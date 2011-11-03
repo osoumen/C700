@@ -1,0 +1,404 @@
+<?xml version="1.0" standalone="yes"?>
+<object class="NSIBObjectData">
+  <string name="targetFramework">IBCarbonFramework</string>
+  <object name="rootObject" class="NSCustomObject" id="1">
+    <string name="customClass">NSApplication</string>
+  </object>
+  <array count="43" name="allObjects">
+    <object class="IBCarbonWindow" id="166">
+      <string name="windowRect">321 261 495 789 </string>
+      <string name="title">Window</string>
+      <object name="rootControl" class="IBCarbonRootControl" id="167">
+        <string name="bounds">0 0 174 528 </string>
+        <array count="1" name="subviews">
+          <object class="IBCarbonUserPane" id="188">
+            <string name="bounds">0 0 174 528 </string>
+            <array count="40" name="subviews">
+              <object class="IBCarbonCustom" id="183">
+                <string name="bounds">54 351 154 367 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">12</int>
+                <string name="title">slider</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.slider</string>
+                <int name="minimum">-128</int>
+                <int name="maximum">127</int>
+              </object>
+              <object class="IBCarbonCustom" id="274">
+                <string name="bounds">16 24 28 42 </string>
+                <ostype name="controlSignature">AUid</ostype>
+                <string name="title">Monaco 10 180 248 255 0 2 1 0</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.dragtext</string>
+              </object>
+              <object class="IBCarbonCustom" id="287">
+                <string name="bounds">156 347 168 371 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1012</int>
+                <string name="title">Monaco 10 180 248 255 0 2 1 0</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.dragtext</string>
+                <int name="minimum">-128</int>
+                <int name="maximum">127</int>
+              </object>
+              <object class="IBCarbonCustom" id="288">
+                <string name="bounds">54 378 154 394 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">13</int>
+                <string name="title">slider</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.slider</string>
+                <int name="minimum">-128</int>
+                <int name="maximum">127</int>
+              </object>
+              <object class="IBCarbonCustom" id="289">
+                <string name="bounds">156 374 168 398 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1013</int>
+                <string name="title">Monaco 10 180 248 255 0 2 1 0</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.dragtext</string>
+                <int name="minimum">-128</int>
+                <int name="maximum">127</int>
+              </object>
+              <object class="IBCarbonCustom" id="290">
+                <string name="bounds">121 10 153 42 </string>
+                <ostype name="controlSignature">AUid</ostype>
+                <int name="controlID">5</int>
+                <string name="title">knob</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.knob</string>
+              </object>
+              <object class="IBCarbonCustom" id="291">
+                <string name="bounds">121 50 153 82 </string>
+                <ostype name="controlSignature">AUid</ostype>
+                <int name="controlID">4</int>
+                <string name="title">knob</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.knob</string>
+              </object>
+              <object class="IBCarbonCustom" id="292">
+                <string name="bounds">157 6 171 46 </string>
+                <ostype name="controlSignature">AUid</ostype>
+                <int name="controlID">1005</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.edittext</string>
+              </object>
+              <object class="IBCarbonCustom" id="293">
+                <string name="bounds">157 46 171 86 </string>
+                <ostype name="controlSignature">AUid</ostype>
+                <int name="controlID">1004</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.edittext</string>
+              </object>
+              <object class="IBCarbonCustom" id="295">
+                <string name="bounds">34 6 46 86 </string>
+                <ostype name="controlSignature">AUid</ostype>
+                <int name="controlID">6</int>
+                <string name="title">bt_velocitysens</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.pbutton</string>
+              </object>
+              <object class="IBCarbonCustom" id="296">
+                <string name="bounds">54 6 66 86 </string>
+                <ostype name="controlSignature">AUid</ostype>
+                <int name="controlID">10</int>
+                <string name="title">bt_mappingmode</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.pbutton</string>
+              </object>
+              <object class="IBCarbonCustom" id="297">
+                <string name="bounds">74 6 86 86 </string>
+                <ostype name="controlSignature">AUid</ostype>
+                <int name="controlID">9</int>
+                <string name="title">bt_properlydecode</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.pbutton</string>
+              </object>
+              <object class="IBCarbonCustom" id="298">
+                <string name="bounds">9 351 21 384 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">7</int>
+                <string name="title">bt_loop</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.pbutton</string>
+              </object>
+              <object class="IBCarbonCustom" id="299">
+                <string name="bounds">99 411 154 427 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">8</int>
+                <string name="title">slider</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.slider</string>
+                <int name="maximum">15</int>
+              </object>
+              <object class="IBCarbonCustom" id="304">
+                <string name="bounds">99 438 154 454 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">9</int>
+                <string name="title">slider</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.slider</string>
+                <int name="maximum">7</int>
+              </object>
+              <object class="IBCarbonCustom" id="305">
+                <string name="bounds">99 465 154 481 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">10</int>
+                <string name="title">slider</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.slider</string>
+                <int name="maximum">7</int>
+              </object>
+              <object class="IBCarbonCustom" id="306">
+                <string name="bounds">99 492 154 508 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">11</int>
+                <string name="title">slider</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.slider</string>
+                <int name="maximum">31</int>
+              </object>
+              <object class="IBCarbonCustom" id="307">
+                <string name="bounds">156 407 168 431 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1008</int>
+                <string name="title">Monaco 10 180 248 255 0 2 1 0</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.dragtext</string>
+                <int name="maximum">15</int>
+              </object>
+              <object class="IBCarbonCustom" id="308">
+                <string name="bounds">156 434 168 458 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1009</int>
+                <string name="title">Monaco 10 180 248 255 0 2 1 0</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.dragtext</string>
+                <int name="maximum">7</int>
+              </object>
+              <object class="IBCarbonCustom" id="309">
+                <string name="bounds">156 461 168 485 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1010</int>
+                <string name="title">Monaco 10 180 248 255 0 2 1 0</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.dragtext</string>
+                <int name="maximum">7</int>
+              </object>
+              <object class="IBCarbonCustom" id="310">
+                <string name="bounds">156 488 168 512 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1011</int>
+                <string name="title">Monaco 10 180 248 255 0 2 1 0</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.dragtext</string>
+                <int name="maximum">31</int>
+              </object>
+              <object class="IBCarbonCustom" id="313">
+                <string name="bounds">48 459 62 491 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">3</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.edittext</string>
+                <int name="maximum">127</int>
+              </object>
+              <object class="IBCarbonCustom" id="314">
+                <string name="bounds">11 138 25 339 </string>
+                <ostype name="controlSignature">user</ostype>
+                <string name="classID">com.VeMa.audiounit.Chip700.edittext</string>
+              </object>
+              <object class="IBCarbonLittleArrows" id="315">
+                <string name="bounds">7 122 26 135 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">14</int>
+                <boolean name="small">TRUE</boolean>
+                <int name="controlSize">1</int>
+                <int name="maximumValue">127</int>
+              </object>
+              <object class="IBCarbonLittleArrows" id="316">
+                <string name="bounds">7 491 26 504 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">6</int>
+                <boolean name="small">TRUE</boolean>
+                <int name="controlSize">1</int>
+                <int name="maximumValue">10000000</int>
+                <int name="increment">16</int>
+              </object>
+              <object class="IBCarbonCustom" id="317">
+                <string name="bounds">31 431 45 491 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">2</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.edittext</string>
+              </object>
+              <object class="IBCarbonCustom" id="318">
+                <string name="bounds">63 459 77 491 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">4</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.edittext</string>
+                <int name="maximum">127</int>
+              </object>
+              <object class="IBCarbonCustom" id="319">
+                <string name="bounds">78 459 92 491 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">5</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.edittext</string>
+                <int name="maximum">127</int>
+              </object>
+              <object class="IBCarbonCustom" id="323">
+                <string name="bounds">11 444 25 490 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1006</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.edittext</string>
+              </object>
+              <object class="IBCarbonCustom" id="324">
+                <string name="bounds">11 99 25 122 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1014</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.edittext</string>
+                <int name="maximum">127</int>
+              </object>
+              <object class="IBCarbonCustom" id="325">
+                <string name="bounds">28 99 76 339 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.waveview</string>
+              </object>
+              <object class="IBCarbonCustom" id="326">
+                <string name="bounds">76 99 148 219 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">1001</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.waveview</string>
+              </object>
+              <object class="IBCarbonCustom" id="327">
+                <string name="bounds">76 219 148 339 </string>
+                <ostype name="controlSignature">user</ostype>
+                <int name="controlID">2001</int>
+                <string name="classID">com.VeMa.audiounit.Chip700.waveview</string>
+              </object>
+              <object class="IBCarbonCustom" id="328">
+                <string name="bounds">46 493 60 522 </string>
+                <string name="title">bt_calc</string>
+                <ostype name="command">dkey</ostype>
+                <string name="classID">com.VeMa.audiounit.Chip700.push</string>
+              </object>
+              <object class="IBCarbonCustom" id="329">
+                <string name="bounds">29 493 43 522 </string>
+                <string name="title">bt_calc</string>
+                <ostype name="command">drat</ostype>
+                <string name="classID">com.VeMa.audiounit.Chip700.push</string>
+              </object>
+              <object class="IBCarbonCustom" id="330">
+                <string name="bounds">155 198 169 238 </string>
+                <string name="title">bt_load</string>
+                <ostype name="command">load</ostype>
+                <string name="classID">com.VeMa.audiounit.Chip700.push</string>
+              </object>
+              <object class="IBCarbonCustom" id="331">
+                <string name="bounds">155 150 169 190 </string>
+                <string name="title">bt_save</string>
+                <ostype name="command">save</ostype>
+                <string name="classID">com.VeMa.audiounit.Chip700.push</string>
+              </object>
+              <object class="IBCarbonCustom" id="332">
+                <string name="bounds">155 101 169 142 </string>
+                <string name="title">bt_unload</string>
+                <ostype name="command">unlo</ostype>
+                <string name="classID">com.VeMa.audiounit.Chip700.push</string>
+              </object>
+              <object class="IBCarbonCustom" id="333">
+                <string name="bounds">155 246 167 313 </string>
+                <string name="title">bt_preemphasis</string>
+                <ostype name="command">emph</ostype>
+                <string name="classID">com.VeMa.audiounit.Chip700.pbutton</string>
+                <int name="value">1</int>
+              </object>
+              <object class="IBCarbonCustom" id="335">
+                <string name="bounds">16 73 28 91 </string>
+                <ostype name="controlSignature">AUid</ostype>
+                <int name="controlID">7</int>
+                <string name="title">Monaco 10 180 248 255 0 2 1 0</string>
+                <string name="classID">com.VeMa.audiounit.Chip700.dragtext</string>
+              </object>
+            </array>
+            <ostype name="controlSignature">AUid</ostype>
+            <int name="controlID">9999</int>
+            <int name="featureBits">5258</int>
+          </object>
+        </array>
+      </object>
+    </object>
+    <reference idRef="167"/>
+    <reference idRef="183"/>
+    <reference idRef="188"/>
+    <reference idRef="274"/>
+    <reference idRef="287"/>
+    <reference idRef="288"/>
+    <reference idRef="289"/>
+    <reference idRef="290"/>
+    <reference idRef="291"/>
+    <reference idRef="292"/>
+    <reference idRef="293"/>
+    <reference idRef="295"/>
+    <reference idRef="296"/>
+    <reference idRef="297"/>
+    <reference idRef="298"/>
+    <reference idRef="299"/>
+    <reference idRef="304"/>
+    <reference idRef="305"/>
+    <reference idRef="306"/>
+    <reference idRef="307"/>
+    <reference idRef="308"/>
+    <reference idRef="309"/>
+    <reference idRef="310"/>
+    <reference idRef="313"/>
+    <reference idRef="314"/>
+    <reference idRef="315"/>
+    <reference idRef="316"/>
+    <reference idRef="317"/>
+    <reference idRef="318"/>
+    <reference idRef="319"/>
+    <reference idRef="323"/>
+    <reference idRef="324"/>
+    <reference idRef="325"/>
+    <reference idRef="326"/>
+    <reference idRef="327"/>
+    <reference idRef="328"/>
+    <reference idRef="329"/>
+    <reference idRef="330"/>
+    <reference idRef="331"/>
+    <reference idRef="332"/>
+    <reference idRef="333"/>
+    <reference idRef="335"/>
+  </array>
+  <array count="43" name="allParents">
+    <reference idRef="1"/>
+    <reference idRef="166"/>
+    <reference idRef="188"/>
+    <reference idRef="167"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+    <reference idRef="188"/>
+  </array>
+  <dictionary count="2" name="nameTable">
+    <string>File&apos;s Owner</string>
+    <reference idRef="1"/>
+    <string>window</string>
+    <reference idRef="166"/>
+  </dictionary>
+  <unsigned_int name="nextObjectID">336</unsigned_int>
+</object>

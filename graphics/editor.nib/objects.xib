@@ -1,0 +1,396 @@
+<?xml version="1.0" standalone="yes"?>
+<object class="NSIBObjectData">
+  <string name="targetFramework">IBCarbonFramework</string>
+  <object name="rootObject" class="NSCustomObject" id="1">
+    <string name="customClass">NSApplication</string>
+  </object>
+  <array count="34" name="allObjects">
+    <object class="IBCarbonEditText" id="180">
+      <string name="bounds">13 74 24 103 </string>
+      <string name="viewFrame">74 13 29 11 </string>
+      <ostype name="controlSignature">info</ostype>
+      <int name="controlID">1</int>
+      <int name="fontStyle">-5</int>
+      <boolean name="small">TRUE</boolean>
+      <int name="controlSize">3</int>
+      <ostype name="command">INFO</ostype>
+      <string name="helpTagText">Y position</string>
+      <boolean name="isUnicode">TRUE</boolean>
+      <boolean name="isSingleLine">TRUE</boolean>
+    </object>
+    <object class="IBCarbonEditText" id="181">
+      <string name="bounds">13 23 24 52 </string>
+      <string name="viewFrame">23 13 29 11 </string>
+      <ostype name="controlSignature">info</ostype>
+      <int name="fontStyle">-5</int>
+      <boolean name="small">TRUE</boolean>
+      <int name="controlSize">3</int>
+      <ostype name="command">INFO</ostype>
+      <string name="helpTagText">X position</string>
+      <boolean name="isUnicode">TRUE</boolean>
+      <boolean name="isSingleLine">TRUE</boolean>
+    </object>
+    <object class="IBCarbonEditText" id="182">
+      <string name="bounds">37 13 48 216 </string>
+      <string name="viewFrame">13 37 203 11 </string>
+      <ostype name="controlSignature">info</ostype>
+      <int name="controlID">4</int>
+      <int name="fontStyle">-5</int>
+      <boolean name="small">TRUE</boolean>
+      <int name="controlSize">3</int>
+      <ostype name="command">INFO</ostype>
+      <string name="helpTagText">Control title</string>
+      <string name="helpTagExtendedText">Enter here control parameters (see augui documentation)</string>
+      <boolean name="isUnicode">TRUE</boolean>
+      <boolean name="isSingleLine">TRUE</boolean>
+    </object>
+    <object class="IBCarbonCheckBox" id="183">
+      <string name="bounds">106 10 120 66 </string>
+      <string name="viewFrame">10 106 56 14 </string>
+      <ostype name="controlSignature">info</ostype>
+      <int name="controlID">5</int>
+      <int name="fontStyle">-5</int>
+      <boolean name="small">TRUE</boolean>
+      <int name="controlSize">3</int>
+      <string name="title">Enabled</string>
+      <ostype name="command">INFO</ostype>
+    </object>
+    <object class="IBCarbonStaticText" id="184">
+      <string name="bounds">12 173 23 184 </string>
+      <string name="viewFrame">173 12 11 11 </string>
+      <boolean name="small">TRUE</boolean>
+      <int name="controlSize">3</int>
+      <string name="title">x</string>
+    </object>
+    <object class="IBCarbonEditText" id="185">
+      <string name="bounds">13 187 24 216 </string>
+      <string name="viewFrame">187 13 29 11 </string>
+      <ostype name="controlSignature">info</ostype>
+      <int name="controlID">3</int>
+      <int name="fontStyle">-5</int>
+      <boolean name="small">TRUE</boolean>
+      <int name="controlSize">3</int>
+      <ostype name="command">INFO</ostype>
+      <string name="helpTagText">Height</string>
+      <boolean name="isUnicode">TRUE</boolean>
+      <boolean name="isSingleLine">TRUE</boolean>
+    </object>
+    <object class="IBCarbonEditText" id="186">
+      <string name="bounds">13 136 24 165 </string>
+      <string name="viewFrame">136 13 29 11 </string>
+      <ostype name="controlSignature">info</ostype>
+      <int name="controlID">2</int>
+      <int name="fontStyle">-5</int>
+      <boolean name="small">TRUE</boolean>
+      <int name="controlSize">3</int>
+      <ostype name="command">INFO</ostype>
+      <string name="helpTagText">Width</string>
+      <boolean name="isUnicode">TRUE</boolean>
+      <boolean name="isSingleLine">TRUE</boolean>
+    </object>
+    <object class="IBCarbonStaticText" id="187">
+      <string name="bounds">12 114 23 125 </string>
+      <string name="viewFrame">114 12 11 11 </string>
+      <boolean name="small">TRUE</boolean>
+      <int name="controlSize">3</int>
+      <string name="title">)</string>
+    </object>
+    <object class="IBCarbonWindow" id="188">
+      <string name="windowRect">203 282 529 512 </string>
+      <string name="title">info</string>
+      <object name="rootControl" class="IBCarbonRootControl" id="190">
+        <string name="bounds">0 0 326 230 </string>
+        <string name="viewFrame">0 0 230 326 </string>
+        <array count="18" name="subviews">
+          <reference idRef="182"/>
+          <object class="IBCarbonStaticText" id="189">
+            <string name="bounds">12 10 23 21 </string>
+            <string name="viewFrame">10 12 11 11 </string>
+            <boolean name="small">TRUE</boolean>
+            <int name="controlSize">3</int>
+            <string name="title">(</string>
+          </object>
+          <reference idRef="184"/>
+          <reference idRef="187"/>
+          <reference idRef="183"/>
+          <reference idRef="181"/>
+          <reference idRef="180"/>
+          <reference idRef="185"/>
+          <reference idRef="186"/>
+          <object class="IBCarbonEditText" id="191">
+            <string name="bounds">62 34 73 63 </string>
+            <string name="viewFrame">34 62 29 11 </string>
+            <ostype name="controlSignature">info</ostype>
+            <int name="controlID">6</int>
+            <int name="fontStyle">-5</int>
+            <boolean name="small">TRUE</boolean>
+            <int name="controlSize">3</int>
+            <string name="helpTagText">Control signature</string>
+            <string name="helpTagExtendedText">Set it to AUid for parameter binding</string>
+            <boolean name="isUnicode">TRUE</boolean>
+            <boolean name="isSingleLine">TRUE</boolean>
+          </object>
+          <object class="IBCarbonStaticText" id="192">
+            <string name="bounds">62 10 73 27 </string>
+            <string name="viewFrame">10 62 17 11 </string>
+            <boolean name="small">TRUE</boolean>
+            <int name="controlSize">3</int>
+            <string name="title">ID :</string>
+          </object>
+          <object class="IBCarbonEditText" id="193">
+            <string name="bounds">62 74 73 103 </string>
+            <string name="viewFrame">74 62 29 11 </string>
+            <ostype name="controlSignature">info</ostype>
+            <int name="controlID">7</int>
+            <int name="fontStyle">-5</int>
+            <boolean name="small">TRUE</boolean>
+            <int name="controlSize">3</int>
+            <string name="helpTagText">Control ID</string>
+            <string name="helpTagExtendedText">Set the signature to AUid and the ID to the parameter ID you want to control (+ n.1000)</string>
+            <boolean name="isUnicode">TRUE</boolean>
+            <boolean name="isSingleLine">TRUE</boolean>
+          </object>
+          <object class="IBCarbonButton" id="195">
+            <string name="bounds">302 183 316 220 </string>
+            <string name="viewFrame">183 302 37 14 </string>
+            <int name="fontStyle">-5</int>
+            <boolean name="small">TRUE</boolean>
+            <int name="controlSize">3</int>
+            <string name="title">OK</string>
+            <ostype name="command">INFO</ostype>
+            <int name="buttonType">1</int>
+          </object>
+          <object class="IBCarbonEditText" id="196">
+            <string name="bounds">87 74 98 103 </string>
+            <string name="viewFrame">74 87 29 11 </string>
+            <ostype name="controlSignature">info</ostype>
+            <int name="controlID">8</int>
+            <int name="fontStyle">-5</int>
+            <boolean name="small">TRUE</boolean>
+            <int name="controlSize">3</int>
+            <ostype name="command">INFO</ostype>
+            <string name="helpTagText">Command associated to the control</string>
+            <boolean name="isUnicode">TRUE</boolean>
+            <boolean name="isSingleLine">TRUE</boolean>
+          </object>
+          <object class="IBCarbonStaticText" id="197">
+            <string name="bounds">87 10 98 66 </string>
+            <string name="viewFrame">10 87 56 11 </string>
+            <boolean name="small">TRUE</boolean>
+            <int name="controlSize">3</int>
+            <string name="title">Command :</string>
+          </object>
+          <object class="IBCarbonStaticText" id="220">
+            <string name="bounds">62 114 80 219 </string>
+            <string name="viewFrame">114 62 105 18 </string>
+            <ostype name="controlSignature">info</ostype>
+            <int name="controlID">9</int>
+            <boolean name="small">TRUE</boolean>
+            <int name="controlSize">3</int>
+            <string name="title">(none)</string>
+            <string name="helpTagText">AU Parameter name</string>
+            <int name="justification">1</int>
+          </object>
+          <object class="IBCarbonDBListView" id="221">
+            <string name="bounds">128 10 289 219 </string>
+            <string name="viewFrame">10 128 209 161 </string>
+            <ostype name="controlSignature">info</ostype>
+            <int name="controlID">10</int>
+            <int name="fontStyle">-5</int>
+            <string name="helpTagText">Control parameters</string>
+            <boolean name="horzScrollBar">FALSE</boolean>
+            <int name="selectionFlags">11</int>
+            <array count="1" name="listViewColumns">
+              <object class="IBCarbonDBListViewColumn">
+                <ostype name="propertyID">????</ostype>
+                <int name="sortOrder">1</int>
+              </object>
+            </array>
+          </object>
+          <object class="IBCarbonButton" id="222">
+            <string name="bounds">302 122 316 175 </string>
+            <string name="viewFrame">122 302 53 14 </string>
+            <int name="fontStyle">-5</int>
+            <boolean name="small">TRUE</boolean>
+            <int name="controlSize">3</int>
+            <string name="title">Save</string>
+            <ostype name="command">SAVE</ostype>
+          </object>
+        </array>
+      </object>
+      <boolean name="receiveUpdates">FALSE</boolean>
+      <boolean name="hasCloseBox">FALSE</boolean>
+      <boolean name="hasCollapseBox">FALSE</boolean>
+      <boolean name="hasHorizontalZoom">FALSE</boolean>
+      <boolean name="isResizable">FALSE</boolean>
+      <boolean name="hasSideTitle">TRUE</boolean>
+      <boolean name="hasVerticalZoom">FALSE</boolean>
+      <boolean name="liveResize">TRUE</boolean>
+      <boolean name="compositing">TRUE</boolean>
+      <int name="carbonWindowClass">5</int>
+      <boolean name="isConstrained">FALSE</boolean>
+      <boolean name="hideOnFullScreen">TRUE</boolean>
+      <boolean name="hideOnSuspend">TRUE</boolean>
+    </object>
+    <reference idRef="189"/>
+    <reference idRef="190"/>
+    <reference idRef="191"/>
+    <reference idRef="192"/>
+    <reference idRef="193"/>
+    <reference idRef="195"/>
+    <reference idRef="196"/>
+    <reference idRef="197"/>
+    <object class="IBCarbonMenu" id="200">
+      <string name="title">Controls</string>
+      <array count="7" name="items">
+        <object class="IBCarbonMenuItem" id="201">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">New knob</string>
+          <ostype name="command">KNOB</ostype>
+        </object>
+        <object class="IBCarbonMenuItem" id="203">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">New arc knob</string>
+          <ostype name="command">ARCK</ostype>
+        </object>
+        <object class="IBCarbonMenuItem" id="202">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">New slider</string>
+          <ostype name="command">SLID</ostype>
+        </object>
+        <object class="IBCarbonMenuItem" id="204">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">New text field</string>
+          <ostype name="command">TEXT</ostype>
+        </object>
+        <object class="IBCarbonMenuItem" id="205">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">New button</string>
+          <ostype name="command">BUTT</ostype>
+        </object>
+        <object class="IBCarbonMenuItem" id="214">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">New push button</string>
+          <ostype name="command">PBUT</ostype>
+        </object>
+        <object class="IBCarbonMenuItem" id="215">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">New popup</string>
+          <ostype name="command">POPU</ostype>
+        </object>
+      </array>
+    </object>
+    <reference idRef="201"/>
+    <reference idRef="202"/>
+    <reference idRef="203"/>
+    <reference idRef="204"/>
+    <reference idRef="205"/>
+    <object class="IBCarbonMenuItem" id="206">
+      <boolean name="submenuParentChoosable">TRUE</boolean>
+      <boolean name="updateSingleItem">TRUE</boolean>
+      <string name="title">New</string>
+      <ostype name="command">NEW </ostype>
+    </object>
+    <object class="IBCarbonMenu" id="207">
+      <string name="title">Editor</string>
+      <int name="menuID">1</int>
+      <array count="5" name="items">
+        <object class="IBCarbonMenuItem" id="212">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">Save…</string>
+          <ostype name="command">SAVE</ostype>
+        </object>
+        <reference idRef="206"/>
+        <object class="IBCarbonMenuItem" id="208">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">Delete</string>
+          <ostype name="command">DELE</ostype>
+        </object>
+        <object class="IBCarbonMenuItem" id="216">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">Copy</string>
+          <ostype name="command">COPY</ostype>
+        </object>
+        <object class="IBCarbonMenuItem" id="217">
+          <boolean name="updateSingleItem">TRUE</boolean>
+          <string name="title">Paste</string>
+          <ostype name="command">PAST</ostype>
+        </object>
+      </array>
+    </object>
+    <reference idRef="208"/>
+    <reference idRef="212"/>
+    <reference idRef="214"/>
+    <reference idRef="215"/>
+    <reference idRef="216"/>
+    <reference idRef="217"/>
+    <reference idRef="220"/>
+    <reference idRef="221"/>
+    <reference idRef="222"/>
+  </array>
+  <array count="34" name="allParents">
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="1"/>
+    <reference idRef="190"/>
+    <reference idRef="188"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="1"/>
+    <reference idRef="200"/>
+    <reference idRef="200"/>
+    <reference idRef="200"/>
+    <reference idRef="200"/>
+    <reference idRef="200"/>
+    <reference idRef="207"/>
+    <reference idRef="1"/>
+    <reference idRef="207"/>
+    <reference idRef="207"/>
+    <reference idRef="200"/>
+    <reference idRef="200"/>
+    <reference idRef="207"/>
+    <reference idRef="207"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+    <reference idRef="190"/>
+  </array>
+  <dictionary count="13" name="nameTable">
+    <string>Controls</string>
+    <reference idRef="200"/>
+    <string>Editor</string>
+    <reference idRef="207"/>
+    <string>File&apos;s Owner</string>
+    <reference idRef="1"/>
+    <string>IBCarbonMenuItem</string>
+    <reference idRef="212"/>
+    <string>IBCarbonMenuItem1</string>
+    <reference idRef="201"/>
+    <string>IBCarbonMenuItem11</string>
+    <reference idRef="202"/>
+    <string>IBCarbonMenuItem111</string>
+    <reference idRef="203"/>
+    <string>IBCarbonMenuItem112</string>
+    <reference idRef="204"/>
+    <string>IBCarbonMenuItem1121</string>
+    <reference idRef="208"/>
+    <string>IBCarbonMenuItem11211</string>
+    <reference idRef="216"/>
+    <string>IBCarbonMenuItem112111</string>
+    <reference idRef="217"/>
+    <string>ListView</string>
+    <reference idRef="221"/>
+    <string>infos</string>
+    <reference idRef="188"/>
+  </dictionary>
+  <unsigned_int name="nextObjectID">223</unsigned_int>
+</object>
