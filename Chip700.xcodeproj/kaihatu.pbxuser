@@ -185,6 +185,8 @@
 			8AAE1DE61462850B00D570DA = 8AAE1DE61462850B00D570DA /* PBXTextBookmark */;
 			8AAE1DEE146285B700D570DA /* PBXTextBookmark */ = 8AAE1DEE146285B700D570DA /* PBXTextBookmark */;
 			8AAE1DFB1462871A00D570DA /* PBXTextBookmark */ = 8AAE1DFB1462871A00D570DA /* PBXTextBookmark */;
+			8AAE1E071462AEA000D570DA /* PBXTextBookmark */ = 8AAE1E071462AEA000D570DA /* PBXTextBookmark */;
+			8AAE1E081462AEA000D570DA /* PBXTextBookmark */ = 8AAE1E081462AEA000D570DA /* PBXTextBookmark */;
 		};
 		sourceControlManager = 8A4514C50AADC92800997A83 /* Source Control */;
 		userBuildSettings = {
@@ -531,6 +533,24 @@
 		rType = 0;
 		vrLen = 0;
 		vrLoc = 0;
+	};
+	8AAE1E071462AEA000D570DA /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "error:   initializing argument 2 of 'const __CFArray* CFArrayCreate(const __CFAllocator*, const void**, CFIndex, const CFArrayCallBacks*)'";
+		fRef = 8ACF4D050B214D2F00EC1825 /* Chip700View.cpp */;
+		rLen = 1;
+		rLoc = 847;
+		rType = 1;
+	};
+	8AAE1E081462AEA000D570DA /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8ACF4D050B214D2F00EC1825 /* Chip700View.cpp */;
+		name = "Chip700View.cpp: 847";
+		rLen = 0;
+		rLoc = 25213;
+		rType = 0;
+		vrLen = 1010;
+		vrLoc = 24783;
 	};
 	8AC1D32A0B27525A00FFD294 /* dragimg.png */ = {
 		uiCtxt = {
@@ -994,10 +1014,10 @@
 	};
 	8ACF4D050B214D2F00EC1825 /* Chip700View.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {908, 20440}}";
-			sepNavSelRange = "{19587, 22}";
-			sepNavVisRect = "{{0, 9069}, {674, 813}}";
-			sepNavWindowFrame = "{{445, 60}, {713, 942}}";
+			sepNavIntBoundsRect = "{{0, 0}, {908, 21042}}";
+			sepNavSelRange = "{25213, 0}";
+			sepNavVisRect = "{{0, 11653}, {749, 424}}";
+			sepNavWindowFrame = "{{445, 62}, {713, 940}}";
 		};
 	};
 	8AD2C4FB0B2AA99100ED85CB /* bt_properlydecode1.png */ = {
