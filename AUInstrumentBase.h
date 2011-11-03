@@ -196,7 +196,7 @@ protected:
 	
 	SInt64 mAbsoluteSampleFrame;
 
-	void ChangeMaxActiveNotes(int num) {mMaxActiveNotes = num;}
+	void ChangeMaxActiveNotes(int num) {mMaxActiveNotes = num;}		//’Ç‰Á
 private:
 				
 	SInt32 mNoteIDCounter;
