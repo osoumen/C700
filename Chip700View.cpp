@@ -2,7 +2,7 @@
  *  Chip700View.cpp
  *  Chip700
  *
- *  Created by 開発用 on 06/11/30.
+ *  Created by on 06/11/30.
  *  Copyright 2006 __MyCompanyName__. All rights reserved.
  *
  */
@@ -845,7 +845,7 @@ CFURLRef Chip700View::getSaveFile(CFStringRef defaultName)
 	myDialogOptions.saveFileName = defaultName;
 	
 	CFStringRef	format_strings[] = { CFSTR(".brr"), CFSTR(".xi") };
-	CFArrayRef	formats = CFArrayCreate( NULL, (void*)&format_strings, 2, &kCFTypeArrayCallBacks );
+	CFArrayRef	formats = CFArrayCreate( NULL, (const void**)format_strings, 2, &kCFTypeArrayCallBacks );
 	myDialogOptions.popupExtension = formats;
 	myDialogOptions.optionFlags &= ~kNavNoTypePopup;
 	
