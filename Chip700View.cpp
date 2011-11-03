@@ -845,7 +845,7 @@ CFURLRef Chip700View::getSaveFile(CFStringRef defaultName)
 	myDialogOptions.saveFileName = defaultName;
 	
 	CFStringRef	format_strings[] = { CFSTR(".brr"), CFSTR(".xi") };
-	CFArrayRef	formats = CFArrayCreate( NULL, (void*)format_strings, 2, &kCFTypeArrayCallBacks );
+	CFArrayRef	formats = CFArrayCreate( NULL, (void*)&format_strings, 2, &kCFTypeArrayCallBacks );
 	myDialogOptions.popupExtension = formats;
 	myDialogOptions.optionFlags &= ~kNavNoTypePopup;
 	
