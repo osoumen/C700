@@ -1,5 +1,6 @@
 #include "Chip700.h"
 #include "samplebrr.h"
+#include "brrcodec.h"
 #include <AudioToolbox/AudioToolbox.h>
 
 
@@ -299,6 +300,11 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 				outWritable = false;
 				return noErr;
 				
+			case kAudioUnitCustomProperty_XIData:
+				outDataSize = sizeof(CFDataRef);
+				outWritable = false;
+				return noErr;
+			
 			case kAudioUnitCustomProperty_ProgramName:
 				outDataSize = sizeof(CFStringRef);
 				outWritable = false;
@@ -506,6 +512,11 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 				return noErr;
 			}
 				
+			case kAudioUnitCustomProperty_XIData:
+			{
+				return noErr;
+			}
+			
 			case kAudioUnitCustomProperty_ProgramName:
 				if (mVPset[mEditProg].pgname)
 					CFRelease(mVPset[mEditProg].pgname);
@@ -744,7 +755,7 @@ int Chip700::CreateXIData( CFDataRef *data )
 	
 	int start_prg = 0;
 	int end_prg = 127;
-	bool multisample = Globals()->GetParameter(kParam_drummode_Name) != 0 ? true:false;
+	bool multisample = Globals()->GetParameter(kParam_drummode) != 0 ? true:false;
 	
 	if ( !multisample ) {
 		start_prg = end_prg = mEditProg;
@@ -758,11 +769,18 @@ int Chip700::CreateXIData( CFDataRef *data )
 	// XI File Header
 	memset(&xfh, 0, sizeof(xfh));
 	memcpy(xfh.extxi, "Extended Instrument: ", 21);
-	memcpy(xfh.name, "(Inst Name)", 22);
+	if ( multisample ) {
+		memcpy(xfh.name, "Multi sampled Inst", 22);
+	}
+	else {
+		if ( CFStringGetCString(mVPset[mEditProg].pgname,xsh.name,22,kCFStringEncodingASCII) == false ) {
+			memcpy(xsh.name, "Inst", 22);
+		}
+	}
 	xfh.name[22] = 0x1A;
 	memcpy(xfh.trkname, "FastTracker v2.00   ", 20);
 	xfh.shsize = 0x102;
-	CFDataAppendBytes( mdata, &xfh, sizeof(xfh) );
+	CFDataAppendBytes( mdata, (const UInt8 *)&xfh, sizeof(xfh) );
 	
 	// XI Instrument Header
 	memset(&xih, 0, sizeof(xih));
@@ -783,13 +801,14 @@ int Chip700::CreateXIData( CFDataRef *data )
 			xih.snum[i] = 0;
 		}
 		nsamples = 1;
-		vol = (int)( abs(mVPset[mEditProg].volL) + abs(mVPset[mEditProg].volR) ) / 2;
+		vol = (int)( abs(mVPset[mEditProg].volL) + abs(mVPset[mEditProg].volR) ) / 4;
 	}
-	for (int i=0; i<3; i++) {
-		xih.venv[i*2] = i*5;	//ADSR‚ð”½‰f‚³‚¹‚½‚¢
+	for (int i=0; i<4; i++) {
+		xih.venv[i*2] = i*10;	//ADSR‚ð”½‰f‚³‚¹‚½‚¢
 		xih.venv[i*2+1] = vol;
 		//xih.penv[i*2] = 0
 	}
+	xih.venv[7] = 0;
 	xih.vnum = 4;
 	xih.pnum = 0;
 	xih.vsustain = 2;
@@ -802,38 +821,50 @@ int Chip700::CreateXIData( CFDataRef *data )
 	xih.ptype = 0;
 	xih.volfade = 5000;
 	xih.reserved2 = nsamples;
-	CFDataAppendBytes( mdata, &xih, sizeof(xih) );
+	CFDataAppendBytes( mdata, (const UInt8 *)&xih, sizeof(xih) );
 	
 	// XI Sample Headers
-	for (int ismp=start_prg; ismp<end_prg; ismp++) {
+	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
 		xsh.samplen = mVPset[ismp].brr.size/9*32;
 		xsh.loopstart = mVPset[ismp].lp/9*32;
 		xsh.looplen = xsh.samplen - xsh.loopstart;
+		double avr = ( abs(mVPset[ismp].volL) + abs(mVPset[ismp].volR) ) / 2;
+		double pan = (abs(mVPset[ismp].volR) * 128) / avr;
+		if ( pan > 256 ) pan = 256;
 		xsh.vol = 64;	//•Ï‰»‚µ‚È‚¢H
+		xsh.pan = pan;
 		xsh.type = 0x10;	//CHN_16BIT
 		if ( mVPset[ismp].loop ) {
-			xsh.type = 0x01;	//Normal Loop
+			xsh.type |= 0x01;	//Normal Loop
 		}
-		xsh.pan = 128;
-		xsh.relnote = 0;
-		xsh.finetune = 0;
+		double trans = 12*(log(mVPset[ismp].rate / 8363.0)/log(2.0));
+		int trans_i = (trans + (60-mVPset[ismp].basekey) ) * 128;
+		xsh.relnote = trans_i >> 7;
+		xsh.finetune = trans_i & 0x7f;
 		xsh.res = 0;
 		if ( CFStringGetCString(mVPset[ismp].pgname,xsh.name,22,kCFStringEncodingASCII) == false ) {
 			memcpy(xsh.name, "Sample", 22);
 		}
-		CFDataAppendBytes( mdata, &xsh, sizeof(xsh) );
+		CFDataAppendBytes( mdata, (const UInt8 *)&xsh, sizeof(xsh) );
 	}
 	
 	// XI Sample Data
-	for (int ismp=start_prg; ismp<end_prg; ismp++) {
+	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
 		short	*wavedata;
 		long	numSamples = mVPset[ismp].brr.size/9*16;
 		wavedata = new short[numSamples];
 		brrdecode(mVPset[ismp].brr.data, wavedata,0,0);
-		CFDataAppendBytes( mdata, wavedata, numSamples*2 );
+		short s_new,s_old;
+		s_old = wavedata[0];
+		for ( int i=0; i<numSamples; i++ ) {
+			s_new = wavedata[i];
+			wavedata[i] = s_new - s_old;
+			s_old = s_new;
+		}
+		CFDataAppendBytes( mdata, (const UInt8 *)wavedata, numSamples*2 );
 		delete [] wavedata;
 	}
-	data = mdata;
+	*data = mdata;
 	
 	return 0;
 }

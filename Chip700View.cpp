@@ -823,13 +823,15 @@ CFURLRef Chip700View::getSaveFile(CFStringRef defaultName)
 	myDialogOptions.optionFlags |= kNavPreserveSaveFileExtension;
 	myDialogOptions.saveFileName = defaultName;
 	
-//	CFStringRef	format_strings[] = { CFSTR(".brr"), CFSTR(".xi") };
+//	CFStringRef	format_strings[2];
+//	format_strings[0] = CFStringCreateWithFormat(NULL,NULL,CFSTR(".brr"));
+//	format_strings[1] = CFStringCreateWithFormat(NULL,NULL,CFSTR(".xi"));
 //	CFArrayRef	formats = CFArrayCreate( kCFAllocatorDefault, (const void**)format_strings, 2, &kCFTypeArrayCallBacks );
 //	myDialogOptions.popupExtension = formats;
 //	myDialogOptions.optionFlags &= ~kNavNoTypePopup;
 	
 	status = NavCreatePutFileDialog(&myDialogOptions,0,0,NULL,NULL,&myDialogRef);
-		
+	
 	status = NavDialogRun(myDialogRef);
 	
 	NavUserAction userAction = NavDialogGetUserAction(myDialogRef);
