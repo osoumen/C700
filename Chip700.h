@@ -93,6 +93,7 @@ private:
 	Chip700Note			mChip700Notes[kMaximumVoices];
 	
 	void					RefreshKeyMap(void);
+	int						CreateXIData( CFDataRef *data );
 	int						CreatePGDataDic(CFDictionaryRef *data, int pgnum);
 	void					RestorePGDataDic(CFPropertyListRef data, int pgnum);
 };

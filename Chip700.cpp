@@ -380,6 +380,14 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 				*((CFDictionaryRef *)outData) = pgdata;	//使用後要release
 				return noErr;
 			}
+			
+			case kAudioUnitCustomProperty_XIData:
+			{
+				CFDataRef xidata;
+				CreateXIData( &xidata );
+				*((CFDataRef *)outData) = xidata;	//使用後要release
+				return noErr;
+			}
 				
 			case kAudioUnitCustomProperty_ProgramName:
 				*((CFStringRef *)outData) = mVPset[mEditProg].pgname;
@@ -727,6 +735,107 @@ void Chip700::RefreshKeyMap(void)
 			}
 		}
 	}
+}
+
+int Chip700::CreateXIData( CFDataRef *data )
+{
+	CFMutableDataRef mdata;
+	mdata = CFDataCreateMutable( NULL, 0 );
+	
+	int start_prg = 0;
+	int end_prg = 127;
+	bool multisample = Globals()->GetParameter(kParam_drummode_Name) != 0 ? true:false;
+	
+	if ( !multisample ) {
+		start_prg = end_prg = mEditProg;
+	}
+	
+	XIFILEHEADER xfh;
+	XIINSTRUMENTHEADER xih;
+	XISAMPLEHEADER xsh;
+	int nsamples = 0;
+	
+	// XI File Header
+	memset(&xfh, 0, sizeof(xfh));
+	memcpy(xfh.extxi, "Extended Instrument: ", 21);
+	memcpy(xfh.name, "(Inst Name)", 22);
+	xfh.name[22] = 0x1A;
+	memcpy(xfh.trkname, "FastTracker v2.00   ", 20);
+	xfh.shsize = 0x102;
+	CFDataAppendBytes( mdata, &xfh, sizeof(xfh) );
+	
+	// XI Instrument Header
+	memset(&xih, 0, sizeof(xih));
+	
+	int vol = 64;
+	
+	if ( multisample ) {
+		for ( int i=0; i<96; i++ ) {
+			xih.snum[i] = mKeyMap[i+12];
+			if ( (mKeyMap[i+12]+1) > nsamples ) {
+				nsamples = mKeyMap[i+12]+1;
+				end_prg = mKeyMap[i+12];
+			}
+		}
+	}
+	else {
+		for ( int i=0; i<96; i++ ) {
+			xih.snum[i] = 0;
+		}
+		nsamples = 1;
+		vol = (int)( abs(mVPset[mEditProg].volL) + abs(mVPset[mEditProg].volR) ) / 2;
+	}
+	for (int i=0; i<3; i++) {
+		xih.venv[i*2] = i*5;	//ADSRを反映させたい
+		xih.venv[i*2+1] = vol;
+		//xih.penv[i*2] = 0
+	}
+	xih.vnum = 4;
+	xih.pnum = 0;
+	xih.vsustain = 2;
+	xih.vloops = 2;
+	xih.vloope = 2;
+	xih.psustain = 0;
+	xih.ploops = 0;
+	xih.ploope = 0;
+	xih.vtype = 3;	//ENV_VOLUME + ENV_VOLSUSTAIN
+	xih.ptype = 0;
+	xih.volfade = 5000;
+	xih.reserved2 = nsamples;
+	CFDataAppendBytes( mdata, &xih, sizeof(xih) );
+	
+	// XI Sample Headers
+	for (int ismp=start_prg; ismp<end_prg; ismp++) {
+		xsh.samplen = mVPset[ismp].brr.size/9*32;
+		xsh.loopstart = mVPset[ismp].lp/9*32;
+		xsh.looplen = xsh.samplen - xsh.loopstart;
+		xsh.vol = 64;	//変化しない？
+		xsh.type = 0x10;	//CHN_16BIT
+		if ( mVPset[ismp].loop ) {
+			xsh.type = 0x01;	//Normal Loop
+		}
+		xsh.pan = 128;
+		xsh.relnote = 0;
+		xsh.finetune = 0;
+		xsh.res = 0;
+		if ( CFStringGetCString(mVPset[ismp].pgname,xsh.name,22,kCFStringEncodingASCII) == false ) {
+			memcpy(xsh.name, "Sample", 22);
+		}
+		CFDataAppendBytes( mdata, &xsh, sizeof(xsh) );
+	}
+	
+	// XI Sample Data
+	for (int ismp=start_prg; ismp<end_prg; ismp++) {
+		short	*wavedata;
+		long	numSamples = mVPset[ismp].brr.size/9*16;
+		wavedata = new short[numSamples];
+		brrdecode(mVPset[ismp].brr.data, wavedata,0,0);
+		CFDataAppendBytes( mdata, wavedata, numSamples*2 );
+		delete [] wavedata;
+	}
+	data = mdata;
+	
+	return 0;
 }
 
 int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
