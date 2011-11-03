@@ -96,7 +96,7 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
         styleOK = 1;
     }
 	
-	//ƒRƒ“ƒgƒ[ƒ‹‘€ìƒCƒxƒ“ƒg‚Ì“o˜^
+	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«æ“ä½œã‚¤ãƒ™ãƒ³ãƒˆã®ç™»éŒ²
 	for (int j=0; j<=1000; j+=1000) {
 		for (int i=0; i<kNumberOfProperties; i++) {
 			id.id=i+j;
@@ -158,7 +158,7 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 	InstallTrackingHandler((DragTrackingHandlerUPP)MyTrackingHandler, mCarbonWindow, this);
 	InstallReceiveHandler((DragReceiveHandlerUPP)MyReceiveHandler, mCarbonWindow, this);
 	
-	//ƒvƒƒpƒeƒB•ÏXƒCƒxƒ“ƒg‚Ì“o˜^
+	//ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å¤‰æ›´ã‚¤ãƒ™ãƒ³ãƒˆã®ç™»éŒ²
 	for (int i=0; i<kNumberOfProperties; i++) {
 		RegisterPropertyChanges(kAudioUnitCustomProperty_First+i);
 		PropertyHasChanged(kAudioUnitCustomProperty_First+i,kAudioUnitScope_Global,0);
@@ -227,7 +227,7 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 				case kEventControlClick:
 				{
 					if (propertyID == kAudioUnitCustomProperty_BRRData) {
-					//ƒhƒ‰ƒbƒOˆ—
+					//ãƒ‰ãƒ©ãƒƒã‚°å‡¦ç†
 					EventRecord	eventrec;
 					if (!ConvertEventRefToEventRecord(event,&eventrec))
 						return dragStart(view, &eventrec);
@@ -506,7 +506,7 @@ pascal ControlKeyFilterResult Chip700View::NumericKeyFilterCallback(ControlRef t
 	return kControlKeyFilterBlockKey;
 }
 
-//”gŒ`‚ğ•\¦‚·‚é
+//æ³¢å½¢ã‚’è¡¨ç¤ºã™ã‚‹
 void Chip700View::setBRRData(UInt8 *data, UInt32 length)
 {
 	HIRect	bounds;
@@ -535,7 +535,7 @@ void Chip700View::setBRRData(UInt8 *data, UInt32 length)
 	}
 }
 
-//setBRRData‚ğŒÄ‚Ño‚µ‚½Œã‚ÉŒÄ‚Ño‚·
+//setBRRDataã‚’å‘¼ã³å‡ºã—ãŸå¾Œã«å‘¼ã³å‡ºã™
 void Chip700View::setLoopoint(UInt32 lp)
 {
 	short	*wavedata;
@@ -643,19 +643,19 @@ void Chip700View::saveSelected(void)
 	UInt32		size;
 	int			intValue;
 	
-	//•ÒW’†‚ÌƒvƒƒOƒ‰ƒ€”Ô†‚ğ’²‚×‚é
+	//ç·¨é›†ä¸­ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ç•ªå·ã‚’èª¿ã¹ã‚‹
 	size = sizeof(int);
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_EditingProgram,kAudioUnitScope_Global,0,&intValue,&size);
 	
-	//ƒTƒ“ƒvƒ‹ƒf[ƒ^‚ğæ“¾‚·‚é
+	//ã‚µãƒ³ãƒ—ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
 	BRRData		brr;
 	size = sizeof(BRRData);
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_BRRData,kAudioUnitScope_Global,0,&brr,&size);
-	//ƒf[ƒ^‚ª–³‚¯‚ê‚ÎI—¹‚·‚é
+	//ãƒ‡ãƒ¼ã‚¿ãŒç„¡ã‘ã‚Œã°çµ‚äº†ã™ã‚‹
 	if (brr.data == NULL)
 		return;
 	
-	//ƒtƒ@ƒCƒ‹ƒ_ƒCƒAƒƒO
+	//ãƒ•ã‚¡ã‚¤ãƒ«ãƒ€ã‚¤ã‚¢ãƒ­ã‚°
 	CFStringRef	pgname;
 	size = sizeof(CFStringRef);
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,kAudioUnitScope_Global,0,&pgname,&size);
@@ -684,11 +684,11 @@ bool Chip700View::dragStart(ControlRef cont, EventRecord *event)
 	
 	RgnHandle	rgn1;
 	
-	//ƒTƒ“ƒvƒ‹ƒf[ƒ^‚ğæ“¾‚·‚é
+	//ã‚µãƒ³ãƒ—ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
 	BRRData		brr;
 	UInt32		size = sizeof(BRRData);
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_BRRData,kAudioUnitScope_Global,0,&brr,&size);
-	//ƒf[ƒ^‚ª–³‚¯‚ê‚ÎI—¹‚·‚é
+	//ãƒ‡ãƒ¼ã‚¿ãŒç„¡ã‘ã‚Œã°çµ‚äº†ã™ã‚‹
 	if (brr.data == NULL)
 		return false;
 	
@@ -744,19 +744,19 @@ bool Chip700View::dragStart(ControlRef cont, EventRecord *event)
 
 void Chip700View::saveToFile(CFURLRef savefile)
 {
-	//Dictionaryƒf[ƒ^‚ğæ“¾‚·‚é
+	//Dictionaryãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
 	CFDictionaryRef	propertydata;
 	UInt32 size = sizeof(CFDictionaryRef);
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_PGDictionary,kAudioUnitScope_Global,0,&propertydata,&size);
 	
-	//ƒoƒCƒiƒŠŒ`®‚É•ÏŠ·
+	//ãƒã‚¤ãƒŠãƒªå½¢å¼ã«å¤‰æ›
 	CFWriteStreamRef	filestream=CFWriteStreamCreateWithFile(NULL,savefile);
 	if (CFWriteStreamOpen(filestream)) {
 		CFPropertyListWriteToStream(propertydata,filestream,kCFPropertyListBinaryFormat_v1_0,NULL);
 		CFWriteStreamClose(filestream);
 	}
 	CFRelease(filestream);
-	//Get‚µ‚½PGDictionary‚Írelease‚ª•K—v
+	//Getã—ãŸPGDictionaryã¯releaseãŒå¿…è¦
 	CFRelease(propertydata);
 }
 
@@ -890,7 +890,7 @@ void Chip700View::loadFile(FSRef *ref)
 	CFStringRef	ext=CFURLCopyPathExtension(path);
 	
 	if ( kCFCompareEqualTo==CFStringCompare(ext,CFSTR("brr"),kCFCompareCaseInsensitive) ) {
-		//•Û‘¶‚³‚ê‚½ƒpƒbƒ`(.brrƒtƒ@ƒCƒ‹)‚Ì“Ç‚İ‚İ
+		//ä¿å­˜ã•ã‚ŒãŸãƒ‘ãƒƒãƒ(.brrãƒ•ã‚¡ã‚¤ãƒ«)ã®èª­ã¿è¾¼ã¿
 		CFReadStreamRef	filestream=CFReadStreamCreateWithFile(NULL,path);
 		if (CFReadStreamOpen(filestream)) {
 			CFPropertyListFormat	format=kCFPropertyListBinaryFormat_v1_0;
@@ -908,7 +908,7 @@ void Chip700View::loadFile(FSRef *ref)
 		loadSPCFile(path);
 	}
 	else {
-		//‚»‚Ì‘¼‚ÌƒI[ƒfƒBƒIƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+		//ãã®ä»–ã®ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
 		InstData	inst;
 		short	*wavedata;
 		long	numSamples;
@@ -960,13 +960,13 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
     UInt32 dataSize;
 	short *wavedata;
 	
-    // ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
     if(AudioFileOpen(ref, fsRdPerm, 0, &mAudioFileID)) {
         //NSLog(@"AudioFileOpen failed");
         return NULL;
     }
 	
-    // ŠJ‚¢‚½ƒtƒ@ƒCƒ‹‚ÌŠî–{î•ñ‚ğ mFileDescription ‚Ö
+    // é–‹ã„ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®åŸºæœ¬æƒ…å ±ã‚’ mFileDescription ã¸
     UInt32 propertySize = sizeof(AudioStreamBasicDescription);
     if(AudioFileGetProperty(mAudioFileID, kAudioFilePropertyDataFormat, 
                             &propertySize, &mFileDescription)) {
@@ -975,7 +975,7 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
         return NULL;
     }
 	
-    // ŠJ‚¢‚½ƒtƒ@ƒCƒ‹‚Ìƒf[ƒ^•”‚ÌƒoƒCƒg”‚ğ dataSize ‚Ö
+    // é–‹ã„ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‡ãƒ¼ã‚¿éƒ¨ã®ãƒã‚¤ãƒˆæ•°ã‚’ dataSize ã¸
     propertySize = sizeof(SInt64);
     if(AudioFileGetProperty(mAudioFileID, kAudioFilePropertyAudioDataByteCount, 
                             &propertySize, &dataSize64)) {
@@ -985,11 +985,11 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
     }
     dataSize=(UInt32)dataSize64;
 	
-	//Base KeyAƒ‹[ƒvî•ñ‚ğæ“¾
+	//Base Keyã€ãƒ«ãƒ¼ãƒ—æƒ…å ±ã‚’å–å¾—
 	UInt8	*instChunk;
 	int		loop_st_id=-1,loop_end_id=-1;
 	AudioFileGetUserDataSize(mAudioFileID, InstrumentID, 0, &propertySize);
-	if (propertySize == 28) {	//AIFFƒtƒ@ƒCƒ‹‚ÌINSTƒ`ƒƒƒ“ƒN
+	if (propertySize == 28) {	//AIFFãƒ•ã‚¡ã‚¤ãƒ«ã®INSTãƒãƒ£ãƒ³ã‚¯
 		instChunk = (UInt8*)malloc(propertySize);
 		AudioFileGetUserData(mAudioFileID, InstrumentID, 0, &propertySize, instChunk);
 		inst->basekey = instChunk[0];
@@ -1049,14 +1049,14 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 		end_point += dataSize64/mFileDescription.mBytesPerFrame+1;
 	free(markers);	
 	
-    // ”gŒ`ˆê“Ç‚İ‚İ—pƒƒ‚ƒŠ‚ğŠm•Û
+    // æ³¢å½¢ä¸€æ™‚èª­ã¿è¾¼ã¿ç”¨ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
     char *mFileBuffer;
 	if (inst->loop)
 		mFileBuffer = (char *)calloc(dataSize+EXPAND_BUFFER*mFileDescription.mBytesPerFrame,sizeof(char));
 	else
 		mFileBuffer = (char *)calloc(dataSize,sizeof(char));
 	
-	// ƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İ‚İ
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã¿
     if(AudioFileReadBytes(mAudioFileID, false, 0, &dataSize, mFileBuffer)) {
         //NSLog(@"AudioFileReadBytes failed");
         AudioFileClose(mAudioFileID);
@@ -1065,7 +1065,7 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
     }
     AudioFileClose(mAudioFileID);
 	
-    //‚P‚Ubitƒ‚ƒmƒ‰ƒ‹‚Ìƒf[ƒ^‚É•ÏŠ·
+    //ï¼‘ï¼–bitãƒ¢ãƒãƒ©ãƒ«ã®ãƒ‡ãƒ¼ã‚¿ã«å¤‰æ›
     outputFormat=mFileDescription;
 	if (inst->loop) {
 		UInt32	plusalpha=0, framestocopy;
@@ -1092,7 +1092,7 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 	outputFormat.mBitsPerChannel = 16;
 	outputFormat.mBytesPerPacket = outputFormat.mBytesPerFrame;
 	
-    // ƒoƒCƒgƒI[ƒ_[•ÏŠ·—p‚ÌƒRƒ“ƒo[ƒ^‚ğ—pˆÓ
+    // ãƒã‚¤ãƒˆã‚ªãƒ¼ãƒ€ãƒ¼å¤‰æ›ç”¨ã®ã‚³ãƒ³ãƒãƒ¼ã‚¿ã‚’ç”¨æ„
     AudioConverterRef converter;
     if(AudioConverterNew(&mFileDescription, &outputFormat, &converter)) {
         //NSLog(@"AudioConverterNew failed");
@@ -1100,7 +1100,7 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
         return NULL;
     }
 	
-	//ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg•ÏŠ·‚Ì¿‚ğÅ‚‚Éİ’è
+	//ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆå¤‰æ›ã®è³ªã‚’æœ€é«˜ã«è¨­å®š
 	if (mFileDescription.mSampleRate != outputFormat.mSampleRate) {
 		propertySize = sizeof(UInt32);
 		UInt32	setProp = kAudioConverterQuality_Max;
@@ -1108,8 +1108,8 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 								  propertySize, &setProp);
 	}
 	
-    //o—Í‚É•K—v\•ª‚Èƒoƒbƒtƒ@ƒTƒCƒY‚ğ“¾‚é
-    //if(wavedata) // 2“x–ÚˆÈ~
+    //å‡ºåŠ›ã«å¿…è¦ååˆ†ãªãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å¾—ã‚‹
+    //if(wavedata) // 2åº¦ç›®ä»¥é™
     //    free(wavedata);
 	UInt32	outputSize = dataSize;
 	propertySize = sizeof(UInt32);
@@ -1121,7 +1121,7 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 	}
     wavedata=(short *)malloc(outputSize);
     
-    // ƒoƒCƒgƒI[ƒ_[•ÏŠ·
+    // ãƒã‚¤ãƒˆã‚ªãƒ¼ãƒ€ãƒ¼å¤‰æ›
 	AudioConverterConvertBuffer(converter, dataSize, mFileBuffer,
 								&outputSize, wavedata);
     if(outputSize == 0) {
@@ -1131,7 +1131,7 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
         return NULL;
     }
     
-    // Œãn––
+    // å¾Œå§‹æœ«
     free(mFileBuffer);
     AudioConverterDispose(converter);
 	
@@ -1215,7 +1215,7 @@ int Chip700View::loadSPCFile(CFURLRef path)
 		
 		cEditNum++;
 	}
-//•Ê‚É‚O‚É–ß‚·•K—v‚Í–³‚¢‚È
+//åˆ¥ã«ï¼ã«æˆ»ã™å¿…è¦ã¯ç„¡ã„ãª
 //	cEditNum = 0;
 //	AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_EditingProgram,kAudioUnitScope_Global,0,&cEditNum,sizeof(int));
 
@@ -1230,8 +1230,8 @@ int Chip700View::loadSPCFile(CFURLRef path)
 
 static void LittleArrowsControlAction(ControlRef theControl, ControlPartCode partCode)
 {
-	// increment’l‚ğƒRƒ“ƒgƒ[ƒ‹‚©‚çæ“¾
-	// İ’è‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î‚P‚ğg‚¤
+	// incrementå€¤ã‚’ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‹ã‚‰å–å¾—
+	// è¨­å®šã•ã‚Œã¦ã„ãªã‘ã‚Œã°ï¼‘ã‚’ä½¿ã†
 	SInt32 increment;
 	OSStatus status = GetControlData(theControl, kControlEntireControl, kControlLittleArrowsIncrementValueTag, sizeof(increment), &increment, NULL);
 	if (status != noErr)
@@ -1370,7 +1370,7 @@ static OSErr MyReceiveHandler(WindowRef win, void *handlerRefCon, DragRef theDra
 			{
 				FSRef	theRef;
 				if (FSpMakeFSRef(&theHFSFlavor.fileSpec,&theRef) == noErr) {
-					This->enqueueFile(&theRef);	//“Ç‚İ‚İˆ—
+					This->enqueueFile(&theRef);	//èª­ã¿è¾¼ã¿å‡¦ç†
 					acceptableFlag = true;
 				}
 				else acceptableFlag = false;
@@ -1419,7 +1419,7 @@ static OSErr MyDragSendDataFunction(FlavorType theType, void *dragSendRefCon,
 	size = sizeof(CFStringRef);
 	AudioUnitGetProperty(This->mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,kAudioUnitScope_Global,0,&pgstr,(UInt32*)&size);
 	if (pgstr == NULL) {
-		//•ÒW’†‚ÌƒvƒƒOƒ‰ƒ€”Ô†‚ğ’²‚×‚é
+		//ç·¨é›†ä¸­ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ç•ªå·ã‚’èª¿ã¹ã‚‹
 		int	intValue;
 		size = sizeof(int);
 		AudioUnitGetProperty(This->mEditAudioUnit,kAudioUnitCustomProperty_EditingProgram,kAudioUnitScope_Global,0,&intValue,(UInt32*)&size);
@@ -1435,7 +1435,7 @@ static OSErr MyDragSendDataFunction(FlavorType theType, void *dragSendRefCon,
 	bool		fileexists;
 	SInt32		err_code;
 	do {
-		//d•¡ƒtƒ@ƒCƒ‹–¼‚É‚à‘Î‚·‚éˆ—
+		//é‡è¤‡ãƒ•ã‚¡ã‚¤ãƒ«åã«ã‚‚å¯¾ã™ã‚‹å‡¦ç†
 		dropfile = CFStringCreateWithFormat(NULL,NULL,CFSTR("%@%@.brr"),pgstr,suffix);
 		CFRelease(dropfilefullURL);
 		dropfilefullURL = CFURLCreateCopyAppendingPathComponent(NULL,dropfileFoldURL,dropfile,false);
