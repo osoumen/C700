@@ -177,12 +177,14 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 342000889;
-			PBXWorkspaceStateSaveDate = 342000889;
+			PBXPerProjectTemplateStateSaveDate = 342001076;
+			PBXWorkspaceStateSaveDate = 342001076;
 		};
 		perUserProjectItems = {
-			8AAE1DDD1462832900D570DA /* PBXTextBookmark */ = 8AAE1DDD1462832900D570DA /* PBXTextBookmark */;
-			8AAE1DE61462850B00D570DA /* PBXTextBookmark */ = 8AAE1DE61462850B00D570DA /* PBXTextBookmark */;
+			8AAE1DDD1462832900D570DA = 8AAE1DDD1462832900D570DA /* PBXTextBookmark */;
+			8AAE1DE61462850B00D570DA = 8AAE1DE61462850B00D570DA /* PBXTextBookmark */;
+			8AAE1DEE146285B700D570DA /* PBXTextBookmark */ = 8AAE1DEE146285B700D570DA /* PBXTextBookmark */;
+			8AAE1DFB1462871A00D570DA /* PBXTextBookmark */ = 8AAE1DFB1462871A00D570DA /* PBXTextBookmark */;
 		};
 		sourceControlManager = 8A4514C50AADC92800997A83 /* Source Control */;
 		userBuildSettings = {
@@ -509,6 +511,26 @@
 		rType = 0;
 		vrLen = 1255;
 		vrLoc = 373;
+	};
+	8AAE1DEE146285B700D570DA /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */;
+		name = "Chip700View.h: GetBundleID";
+		rLen = 0;
+		rLoc = 889;
+		rType = 0;
+		vrLen = 1258;
+		vrLoc = 373;
+	};
+	8AAE1DFB1462871A00D570DA /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */;
+		name = "Chip700View.h: 88";
+		rLen = 0;
+		rLoc = 2758;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
 	};
 	8AC1D32A0B27525A00FFD294 /* dragimg.png */ = {
 		uiCtxt = {
@@ -965,9 +987,9 @@
 	8ACF4D040B214D2F00EC1825 /* Chip700View.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {662, 1232}}";
-			sepNavSelRange = "{889, 0}";
-			sepNavVisRect = "{{0, 306}, {512, 413}}";
-			sepNavWindowFrame = "{{262, 60}, {761, 942}}";
+			sepNavSelRange = "{2758, 0}";
+			sepNavVisRect = "{{0, 0}, {0, 0}}";
+			sepNavWindowFrame = "{{262, 62}, {761, 940}}";
 		};
 	};
 	8ACF4D050B214D2F00EC1825 /* Chip700View.cpp */ = {
