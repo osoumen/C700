@@ -661,15 +661,15 @@ void Chip700View::saveSelected(void)
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,kAudioUnitScope_Global,0,&pgname,&size);
 	CFStringRef	defaultname;
 	if (CFStringGetLength(pgname)==0)
-		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("program_%03d.brr"),intValue);
+		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("program_%03d.xi"),intValue);
 	else
-		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("%@.brr"),pgname);
+		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("%@.xi"),pgname);
 	CFURLRef	savefile=getSaveFile(defaultname);
 	CFRelease(defaultname);
 	if (savefile == NULL)
 		return;
 	
-	saveToFile(savefile);
+	saveToXIFile(savefile);
 	CFRelease(savefile);
 }
 
@@ -743,6 +743,24 @@ bool Chip700View::dragStart(ControlRef cont, EventRecord *event)
 }
 
 void Chip700View::saveToFile(CFURLRef savefile)
+{
+	//Dictionaryデータを取得する
+	CFDictionaryRef	propertydata;
+	UInt32 size = sizeof(CFDictionaryRef);
+	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_PGDictionary,kAudioUnitScope_Global,0,&propertydata,&size);
+	
+	//バイナリ形式に変換
+	CFWriteStreamRef	filestream=CFWriteStreamCreateWithFile(NULL,savefile);
+	if (CFWriteStreamOpen(filestream)) {
+		CFPropertyListWriteToStream(propertydata,filestream,kCFPropertyListBinaryFormat_v1_0,NULL);
+		CFWriteStreamClose(filestream);
+	}
+	CFRelease(filestream);
+	//GetしたPGDictionaryはreleaseが必要
+	CFRelease(propertydata);
+}
+
+void Chip700View::saveToXIFile(CFURLRef savefile)
 {
 	//Dictionaryデータを取得する
 	CFDictionaryRef	propertydata;

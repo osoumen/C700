@@ -51,6 +51,7 @@ public:
 	void loadFile(FSRef *ref);
 	void loadFile(CFURLRef path);
 	void saveToFile(CFURLRef savefile);
+	void saveToXIFile(CFURLRef savefile);
 private:
 	static pascal ControlKeyFilterResult StdKeyFilterCallback(ControlRef theControl, 
 																		SInt16 *keyCode, SInt16 *charCode, 
