@@ -15,6 +15,44 @@
 #include "TWaveView.h"
 #include "TImageCache.h"
 
+typedef struct XIFILEHEADER
+{
+	char extxi[21];		// Extended Instrument:
+	char name[23];		// Name, 1Ah
+	char trkname[20];	// FastTracker v2.00
+	unsigned short shsize;		// 0x0102
+} XIFILEHEADER;
+
+typedef struct XIINSTRUMENTHEADER
+{
+	unsigned char snum[96];
+	unsigned short venv[24];
+	unsigned short penv[24];
+	unsigned char vnum, pnum;
+	unsigned char vsustain, vloops, vloope, psustain, ploops, ploope;
+	unsigned char vtype, ptype;
+	unsigned char vibtype, vibsweep, vibdepth, vibrate;
+	unsigned short volfade;
+	unsigned short res;
+	unsigned char reserved1[20];
+	unsigned short reserved2;		//nsamples?
+} XIINSTRUMENTHEADER;
+
+typedef struct XISAMPLEHEADER
+{
+	unsigned long samplen;
+	unsigned long loopstart;
+	unsigned long looplen;
+	unsigned char vol;
+	signed char finetune;
+	unsigned char type;
+	unsigned char pan;
+	signed char relnote;
+	unsigned char res;
+	char name[22];
+} XISAMPLEHEADER;
+
+
 static Boolean MyFilterProc(AEDesc *theItem, void *info, void *callBackUD, 
 					 NavFilterModes filterMode);
 static void LittleArrowsControlAction(ControlRef theControl, ControlPartCode partCode);
@@ -805,6 +843,11 @@ CFURLRef Chip700View::getSaveFile(CFStringRef defaultName)
 	myDialogOptions.optionFlags &= ~kNavAllowMultipleFiles;
 	myDialogOptions.optionFlags |= kNavPreserveSaveFileExtension;
 	myDialogOptions.saveFileName = defaultName;
+	
+	CFStringRef	format_strings[] = { CFSTR(".brr"), CFSTR(".xi") };
+	CFArrayRef	formats = CFArrayCreate( NULL, (void*)format_strings, 2, &kCFTypeArrayCallBacks );
+	myDialogOptions.popupExtension = formats;
+	myDialogOptions.optionFlags &= ~kNavNoTypePopup;
 	
 	status = NavCreatePutFileDialog(&myDialogOptions,0,0,NULL,NULL,&myDialogRef);
 		
