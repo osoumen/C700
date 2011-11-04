@@ -810,7 +810,10 @@ int Chip700::CreateXIData( CFDataRef *data )
 
 	//エンベロープの近似
 	Float64 tempo;
-	OSStatus err = AUBase::CallHostBeatAndTempo(NULL, &tempo);
+	OSStatus err = CallHostBeatAndTempo(NULL, &tempo);
+	if ( err != noErr ) {
+		tempo = 120;
+	}
 
 	if ( multisample ) {
 		//サンプル毎には設定出来ないので非対応
@@ -936,7 +939,7 @@ int GetDRTicks( int dr, Float64 tempo )
 	};
 	//四分音符＝25tick
 	Float64 tick_per_sec = tempo/60.0 * 25;
-	tick_per_sec /= 2;	//実際は半分くらいなような気がする？？
+	//tick_per_sec /= 2;	//実際は半分くらいなような気がする？？
 	return (int)(basetime[dr] * tick_per_sec);
 }
 
