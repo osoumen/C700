@@ -67,6 +67,10 @@ static CFStringRef kSaveKey_sr = CFSTR("sr");
 static CFStringRef kSaveKey_volL = CFSTR("volL");
 static CFStringRef kSaveKey_volR = CFSTR("volR");
 
+int GetARTicks( int ar, Float64 tempo );
+int GetDRTicks( int dr, Float64 tempo );
+int GetSRTicks( int sr, Float64 tempo );
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 COMPONENT_ENTRY(Chip700)
@@ -803,17 +807,41 @@ int Chip700::CreateXIData( CFDataRef *data )
 		nsamples = 1;
 		vol = (int)( abs(mVPset[mEditProg].volL) + abs(mVPset[mEditProg].volR) ) / 4;
 	}
-	for (int i=0; i<4; i++) {
-		xih.venv[i*2] = i*10;	//ADSRを反映させたい
-		xih.venv[i*2+1] = vol;
-		//xih.penv[i*2] = 0
+
+	//エンベロープの近似
+	Float64 tempo;
+	OSStatus err = AUBase::CallHostBeatAndTempo(NULL, &tempo);
+
+	if ( multisample ) {
+		//サンプル毎には設定出来ないので非対応
+		for (int i=0; i<4; i++) {
+			xih.venv[i*2] = i*10;
+			xih.venv[i*2+1] = 64;
+		}
+		xih.venv[7] = 0;
 	}
-	xih.venv[7] = 0;
+	else {
+		xih.venv[0] = 0;
+		xih.venv[1] = 0;
+		xih.venv[2] = GetARTicks( mVPset[mEditProg].ar, tempo );	//tick数値はテンポ値に依存する
+		xih.venv[3] = vol;
+		xih.venv[4] = xih.venv[2] + GetDRTicks( mVPset[mEditProg].dr, tempo );
+		xih.venv[5] = vol * (mVPset[mEditProg].sl + 1) / 8;
+		if (mVPset[mEditProg].sr == 0) {
+			xih.venv[6] = xih.venv[4]+1;
+			xih.venv[7] = xih.venv[5];
+		}
+		else {
+			xih.venv[6] = xih.venv[4] + GetSRTicks( mVPset[mEditProg].sr, tempo );
+			xih.venv[7] = vol / 10;
+		}
+	}
+	
 	xih.vnum = 4;
 	xih.pnum = 0;
-	xih.vsustain = 2;
-	xih.vloops = 2;
-	xih.vloope = 2;
+	xih.vsustain = 3;
+	xih.vloops = 3;
+	xih.vloope = 3;
 	xih.psustain = 0;
 	xih.ploops = 0;
 	xih.ploope = 0;
@@ -867,6 +895,90 @@ int Chip700::CreateXIData( CFDataRef *data )
 	*data = mdata;
 	
 	return 0;
+}
+
+int GetARTicks( int ar, Float64 tempo )
+{
+	Float64	basetime[16] = {
+		4.1,
+		2.6,
+		1.5,
+		1.0,
+		0.640,
+		0.380,
+		0.260,
+		0.160,
+		0.096,
+		0.064,
+		0.040,
+		0.024,
+		0.016,
+		0.010,
+		0.006,
+		0
+	};
+	//四分音符＝25tick
+	Float64 tick_per_sec = tempo/60.0 * 25;
+	return (int)(basetime[ar] * tick_per_sec);
+}
+
+int GetDRTicks( int dr, Float64 tempo )
+{
+	Float64	basetime[8] = {
+		1.2,
+		0.740,
+		0.440,
+		0.290,
+		0.180,
+		0.110,
+		0.074,
+		0.037
+	};
+	//四分音符＝25tick
+	Float64 tick_per_sec = tempo/60.0 * 25;
+	tick_per_sec /= 2;	//実際は半分くらいなような気がする？？
+	return (int)(basetime[dr] * tick_per_sec);
+}
+
+int GetSRTicks( int sr, Float64 tempo )
+{
+	Float64	basetime[32] = {
+		0,
+		38,
+		28,
+		24,
+		19,
+		14,
+		12,
+		9.4,
+		7.1,
+		5.9,
+		4.7,
+		3.5,
+		2.9,
+		2.4,
+		1.8,
+		1.5,
+		1.2,
+		0.880,
+		0.740,
+		0.590,
+		0.440,
+		0.370,
+		0.290,
+		0.220,
+		0.180,
+		0.150,
+		0.110,
+		0.092,
+		0.074,
+		0.055,
+		0.037,
+		0.028
+	};
+	//四分音符＝25tick
+	Float64 tick_per_sec = tempo/60.0 * 25;
+	return (int)(basetime[sr] * tick_per_sec);
 }
 
 int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
