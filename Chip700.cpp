@@ -809,11 +809,10 @@ int Chip700::CreateXIData( CFDataRef *data )
 	}
 
 	//エンベロープの近似
-	Float64 tempo;
+	Float64 tempo = 120;
 	OSStatus err = CallHostBeatAndTempo(NULL, &tempo);
-	if ( err != noErr ) {
-		tempo = 120;
-	}
+	printf("tempo=%f\n",tempo);
+	printf("err=%d\n",err);
 
 	if ( multisample ) {
 		//サンプル毎には設定出来ないので非対応
@@ -825,7 +824,12 @@ int Chip700::CreateXIData( CFDataRef *data )
 	}
 	else {
 		xih.venv[0] = 0;
-		xih.venv[1] = 0;
+		if ( mVPset[mEditProg].ar == 15 ) {
+			xih.venv[1] = vol;
+		}
+		else {
+			xih.venv[1] = 0;
+		}
 		xih.venv[2] = GetARTicks( mVPset[mEditProg].ar, tempo );	//tick数値はテンポ値に依存する
 		xih.venv[3] = vol;
 		xih.venv[4] = xih.venv[2] + GetDRTicks( mVPset[mEditProg].dr, tempo );
