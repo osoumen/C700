@@ -122,5 +122,32 @@ typedef struct XISAMPLEHEADER
 	char name[22];
 } XISAMPLEHEADER;
 
-
+typedef struct {
+	UInt32 manufacturer;
+	UInt32 product;
+	UInt32 sample_period;
+	UInt32 note;
+	UInt32 pitch_fraction;
+	UInt32 smpte_format;
+	UInt32 smpte_offset;
+	UInt32 loops;
+	UInt32 sampler_data;
+	
+	UInt32 cue_id;
+	UInt32 type;
+	UInt32 start;
+	UInt32 end;
+	UInt32 fraction;
+	UInt32 play_count;
+} WAV_smpl;
+/*
+typedef struct {
+	UInt32 id;
+	UInt32 type;
+	UInt32 start;
+	UInt32 end;	
+	UInt32 fraction;
+	UInt32 play_count;
+} WAV_Loop;
+*/
 #endif

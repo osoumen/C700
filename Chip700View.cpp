@@ -941,45 +941,116 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
     UInt32 dataSize;
 	short *wavedata;
 	
+	OSStatus err;
+	UInt32 size;
+	
     // ファイルを開く
-    if(AudioFileOpen(ref, fsRdPerm, 0, &mAudioFileID)) {
+	err = AudioFileOpen(ref, fsRdPerm, 0, &mAudioFileID);
+    if (err) {
         //NSLog(@"AudioFileOpen failed");
         return NULL;
     }
 	
     // 開いたファイルの基本情報を mFileDescription へ
-    UInt32 propertySize = sizeof(AudioStreamBasicDescription);
-    if(AudioFileGetProperty(mAudioFileID, kAudioFilePropertyDataFormat, 
-                            &propertySize, &mFileDescription)) {
+    size = sizeof(AudioStreamBasicDescription);
+	err = AudioFileGetProperty(mAudioFileID, kAudioFilePropertyDataFormat, 
+							   &size, &mFileDescription);
+    if (err) {
         //NSLog(@"AudioFileGetProperty failed");
         AudioFileClose(mAudioFileID);
         return NULL;
     }
 	
     // 開いたファイルのデータ部のバイト数を dataSize へ
-    propertySize = sizeof(SInt64);
-    if(AudioFileGetProperty(mAudioFileID, kAudioFilePropertyAudioDataByteCount, 
-                            &propertySize, &dataSize64)) {
+    size = sizeof(SInt64);
+	err = AudioFileGetProperty(mAudioFileID, kAudioFilePropertyAudioDataByteCount, 
+							   &size, &dataSize64);
+    if (err) {
         //NSLog(@"AudioFileGetProperty failed");
         AudioFileClose(mAudioFileID);
         return NULL;
     }
     dataSize=(UInt32)dataSize64;
 	
-	//Base Key、ループ情報を取得
-	UInt8	*instChunk;
-	int		loop_st_id=-1,loop_end_id=-1;
-	AudioFileGetUserDataSize(mAudioFileID, InstrumentID, 0, &propertySize);
-	if (propertySize == 28) {	//AIFFファイルのINSTチャンク
-		instChunk = (UInt8*)malloc(propertySize);
-		AudioFileGetUserData(mAudioFileID, InstrumentID, 0, &propertySize, instChunk);
-		inst->basekey = instChunk[0];
-		inst->lowkey = instChunk[2];
-		inst->highkey = instChunk[3];
-		inst->loop = instChunk[9];
-		loop_st_id = instChunk[11];
-		loop_end_id = instChunk[13];
-		free(instChunk);
+	//ファイルフォーマットを取得
+	AudioFileTypeID　filetypeID;
+	size = sizeof( AudioFileTypeID );
+	err = AudioFileGetProperty(mAudioFileID, kAudioFilePropertyFileFormat, &size, &filetypeID)
+	if (err) {
+        //NSLog(@"AudioFileGetProperty failed");
+        AudioFileClose(mAudioFileID);
+        return NULL;
+    }
+	
+	//ループポイントの取得
+	Float64		st_point=0.0,end_point=0.0;
+	if ( filetypeID == kAudioFileAIFFType || filetypeID == kAudioFileAIFCType ) {
+		//INSTチャンクの取得
+		AudioFileGetUserDataSize(mAudioFileID, 'INST', 0, &size);
+		if ( size > 0 ) {
+			UInt8	*instChunk = (UInt8*)malloc(size);
+			AudioFileGetUserData(mAudioFileID, 'INST', 0, &size, instChunk);
+			
+			//MIDI情報の取得
+			inst->basekey = instChunk[0];
+			inst->lowkey = instChunk[2];
+			inst->highkey = instChunk[3];
+			
+			if ( instChunk[9] > 0 ) {	//ループフラグを確認
+				//マーカーの取得
+				UInt32	writable;
+				err = AudioFileGetPropertyInfo(mAudioFileID, kAudioFilePropertyMarkerList,
+											   &size, &writable);
+				if (err) {
+					//NSLog(@"AudioFileGetPropertyInfo failed");
+					AudioFileClose(mAudioFileID);
+					return NULL;
+				}
+				AudioFileMarkerList	*markers = (AudioFileMarkerList*)malloc(size);
+				err = AudioFileGetProperty(mAudioFileID, kAudioFilePropertyMarkerList, 
+										   &size, markers);
+				if (err) {
+					//NSLog(@"AudioFileGetProperty failed");
+					AudioFileClose(mAudioFileID);
+					return NULL;
+				}
+				
+				//ループポイントの設定
+				for (unsigned int i=0; i<markers->mNumberMarkers; i++) {
+					if (markers->mMarkers[i].mMarkerID == instChunk[11] ) {
+						st_point = markers->mMarkers[i].mFramePosition;
+					}
+					else if (markers->mMarkers[i].mMarkerID == instChunk[13] ) {
+						end_point = markers->mMarkers[i].mFramePosition;
+					}
+					CFRelease(markers->mMarkers[i].mName);
+				}
+				if ( st_point < end_point ) {
+					inst->loop = 1;
+				}
+				free( markers );
+			}
+			free( instChunk );
+		}
+				
+	}
+	else if ( filetypeID == kAudioFileWAVEType ) {
+		//smplチャンクの取得
+		AudioFileGetUserData( mAudioFileID, 'smpl', 0, &size );
+		if ( size > 0 ) {
+			UInt8	*smplChunk = (UInt8*)malloc(size);
+			AudioFileGetUserData( mAudioFileID, 'smpl', 0, &size, smplChunk );
+			
+			if ( smplChunk[28] > 0 ) {
+				WAV_smpl	*smpl = (WAV_smpl *)smplChunk;
+				inst->lowkey = 0;
+				inst->highkey = 127;
+				inst->basekey = EndianU32_LtoN( smpl->note );
+				st_point = EndianU32_LtoN( smpl->start );
+				end_point EndianU32_LtoN( smpl->end ) + 1;
+			}
+			free( smplChunk );
+		}
 	}
 	else {
 		inst->basekey = 60;
@@ -987,49 +1058,71 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 		inst->highkey = 127;
 		inst->loop = 0;
 	}
-	UInt32	writable;
-	if (AudioFileGetPropertyInfo(mAudioFileID, kAudioFilePropertyMarkerList,
-								 &propertySize, &writable)) {
-		//NSLog(@"AudioFileGetPropertyInfo failed");
-        AudioFileClose(mAudioFileID);
-        return NULL;
-	}
-	AudioFileMarkerList	*markers = (AudioFileMarkerList*)malloc(propertySize);
-	if(AudioFileGetProperty(mAudioFileID, kAudioFilePropertyMarkerList, 
-                            &propertySize, markers)) {
-        //NSLog(@"AudioFileGetProperty failed");
-        AudioFileClose(mAudioFileID);
-        return NULL;
-    }
-	Float64		st_point=0.0,end_point=0.0;
-	if ((markers->mNumberMarkers == 2) && (loop_st_id == -1)) {
-		st_point = markers->mMarkers[0].mFramePosition;
-		end_point = markers->mMarkers[1].mFramePosition;
-		inst->loop = 1;
-	}
-	else if (markers->mNumberMarkers >= 2) {
-		for (unsigned int i=0; i<markers->mNumberMarkers; i++) {
-			if (markers->mMarkers[i].mMarkerID == loop_st_id) {
-				st_point = markers->mMarkers[i].mFramePosition;
-			}
-			else if (markers->mMarkers[i].mMarkerID == loop_end_id) {
-				end_point = markers->mMarkers[i].mFramePosition;
-			}
-			CFRelease(markers->mMarkers[i].mName);
+	/*
+//Base Key、ループ情報を取得
+UInt8	*instChunk;
+int		loop_st_id=-1,loop_end_id=-1;
+AudioFileGetUserDataSize(mAudioFileID, InstrumentID, 0, &size);
+if (size == 28) {	//AIFFファイルのINSTチャンク
+	instChunk = (UInt8*)malloc(size);
+	AudioFileGetUserData(mAudioFileID, InstrumentID, 0, &size, instChunk);
+	inst->basekey = instChunk[0];
+	inst->lowkey = instChunk[2];
+	inst->highkey = instChunk[3];
+	inst->loop = instChunk[9];
+	loop_st_id = instChunk[11];
+	loop_end_id = instChunk[13];
+	free(instChunk);
+}
+else {
+	inst->basekey = 60;
+	inst->lowkey = 0;
+	inst->highkey = 127;
+	inst->loop = 0;
+}
+UInt32	writable;
+if (AudioFileGetPropertyInfo(mAudioFileID, kAudioFilePropertyMarkerList,
+							 &size, &writable)) {
+	//NSLog(@"AudioFileGetPropertyInfo failed");
+	AudioFileClose(mAudioFileID);
+	return NULL;
+}
+AudioFileMarkerList	*markers = (AudioFileMarkerList*)malloc(size);
+if(AudioFileGetProperty(mAudioFileID, kAudioFilePropertyMarkerList, 
+						&size, markers)) {
+	//NSLog(@"AudioFileGetProperty failed");
+	AudioFileClose(mAudioFileID);
+	return NULL;
+}
+Float64		st_point=0.0,end_point=0.0;
+if ((markers->mNumberMarkers == 2) && (loop_st_id == -1)) {
+	st_point = markers->mMarkers[0].mFramePosition;
+	end_point = markers->mMarkers[1].mFramePosition;
+	inst->loop = 1;
+}
+else if (markers->mNumberMarkers >= 2) {
+	for (unsigned int i=0; i<markers->mNumberMarkers; i++) {
+		if (markers->mMarkers[i].mMarkerID == loop_st_id) {
+			st_point = markers->mMarkers[i].mFramePosition;
 		}
+		else if (markers->mMarkers[i].mMarkerID == loop_end_id) {
+			end_point = markers->mMarkers[i].mFramePosition;
+		}
+		CFRelease(markers->mMarkers[i].mName);
 	}
-	if (st_point < 0)
-		st_point = 0;
-	if (st_point == end_point)
-		inst->loop = 0;
-	if (st_point > dataSize64/mFileDescription.mBytesPerFrame)
-		st_point = 0;
-	if (end_point > dataSize64/mFileDescription.mBytesPerFrame)
-		end_point = dataSize64/mFileDescription.mBytesPerFrame;
-	if (end_point < 0)
-		end_point += dataSize64/mFileDescription.mBytesPerFrame+1;
-	free(markers);	
-	
+}
+if (st_point < 0)
+	st_point = 0;
+if (st_point == end_point)
+	inst->loop = 0;
+if (st_point > dataSize64/mFileDescription.mBytesPerFrame)
+	st_point = 0;
+if (end_point > dataSize64/mFileDescription.mBytesPerFrame)
+	end_point = dataSize64/mFileDescription.mBytesPerFrame;
+if (end_point < 0)
+	end_point += dataSize64/mFileDescription.mBytesPerFrame+1;
+free(markers);	
+	*/
     // 波形一時読み込み用メモリを確保
     char *mFileBuffer;
 	if (inst->loop)
@@ -1038,7 +1131,8 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 		mFileBuffer = (char *)calloc(dataSize,sizeof(char));
 	
 	// ファイルから読み込み
-    if(AudioFileReadBytes(mAudioFileID, false, 0, &dataSize, mFileBuffer)) {
+	err = AudioFileReadBytes(mAudioFileID, false, 0, &dataSize, mFileBuffer);
+    if (err) {
         //NSLog(@"AudioFileReadBytes failed");
         AudioFileClose(mAudioFileID);
         free(mFileBuffer);
@@ -1075,7 +1169,8 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 	
     // バイトオーダー変換用のコンバータを用意
     AudioConverterRef converter;
-    if(AudioConverterNew(&mFileDescription, &outputFormat, &converter)) {
+	err = AudioConverterNew(&mFileDescription, &outputFormat, &converter);
+    if (err) {
         //NSLog(@"AudioConverterNew failed");
         free(mFileBuffer);
         return NULL;
@@ -1083,19 +1178,20 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 	
 	//サンプリングレート変換の質を最高に設定
 	if (mFileDescription.mSampleRate != outputFormat.mSampleRate) {
-		propertySize = sizeof(UInt32);
+		size = sizeof(UInt32);
 		UInt32	setProp = kAudioConverterQuality_Max;
 		AudioConverterSetProperty(converter, kAudioConverterSampleRateConverterQuality, 
-								  propertySize, &setProp);
+								  size, &setProp);
 	}
 	
     //出力に必要十分なバッファサイズを得る
     //if(wavedata) // 2度目以降
     //    free(wavedata);
 	UInt32	outputSize = dataSize;
-	propertySize = sizeof(UInt32);
-	if (AudioConverterGetProperty(converter, kAudioConverterPropertyCalculateOutputBufferSize, 
-								  &propertySize, &outputSize)) {
+	size = sizeof(UInt32);
+	err = AudioConverterGetProperty(converter, kAudioConverterPropertyCalculateOutputBufferSize, 
+									&size, &outputSize);
+	if (err) {
 		//NSLog(@"AudioConverterGetProperty failed");
 		free(mFileBuffer);
 		AudioConverterDispose(converter);
