@@ -2,7 +2,7 @@
 {
 	089C1669FE841209C02AAC07 /* Project object */ = {
 		activeBuildConfigurationName = Deployment;
-		activeExecutable = 8ACA25E60AF25287000A563D /* AULab */;
+		activeExecutable = 8AAB14C60AFB2CB100C369DD /* Logic */;
 		activeTarget = 8D01CCC60486CAD60068D4B7 /* C700 */;
 		addToTargets = (
 			8D01CCC60486CAD60068D4B7 /* C700 */,
@@ -184,6 +184,10 @@
 			8A1391E214659CBE00BC9E78 /* PBXBookmark */ = 8A1391E214659CBE00BC9E78 /* PBXBookmark */;
 			8A1391E91465A1B300BC9E78 /* PBXTextBookmark */ = 8A1391E91465A1B300BC9E78 /* PBXTextBookmark */;
 			8A1391EE1465A1B300BC9E78 /* PBXTextBookmark */ = 8A1391EE1465A1B300BC9E78 /* PBXTextBookmark */;
+			8A1391FD1465A46F00BC9E78 /* PBXTextBookmark */ = 8A1391FD1465A46F00BC9E78 /* PBXTextBookmark */;
+			8A1391FE1465A46F00BC9E78 /* PBXTextBookmark */ = 8A1391FE1465A46F00BC9E78 /* PBXTextBookmark */;
+			8A1392001465A62400BC9E78 /* PBXTextBookmark */ = 8A1392001465A62400BC9E78 /* PBXTextBookmark */;
+			8A1392011465A62400BC9E78 /* PBXTextBookmark */ = 8A1392011465A62400BC9E78 /* PBXTextBookmark */;
 			8A1D23B41465167000FD4C47 = 8A1D23B41465167000FD4C47 /* PBXTextBookmark */;
 			8A2E50D11464F8BE0019D1FA = 8A2E50D11464F8BE0019D1FA /* PBXTextBookmark */;
 		};
@@ -242,10 +246,50 @@
 		fRef = 8BA05A660720730100365D66 /* Chip700.cpp */;
 		name = "Chip700.cpp: 816";
 		rLen = 0;
-		rLoc = 26133;
+		rLoc = 26186;
 		rType = 0;
 		vrLen = 1313;
 		vrLoc = 25555;
+	};
+	8A1391FD1465A46F00BC9E78 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */;
+		name = "Chip700View.h: 89";
+		rLen = 0;
+		rLoc = 2797;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	8A1391FE1465A46F00BC9E78 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8BA05A660720730100365D66 /* Chip700.cpp */;
+		name = "Chip700.cpp: 813";
+		rLen = 0;
+		rLoc = 26127;
+		rType = 0;
+		vrLen = 1425;
+		vrLoc = 25419;
+	};
+	8A1392001465A62400BC9E78 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */;
+		name = "Chip700View.h: 89";
+		rLen = 0;
+		rLoc = 2797;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	8A1392011465A62400BC9E78 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8BA05A660720730100365D66 /* Chip700.cpp */;
+		name = "Chip700.cpp: 813";
+		rLen = 0;
+		rLoc = 26127;
+		rType = 0;
+		vrLen = 1425;
+		vrLoc = 25419;
 	};
 	8A1D23B41465167000FD4C47 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -671,7 +715,7 @@
 		delayBeforeContinue = 0;
 		hitCount = 1;
 		location = CoreFoundation;
-		modificationTime = 342204833.541642;
+		modificationTime = 342205479.801151;
 		state = 1;
 		symbolName = "*0x907dcdb4";
 	};
@@ -1052,9 +1096,9 @@
 	};
 	8BA05A660720730100365D66 /* Chip700.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {818, 16352}}";
-			sepNavSelRange = "{26133, 0}";
-			sepNavVisRect = "{{0, 11035}, {768, 811}}";
+			sepNavIntBoundsRect = "{{0, 0}, {818, 16380}}";
+			sepNavSelRange = "{26123, 0}";
+			sepNavVisRect = "{{0, 10987}, {768, 811}}";
 			sepNavWindowFrame = "{{320, 62}, {807, 940}}";
 		};
 	};
@@ -1093,8 +1137,8 @@
 	8BA05A80072073D200365D66 /* AUBase.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {902, 11172}}";
-			sepNavSelRange = "{21067, 20}";
-			sepNavVisRect = "{{0, 7007}, {768, 813}}";
+			sepNavSelRange = "{21057, 62}";
+			sepNavVisRect = "{{0, 7008}, {768, 813}}";
 			sepNavWindowFrame = "{{15, 60}, {807, 942}}";
 		};
 	};

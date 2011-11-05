@@ -810,9 +810,11 @@ int Chip700::CreateXIData( CFDataRef *data )
 
 	//エンベロープの近似
 	Float64 tempo = 120;
-	OSStatus err = CallHostBeatAndTempo(NULL, &tempo);
-	printf("tempo=%f\n",tempo);
-	printf("err=%d\n",err);
+	Float64 beat = 0;
+	OSStatus err = CallHostBeatAndTempo(&beat, &tempo);
+//	printf("beat=%f\n",beat);
+//	printf("tempo=%f\n",tempo);
+//	printf("err=%d\n",err);
 
 	if ( multisample ) {
 		//サンプル毎には設定出来ないので非対応
