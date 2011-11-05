@@ -869,6 +869,9 @@ void Chip700View::loadFile(FSRef *ref)
 {
 	CFURLRef	path=CFURLCreateFromFSRef(NULL,ref);
 	CFStringRef	ext=CFURLCopyPathExtension(path);
+	if ( ext == NULL ) {
+		ext = CFStringCreateCopy(NULL,CFSTR("(noext)") );
+	}
 	
 	if ( kCFCompareEqualTo==CFStringCompare(ext,CFSTR("brr"),kCFCompareCaseInsensitive) ) {
 		//保存されたパッチ(.brrファイル)の読み込み
@@ -971,23 +974,27 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
         return NULL;
     }
     dataSize=(UInt32)dataSize64;
-	
-	//ファイルフォーマットを取得
-	AudioFileTypeID　filetypeID;
+
+	AudioFileTypeID	fileTypeID;
 	size = sizeof( AudioFileTypeID );
-	err = AudioFileGetProperty(mAudioFileID, kAudioFilePropertyFileFormat, &size, &filetypeID)
+	err = AudioFileGetProperty(mAudioFileID, kAudioFilePropertyFileFormat, &size, &fileTypeID);
 	if (err) {
         //NSLog(@"AudioFileGetProperty failed");
         AudioFileClose(mAudioFileID);
         return NULL;
     }
 	
+	inst->basekey = 60;
+	inst->lowkey = 0;
+	inst->highkey = 127;
+	inst->loop = 0;
+	
 	//ループポイントの取得
 	Float64		st_point=0.0,end_point=0.0;
-	if ( filetypeID == kAudioFileAIFFType || filetypeID == kAudioFileAIFCType ) {
+	if ( fileTypeID == kAudioFileAIFFType || fileTypeID == kAudioFileAIFCType ) {
 		//INSTチャンクの取得
 		AudioFileGetUserDataSize(mAudioFileID, 'INST', 0, &size);
-		if ( size > 0 ) {
+		if ( size > 4 ) {
 			UInt8	*instChunk = (UInt8*)malloc(size);
 			AudioFileGetUserData(mAudioFileID, 'INST', 0, &size, instChunk);
 			
@@ -1034,95 +1041,30 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 		}
 				
 	}
-	else if ( filetypeID == kAudioFileWAVEType ) {
+	else if ( fileTypeID == kAudioFileWAVEType ) {
 		//smplチャンクの取得
-		AudioFileGetUserData( mAudioFileID, 'smpl', 0, &size );
-		if ( size > 0 ) {
+		AudioFileGetUserDataSize( mAudioFileID, 'smpl', 0, &size );
+		if ( size >= sizeof(WAV_smpl) ) {
 			UInt8	*smplChunk = (UInt8*)malloc(size);
 			AudioFileGetUserData( mAudioFileID, 'smpl', 0, &size, smplChunk );
+			WAV_smpl	*smpl = (WAV_smpl *)smplChunk;
 			
-			if ( smplChunk[28] > 0 ) {
-				WAV_smpl	*smpl = (WAV_smpl *)smplChunk;
-				inst->lowkey = 0;
-				inst->highkey = 127;
+			smpl->loops = EndianU32_LtoN( smpl->loops );
+			
+			if ( smpl->loops > 0 ) {
+				inst->loop = 1;
 				inst->basekey = EndianU32_LtoN( smpl->note );
 				st_point = EndianU32_LtoN( smpl->start );
-				end_point EndianU32_LtoN( smpl->end ) + 1;
+				end_point = EndianU32_LtoN( smpl->end ) + 1;
+
+			}
+			else {
+				inst->basekey = EndianU32_LtoN( smpl->note );
 			}
 			free( smplChunk );
 		}
 	}
-	else {
-		inst->basekey = 60;
-		inst->lowkey = 0;
-		inst->highkey = 127;
-		inst->loop = 0;
-	}
-	/*
-//Base Key、ループ情報を取得
-UInt8	*instChunk;
-int		loop_st_id=-1,loop_end_id=-1;
-AudioFileGetUserDataSize(mAudioFileID, InstrumentID, 0, &size);
-if (size == 28) {	//AIFFファイルのINSTチャンク
-	instChunk = (UInt8*)malloc(size);
-	AudioFileGetUserData(mAudioFileID, InstrumentID, 0, &size, instChunk);
-	inst->basekey = instChunk[0];
-	inst->lowkey = instChunk[2];
-	inst->highkey = instChunk[3];
-	inst->loop = instChunk[9];
-	loop_st_id = instChunk[11];
-	loop_end_id = instChunk[13];
-	free(instChunk);
-}
-else {
-	inst->basekey = 60;
-	inst->lowkey = 0;
-	inst->highkey = 127;
-	inst->loop = 0;
-}
-UInt32	writable;
-if (AudioFileGetPropertyInfo(mAudioFileID, kAudioFilePropertyMarkerList,
-							 &size, &writable)) {
-	//NSLog(@"AudioFileGetPropertyInfo failed");
-	AudioFileClose(mAudioFileID);
-	return NULL;
-}
-AudioFileMarkerList	*markers = (AudioFileMarkerList*)malloc(size);
-if(AudioFileGetProperty(mAudioFileID, kAudioFilePropertyMarkerList, 
-						&size, markers)) {
-	//NSLog(@"AudioFileGetProperty failed");
-	AudioFileClose(mAudioFileID);
-	return NULL;
-}
-Float64		st_point=0.0,end_point=0.0;
-if ((markers->mNumberMarkers == 2) && (loop_st_id == -1)) {
-	st_point = markers->mMarkers[0].mFramePosition;
-	end_point = markers->mMarkers[1].mFramePosition;
-	inst->loop = 1;
-}
-else if (markers->mNumberMarkers >= 2) {
-	for (unsigned int i=0; i<markers->mNumberMarkers; i++) {
-		if (markers->mMarkers[i].mMarkerID == loop_st_id) {
-			st_point = markers->mMarkers[i].mFramePosition;
-		}
-		else if (markers->mMarkers[i].mMarkerID == loop_end_id) {
-			end_point = markers->mMarkers[i].mFramePosition;
-		}
-		CFRelease(markers->mMarkers[i].mName);
-	}
-}
-if (st_point < 0)
-	st_point = 0;
-if (st_point == end_point)
-	inst->loop = 0;
-if (st_point > dataSize64/mFileDescription.mBytesPerFrame)
-	st_point = 0;
-if (end_point > dataSize64/mFileDescription.mBytesPerFrame)
-	end_point = dataSize64/mFileDescription.mBytesPerFrame;
-if (end_point < 0)
-	end_point += dataSize64/mFileDescription.mBytesPerFrame+1;
-free(markers);	
-	*/
+
     // 波形一時読み込み用メモリを確保
     char *mFileBuffer;
 	if (inst->loop)
@@ -1553,15 +1495,17 @@ void Chip700View::enqueueFile(FSRef *ref)
 	if (!shouldload) {
 		CFURLRef path=CFURLCreateFromFSRef(NULL,ref);
 		CFStringRef	ext=CFURLCopyPathExtension(path);
-		if ( (kCFCompareEqualTo!=CFStringCompare(ext,CFSTR("brr"),kCFCompareCaseInsensitive)) &&
-			 (kCFCompareEqualTo!=CFStringCompare(ext,CFSTR("spc"),kCFCompareCaseInsensitive))
-			) 
-		{
-			SetControlData(hiOverView,0,kShowMsgTag,0,NULL);
-			SetControlData(hiTailView,0,kShowMsgTag,0,NULL);
-			SetControlData(hiHeadView,0,kShowMsgTag,0,NULL);
+		if ( ext ) {
+			if ( (kCFCompareEqualTo!=CFStringCompare(ext,CFSTR("brr"),kCFCompareCaseInsensitive)) &&
+				 (kCFCompareEqualTo!=CFStringCompare(ext,CFSTR("spc"),kCFCompareCaseInsensitive))
+				) 
+			{
+				SetControlData(hiOverView,0,kShowMsgTag,0,NULL);
+				SetControlData(hiTailView,0,kShowMsgTag,0,NULL);
+				SetControlData(hiHeadView,0,kShowMsgTag,0,NULL);
+			}
+			CFRelease(ext);
 		}
-		CFRelease(ext);
 		CFRelease(path);
 		
 		queingfile=*ref;
