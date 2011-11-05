@@ -204,7 +204,7 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>8A1392011465A62400BC9E78</string>
+						<string>8A1392081465A9F300BC9E78</string>
 						<key>history</key>
 						<array>
 							<string>8A1391E214659CBE00BC9E78</string>
@@ -361,7 +361,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>8A1392001465A62400BC9E78</string>
+										<string>8A1392071465A9F300BC9E78</string>
 										<key>history</key>
 										<array>
 											<string>8A1D23B41465167000FD4C47</string>
@@ -563,8 +563,8 @@
 		<string>8A1391F61465A1B300BC9E78</string>
 		<string>8A4514FC0AADE71D00997A83</string>
 		<string>/Users/kaihatu/AUPlug/C700/Chip700.xcodeproj</string>
-		<string>1CD10A99069EF8BA00B06720</string>
 		<string>8ACA25F00AF252B6000A563D</string>
+		<string>1CD10A99069EF8BA00B06720</string>
 		<string>8A1391EC1465A1B300BC9E78</string>
 	</array>
 	<key>WindowString</key>
