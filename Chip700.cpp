@@ -128,7 +128,7 @@ ComponentResult Chip700::Initialize()
 {	
 	AUMonotimbralInstrumentBase::Initialize();
 	SetNotes(kMaximumVoices, Globals()->GetParameter(kParam_poly), mChip700Notes, sizeof(Chip700Note));
-	
+
 	return noErr;
 }
 
@@ -147,6 +147,7 @@ ComponentResult Chip700::StartNote(MusicDeviceInstrumentID		inInstrument,
 						  UInt32 						inOffsetSampleFrame, 
 						  const MusicDeviceNoteParams &inParams)
 {
+CallHostBeatAndTempo(NULL, &m_tempo);
 	ChangeMaxActiveNotes(Globals()->GetParameter(kParam_poly));
 	return AUMonotimbralInstrumentBase::StartNote(inInstrument,inGroupID,outNoteInstanceID,inOffsetSampleFrame,inParams);
 }
@@ -809,9 +810,9 @@ int Chip700::CreateXIData( CFDataRef *data )
 	}
 
 	//エンベロープの近似
-	Float64 tempo = 120;
-	Float64 beat = 0;
-	OSStatus err = CallHostBeatAndTempo(&beat, &tempo);
+	Float64 tempo = m_tempo;
+//	Float64 beat = 0;
+//	OSStatus err = CallHostBeatAndTempo(&beat, &tempo);
 //	printf("beat=%f\n",beat);
 //	printf("tempo=%f\n",tempo);
 //	printf("err=%d\n",err);

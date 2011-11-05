@@ -91,7 +91,7 @@ private:
 	VoiceParams			mVPset[128];
 	TAUBuffer<UInt8>	mBRRdata[128];
 	Chip700Note			mChip700Notes[kMaximumVoices];
-	
+Float64 m_tempo;
 	void					RefreshKeyMap(void);
 	int						CreateXIData( CFDataRef *data );
 	int						CreatePGDataDic(CFDictionaryRef *data, int pgnum);

@@ -177,14 +177,16 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 342203519;
-			PBXWorkspaceStateSaveDate = 342203519;
+			PBXPerProjectTemplateStateSaveDate = 342207781;
+			PBXWorkspaceStateSaveDate = 342207781;
 		};
 		perUserProjectItems = {
-			8A1391E214659CBE00BC9E78 /* PBXBookmark */ = 8A1391E214659CBE00BC9E78 /* PBXBookmark */;
 			8A1392071465A9F300BC9E78 /* PBXTextBookmark */ = 8A1392071465A9F300BC9E78 /* PBXTextBookmark */;
 			8A1392081465A9F300BC9E78 /* PBXTextBookmark */ = 8A1392081465A9F300BC9E78 /* PBXTextBookmark */;
-			8A1D23B41465167000FD4C47 /* PBXTextBookmark */ = 8A1D23B41465167000FD4C47 /* PBXTextBookmark */;
+			8A85F3E81465B72800E5F9B7 /* PBXBookmark */ = 8A85F3E81465B72800E5F9B7 /* PBXBookmark */;
+			8A85F3F91465BCC100E5F9B7 /* PBXTextBookmark */ = 8A85F3F91465BCC100E5F9B7 /* PBXTextBookmark */;
+			8A85F3FC1465BCC100E5F9B7 /* PBXTextBookmark */ = 8A85F3FC1465BCC100E5F9B7 /* PBXTextBookmark */;
+			8A85F3FF1465BCC100E5F9B7 /* PBXTextBookmark */ = 8A85F3FF1465BCC100E5F9B7 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 8A4514C50AADC92800997A83 /* Source Control */;
 		userBuildSettings = {
@@ -222,10 +224,6 @@
 			sepNavWindowFrame = "{{361, 60}, {722, 942}}";
 		};
 	};
-	8A1391E214659CBE00BC9E78 /* PBXBookmark */ = {
-		isa = PBXBookmark;
-		fRef = 8BA05A660720730100365D66 /* Chip700.cpp */;
-	};
 	8A1392071465A9F300BC9E78 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */;
@@ -241,20 +239,10 @@
 		fRef = 8BA05A660720730100365D66 /* Chip700.cpp */;
 		name = CallHostBeatAndTempo;
 		rLen = 20;
-		rLoc = 26062;
+		rLoc = 26107;
 		rType = 0;
 		vrLen = 1377;
 		vrLoc = 25419;
-	};
-	8A1D23B41465167000FD4C47 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */;
-		name = "Chip700View.h: 89";
-		rLen = 0;
-		rLoc = 2797;
-		rType = 0;
-		vrLen = 0;
-		vrLoc = 0;
 	};
 	8A3E62FA0B22D6E30091886F /* TWaveView.cpp */ = {
 		uiCtxt = {
@@ -291,6 +279,40 @@
 			sepNavVisRect = "{{0, 1345}, {683, 811}}";
 			sepNavWindowFrame = "{{78, 62}, {722, 940}}";
 		};
+	};
+	8A85F3E81465B72800E5F9B7 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = 8BC6025B073B072D006C4272 /* Chip700.h */;
+	};
+	8A85F3F91465BCC100E5F9B7 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */;
+		name = "Chip700View.h: 89";
+		rLen = 0;
+		rLoc = 2797;
+		rType = 0;
+		vrLen = 0;
+		vrLoc = 0;
+	};
+	8A85F3FC1465BCC100E5F9B7 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8BA05A660720730100365D66 /* Chip700.cpp */;
+		name = "Chip700.cpp: 817";
+		rLen = 0;
+		rLoc = 26175;
+		rType = 0;
+		vrLen = 1367;
+		vrLoc = 25431;
+	};
+	8A85F3FF1465BCC100E5F9B7 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8BC6025B073B072D006C4272 /* Chip700.h */;
+		name = "Chip700.h: m_tempo";
+		rLen = 0;
+		rLoc = 2995;
+		rType = 0;
+		vrLen = 2031;
+		vrLoc = 1284;
 	};
 	8AA4CEE60AAE77CF00AA021C /* Chip700Note.h */ = {
 		uiCtxt = {
@@ -366,9 +388,9 @@
 	8AA4CF560AAE7D7A00AA021C /* AUInstrumentBase.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {770, 11214}}";
-			sepNavSelRange = "{11233, 29}";
-			sepNavVisRect = "{{0, 4950}, {768, 819}}";
-			sepNavWindowFrame = "{{217, 54}, {807, 948}}";
+			sepNavSelRange = "{8236, 31}";
+			sepNavVisRect = "{{0, 4176}, {768, 813}}";
+			sepNavWindowFrame = "{{217, 60}, {807, 942}}";
 		};
 	};
 	8AA4CF570AAE7D7A00AA021C /* AUInstrumentBase.h */ = {
@@ -1041,10 +1063,10 @@
 	};
 	8BA05A660720730100365D66 /* Chip700.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {818, 16380}}";
-			sepNavSelRange = "{26062, 20}";
-			sepNavVisRect = "{{0, 10987}, {768, 811}}";
-			sepNavWindowFrame = "{{320, 62}, {807, 940}}";
+			sepNavIntBoundsRect = "{{0, 0}, {818, 16394}}";
+			sepNavSelRange = "{26175, 0}";
+			sepNavVisRect = "{{0, 10963}, {768, 811}}";
+			sepNavWindowFrame = "{{403, 62}, {807, 940}}";
 		};
 	};
 	8BA05A670720730100365D66 /* Chip700.exp */ = {
@@ -1082,8 +1104,8 @@
 	8BA05A80072073D200365D66 /* AUBase.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {902, 11172}}";
-			sepNavSelRange = "{21057, 62}";
-			sepNavVisRect = "{{0, 7008}, {768, 813}}";
+			sepNavSelRange = "{30197, 16}";
+			sepNavVisRect = "{{0, 10359}, {768, 813}}";
 			sepNavWindowFrame = "{{15, 60}, {807, 942}}";
 		};
 	};
@@ -1241,7 +1263,7 @@
 	8BC6025B073B072D006C4272 /* Chip700.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {612, 1456}}";
-			sepNavSelRange = "{1625, 0}";
+			sepNavSelRange = "{2995, 0}";
 			sepNavVisRect = "{{0, 645}, {612, 811}}";
 			sepNavWindowFrame = "{{122, 62}, {651, 940}}";
 		};
