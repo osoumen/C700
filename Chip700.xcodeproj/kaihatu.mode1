@@ -290,7 +290,7 @@
 							<real>186</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>406 293 761 709 0 0 1280 1002 </string>
+						<string>405 293 761 709 0 0 1280 1002 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -318,10 +318,10 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>8A0076D2146642FC000DE0F4</string>
+										<string>8A32F67F14664D6300CBD6A2</string>
 										<key>history</key>
 										<array>
-											<string>8A85F3F91465BCC100E5F9B7</string>
+											<string>8A0076D2146642FC000DE0F4</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -335,7 +335,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {553, 0}}</string>
 								<key>RubberWindowFrame</key>
-								<string>406 293 761 709 0 0 1280 1002 </string>
+								<string>405 293 761 709 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -357,7 +357,7 @@
 								<key>Frame</key>
 								<string>{{0, 5}, {553, 663}}</string>
 								<key>RubberWindowFrame</key>
-								<string>406 293 761 709 0 0 1280 1002 </string>
+								<string>405 293 761 709 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -381,9 +381,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>8A00766C14663574000DE0F4</string>
+				<string>8A32F67D14664D6300CBD6A2</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>8A00766D14663574000DE0F4</string>
+				<string>8A32F67E14664D6300CBD6A2</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -517,16 +517,11 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>8A0076811466359C000DE0F4</string>
-		<string>8A0076821466359C000DE0F4</string>
-		<string>8ACA25F00AF252B6000A563D</string>
 		<string>8A4514FC0AADE71D00997A83</string>
-		<string>1CD10A99069EF8BA00B06720</string>
-		<string>8A00764314662A71000DE0F4</string>
 		<string>/Users/kaihatu/AUPlug/C700/Chip700.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>406 293 761 709 0 0 1280 1002 </string>
+	<string>405 293 761 709 0 0 1280 1002 </string>
 	<key>WindowTools</key>
 	<array>
 		<dict>
@@ -542,6 +537,8 @@
 					<key>Dock</key>
 					<array>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -564,8 +561,6 @@
 							<string>456pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -605,7 +600,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>8A4514FC0AADE71D00997A83</string>
-				<string>8A00763C14662A71000DE0F4</string>
+				<string>8A32F67B14664D6200CBD6A2</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
