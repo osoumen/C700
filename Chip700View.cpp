@@ -1513,15 +1513,12 @@ void Chip700View::enqueueFile(FSRef *ref)
 	}
 }
 
+
 void Chip700View::Idle()
 {
 	if (shouldload) {
 		loadFile(&queingfile);
 		shouldload=false;
-	}
-	Float64 beat,tempo;
-	if ( mEditAudioUnit->CallHostBeatAndTempo(&beat, &tempo) == noErr ) {
-		printf("beat=%f, tempo=%f¥n");
 	}
 }
 

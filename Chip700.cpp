@@ -147,11 +147,17 @@ ComponentResult Chip700::StartNote(MusicDeviceInstrumentID		inInstrument,
 						  UInt32 						inOffsetSampleFrame, 
 						  const MusicDeviceNoteParams &inParams)
 {
-CallHostBeatAndTempo(NULL, &m_tempo);
 	ChangeMaxActiveNotes(Globals()->GetParameter(kParam_poly));
 	return AUMonotimbralInstrumentBase::StartNote(inInstrument,inGroupID,outNoteInstanceID,inOffsetSampleFrame,inParams);
 }
 
+ComponentResult	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
+												const AudioTimeStamp &			inTimeStamp,
+												UInt32							inNumberFrames)
+{
+	CallHostBeatAndTempo(NULL, &mTempo);
+	return AUMonotimbralInstrumentBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //	Chip700::GetParameterInfo
@@ -701,7 +707,7 @@ ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
 		
 		AddNumToDictionary(dict, kSaveKey_EditProg, mEditProg);
 		
-		pgname = CFStringCreateCopy(NULL,CFSTR("Chip700"));
+		pgname = CFStringCreateCopy(NULL,CFSTR("C700"));
 		CFDictionarySetValue(dict, CFSTR(kAUPresetNameKey), pgname);
 		CFRelease(pgname);
 	}
@@ -784,7 +790,7 @@ int Chip700::CreateXIData( CFDataRef *data )
 	}
 	xfh.name[22] = 0x1A;
 	memcpy(xfh.trkname, "FastTracker v2.00   ", 20);
-	xfh.shsize = 0x102;
+	xfh.shsize = EndianU16_NtoL( 0x0102 );
 	CFDataAppendBytes( mdata, (const UInt8 *)&xfh, sizeof(xfh) );
 	
 	// XI Instrument Header
@@ -810,40 +816,35 @@ int Chip700::CreateXIData( CFDataRef *data )
 	}
 
 	//エンベロープの近似
-	Float64 tempo = m_tempo;
-//	Float64 beat = 0;
-//	OSStatus err = CallHostBeatAndTempo(&beat, &tempo);
-//	printf("beat=%f\n",beat);
-//	printf("tempo=%f\n",tempo);
-//	printf("err=%d\n",err);
+	Float64 tempo = mTempo;
 
 	if ( multisample ) {
 		//サンプル毎には設定出来ないので非対応
 		for (int i=0; i<4; i++) {
-			xih.venv[i*2] = i*10;
-			xih.venv[i*2+1] = 64;
+			xih.venv[i*2] = EndianU16_NtoL( i*10 );
+			xih.venv[i*2+1] = EndianU16_NtoL( 64 );
 		}
 		xih.venv[7] = 0;
 	}
 	else {
 		xih.venv[0] = 0;
 		if ( mVPset[mEditProg].ar == 15 ) {
-			xih.venv[1] = vol;
+			xih.venv[1] = EndianU16_NtoL( vol );
 		}
 		else {
 			xih.venv[1] = 0;
 		}
-		xih.venv[2] = GetARTicks( mVPset[mEditProg].ar, tempo );	//tick数値はテンポ値に依存する
-		xih.venv[3] = vol;
-		xih.venv[4] = xih.venv[2] + GetDRTicks( mVPset[mEditProg].dr, tempo );
-		xih.venv[5] = vol * (mVPset[mEditProg].sl + 1) / 8;
+		xih.venv[2] = EndianU16_NtoL( GetARTicks( mVPset[mEditProg].ar, tempo ) );	//tick数値はテンポ値に依存する
+		xih.venv[3] = EndianU16_NtoL( vol );
+		xih.venv[4] = EndianU16_NtoL( xih.venv[2] + GetDRTicks( mVPset[mEditProg].dr, tempo ) );
+		xih.venv[5] = EndianU16_NtoL( vol * (mVPset[mEditProg].sl + 1) / 8 );
 		if (mVPset[mEditProg].sr == 0) {
-			xih.venv[6] = xih.venv[4]+1;
-			xih.venv[7] = xih.venv[5];
+			xih.venv[6] = EndianU16_NtoL( xih.venv[4]+1 );
+			xih.venv[7] = EndianU16_NtoL( xih.venv[5] );
 		}
 		else {
-			xih.venv[6] = xih.venv[4] + GetSRTicks( mVPset[mEditProg].sr, tempo );
-			xih.venv[7] = vol / 10;
+			xih.venv[6] = EndianU16_NtoL( xih.venv[4] + GetSRTicks( mVPset[mEditProg].sr, tempo ) );
+			xih.venv[7] = EndianU16_NtoL( vol / 10 );
 		}
 	}
 	
@@ -857,15 +858,15 @@ int Chip700::CreateXIData( CFDataRef *data )
 	xih.ploope = 0;
 	xih.vtype = 3;	//ENV_VOLUME + ENV_VOLSUSTAIN
 	xih.ptype = 0;
-	xih.volfade = 5000;
-	xih.reserved2 = nsamples;
+	xih.volfade = EndianU16_NtoL( 5000 );
+	xih.reserved2 = EndianU16_NtoL( nsamples );
 	CFDataAppendBytes( mdata, (const UInt8 *)&xih, sizeof(xih) );
 	
 	// XI Sample Headers
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
-		xsh.samplen = mVPset[ismp].brr.size/9*32;
-		xsh.loopstart = mVPset[ismp].lp/9*32;
-		xsh.looplen = xsh.samplen - xsh.loopstart;
+		xsh.samplen = EndianU32_NtoL( mVPset[ismp].brr.size/9*32 );
+		xsh.loopstart = EndianU32_NtoL( mVPset[ismp].lp/9*32 );
+		xsh.looplen = EndianU32_NtoL( xsh.samplen - xsh.loopstart );
 		double avr = ( abs(mVPset[ismp].volL) + abs(mVPset[ismp].volR) ) / 2;
 		double pan = (abs(mVPset[ismp].volR) * 128) / avr;
 		if ( pan > 256 ) pan = 256;
@@ -876,7 +877,7 @@ int Chip700::CreateXIData( CFDataRef *data )
 			xsh.type |= 0x01;	//Normal Loop
 		}
 		double trans = 12*(log(mVPset[ismp].rate / 8363.0)/log(2.0));
-		int trans_i = (trans + (60-mVPset[ismp].basekey) ) * 128;
+		int trans_i = (trans + (60-mVPset[ismp].basekey) ) * 128 + 0.5;
 		xsh.relnote = trans_i >> 7;
 		xsh.finetune = trans_i & 0x7f;
 		xsh.res = 0;
@@ -897,6 +898,7 @@ int Chip700::CreateXIData( CFDataRef *data )
 		for ( int i=0; i<numSamples; i++ ) {
 			s_new = wavedata[i];
 			wavedata[i] = s_new - s_old;
+			wavedata[i] = EndianS16_NtoL( wavedata[i] );
 			s_old = s_new;
 		}
 		CFDataAppendBytes( mdata, (const UInt8 *)wavedata, numSamples*2 );

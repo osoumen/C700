@@ -70,6 +70,10 @@ public:
 										  UInt32 						inOffsetSampleFrame, 
 										  const MusicDeviceNoteParams &inParams);
 	
+	virtual ComponentResult		Render(   AudioUnitRenderActionFlags &	ioActionFlags,
+									   const AudioTimeStamp &			inTimeStamp,
+									   UInt32							inNumberFrames);
+	
 	/*! @method Version */
 	virtual ComponentResult	Version() { return kChip700Version; }
 	
@@ -91,7 +95,7 @@ private:
 	VoiceParams			mVPset[128];
 	TAUBuffer<UInt8>	mBRRdata[128];
 	Chip700Note			mChip700Notes[kMaximumVoices];
-Float64 m_tempo;
+	Float64				mTempo;
 	void					RefreshKeyMap(void);
 	int						CreateXIData( CFDataRef *data );
 	int						CreatePGDataDic(CFDictionaryRef *data, int pgnum);
