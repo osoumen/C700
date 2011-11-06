@@ -1519,5 +1519,9 @@ void Chip700View::Idle()
 		loadFile(&queingfile);
 		shouldload=false;
 	}
+	Float64 beat,tempo;
+	if ( mEditAudioUnit->CallHostBeatAndTempo(&beat, &tempo) == noErr ) {
+		printf("beat=%f, tempo=%f¥n");
+	}
 }
 
