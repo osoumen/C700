@@ -1055,8 +1055,8 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 				inst->loop = 1;
 				inst->basekey = EndianU32_LtoN( smpl->note );
 				st_point = EndianU32_LtoN( smpl->start );
-				end_point = EndianU32_LtoN( smpl->end ) + 1;
-
+				//end_point = EndianU32_LtoN( smpl->end ) + 1;	//SoundForge等では最終ポイントを含める解釈
+				end_point = EndianU32_LtoN( smpl->end );	//PeakではAIFFと同じ。こちらに合わせておくこととする
 			}
 			else {
 				inst->basekey = EndianU32_LtoN( smpl->note );
