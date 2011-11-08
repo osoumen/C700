@@ -622,7 +622,7 @@ void Chip700View::saveSelected(void)
 	size = sizeof(CFStringRef);
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,kAudioUnitScope_Global,0,&pgname,&size);
 	CFStringRef	defaultname;
-	if (CFStringGetLength(pgname)==0)
+	if (pgname == NULL || CFStringGetLength(pgname)==0)
 		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("program_%03d.xi"),intValue);
 	else
 		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("%@.xi"),pgname);
