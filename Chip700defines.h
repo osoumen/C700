@@ -28,6 +28,38 @@ enum {
 	kParam_clipnoise,
 	kParam_drummode,
 	
+	kParam_program_2,
+	kParam_program_3,
+	kParam_program_4,
+	kParam_program_5,
+	kParam_program_6,
+	kParam_program_7,
+	kParam_program_8,
+	kParam_program_9,
+	kParam_program_10,
+	kParam_program_11,
+	kParam_program_12,
+	kParam_program_13,
+	kParam_program_14,
+	kParam_program_15,
+	kParam_program_16,
+	
+	kParam_vibdepth_2,
+	kParam_vibdepth_3,
+	kParam_vibdepth_4,
+	kParam_vibdepth_5,
+	kParam_vibdepth_6,
+	kParam_vibdepth_7,
+	kParam_vibdepth_8,
+	kParam_vibdepth_9,
+	kParam_vibdepth_10,
+	kParam_vibdepth_11,
+	kParam_vibdepth_12,
+	kParam_vibdepth_13,
+	kParam_vibdepth_14,
+	kParam_vibdepth_15,
+	kParam_vibdepth_16,
+	
 	kNumberOfParameters
 };
 

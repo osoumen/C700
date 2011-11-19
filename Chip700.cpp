@@ -96,6 +96,10 @@ Chip700::Chip700(AudioUnit component)
 	Globals()->SetParameter(kParam_bendrange, kDefaultValue_bendrange);
 	Globals()->SetParameter(kParam_program, kDefaultValue_program);
 	Globals()->SetParameter(kParam_drummode, kDefaultValue_drummode);
+	for ( int i=0; i<15; i++ ) {
+		Globals()->SetParameter(kParam_program_2+i, kDefaultValue_program);
+		Globals()->SetParameter(kParam_vibdepth_2+i, kDefaultValue_vibdepth);
+	}
 	
 	mEditProg = 0;
 	//プログラムの初期化
@@ -196,6 +200,21 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 				outParameterInfo.defaultValue = kDefaultValue_volR;
 				break;
 			case kParam_vibdepth:
+			case kParam_vibdepth_2:
+			case kParam_vibdepth_3:
+			case kParam_vibdepth_4:
+			case kParam_vibdepth_5:
+			case kParam_vibdepth_6:
+			case kParam_vibdepth_7:
+			case kParam_vibdepth_8:
+			case kParam_vibdepth_9:
+			case kParam_vibdepth_10:
+			case kParam_vibdepth_11:
+			case kParam_vibdepth_12:
+			case kParam_vibdepth_13:
+			case kParam_vibdepth_14:
+			case kParam_vibdepth_15:
+			case kParam_vibdepth_16:
 				AUBase::FillInParameterName (outParameterInfo, kParam_vibdepth_Name, false);
 				outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
 				outParameterInfo.minValue = kMinimumValue_0;
@@ -238,6 +257,21 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 				outParameterInfo.defaultValue = kDefaultValue_bendrange;
 				break;
 			case kParam_program:
+			case kParam_program_2:
+			case kParam_program_3:
+			case kParam_program_4:
+			case kParam_program_5:
+			case kParam_program_6:
+			case kParam_program_7:
+			case kParam_program_8:
+			case kParam_program_9:
+			case kParam_program_10:
+			case kParam_program_11:
+			case kParam_program_12:
+			case kParam_program_13:
+			case kParam_program_14:
+			case kParam_program_15:
+			case kParam_program_16:
 				AUBase::FillInParameterName (outParameterInfo, kParam_program_Name, false);
 				outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
 				outParameterInfo.minValue = kMinimumValue_0;
@@ -1142,12 +1176,16 @@ void Chip700::HandleControlChange(	int 	inChannel,
 {
 	//モジュレーションホイール
 	if (inController == kMidiController_ModWheel) {
-		Globals()->SetParameter(kParam_vibdepth, inValue);
+		AudioUnitParameterID	paramID = kParam_vibdepth;
+		if ( inChannel > 0 ) {
+			paramID = kParam_vibdepth_2 - 1 + inChannel;
+		}
+		Globals()->SetParameter(paramID, inValue);
 		AudioUnitEvent auEvent;
 		auEvent.mEventType = kAudioUnitEvent_ParameterValueChange;
 		auEvent.mArgument.mParameter.mAudioUnit = (AudioUnit)GetComponentInstance();
 		auEvent.mArgument.mParameter.mScope = kAudioUnitScope_Global;
-		auEvent.mArgument.mParameter.mParameterID = kParam_vibdepth;
+		auEvent.mArgument.mParameter.mParameterID = paramID;
 		auEvent.mArgument.mParameter.mElement = 0;
 		AUEventListenerNotify(NULL, NULL, &auEvent);
 	}
@@ -1160,12 +1198,16 @@ void Chip700::HandleControlChange(	int 	inChannel,
 void Chip700::HandleProgramChange(	int 	inChannel,
 									UInt8 	inValue)
 {
-	Globals()->SetParameter(kParam_program, inValue);
+	AudioUnitParameterID	paramID = kParam_program;
+	if ( inChannel > 0 ) {
+		paramID = kParam_program_2 - 1 + inChannel;
+	}
+	Globals()->SetParameter(paramID, inValue);
 	AudioUnitEvent auEvent;
 	auEvent.mEventType = kAudioUnitEvent_ParameterValueChange;
 	auEvent.mArgument.mParameter.mAudioUnit = (AudioUnit)GetComponentInstance();
 	auEvent.mArgument.mParameter.mScope = kAudioUnitScope_Global;
-	auEvent.mArgument.mParameter.mParameterID = kParam_program;
+	auEvent.mArgument.mParameter.mParameterID = paramID;
 	auEvent.mArgument.mParameter.mElement = 0;
 	AUEventListenerNotify(NULL, NULL, &auEvent);
 	AUMonotimbralInstrumentBase::HandleProgramChange(inChannel, inValue);

@@ -124,6 +124,10 @@ void Chip700Note::Attack(const MusicDeviceNoteParams &inParams)
 	Chip700		*synth;
 	VoiceParams		vp;
 	
+	//MIDIチャンネルの取得
+	SynthGroupElement	*group = GetGroup();
+	UInt32				chID = group->GroupID();
+	
 	mParam = inParams;
 
 	synth = (Chip700*)GetAudioUnit();
@@ -131,7 +135,12 @@ void Chip700Note::Attack(const MusicDeviceNoteParams &inParams)
 		vp = synth->getMappedVP(inParams.mPitch);
 	}
 	else {
-		vp = synth->getVP(GetGlobalParameter(kParam_program));
+		if ( chID == 0 ) {
+			vp = synth->getVP(GetGlobalParameter(kParam_program));
+		}
+		else {
+			vp = synth->getVP(GetGlobalParameter(kParam_program_2 + chID - 1));
+		}
 	}
 	
 	if (vp.brr.data) {
@@ -169,6 +178,10 @@ void Chip700Note::KeyOn(void)
 	Chip700		*synth;
 	VoiceParams		vp;
 	
+	//MIDIチャンネルの取得
+	SynthGroupElement	*group = GetGroup();
+	UInt32				chID = group->GroupID();
+
 	//ベロシティの取得
 	if (GetGlobalParameter(kParam_velocity) != 0.) {
 		mVelo = mParam.mVelocity;
@@ -183,7 +196,12 @@ void Chip700Note::KeyOn(void)
 		vp = synth->getMappedVP(mParam.mPitch);
 	}
 	else {
-		vp = synth->getVP(GetGlobalParameter(kParam_program));
+		if ( chID == 0 ) {
+			vp = synth->getVP(GetGlobalParameter(kParam_program));
+		}
+		else {
+			vp = synth->getVP(GetGlobalParameter(kParam_program_2 + chID - 1));
+		}
 	}
 	
 	brrdata = vp.brr.data;
@@ -248,9 +266,18 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 		right = numChans==2 ? (float*)inBufferList.mBuffers[1].mData : 0;
 	}
 
+	//MIDIチャンネルの取得
+	SynthGroupElement	*group = GetGroup();
+	UInt32				chID = group->GroupID();
+	
 	//パラメータの読み込み
 	vibfreq = GetGlobalParameter(kParam_vibrate)*((onepi*2)/mInternalClock);
-	vibdepth = GetGlobalParameter(kParam_vibdepth);
+	if ( chID == 0 ) {
+		vibdepth = GetGlobalParameter(kParam_vibdepth);
+	}
+	else {
+		vibdepth = GetGlobalParameter(kParam_vibdepth_2 - 1 + chID);
+	}
 	vibdepth2 = GetGlobalParameter(kParam_vibdepth2)/2;
 	reg_pmod = vibdepth > 0 ? true:false;
 	clipper = GetGlobalParameter(kParam_clipnoise)==0 ? 0:1;

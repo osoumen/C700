@@ -408,7 +408,7 @@
 		8AEECD2D0B020BC6002C9BB7 /* czt.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; path = czt.cpp; sourceTree = "<group>"; };
 		8AEECD2E0B020BC6002C9BB7 /* czt.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = czt.h; sourceTree = "<group>"; };
 		8AF717CF0AE3DD5900C79293 /* gauss.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = gauss.h; sourceTree = "<group>"; };
-		8BA05A660720730100365D66 /* Chip700.cpp */ = {isa = PBXFileReference; fileEncoding = 18446744071562067968; lastKnownFileType = sourcecode.cpp.cpp; path = Chip700.cpp; sourceTree = "<group>"; };
+		8BA05A660720730100365D66 /* Chip700.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = Chip700.cpp; sourceTree = "<group>"; };
 		8BA05A670720730100365D66 /* Chip700.exp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.exports; path = Chip700.exp; sourceTree = "<group>"; };
 		8BA05A680720730100365D66 /* Chip700.r */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.rez; lineEnding = 0; path = Chip700.r; sourceTree = "<group>"; };
 		8BA05A690720730100365D66 /* Chip700Version.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Chip700Version.h; sourceTree = "<group>"; };
