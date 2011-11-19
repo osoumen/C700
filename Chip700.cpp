@@ -117,7 +117,7 @@ Chip700::Chip700(AudioUnit component)
 		mVPset[i].sl=kDefaultValue_SL;
 		mVPset[i].sr=kDefaultValue_SR;
 		
-		mKeyMap[i] = i;
+		mKeyMap[i] = 0;
 	}
 #if AU_DEBUG_DISPATCHER
 	mDebugDispatcher = new AUDebugDispatcher(this);
@@ -881,7 +881,7 @@ int Chip700::CreateXIData( CFDataRef *data )
 		xsh.relnote = trans_i >> 7;
 		xsh.finetune = trans_i & 0x7f;
 		xsh.res = 0;
-		if ( CFStringGetCString(mVPset[ismp].pgname,xsh.name,22,kCFStringEncodingASCII) == false ) {
+		if ( mVPset[ismp].pgname == NULL || CFStringGetCString(mVPset[ismp].pgname,xsh.name,22,kCFStringEncodingASCII) == false ) {
 			memcpy(xsh.name, "Sample", 22);
 		}
 		CFDataAppendBytes( mdata, (const UInt8 *)&xsh, sizeof(xsh) );
