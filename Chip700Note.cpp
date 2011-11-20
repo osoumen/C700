@@ -74,8 +74,10 @@ void Chip700Note::Reset()
 	SynthNote::Reset();
 
 	mInternalClock=32000;
-	for (int i=0; i<16; i++)
-		mProcessbuf[i]=0;
+	for (int i=0; i<16; i++) {
+		mProcessbuf[0][i]=0;
+		mProcessbuf[1][i]=0;
+	}
 	mProcessFrac=0;
 	mProcessbufPtr=0;
 	
@@ -85,9 +87,8 @@ void Chip700Note::Reset()
 	mSampbuf[1]=0;
 	mSampbuf[2]=0;
 	mSampbuf[3]=0;
-	
-	mOnCnt = -1;
-	mOffCnt = -1;
+
+	mNoteEvt.clear();
 	
 	brrdata = silence_brr;
 	mLoopPoint = 0;
@@ -102,11 +103,15 @@ void Chip700Note::Reset()
 	mHeaderCnt = 0;
 	mHalf = 0;
 	mEnvx = 0;
+	mFilter = 0;
 	mEnd = 0;
 	mSampptr = 0;
 	mMixfrac=0;
 	mEnvcnt = CNT_INIT;
 	mEnvstate = RELEASE;
+	
+	mEcho[0].Reset();
+	mEcho[1].Reset();
 }
 
 void Chip700Note::Attack(const MusicDeviceNoteParams &inParams)
@@ -116,9 +121,14 @@ void Chip700Note::Attack(const MusicDeviceNoteParams &inParams)
 	
 	//MIDIチャンネルの取得
 	SynthGroupElement	*group = GetGroup();
-	UInt32				chID = group->GroupID();
+	unsigned int		chID = group->GroupID();
 	
-	mParam = inParams;
+	NoteEvt			mNoteOnEvt;
+	mNoteOnEvt.isOn = true;
+	mNoteOnEvt.note = inParams.mPitch;
+	mNoteOnEvt.velo = inParams.mVelocity;
+	mNoteOnEvt.ch = chID;
+	mNoteOnEvt.remain_samples = GetRelativeStartFrame();
 
 	synth = (Chip700*)GetAudioUnit();
 	if (GetGlobalParameter(kParam_drummode)) {
@@ -134,9 +144,10 @@ void Chip700Note::Attack(const MusicDeviceNoteParams &inParams)
 	}
 	
 	if (vp.brr.data) {
-		mOnCnt = GetRelativeStartFrame();
+		mNoteEvt.push_back( mNoteOnEvt );
 	}
 	else {
+		mNoteOnEvt.remain_samples = -1;
 		mEnvx = 0;
 		brrdata = silence_brr;
 		mEnvstate = RELEASE;
@@ -146,14 +157,32 @@ void Chip700Note::Attack(const MusicDeviceNoteParams &inParams)
 void Chip700Note::Release(UInt32 inFrame)
 {
 	SynthNote::Release(inFrame);
-	mOffCnt = inFrame;
+
+	//MIDIチャンネルの取得
+	SynthGroupElement	*group = GetGroup();
+	unsigned int		chID = group->GroupID();
+	NoteEvt			mNoteOffEvt;
+	mNoteOffEvt.isOn = false;
+	mNoteOffEvt.ch = chID;
+	mNoteOffEvt.remain_samples = inFrame;
+	mNoteEvt.push_back( mNoteOffEvt );
+
 	mFRFlag = false;
 }
 
 void Chip700Note::FastRelease(UInt32 inFrame)
 {
 	SynthNote::Release(inFrame);
-	mOffCnt = inFrame;
+	
+	//MIDIチャンネルの取得
+	SynthGroupElement	*group = GetGroup();
+	unsigned int		chID = group->GroupID();
+	NoteEvt			mNoteOffEvt;
+	mNoteOffEvt.isOn = false;
+	mNoteOffEvt.ch = chID;
+	mNoteOffEvt.remain_samples = inFrame;
+	mNoteEvt.push_back( mNoteOffEvt );
+	
 	mFRFlag = true;
 }
 
@@ -163,18 +192,14 @@ void Chip700Note::Kill(UInt32 inFrame)
 	mEnvstate = FASTRELEASE;
 }
 
-void Chip700Note::KeyOn(void)
+void Chip700Note::KeyOn(NoteEvt *evt)
 {
 	Chip700		*synth;
 	VoiceParams		vp;
 	
-	//MIDIチャンネルの取得
-	SynthGroupElement	*group = GetGroup();
-	UInt32				chID = group->GroupID();
-
 	//ベロシティの取得
 	if (GetGlobalParameter(kParam_velocity) != 0.) {
-		mVelo = mParam.mVelocity;
+		mVelo = evt->velo;
 		mVelo = VELOCITY_CURB[mVelo];
 	}
 	else {
@@ -183,23 +208,24 @@ void Chip700Note::KeyOn(void)
 	
 	synth = (Chip700*)GetAudioUnit();
 	if (GetGlobalParameter(kParam_drummode)) {
-		vp = synth->getMappedVP(mParam.mPitch);
+		vp = synth->getMappedVP(evt->note);
 	}
 	else {
-		if ( chID == 0 ) {
+		if ( evt->ch == 0 ) {
 			vp = synth->getVP(GetGlobalParameter(kParam_program));
 		}
 		else {
-			vp = synth->getVP(GetGlobalParameter(kParam_program_2 + chID - 1));
+			vp = synth->getVP(GetGlobalParameter(kParam_program_2 + evt->ch - 1));
 		}
 	}
 	
 	brrdata = vp.brr.data;
 	mLoopPoint = vp.lp;
 	mLoop = vp.loop;
+	mEchoOn = vp.echo;
 	
 	//中心周波数の算出
-	mPitch = pow(2., (mParam.mPitch - vp.basekey) / 12.)/mInternalClock*vp.rate*4096 + 0.5;
+	mPitch = pow(2., (evt->note - vp.basekey) / 12.)/mInternalClock*vp.rate*4096 + 0.5;
 	
 	vol_l=vp.volL;
 	vol_r=vp.volR;
@@ -234,7 +260,8 @@ float Chip700Note::VibratoWave(float phase)
 
 OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 {
-	float			*left, *right;
+	float			*output[2];
+	int				main_vol_l, main_vol_r;
 	int             envx;
 	int				outx;
 	int				vl,vr;
@@ -246,19 +273,19 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 	int				clipper;
 	int				pitch,pb;
 	int				procstep=(32000*21168)/SampleRate();
-	UInt32			endFrame = 0xFFFFFFFF;
+	unsigned int	endFrame = 0xFFFFFFFF;
 	
 	//バッファの確保
 	{
 		int numChans = inBufferList.mNumberBuffers;
 		if (numChans > 2) return -1;
-		left = (float*)inBufferList.mBuffers[0].mData;
-		right = numChans==2 ? (float*)inBufferList.mBuffers[1].mData : 0;
+		output[0] = (float*)inBufferList.mBuffers[0].mData;
+		output[1] = numChans==2 ? (float*)inBufferList.mBuffers[1].mData : NULL;
 	}
 
 	//MIDIチャンネルの取得
 	SynthGroupElement	*group = GetGroup();
-	UInt32				chID = group->GroupID();
+	unsigned int		chID = group->GroupID();
 	
 	//パラメータの読み込み
 	vibfreq = GetGlobalParameter(kParam_vibrate)*((onepi*2)/mInternalClock);
@@ -275,68 +302,75 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 	
 	pb = (pow(2., (PitchBend()*pbrange) / 12.) - 1.0)*mPitch;
 	
+	//エコーパラメータの読み込み
+	main_vol_l = GetGlobalParameter(kParam_mainvol_L);
+	mEcho[0].SetEchoVol( GetGlobalParameter(kParam_echovol_L) );
+	mEcho[0].SetFBLevel( GetGlobalParameter(kParam_echoFB) );
+	for ( int i=0; i<8; i++ ) {
+		mEcho[0].SetFIRTap( i, GetGlobalParameter( kParam_fir0+i ) );
+	}
+	mEcho[0].SetDelaySamples( GetGlobalParameter( kParam_echodelay ) );
+	
+	main_vol_r = GetGlobalParameter(kParam_mainvol_R);
+	mEcho[1].SetEchoVol( GetGlobalParameter(kParam_echovol_R) );
+	mEcho[1].SetFBLevel( GetGlobalParameter(kParam_echoFB) );
+	for ( int i=0; i<8; i++ ) {
+		mEcho[1].SetFIRTap( i, GetGlobalParameter( kParam_fir0+i ) );
+	}
+	mEcho[1].SetDelaySamples( GetGlobalParameter( kParam_echodelay ) );
+	
 	//メイン処理
-	for (UInt32 frame=0; frame<inNumFrames; ++frame)
-	{
-		if (mOnCnt >= 0) {
-			mOnCnt--;
-			if (mOnCnt < 0) {
-				KeyOn();
-				if (endFrame != 0xFFFFFFFF) endFrame = 0xFFFFFFFF;
+	for (unsigned int frame=0; frame<inNumFrames; ++frame) {
+		//イベント処理
+		if ( !mNoteEvt.empty() ) {
+			std::list<NoteEvt>::iterator	it = mNoteEvt.begin();
+			while ( it != mNoteEvt.end() ) {
+				if ( it->remain_samples >= 0 ) {
+					it->remain_samples--;
+					if ( it->remain_samples < 0 ) {
+						if ( it->isOn ) {
+							KeyOn( &(*it) );
+							if (endFrame != 0xFFFFFFFF) endFrame = 0xFFFFFFFF;
+						}
+						else {
+							if (mFRFlag) {
+								mEnvstate = FASTRELEASE;
+							}
+							else {
+								mEnvstate = RELEASE;
+							}
+						}
+						mNoteEvt.erase( it );
+					}
+				}
+				it++;
 			}
 		}
-		
-		if (mOffCnt >= 0) {
-			mOffCnt--;
-			if (mOffCnt < 0) {
-				if (mFRFlag)
-					mEnvstate = FASTRELEASE;
-				else
-					mEnvstate = RELEASE;
-			}
-		}
-		
-		
 		outx = 0;
 		
-		for( ; mProcessFrac >= 0; mProcessFrac -= 21168 )
-		{
+		for( ; mProcessFrac >= 0; mProcessFrac -= 21168 ) {
 			
 		//--
 		{
 			int cnt = mEnvcnt;
 			
 			envx = mEnvx;
-			/*
-			switch (GetState()) {
-				case kNoteState_FastReleased:
-				case kNoteState_Released:
-					mEnvstate = RELEASE;
-					break;
-				default:
-					break;
-			}
-			 */
-			switch( mEnvstate )
-			{
+
+			switch( mEnvstate ) {
 				case ATTACK:
-					if ( ar == 15 )
-					{
+					if ( ar == 15 ) {
 						envx += 0x400;
 					}
-					else
-					{
+					else {
 						cnt -= ENVCNT[ ( ar << 1 ) + 1 ];
-						if( cnt > 0 )
-						{
+						if( cnt > 0 ) {
 							break;
 						}
 						envx += 0x20;       /* 0x020 / 0x800 = 1/64         */
 						cnt = CNT_INIT;
 					}
 					
-					if( envx > 0x7FF )
-					{
+					if ( envx > 0x7FF ) {
 						envx = 0x7FF;
 						mEnvstate = DECAY;
 					}
@@ -346,26 +380,23 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 					
 				case DECAY:
 					cnt -= ENVCNT[ dr*2 + 0x10 ];
-					if( cnt <= 0 )
-					{
+					if( cnt <= 0 ) {
 						cnt = CNT_INIT;
 						envx -= ( ( envx - 1 ) >> 8 ) + 1;
 						mEnvx = envx;
 					}
 						
-					if( envx <= 0x100 * ( sl + 1 ) )
-					{
+					if( envx <= 0x100 * ( sl + 1 ) ) {
 						mEnvstate = SUSTAIN;
 					}
 					break;
 					
 				case SUSTAIN:
 					cnt -= ENVCNT[ sr ];
-					if( cnt > 0 )
-					{
+					if( cnt > 0 ) {
 						break;
 					}
-						cnt = CNT_INIT;
+					cnt = CNT_INIT;
 					envx -= ( ( envx - 1 ) >> 8 ) + 1;
 					
 					mEnvx = envx;
@@ -374,8 +405,7 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 					
 				case RELEASE:
 					envx -= 0x8;
-					if( envx <= 0 )
-					{
+					if( envx <= 0 ) {
 						envx = -1;
 					}
 					else {
@@ -385,8 +415,7 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 					
 				case FASTRELEASE:
 					envx -= 0x40;
-					if( envx <= 0 )
-					{
+					if( envx <= 0 ) {
 						envx = -1;
 					}
 					else {
@@ -397,18 +426,16 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 			mEnvcnt = cnt;
 		}
 		
-		if( envx < 0 )
-		{
+		if( envx < 0 ) {
 			outx = 0;
 			if (endFrame == 0xFFFFFFFF) endFrame = frame;
 			continue;
 		}
 		
 		//ピッチの算出
-		pitch = (mPitch + pb)&0x3fff;
+		pitch = (mPitch + pb) & 0x3fff;
 		
-		if (reg_pmod == true)
-		{
+		if (reg_pmod == true) {
 			mVibPhase += vibfreq;
 			if (mVibPhase > onepi) mVibPhase -= onepi*2;
 			
@@ -419,23 +446,16 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 			if (pitch <= 0) pitch=1;
 		}
 		
-		for( ; mMixfrac >= 0; mMixfrac -= 4096 )
-		{
-			if( !mHeaderCnt )	//ブロックの始まり
-			{
-				if( mEnd & 1 )	//データ終了フラグあり
-				{
-					//if( mEnd & 2 )	//ループフラグあり
-					if( mLoop )
-					{
+		for( ; mMixfrac >= 0; mMixfrac -= 4096 ) {
+			if( !mHeaderCnt ) {	//ブロックの始まり
+				if( mEnd & 1 ) {	//データ終了フラグあり
+					if( mLoop ) {
 						mMemPtr = mLoopPoint;	//読み出し位置をループポイントまで戻す
 					}
-					else	//ループなし
-					{
+					else {	//ループなし
 						if (endFrame == 0xFFFFFFFF) endFrame = frame;	//キー状態をオフにする
 						mEnvx = 0;
-						while( mMixfrac >= 0 )
-						{
+						while( mMixfrac >= 0 ) {
 							mSampbuf[mSampptr] = 0;
 							outx = 0;
 							mSampptr  = ( mSampptr + 1 ) & 3;
@@ -453,13 +473,11 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 				mFilter = ( vl & 12 ) >> 2;
 			}
 			
-			if( mHalf == 0 )
-			{
+			if( mHalf == 0 ) {
 				mHalf = 1;
 				outx = ( ( signed char )brrdata[ mMemPtr ] ) >> 4;
 			}
-			else
-			{
+			else {
 				mHalf = 0;
 				outx = ( signed char )( brrdata[ mMemPtr++ ] << 4 );
 				outx >>= 4;
@@ -467,18 +485,15 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 			}
 			//outx:4bitデータ
 			
-			if( mRange <= 0xC )
-			{
+			if( mRange <= 0xC ) {
 				outx = ( outx << mRange ) >> 1;
 			}
-			else
-			{
+			else {
 				outx &= ~0x7FF;
 			}
 			//outx:4bitデータ*Range
 			
-			switch( mFilter )
-			{
+			switch( mFilter ) {
 				case 0:
 					break;
 					
@@ -495,12 +510,10 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 					break;
 			}
 			
-			if( outx < -32768 )
-			{
+			if( outx < -32768 ) {
 				outx = -32768;
 			}
-			else if( outx > 32767 )
-			{
+			else if( outx > 32767 ) {
 				outx = 32767;
 			}
 			if (clipper) {
@@ -529,12 +542,10 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 		vr += ( ( G1[ vl ]
 				  * mSampbuf[ ( mSampptr + 3 ) & 3 ] ) >> 11 ) & ~1;
 		
-		if( vr > 32767 )
-		{
+		if( vr > 32767 ) {
 			vr = 32767;
 		}
-		else if( vr < -32768 )
-		{
+		else if( vr < -32768 ) {
 			vr = -32768;
 		}
 		outx = vr;
@@ -544,48 +555,106 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 		outx = ( ( outx * envx ) >> 11 ) & ~1;
 		outx = ( outx * mVelo ) >> 11;
 		
-		//エコー処理？
+		//ボリューム値の反映
+		vl = ( vol_l * outx ) >> 7;
+		vr = ( vol_r * outx ) >> 7;
 		
-		mProcessbuf[mProcessbufPtr]=outx;
+		//エコー処理
+		if ( mEchoOn ) {
+			mEcho[0].Input(vl);
+			mEcho[1].Input(vr);
+		}
+		//メインボリュームの反映
+		vl = ( vl * main_vol_l ) >> 7;
+		vr = ( vr * main_vol_r ) >> 7;
+		vl += mEcho[0].GetOut();
+		vr += mEcho[1].GetOut();
+		
+		mProcessbuf[0][mProcessbufPtr]=vl;
+		mProcessbuf[1][mProcessbufPtr]=vr;
 		mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
 		}
 		//--
 		//16pointSinc補間
-		{
+		for ( int ch=0; ch<2; ch++ ) {
 			int inputFrac = mProcessFrac+21168;
 			int tabidx1 = ( inputFrac/1764 ) << 4;
 			int tabidx2 = tabidx1 + 16;
 			int a1 = 0, a2 = 0;
 			for (int i=0; i<4; i++) {
-				a1 += sinctable[tabidx1++] * mProcessbuf[mProcessbufPtr] >> 15;
-				a2 += sinctable[tabidx2++] * mProcessbuf[mProcessbufPtr] >> 15;
+				a1 += sinctable[tabidx1++] * mProcessbuf[ch][mProcessbufPtr] >> 15;
+				a2 += sinctable[tabidx2++] * mProcessbuf[ch][mProcessbufPtr] >> 15;
 				mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
-				a1 += sinctable[tabidx1++] * mProcessbuf[mProcessbufPtr] >> 15;
-				a2 += sinctable[tabidx2++] * mProcessbuf[mProcessbufPtr] >> 15;
+				a1 += sinctable[tabidx1++] * mProcessbuf[ch][mProcessbufPtr] >> 15;
+				a2 += sinctable[tabidx2++] * mProcessbuf[ch][mProcessbufPtr] >> 15;
 				mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
-				a1 += sinctable[tabidx1++] * mProcessbuf[mProcessbufPtr] >> 15;
-				a2 += sinctable[tabidx2++] * mProcessbuf[mProcessbufPtr] >> 15;
+				a1 += sinctable[tabidx1++] * mProcessbuf[ch][mProcessbufPtr] >> 15;
+				a2 += sinctable[tabidx2++] * mProcessbuf[ch][mProcessbufPtr] >> 15;
 				mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
-				a1 += sinctable[tabidx1++] * mProcessbuf[mProcessbufPtr] >> 15;
-				a2 += sinctable[tabidx2++] * mProcessbuf[mProcessbufPtr] >> 15;
+				a1 += sinctable[tabidx1++] * mProcessbuf[ch][mProcessbufPtr] >> 15;
+				a2 += sinctable[tabidx2++] * mProcessbuf[ch][mProcessbufPtr] >> 15;
 				mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
 			}
-			outx = a1 + ( (( a2 - a1 ) * ( inputFrac % 1764 )) / 1764 );
+			if ( output[ch] ) {
+				output[ch][frame] += ( a1 + ( (( a2 - a1 ) * ( inputFrac % 1764 )) / 1764 ) ) / 32768.0f;
+			}
 		}
 		//--
-		//ボリューム値の反映
-		vl = ( vol_l * outx ) >> 7;
-		vr = ( vol_r * outx ) >> 7;
-		
-		left[frame] += vl / 32768.0f;
-		if (right) right[frame] += vr / 32768.0f;
 		
 		mProcessFrac += procstep;
 	}
-	if (endFrame != 0xFFFFFFFF)
-	{
+	
+	if (endFrame != 0xFFFFFFFF) {
 		NoteEnded(endFrame);
 	}
 
 	return noErr;
+}
+
+#pragma mark ____EchoKernel
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void EchoKernel::Input(int samp)
+{
+	m_input += samp;
+}
+
+int EchoKernel::GetOut()
+{
+	int echo = m_input;
+	
+	mEchoIndex &= 0x7fff;
+	
+	//ディレイ信号にFIRフィルタを掛けてから出力に加算する
+	mFIRbuf[mFIRIndex] = mEchoBuffer[mEchoIndex];
+	int i;
+	int sum = 0;
+	for (i=0; i<mFIRLength-1; i++) {
+		sum += mFIRbuf[mFIRIndex] * m_fir_taps[i];
+		mFIRIndex = (mFIRIndex + 1)%mFIRLength;
+	}
+	sum += mFIRbuf[mFIRIndex] * m_fir_taps[i];
+	sum >>= 7;
+	//mFIRbufへの書き込みは、右から左へと行われる
+	int output = ( sum * m_echo_vol ) >> 7;
+	
+	//入力にフィードバックを加算したものをバッファキューに入れる
+	echo += ( sum * m_fb_lev ) >> 7;
+	mEchoBuffer[mEchoIndex++] = echo;
+	if (mEchoIndex >= m_delay_samples) {
+		mEchoIndex=0;
+	}
+	
+	m_input = 0;
+	
+	return output;
+}
+
+void EchoKernel::Reset()
+{
+	mEchoBuffer.Clear();
+	mFIRbuf.Clear();
+	mEchoIndex=0;
+	mFIRIndex=0;
+	m_input = 0;
 }

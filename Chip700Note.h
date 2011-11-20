@@ -14,6 +14,7 @@
 #define __Chip700Note_h__
 
 #include "Chip700defines.h"
+#include <list>
 
 typedef enum
 {
@@ -25,8 +26,62 @@ typedef enum
 } env_state_t32;
 
 
+class EchoKernel
+{
+public:
+	EchoKernel()
+	{
+		mDelayUnit=512;
+		mEchoBuffer.AllocateClear(7680);
+		mFIRLength=8;
+		mFIRbuf.AllocateClear(mFIRLength);
+		mFilterStride=1;
+		mEchoIndex=0;
+		mFIRIndex=0;
+		
+		m_echo_vol=0;
+		m_input = 0;
+	};
+	
+	void 	Input(int samp);
+	int		GetOut();
+	void	Reset();
+	void	SetEchoVol( Float32 val )
+	{
+		m_echo_vol = val;
+	}
+	void	SetFBLevel( Float32 val )
+	{
+		m_fb_lev = val;
+	}
+	void	SetFIRTap( int index, Float32 val )
+	{
+		m_fir_taps[index] = val;
+	}
+	void	SetDelaySamples( Float32 val )
+	{
+		m_delay_samples = val * mDelayUnit;
+	}
+	
+private:
+	TAUBuffer<int>	mEchoBuffer;
+	TAUBuffer<int>	mFIRbuf;
+	int			mEchoIndex;
+	int			mFIRIndex, mFIRLength;
+	int			mDelayUnit;
+	int			mFilterStride;
+	
+	int			m_echo_vol;
+	int			m_fb_lev;
+	int			m_fir_taps[8];
+	int			m_delay_samples;
+	
+	int			m_input;
+};
+
 struct Chip700Note : public SynthNote
 {
+public:
 	virtual				~Chip700Note() {}
 	virtual void		Reset();
 	
@@ -37,24 +92,25 @@ struct Chip700Note : public SynthNote
 	virtual Float32		Amplitude() { return mEnvx; }
 	virtual OSStatus	Render(UInt32 inNumFrames, AudioBufferList& inBufferList);
 	
-	void KeyOn(void);
-	float VibratoWave(float phase);
+private:
+	typedef struct {
+		bool	isOn;
+		int		note;
+		int		ch;
+		int		velo;
+		int		remain_samples;
+	} NoteEvt;
 	
 	int				mInternalClock;
 	int				mProcessFrac;
-	int				mProcessbuf[16];
+	int				mProcessbuf[2][16];
 	int				mProcessbufPtr;
+	EchoKernel		mEcho[2];
 	
-	SInt32			mVelo;
-	UInt32			mLoopPoint;
-	bool			mLoop;
+	std::list<NoteEvt>	mNoteEvt;
 	
-	MusicDeviceNoteParams	mParam;
+	
 	unsigned char	*brrdata;
-	bool			mFRFlag;
-	
-	float			mVibPhase;
-	
 	int				mMemPtr;        /* Sample data memory pointer   */
 	int             mEnd;            /* End or loop after block      */
 	int             mEnvcnt;         /* Counts to envelope update    */
@@ -64,17 +120,29 @@ struct Chip700Note : public SynthNote
 	int             mHalf;           /* Active nybble of BRR         */
 	int             mHeaderCnt;     /* Bytes before new header (0-8)*/
 	int             mMixfrac;        /* Fractional part of smpl pstn */	//サンプル間を4096分割した位置
-	int             mOnCnt;         /* Is it time to turn on yet?   */
-	int				mOffCnt;
 	int				mPitch;          /* Sample pitch (4096->32000Hz) */
 	int             mRange;          /* Last header's range          */
-//	unsigned long   mSamp_id;        /* Sample ID#                   */
 	int             mSampptr;        /* Where in sampbuf we are      */
 	int				mSmp1;           /* Last sample (for BRR filter) */
 	int				mSmp2;           /* Second-to-last sample decoded*/
 	int				mSampbuf[4];   /* Buffer for Gaussian interp   */
 	
 	int				ar,dr,sl,sr,vol_l,vol_r;
+	
+	int				mVelo;
+	unsigned int	mLoopPoint;
+	bool			mLoop;
+	
+	bool			mFRFlag;
+	
+	float			mVibPhase;
+	
+	bool			mEchoOn;
+	
+	
+	void KeyOn(NoteEvt *evt);
+	float VibratoWave(float phase);
 };
+
 
 #endif

@@ -7,11 +7,11 @@
 static CFStringRef kParam_poly_Name = CFSTR("Voices");
 static const float kDefaultValue_poly = 8;
 
-static CFStringRef kParam_volL_Name = CFSTR("Vol(L)");
-static const float kDefaultValue_volL = 64;
+static CFStringRef kParameter_mainvol_L_Name = CFSTR("MainVol(L)");
+static const float kDefaultValue_mainvol_L = 127;
 
-static CFStringRef kParam_volR_Name = CFSTR("Vol(R)");
-static const float kDefaultValue_volR = 64;
+static CFStringRef kParameter_mainvol_R_Name = CFSTR("MainVol(R)");
+static const float kDefaultValue_mainvol_R = 127;
 
 static CFStringRef kParam_vibdepth_Name = CFSTR("Vibrato Depth");
 static const float kDefaultValue_vibdepth = 0;
@@ -38,6 +38,44 @@ static const float kDefaultValue_program = 0;
 
 static CFStringRef kParam_drummode_Name = CFSTR("Drum Mode");
 static const float kDefaultValue_drummode = 0;
+
+//エコー部
+static CFStringRef kParameter_echovol_L_Name = CFSTR("Wet(L)");
+static const float kDefaultValue_echovol_L = 50;
+
+static CFStringRef kParameter_echovol_R_Name = CFSTR("Wet(R)");
+static const float kDefaultValue_echovol_R = -50;
+
+static CFStringRef kParameter_echoFB_Name = CFSTR("FeedBack");
+static const float kDefaultValue_echoFB = -70;
+
+static CFStringRef kParameter_echodelay_Name = CFSTR("Delay");
+static const float kDefaultValue_echodelay = 6;
+
+static CFStringRef kParameter_firC0_Name = CFSTR("Filter a0");
+static const float kDefaultValue_fir0 = 127;
+
+static CFStringRef kParameter_firC1_Name = CFSTR("Filter a1");
+static const float kDefaultValue_fir1 = 0;
+
+static CFStringRef kParameter_firC2_Name = CFSTR("Filter a2");
+static const float kDefaultValue_fir2 = 0;
+
+static CFStringRef kParameter_firC3_Name = CFSTR("Filter a3");
+static const float kDefaultValue_fir3 = 0;
+
+static CFStringRef kParameter_firC4_Name = CFSTR("Filter a4");
+static const float kDefaultValue_fir4 = 0;
+
+static CFStringRef kParameter_firC5_Name = CFSTR("Filter a5");
+static const float kDefaultValue_fir5 = 0;
+
+static CFStringRef kParameter_firC6_Name = CFSTR("Filter a6");
+static const float kDefaultValue_fir6 = 0;
+
+static CFStringRef kParameter_firC7_Name = CFSTR("Filter a7");
+static const float kDefaultValue_fir7 = 0;
+
 
 static const int kNumberPresets = 2;
 static AUPreset kPresets[kNumberPresets] = 
@@ -66,6 +104,7 @@ static CFStringRef kSaveKey_sl = CFSTR("sl");
 static CFStringRef kSaveKey_sr = CFSTR("sr");
 static CFStringRef kSaveKey_volL = CFSTR("volL");
 static CFStringRef kSaveKey_volR = CFSTR("volR");
+static CFStringRef kSaveKey_echo = CFSTR("echo");
 
 int GetARTicks( int ar, Float64 tempo );
 int GetDRTicks( int dr, Float64 tempo );
@@ -86,8 +125,8 @@ Chip700::Chip700(AudioUnit component)
 	Globals()->UseIndexedParameters(kNumberOfParameters);
 	
 	Globals()->SetParameter(kParam_poly, kDefaultValue_poly);
-	Globals()->SetParameter(kParam_volL, kDefaultValue_volL);
-	Globals()->SetParameter(kParam_volR, kDefaultValue_volR);
+	Globals()->SetParameter(kParam_mainvol_L, kDefaultValue_mainvol_L );
+	Globals()->SetParameter(kParam_mainvol_R, kDefaultValue_mainvol_R );
 	Globals()->SetParameter(kParam_vibdepth, kDefaultValue_vibdepth);
 	Globals()->SetParameter(kParam_vibrate, kDefaultValue_vibrate);
 	Globals()->SetParameter(kParam_vibdepth2, kDefaultValue_vibdepth2);
@@ -101,6 +140,23 @@ Chip700::Chip700(AudioUnit component)
 		Globals()->SetParameter(kParam_vibdepth_2+i, kDefaultValue_vibdepth);
 	}
 	
+	//エコー
+	Globals()->SetParameter(kParam_echovol_L, kDefaultValue_echovol_L );
+	Globals()->SetParameter(kParam_echovol_R, kDefaultValue_echovol_R );
+	Globals()->SetParameter(kParam_echoFB, kDefaultValue_echoFB );
+	Globals()->SetParameter(kParam_echodelay, kDefaultValue_echodelay );
+	Globals()->SetParameter(kParam_fir0, kDefaultValue_fir0 );
+	Globals()->SetParameter(kParam_fir1, kDefaultValue_fir1 );
+	Globals()->SetParameter(kParam_fir2, kDefaultValue_fir2 );
+	Globals()->SetParameter(kParam_fir3, kDefaultValue_fir3 );
+	Globals()->SetParameter(kParam_fir4, kDefaultValue_fir4 );
+	Globals()->SetParameter(kParam_fir5, kDefaultValue_fir5 );
+	Globals()->SetParameter(kParam_fir6, kDefaultValue_fir6 );
+	Globals()->SetParameter(kParam_fir7, kDefaultValue_fir7 );
+	for (int i=0; i<5; i++) {
+		mFilterBand[i] = 1.0f;
+	}
+	
 	mEditProg = 0;
 	//プログラムの初期化
 	for (int i=0; i<128; i++) {
@@ -111,6 +167,7 @@ Chip700::Chip700(AudioUnit component)
 		mVPset[i].lowkey=0;
 		mVPset[i].highkey=0;
 		mVPset[i].loop=false;
+		mVPset[i].echo=false;
 		mVPset[i].lp=0;
 		mVPset[i].rate=0;
 		mVPset[i].volL=100;
@@ -184,20 +241,6 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
                 outParameterInfo.minValue = kMinimumValue_1;
                 outParameterInfo.maxValue = kMaximumVoices;
                 outParameterInfo.defaultValue = kDefaultValue_poly;
-				break;
-			case kParam_volL:
-				AUBase::FillInParameterName (outParameterInfo, kParam_volL_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-				outParameterInfo.minValue = kMinimumValue_n128;
-				outParameterInfo.maxValue = kMaximumValue_127;
-				outParameterInfo.defaultValue = kDefaultValue_volL;
-				break;
-			case kParam_volR:
-				AUBase::FillInParameterName (outParameterInfo, kParam_volR_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-				outParameterInfo.minValue = kMinimumValue_n128;
-				outParameterInfo.maxValue = kMaximumValue_127;
-				outParameterInfo.defaultValue = kDefaultValue_volR;
 				break;
 			case kParam_vibdepth:
 			case kParam_vibdepth_2:
@@ -285,6 +328,107 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 				outParameterInfo.maxValue = 1;
 				outParameterInfo.defaultValue = kDefaultValue_drummode;
 				break;
+			
+			//エコー
+			case kParam_mainvol_L:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_mainvol_L_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_mainvol_L;
+                break;
+            case kParam_mainvol_R:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_mainvol_R_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_mainvol_R;
+                break;
+            case kParam_echovol_L:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_echovol_L_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_echovol_L;
+                break;
+            case kParam_echovol_R:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_echovol_R_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_echovol_R;
+                break;
+            case kParam_echoFB:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_echoFB_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_echoFB;
+                break;
+			case kParam_echodelay:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_echodelay_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_0;
+                outParameterInfo.maxValue = kMaximumValue_15;
+                outParameterInfo.defaultValue = kDefaultValue_echodelay;
+                break;
+            case kParam_fir0:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_firC0_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_fir0;
+                break;
+            case kParam_fir1:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_firC1_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_fir1;
+                break;
+            case kParam_fir2:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_firC2_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_fir2;
+                break;
+            case kParam_fir3:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_firC3_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_fir3;
+                break;
+            case kParam_fir4:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_firC4_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_fir4;
+                break;
+            case kParam_fir5:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_firC5_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_fir5;
+                break;
+            case kParam_fir6:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_firC6_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_fir6;
+                break;
+            case kParam_fir7:
+                AUBase::FillInParameterName (outParameterInfo, kParameter_firC7_Name, false);
+                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+                outParameterInfo.minValue = kMinimumValue_n128;
+                outParameterInfo.maxValue = kMaximumValue_127;
+                outParameterInfo.defaultValue = kDefaultValue_fir7;
+                break;
+				
 				
 			default:
 				result = kAudioUnitErr_InvalidParameter;
@@ -335,6 +479,11 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 				outWritable = false;
 				return noErr;
 			
+			case kAudioUnitCustomProperty_Echo:
+				outDataSize = sizeof(bool);
+				outWritable = false;
+				return noErr;
+
 			case kAudioUnitCustomProperty_BRRData:
 				outDataSize = sizeof(BRRData);
 				outWritable = false;
@@ -353,6 +502,16 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 			case kAudioUnitCustomProperty_ProgramName:
 				outDataSize = sizeof(CFStringRef);
 				outWritable = false;
+				return noErr;
+				
+			//エコー
+			case kAudioUnitCustomProperty_Band1:
+			case kAudioUnitCustomProperty_Band2:
+			case kAudioUnitCustomProperty_Band3:
+			case kAudioUnitCustomProperty_Band4:
+			case kAudioUnitCustomProperty_Band5:
+				outWritable = false;
+				outDataSize = sizeof(Float32);
 				return noErr;
 		}
 	}
@@ -396,6 +555,10 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 				*((bool *)outData) = mVPset[mEditProg].loop;
 				return noErr;
 				
+			case kAudioUnitCustomProperty_Echo:
+				*((bool *)outData) = mVPset[mEditProg].echo;
+				return noErr;
+
 			case kAudioUnitCustomProperty_AR:
 				*((int *)outData) = mVPset[mEditProg].ar;
 				return noErr;
@@ -443,9 +606,17 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_ProgramName:
 				*((CFStringRef *)outData) = mVPset[mEditProg].pgname;
 				return noErr;
+				
+			//エコー
+			case kAudioUnitCustomProperty_Band1:
+			case kAudioUnitCustomProperty_Band2:
+			case kAudioUnitCustomProperty_Band3:
+			case kAudioUnitCustomProperty_Band4:
+			case kAudioUnitCustomProperty_Band5:
+				*((Float32 *)outData) = mFilterBand[inID-kAudioUnitCustomProperty_Band1];
+				return noErr;
 		}
 	}
-	
 	return AUMonotimbralInstrumentBase::GetProperty(inID, inScope, inElement, outData);
 }
 
@@ -512,6 +683,10 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 				mVPset[mEditProg].loop = *((bool*)inData);
 				return noErr;
 				
+			case kAudioUnitCustomProperty_Echo:
+				mVPset[mEditProg].echo = *((bool*)inData);
+				return noErr;
+				
 			case kAudioUnitCustomProperty_AR:
 				mVPset[mEditProg].ar = *((int*)inData);
 				return noErr;
@@ -544,7 +719,7 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 				mEditProg = pg;
 				
 				Globals()->SetParameter(kParam_program, mEditProg);
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_VolR; i++) {
+				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Echo; i++) {
 					PropertyChanged(i, kAudioUnitScope_Global, 0);
 				}
 				return noErr;
@@ -567,10 +742,56 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 					CFRelease(mVPset[mEditProg].pgname);
 				mVPset[mEditProg].pgname = CFStringCreateCopy(NULL,*((CFStringRef*)inData));
 				return noErr;
+				
+			//エコー
+			case kAudioUnitCustomProperty_Band1:
+			case kAudioUnitCustomProperty_Band2:
+			case kAudioUnitCustomProperty_Band3:
+			case kAudioUnitCustomProperty_Band4:
+			case kAudioUnitCustomProperty_Band5:
+				SetBandParam( inID-kAudioUnitCustomProperty_Band1, *((Float32*)inData) );
+				return noErr;
 		}
 	}
-	
 	return AUMonotimbralInstrumentBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
+}
+
+void Chip700::SetBandParam( int band, Float32 value )
+{
+	float bandfactor[8][5] = {
+		{0.0625,0.125,		0.12500,	0.25,		0.4375},
+		{0.0625,0.11548,	0.08839,	0.04784,	-0.314209},
+		{0.0625,0.08839,	0.00000,	-0.21339,	0.0625},
+		{0.0625,0.04784,	-0.08839,	-0.11548,	0.093538},	
+		{0.0625,0.00000,	-0.12500,	0.125,		-0.0625},
+		{0.0625,-0.04784,	-0.08839,	0.11548,	-0.041761},
+		{0.0625,-0.08839,	0.00000,	-0.03661,	0.0625},
+		{0.0625,-0.11548,	0.08839,	-0.04784,	0.012432}
+	};
+	float	temp;
+	AudioUnitEvent auEvent;
+	
+	mFilterBand[band] = value;
+	
+	for (int j=0; j<8; j++) {
+		temp = 0;
+		for (int i=0; i<5; i++) {
+			temp += mFilterBand[i] * bandfactor[j][i];
+		}
+		if (temp < 0) {
+			temp = ceil(temp*127);
+		}
+		else {
+			temp = floor(temp*127);
+		}
+		Globals()->SetParameter(kParam_fir0+j, temp);
+		auEvent.mEventType = kAudioUnitEvent_ParameterValueChange;
+		auEvent.mArgument.mParameter.mAudioUnit = (AudioUnit)GetComponentInstance();
+		auEvent.mArgument.mParameter.mScope = kAudioUnitScope_Global;
+		auEvent.mArgument.mParameter.mParameterID = kParam_fir0+j;
+		auEvent.mArgument.mParameter.mElement = 0;
+		AUEventListenerNotify(NULL, NULL, &auEvent);
+	}
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -621,6 +842,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[0].lowkey=0;
 					mVPset[0].highkey=127;
 					mVPset[0].loop=true;
+					mVPset[0].echo=true;
 					mVPset[0].lp=18;
 					mVPset[0].rate=28160.0;
 					mVPset[0].volL=100;
@@ -637,6 +859,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[1].lowkey=0;
 					mVPset[1].highkey=127;
 					mVPset[1].loop=true;
+					mVPset[1].echo=true;
 					mVPset[1].lp=9;
 					mVPset[1].rate=28160.0;
 					mVPset[1].volL=100;
@@ -653,6 +876,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[2].lowkey=0;
 					mVPset[2].highkey=127;
 					mVPset[2].loop=true;
+					mVPset[2].echo=true;
 					mVPset[2].lp=9;
 					mVPset[2].rate=28160.0;
 					mVPset[2].volL=100;
@@ -669,6 +893,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[3].lowkey=0;
 					mVPset[3].highkey=127;
 					mVPset[3].loop=true;
+					mVPset[3].echo=true;
 					mVPset[3].lp=9;
 					mVPset[3].rate=28160.0;
 					mVPset[3].volL=100;
@@ -685,6 +910,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[4].lowkey=0;
 					mVPset[4].highkey=127;
 					mVPset[4].loop=true;
+					mVPset[4].echo=true;
 					mVPset[4].lp=9;
 					mVPset[4].rate=28160.0;
 					mVPset[4].volL=100;
@@ -715,6 +941,18 @@ static void AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int
 	CFNumberRef num = CFNumberCreate(NULL, kCFNumberIntType, &value);
 	CFDictionarySetValue(dict, key, num);
 	CFRelease(num);
+}
+
+static void AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key, bool value)
+{
+	//CFBooleanRef num = CFNumberCreate(NULL, kCFNumberIntType, &value);
+	if ( value ) {
+		CFDictionarySetValue(dict, key, kCFBooleanTrue);
+	}
+	else {
+		CFDictionarySetValue(dict, key, kCFBooleanFalse);
+	}
+	//CFRelease(num);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -785,6 +1023,9 @@ ComponentResult	Chip700::RestoreState(CFPropertyListRef plist)
 void Chip700::RefreshKeyMap(void)
 {
 	for (int i=0; i<128; i++) {
+		mKeyMap[i]=0;
+
+	}	for (int i=0; i<128; i++) {
 		if (mVPset[i].brr.data) {
 			for (int j=mVPset[i].lowkey; j<=mVPset[i].highkey; j++) {
 				mKeyMap[j]=i;
@@ -1055,6 +1296,7 @@ int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 	AddNumToDictionary(dict, kSaveKey_sr, mVPset[pgnum].sr);
 	AddNumToDictionary(dict, kSaveKey_volL, mVPset[pgnum].volL);
 	AddNumToDictionary(dict, kSaveKey_volR, mVPset[pgnum].volR);
+	AddBooleanToDictionary(dict, kSaveKey_echo, mVPset[pgnum].echo);
 	
 	if (mVPset[pgnum].pgname)
 		CFDictionarySetValue(dict, kSaveKey_ProgName, mVPset[pgnum].pgname);
@@ -1148,6 +1390,12 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		mVPset[pgnum].volR = value;
 	}
 	else mVPset[pgnum].volR = 100;
+	
+	if (CFDictionaryContainsKey(dict, kSaveKey_echo)) {
+		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_echo));
+		mVPset[pgnum].echo = CFBooleanGetValue(cfbool) ? true:false;
+	}
+	else mVPset[pgnum].echo = false;
 	
 	if (mVPset[pgnum].pgname)
 		CFRelease(mVPset[pgnum].pgname);

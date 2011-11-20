@@ -165,8 +165,98 @@ bool Chip700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
 		case 'dkey':	//detect Key
 			correctBaseKeySelected();
 			return true;
+			
+		case 'copy':
+		{
+			CFStringRef param_str = CreateXMSNESText();
+			
+			HIViewID	id = {'text',0};
+			HIViewRef	control;
+			OSStatus	result;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			HIViewSetText( control, param_str );
+			
+			OSStatus err = noErr;
+			PasteboardRef theClipboard;
+			err = PasteboardCreate( kPasteboardClipboard, &theClipboard );
+			err = PasteboardClear( theClipboard );
+			
+			char text[256];
+			CFStringGetCString( param_str, text, 256, kCFStringEncodingUTF8 );
+			CFDataRef   data = CFDataCreate( kCFAllocatorDefault, (UInt8*)text, (strlen(text)) * sizeof(char) );
+			err = PasteboardPutItemFlavor( theClipboard, (PasteboardItemID)1, kUTTypeUTF8PlainText, data, 0 );
+			
+			CFRelease(theClipboard);
+			CFRelease( data );
+			CFRelease(param_str);
+			
+			return true;
+		}
 	}
 	return false;
+}
+
+CFStringRef Chip700View::CreateXMSNESText()
+{
+	CFStringRef	param_str;
+	
+	Float32	echovol_L;
+	Float32 echovol_R;
+	Float32 fir0;
+	Float32 fir1;
+	Float32 fir2;
+	Float32 fir3;
+	Float32 fir4;
+	Float32 fir5;
+	Float32 fir6;
+	Float32 fir7;
+	Float32 echodelay;
+	Float32 echoFB;
+	
+	AudioUnitGetParameter(mEditAudioUnit,kParam_echovol_L,kAudioUnitScope_Global,0,&echovol_L);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_echovol_R,kAudioUnitScope_Global,0,&echovol_R);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_fir0,kAudioUnitScope_Global,0,&fir0);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_fir1,kAudioUnitScope_Global,0,&fir1);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_fir2,kAudioUnitScope_Global,0,&fir2);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_fir3,kAudioUnitScope_Global,0,&fir3);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_fir4,kAudioUnitScope_Global,0,&fir4);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_fir5,kAudioUnitScope_Global,0,&fir5);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_fir6,kAudioUnitScope_Global,0,&fir6);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_fir7,kAudioUnitScope_Global,0,&fir7);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_echodelay,kAudioUnitScope_Global,0,&echodelay);
+	AudioUnitGetParameter(mEditAudioUnit,kParam_echoFB,kAudioUnitScope_Global,0,&echoFB);
+	
+	int vol_l = echovol_L;
+	int vol_r = echovol_R;
+	if (vol_l >= 0) {
+		vol_l = 32 + vol_l * 47 / 127;
+	}
+	else {
+		vol_l = 80 - vol_l * 46 / 128;
+	}
+	if (vol_r >= 0) {
+		vol_r = 32 + vol_r * 47 / 127;
+	}
+	else {
+		vol_r = 80 - vol_r * 46 / 128;
+	}
+	
+	param_str = CFStringCreateWithFormat(NULL,NULL,
+										 CFSTR(">%c%c%02X%02X%02X%02X%02X%02X%02X%02X%1X%02X"),
+										 vol_l,
+										 vol_r,
+										 (UInt8)fir0,
+										 (UInt8)fir1,
+										 (UInt8)fir2,
+										 (UInt8)fir3,
+										 (UInt8)fir4,
+										 (UInt8)fir5,
+										 (UInt8)fir6,
+										 (UInt8)fir7,
+										 (UInt8)echodelay,
+										 (UInt8)echoFB
+										 );
+	return param_str;
 }
 
 bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
@@ -210,6 +300,15 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 							break;
 						}
 							
+						case kAudioUnitCustomProperty_Echo:
+						{
+							intValue = HIViewGetValue(view);
+							bool param = intValue?true:false;
+							AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Echo,
+												 kAudioUnitScope_Global,0,&param,sizeof(bool));
+							break;
+						}
+							
 						case kAudioUnitCustomProperty_LoopPoint:
 							intValue = HIViewGetValue(view);
 							intValue = intValue/16*9;
@@ -228,6 +327,22 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 							AudioUnitSetProperty(mEditAudioUnit,propertyID,
 												 kAudioUnitScope_Global,0,&intValue,sizeof(int));
 							break;
+							
+						case kAudioUnitCustomProperty_Band1:
+						case kAudioUnitCustomProperty_Band2:
+						case kAudioUnitCustomProperty_Band3:
+						case kAudioUnitCustomProperty_Band4:
+						case kAudioUnitCustomProperty_Band5:
+						{
+							SInt32		maximum,cval;
+							Float32		floatValue;
+							maximum = GetControl32BitMaximum(view);
+							cval = GetControl32BitValue(view);
+							floatValue = (float)cval / (float)maximum;
+							AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Band1+id.id-16/*16番目*/,
+												 kAudioUnitScope_Global,0,&floatValue,sizeof(float));
+							break;
+						}
 					}
 					return true;
 					
@@ -375,6 +490,23 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			}
 			break;
 		}
+			
+		case kAudioUnitCustomProperty_Echo:
+		{
+			bool echo_on;
+			size = sizeof(bool);
+			AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Echo,
+								 kAudioUnitScope_Global,0,&echo_on,&size);
+			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			if (result == noErr) {
+				maximum = GetControl32BitMaximum(control);
+				minimum = GetControl32BitMinimum(control);
+				cval = echo_on?maximum:minimum;
+				HIViewSetValue(control, cval);
+			}
+			break;
+		}
 		
 		case kAudioUnitCustomProperty_BaseKey:
 		case kAudioUnitCustomProperty_LowKey:
@@ -426,6 +558,26 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 				HIViewSetText(control, cfstr);
 			}
 			break;
+			
+		case kAudioUnitCustomProperty_Band1:
+		case kAudioUnitCustomProperty_Band2:
+		case kAudioUnitCustomProperty_Band3:
+		case kAudioUnitCustomProperty_Band4:
+		case kAudioUnitCustomProperty_Band5:
+		{
+			float		floatValue;
+			
+			size = sizeof(float);
+			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,inScope,inElement,&floatValue,&size);
+			id.id=inPropertyID-kAudioUnitCustomProperty_Band1+16;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			if (result == noErr) {
+				maximum = GetControl32BitMaximum(control);
+				cval = SInt32(floatValue*maximum + 0.5);
+				SetControl32BitValue(control, cval);
+			}
+			break;
+		}
 	}
 	mEventDisable = false;
 }

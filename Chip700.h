@@ -89,6 +89,7 @@ public:
 	
 	VoiceParams getVP(int pg) {return mVPset[pg];};
 	VoiceParams getMappedVP(int key) {return mVPset[mKeyMap[key]];};
+	
 private:
 	int					mEditProg;		//編集中のプログラムNo.
 	int					mKeyMap[128];	//各キーに対応するプログラムNo.
@@ -96,10 +97,15 @@ private:
 	TAUBuffer<UInt8>	mBRRdata[128];
 	Chip700Note			mChip700Notes[kMaximumVoices];
 	Float64				mTempo;
-	void					RefreshKeyMap(void);
-	int						CreateXIData( CFDataRef *data );
-	int						CreatePGDataDic(CFDictionaryRef *data, int pgnum);
-	void					RestorePGDataDic(CFPropertyListRef data, int pgnum);
+	
+	//エコー
+	Float32				mFilterBand[5];
+	
+	void		RefreshKeyMap(void);
+	int			CreateXIData( CFDataRef *data );
+	int			CreatePGDataDic(CFDictionaryRef *data, int pgnum);
+	void		RestorePGDataDic(CFPropertyListRef data, int pgnum);
+	void		SetBandParam( int band, Float32 value );
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

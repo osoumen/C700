@@ -16,8 +16,8 @@
 // parameters
 enum {
 	kParam_poly=0,
-	kParam_volL,	//廃止
-	kParam_volR,	//廃止
+	kParam_mainvol_L,
+	kParam_mainvol_R,
 	kParam_vibdepth,
 	kParam_vibrate,
 	kParam_vibdepth2,
@@ -60,6 +60,20 @@ enum {
 	kParam_vibdepth_15,
 	kParam_vibdepth_16,
 	
+	//↓エコー部
+	kParam_echovol_L,
+	kParam_echovol_R,
+	kParam_echoFB,
+	kParam_echodelay,
+	kParam_fir0,
+	kParam_fir1,
+	kParam_fir2,
+	kParam_fir3,
+	kParam_fir4,
+	kParam_fir5,
+	kParam_fir6,
+	kParam_fir7,
+	
 	kNumberOfParameters
 };
 
@@ -82,11 +96,20 @@ enum
 	kAudioUnitCustomProperty_SR,
 	kAudioUnitCustomProperty_VolL,
 	kAudioUnitCustomProperty_VolR,
+	kAudioUnitCustomProperty_Echo,
 	kAudioUnitCustomProperty_EditingProgram,
+	
+	//↓エコー部
+	kAudioUnitCustomProperty_Band1,
+	kAudioUnitCustomProperty_Band2,
+	kAudioUnitCustomProperty_Band3,
+	kAudioUnitCustomProperty_Band4,
+	kAudioUnitCustomProperty_Band5,
+	
 	kAudioUnitCustomProperty_PGDictionary,
 	kAudioUnitCustomProperty_XIData,
 	
-	kNumberOfProperties = 17
+	kNumberOfProperties = 23
 };
 
 static const float kMinimumValue_n128 = -128;
@@ -114,19 +137,18 @@ typedef struct {
 	int					basekey,lowkey,highkey;
 	int					lp;
 	bool				loop;
+	bool				echo;
 	BRRData				brr;
 } VoiceParams;
 
-typedef struct XIFILEHEADER
-{
+typedef struct {
 	char extxi[21];		// Extended Instrument:
 	char name[23];		// Name, 1Ah
 	char trkname[20];	// FastTracker v2.00
 	unsigned short shsize;		// 0x0102
 } XIFILEHEADER;
 
-typedef struct XIINSTRUMENTHEADER
-{
+typedef struct {
 	unsigned char snum[96];
 	unsigned short venv[24];
 	unsigned short penv[24];
@@ -140,8 +162,7 @@ typedef struct XIINSTRUMENTHEADER
 	unsigned short reserved2;		//nsamples?
 } XIINSTRUMENTHEADER;
 
-typedef struct XISAMPLEHEADER
-{
+typedef struct {
 	unsigned long samplen;
 	unsigned long loopstart;
 	unsigned long looplen;

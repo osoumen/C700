@@ -208,6 +208,10 @@
 		8BC6025C073B072D006C4272 /* Chip700.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC6025B073B072D006C4272 /* Chip700.h */; };
 		8D01CCC80486CAD60068D4B7 /* Chip700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */; };
 		8D01CCCA0486CAD60068D4B7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		F5855D2A1478E8F800D87CF2 /* bt_copy0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D271478E8F800D87CF2 /* bt_copy0.png */; };
+		F5855D2B1478E8F800D87CF2 /* bt_copy1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D281478E8F800D87CF2 /* bt_copy1.png */; };
+		F5855D891478FD9300D87CF2 /* bt_echo0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D871478FD9300D87CF2 /* bt_echo0.png */; };
+		F5855D8A1478FD9300D87CF2 /* bt_echo1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D881478FD9300D87CF2 /* bt_echo1.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -447,6 +451,10 @@
 		8BC6025B073B072D006C4272 /* Chip700.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = Chip700.h; sourceTree = "<group>"; };
 		8D01CCD10486CAD60068D4B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D01CCD20486CAD60068D4B7 /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5855D271478E8F800D87CF2 /* bt_copy0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_copy0.png; sourceTree = "<group>"; };
+		F5855D281478E8F800D87CF2 /* bt_copy1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_copy1.png; sourceTree = "<group>"; };
+		F5855D871478FD9300D87CF2 /* bt_echo0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_echo0.png; sourceTree = "<group>"; };
+		F5855D881478FD9300D87CF2 /* bt_echo1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_echo1.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -622,6 +630,10 @@
 		8ACF4C250B2144FD00EC1825 /* graphics */ = {
 			isa = PBXGroup;
 			children = (
+				F5855D871478FD9300D87CF2 /* bt_echo0.png */,
+				F5855D881478FD9300D87CF2 /* bt_echo1.png */,
+				F5855D271478E8F800D87CF2 /* bt_copy0.png */,
+				F5855D281478E8F800D87CF2 /* bt_copy1.png */,
 				8ACBD6F30B2B006500A73622 /* bt_calc1.png */,
 				8ACBD6F40B2B006500A73622 /* bt_load1.png */,
 				8ACBD6F50B2B006500A73622 /* bt_save1.png */,
@@ -1055,6 +1067,10 @@
 				8ACBD6F80B2B006500A73622 /* bt_load1.png in Resources */,
 				8ACBD6F90B2B006500A73622 /* bt_save1.png in Resources */,
 				8ACBD6FA0B2B006500A73622 /* bt_unload1.png in Resources */,
+				F5855D2A1478E8F800D87CF2 /* bt_copy0.png in Resources */,
+				F5855D2B1478E8F800D87CF2 /* bt_copy1.png in Resources */,
+				F5855D891478FD9300D87CF2 /* bt_echo0.png in Resources */,
+				F5855D8A1478FD9300D87CF2 /* bt_echo1.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

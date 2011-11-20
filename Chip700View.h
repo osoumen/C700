@@ -60,6 +60,8 @@ private:
 																		SInt16 *keyCode, SInt16 *charCode, 
 																		EventModifiers *modifiers);
 	
+	CFStringRef CreateXMSNESText();
+	
 	void setBRRData(UInt8 *data, UInt32 length);
 	void setLoopoint(UInt32 lp);
 	
