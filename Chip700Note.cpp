@@ -69,6 +69,35 @@ static unsigned char silence_brr[] = {
 	0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+void Chip700Note::VoiceState::Reset()
+{
+	smp1=0;
+	smp2=0;
+	sampbuf[0]=0;
+	sampbuf[1]=0;
+	sampbuf[2]=0;
+	sampbuf[3]=0;
+	
+	brrdata = silence_brr;
+	loopPoint = 0;
+	loop = false;
+	
+//	FRFlag = false;
+	
+	pitch = 0;
+	
+	vibPhase = 0.0f;
+	memPtr = 0;
+	headerCnt = 0;
+	half = 0;
+	envx = 0;
+	end = 0;
+	sampptr = 0;
+	mixfrac=0;
+	envcnt = CNT_INIT;
+	envstate = RELEASE;	
+}
+
 void Chip700Note::Reset()
 {
 	SynthNote::Reset();
@@ -81,14 +110,19 @@ void Chip700Note::Reset()
 	mProcessFrac=0;
 	mProcessbufPtr=0;
 	
+	mNoteEvt.clear();
+	
+	for ( int i=0; i<MAX_VOICES; i++ ) {
+		mVoice[i].Reset();
+	}
+
+	/*
 	mSmp1=0;
 	mSmp2=0;
 	mSampbuf[0]=0;
 	mSampbuf[1]=0;
 	mSampbuf[2]=0;
 	mSampbuf[3]=0;
-
-	mNoteEvt.clear();
 	
 	brrdata = silence_brr;
 	mLoopPoint = 0;
@@ -103,12 +137,12 @@ void Chip700Note::Reset()
 	mHeaderCnt = 0;
 	mHalf = 0;
 	mEnvx = 0;
-	mFilter = 0;
 	mEnd = 0;
 	mSampptr = 0;
 	mMixfrac=0;
 	mEnvcnt = CNT_INIT;
 	mEnvstate = RELEASE;
+	*/
 	
 	mEcho[0].Reset();
 	mEcho[1].Reset();
@@ -116,42 +150,40 @@ void Chip700Note::Reset()
 
 void Chip700Note::Attack(const MusicDeviceNoteParams &inParams)
 {
-	Chip700		*synth;
-	VoiceParams		vp;
-	
 	//MIDIチャンネルの取得
 	SynthGroupElement	*group = GetGroup();
 	unsigned int		chID = group->GroupID();
 	
-	NoteEvt			mNoteOnEvt;
-	mNoteOnEvt.isOn = true;
-	mNoteOnEvt.note = inParams.mPitch;
-	mNoteOnEvt.velo = inParams.mVelocity;
-	mNoteOnEvt.ch = chID;
-	mNoteOnEvt.remain_samples = GetRelativeStartFrame();
-
-	synth = (Chip700*)GetAudioUnit();
-	if (GetGlobalParameter(kParam_drummode)) {
-		vp = synth->getMappedVP(inParams.mPitch);
-	}
-	else {
-		if ( chID == 0 ) {
-			vp = synth->getVP(GetGlobalParameter(kParam_program));
-		}
-		else {
-			vp = synth->getVP(GetGlobalParameter(kParam_program_2 + chID - 1));
-		}
-	}
+	ScheduleKeyOn( chID, inParams.mPitch, inParams.mVelocity, GetRelativeStartFrame() );
 	
-	if (vp.brr.data) {
-		mNoteEvt.push_back( mNoteOnEvt );
-	}
-	else {
-		mNoteOnEvt.remain_samples = -1;
-		mEnvx = 0;
-		brrdata = silence_brr;
-		mEnvstate = RELEASE;
-	}
+	_note = inParams.mPitch;	//仮
+}
+
+void Chip700Note::ScheduleKeyOn( unsigned char ch, unsigned char note, unsigned char velo, int inFrame )
+{
+	NoteEvt			mNoteOnEvt;
+	mNoteOnEvt.type = NOTE_ON;
+	mNoteOnEvt.note = note;
+	mNoteOnEvt.velo = velo;
+	mNoteOnEvt.ch = ch;
+	mNoteOnEvt.remain_samples = inFrame;
+	mNoteEvt.push_back( mNoteOnEvt );
+}
+
+void Chip700Note::ScheduleKeyOff( unsigned char ch, unsigned char note, unsigned char velo, int inFrame )
+{
+	NoteEvt			mNoteOffEvt;
+	mNoteOffEvt.type = NOTE_OFF;
+	mNoteOffEvt.note = note;
+	mNoteOffEvt.velo = velo;
+	mNoteOffEvt.ch = ch;
+	mNoteOffEvt.remain_samples = inFrame;
+	mNoteEvt.push_back( mNoteOffEvt );
+}
+
+int Chip700Note::FindVoice( const NoteEvt *evt )
+{
+	return 0;		//仮
 }
 
 void Chip700Note::Release(UInt32 inFrame)
@@ -161,13 +193,8 @@ void Chip700Note::Release(UInt32 inFrame)
 	//MIDIチャンネルの取得
 	SynthGroupElement	*group = GetGroup();
 	unsigned int		chID = group->GroupID();
-	NoteEvt			mNoteOffEvt;
-	mNoteOffEvt.isOn = false;
-	mNoteOffEvt.ch = chID;
-	mNoteOffEvt.remain_samples = inFrame;
-	mNoteEvt.push_back( mNoteOffEvt );
-
-	mFRFlag = false;
+	
+	ScheduleKeyOff( chID, _note, 0, inFrame );
 }
 
 void Chip700Note::FastRelease(UInt32 inFrame)
@@ -177,19 +204,14 @@ void Chip700Note::FastRelease(UInt32 inFrame)
 	//MIDIチャンネルの取得
 	SynthGroupElement	*group = GetGroup();
 	unsigned int		chID = group->GroupID();
-	NoteEvt			mNoteOffEvt;
-	mNoteOffEvt.isOn = false;
-	mNoteOffEvt.ch = chID;
-	mNoteOffEvt.remain_samples = inFrame;
-	mNoteEvt.push_back( mNoteOffEvt );
 	
-	mFRFlag = true;
+	ScheduleKeyOff( chID, _note, 0, inFrame );
 }
 
 void Chip700Note::Kill(UInt32 inFrame)
 {
 	SynthNote::Kill(inFrame);
-	mEnvstate = FASTRELEASE;
+	mVoice[0].envstate = FASTRELEASE;
 }
 
 void Chip700Note::KeyOn(NoteEvt *evt)
@@ -197,15 +219,7 @@ void Chip700Note::KeyOn(NoteEvt *evt)
 	Chip700		*synth;
 	VoiceParams		vp;
 	
-	//ベロシティの取得
-	if (GetGlobalParameter(kParam_velocity) != 0.) {
-		mVelo = evt->velo;
-		mVelo = VELOCITY_CURB[mVelo];
-	}
-	else {
-		mVelo=VELOCITY_CURB[127];
-	}
-	
+	//波形アドレスの取得
 	synth = (Chip700*)GetAudioUnit();
 	if (GetGlobalParameter(kParam_drummode)) {
 		vp = synth->getMappedVP(evt->note);
@@ -219,31 +233,48 @@ void Chip700Note::KeyOn(NoteEvt *evt)
 		}
 	}
 	
-	brrdata = vp.brr.data;
-	mLoopPoint = vp.lp;
-	mLoop = vp.loop;
-	mEchoOn = vp.echo;
+	//波形データが存在しない場合は、ここで中断
+	if (vp.brr.data == NULL) {
+		return;
+	}
+	
+	//空きボイスを取得
+	int	v = FindVoice( evt );
+	
+	//ベロシティの取得
+	if (GetGlobalParameter(kParam_velocity) != 0.) {
+		//mVoice[v].velo = evt->velo;
+		mVoice[v].velo = VELOCITY_CURB[evt->velo];
+	}
+	else {
+		mVoice[v].velo=VELOCITY_CURB[127];
+	}
+	
+	mVoice[v].brrdata = vp.brr.data;
+	mVoice[v].loopPoint = vp.lp;
+	mVoice[v].loop = vp.loop;
+	mVoice[v].echoOn = vp.echo;
 	
 	//中心周波数の算出
-	mPitch = pow(2., (evt->note - vp.basekey) / 12.)/mInternalClock*vp.rate*4096 + 0.5;
+	mVoice[v].pitch = pow(2., (evt->note - vp.basekey) / 12.)/mInternalClock*vp.rate*4096 + 0.5;
 	
-	vol_l=vp.volL;
-	vol_r=vp.volR;
-	ar=vp.ar;
-	dr=vp.dr;
-	sl=vp.sl;
-	sr=vp.sr;
+	mVoice[v].vol_l=vp.volL;
+	mVoice[v].vol_r=vp.volR;
+	mVoice[v].ar=vp.ar;
+	mVoice[v].dr=vp.dr;
+	mVoice[v].sl=vp.sl;
+	mVoice[v].sr=vp.sr;
 	
-	mVibPhase = 0.0f;
-	mMemPtr = 0;
-	mHeaderCnt = 0;
-	mHalf = 0;
-	mEnvx = 0;
-	mEnd = 0;
-	mSampptr = 0;
-	mMixfrac = 3 * 4096;
-	mEnvcnt = CNT_INIT;
-	mEnvstate = ATTACK;
+	mVoice[v].vibPhase = 0.0f;
+	mVoice[v].memPtr = 0;
+	mVoice[v].headerCnt = 0;
+	mVoice[v].half = 0;
+	mVoice[v].envx = 0;
+	mVoice[v].end = 0;
+	mVoice[v].sampptr = 0;
+	mVoice[v].mixfrac = 3 * 4096;
+	mVoice[v].envcnt = CNT_INIT;
+	mVoice[v].envstate = ATTACK;
 }
 
 float Chip700Note::VibratoWave(float phase)
@@ -258,11 +289,21 @@ float Chip700Note::VibratoWave(float phase)
 	return vibwave;
 }
 
+Float32	Chip700Note::Amplitude()
+{
+	Float32	max = .0;
+	for ( int i=0; i<MAX_VOICES; i++ ) {
+		if ( mVoice[i].envx > max ) {
+			max = mVoice[i].envx;
+		}
+	}
+	return max;
+}
+
 OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 {
 	float			*output[2];
 	int				main_vol_l, main_vol_r;
-	int             envx;
 	int				outx;
 	int				vl,vr;
 	bool			reg_pmod;
@@ -300,7 +341,7 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 	clipper = GetGlobalParameter(kParam_clipnoise)==0 ? 0:1;
 	pbrange = GetGlobalParameter(kParam_bendrange)/2.0;
 	
-	pb = (pow(2., (PitchBend()*pbrange) / 12.) - 1.0)*mPitch;
+	pb = (pow(2., (PitchBend()*pbrange) / 12.) - 1.0)*mVoice[0].pitch;	//仮
 	
 	//エコーパラメータの読み込み
 	main_vol_l = GetGlobalParameter(kParam_mainvol_L);
@@ -328,17 +369,13 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 				if ( it->remain_samples >= 0 ) {
 					it->remain_samples--;
 					if ( it->remain_samples < 0 ) {
-						if ( it->isOn ) {
+						if ( it->type == NOTE_ON ) {
 							KeyOn( &(*it) );
 							if (endFrame != 0xFFFFFFFF) endFrame = 0xFFFFFFFF;
 						}
-						else {
-							if (mFRFlag) {
-								mEnvstate = FASTRELEASE;
-							}
-							else {
-								mEnvstate = RELEASE;
-							}
+						else if ( it->type == NOTE_OFF ) {
+							int voice = FindVoice( &(*it) );
+							mVoice[voice].envstate = RELEASE;
 						}
 						mNoteEvt.erase( it );
 					}
@@ -346,232 +383,222 @@ OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
 				it++;
 			}
 		}
-		outx = 0;
 		
-		for( ; mProcessFrac >= 0; mProcessFrac -= 21168 ) {
-			
+		for ( ; mProcessFrac >= 0; mProcessFrac -= 21168 ) {
+		int outl=0,outr=0;
+		for ( int v=0; v<MAX_VOICES; v++ ) {
+		outx = 0;
 		//--
 		{
-			int cnt = mEnvcnt;
-			
-			envx = mEnvx;
-
-			switch( mEnvstate ) {
+			switch( mVoice[v].envstate ) {
 				case ATTACK:
-					if ( ar == 15 ) {
-						envx += 0x400;
+					if ( mVoice[v].ar == 15 ) {
+						mVoice[v].envx += 0x400;
 					}
 					else {
-						cnt -= ENVCNT[ ( ar << 1 ) + 1 ];
-						if( cnt > 0 ) {
+						mVoice[v].envcnt -= ENVCNT[ ( mVoice[v].ar << 1 ) + 1 ];
+						if ( mVoice[v].envcnt > 0 ) {
 							break;
 						}
-						envx += 0x20;       /* 0x020 / 0x800 = 1/64         */
-						cnt = CNT_INIT;
+						mVoice[v].envx += 0x20;       /* 0x020 / 0x800 = 1/64         */
+						mVoice[v].envcnt = CNT_INIT;
 					}
 					
-					if ( envx > 0x7FF ) {
-						envx = 0x7FF;
-						mEnvstate = DECAY;
+					if ( mVoice[v].envx > 0x7FF ) {
+						mVoice[v].envx = 0x7FF;
+						mVoice[v].envstate = DECAY;
 					}
-					
-					mEnvx = envx;
 					break;
 					
 				case DECAY:
-					cnt -= ENVCNT[ dr*2 + 0x10 ];
-					if( cnt <= 0 ) {
-						cnt = CNT_INIT;
-						envx -= ( ( envx - 1 ) >> 8 ) + 1;
-						mEnvx = envx;
+					mVoice[v].envcnt -= ENVCNT[ mVoice[v].dr*2 + 0x10 ];
+					if ( mVoice[v].envcnt <= 0 ) {
+						mVoice[v].envcnt = CNT_INIT;
+						mVoice[v].envx -= ( ( mVoice[v].envx - 1 ) >> 8 ) + 1;
 					}
 						
-					if( envx <= 0x100 * ( sl + 1 ) ) {
-						mEnvstate = SUSTAIN;
+					if ( mVoice[v].envx <= 0x100 * ( mVoice[v].sl + 1 ) ) {
+						mVoice[v].envstate = SUSTAIN;
 					}
 					break;
 					
 				case SUSTAIN:
-					cnt -= ENVCNT[ sr ];
-					if( cnt > 0 ) {
+					mVoice[v].envcnt -= ENVCNT[ mVoice[v].sr ];
+					if ( mVoice[v].envcnt > 0 ) {
 						break;
 					}
-					cnt = CNT_INIT;
-					envx -= ( ( envx - 1 ) >> 8 ) + 1;
-					
-					mEnvx = envx;
-					
+					mVoice[v].envcnt = CNT_INIT;
+					mVoice[v].envx -= ( ( mVoice[v].envx - 1 ) >> 8 ) + 1;
 					break;
 					
 				case RELEASE:
-					envx -= 0x8;
-					if( envx <= 0 ) {
-						envx = -1;
-					}
-					else {
-						mEnvx = envx;
+					mVoice[v].envx -= 0x8;
+					if ( mVoice[v].envx <= 0 ) {
+						mVoice[v].envx = -1;
 					}
 					break;
 					
 				case FASTRELEASE:
-					envx -= 0x40;
-					if( envx <= 0 ) {
-						envx = -1;
-					}
-					else {
-						mEnvx = envx;
+					mVoice[v].envx -= 0x40;
+					if ( mVoice[v].envx <= 0 ) {
+						mVoice[v].envx = -1;
 					}
 					break;
 			}
-			mEnvcnt = cnt;
 		}
 		
-		if( envx < 0 ) {
+		if ( mVoice[v].envx < 0 ) {
 			outx = 0;
 			if (endFrame == 0xFFFFFFFF) endFrame = frame;
 			continue;
 		}
 		
 		//ピッチの算出
-		pitch = (mPitch + pb) & 0x3fff;
+		pitch = (mVoice[v].pitch + pb) & 0x3fff;
 		
 		if (reg_pmod == true) {
-			mVibPhase += vibfreq;
-			if (mVibPhase > onepi) mVibPhase -= onepi*2;
+			mVoice[v].vibPhase += vibfreq;
+			if (mVoice[v].vibPhase > onepi) {
+				mVoice[v].vibPhase -= onepi*2;
+			}
 			
-			float vibwave = VibratoWave(mVibPhase);
+			float vibwave = VibratoWave(mVoice[v].vibPhase);
 			outx = (vibwave*vibdepth2)*VELOCITY_CURB[vibdepth];
 			
 			pitch = ( pitch * ( outx + 32768 ) ) >> 15;
-			if (pitch <= 0) pitch=1;
+			if (pitch <= 0) {
+				pitch=1;
+			}
 		}
 		
-		for( ; mMixfrac >= 0; mMixfrac -= 4096 ) {
-			if( !mHeaderCnt ) {	//ブロックの始まり
-				if( mEnd & 1 ) {	//データ終了フラグあり
-					if( mLoop ) {
-						mMemPtr = mLoopPoint;	//読み出し位置をループポイントまで戻す
+		for( ; mVoice[v].mixfrac >= 0; mVoice[v].mixfrac -= 4096 ) {
+			if( !mVoice[v].headerCnt ) {	//ブロックの始まり
+				if( mVoice[v].end & 1 ) {	//データ終了フラグあり
+					if( mVoice[v].loop ) {
+						mVoice[v].memPtr = mVoice[v].loopPoint;	//読み出し位置をループポイントまで戻す
 					}
 					else {	//ループなし
-						if (endFrame == 0xFFFFFFFF) endFrame = frame;	//キー状態をオフにする
-						mEnvx = 0;
-						while( mMixfrac >= 0 ) {
-							mSampbuf[mSampptr] = 0;
+						if (endFrame == 0xFFFFFFFF) {
+							endFrame = frame;	//キー状態をオフにする
+						}
+						mVoice[v].envx = 0;
+						while( mVoice[v].mixfrac >= 0 ) {
+							mVoice[v].sampbuf[mVoice[v].sampptr] = 0;
 							outx = 0;
-							mSampptr  = ( mSampptr + 1 ) & 3;
-							mMixfrac -= 4096;
+							mVoice[v].sampptr  = ( mVoice[v].sampptr + 1 ) & 3;
+							mVoice[v].mixfrac -= 4096;
 						}
 						break;
 					}
 				}
 				
 				//開始バイトの情報を取得
-				mHeaderCnt = 8;
-				vl = ( unsigned char )brrdata[mMemPtr++];
-				mRange = vl >> 4;
-				mEnd = vl & 3;
-				mFilter = ( vl & 12 ) >> 2;
+				mVoice[v].headerCnt = 8;
+				vl = ( unsigned char )mVoice[v].brrdata[mVoice[v].memPtr++];
+				mVoice[v].range = vl >> 4;
+				mVoice[v].end = vl & 3;
+				mVoice[v].filter = ( vl & 12 ) >> 2;
 			}
 			
-			if( mHalf == 0 ) {
-				mHalf = 1;
-				outx = ( ( signed char )brrdata[ mMemPtr ] ) >> 4;
+			if ( mVoice[v].half == 0 ) {
+				mVoice[v].half = 1;
+				outx = ( ( signed char )mVoice[v].brrdata[ mVoice[v].memPtr ] ) >> 4;
 			}
 			else {
-				mHalf = 0;
-				outx = ( signed char )( brrdata[ mMemPtr++ ] << 4 );
+				mVoice[v].half = 0;
+				outx = ( signed char )( mVoice[v].brrdata[ mVoice[v].memPtr++ ] << 4 );
 				outx >>= 4;
-				mHeaderCnt--;
+				mVoice[v].headerCnt--;
 			}
 			//outx:4bitデータ
 			
-			if( mRange <= 0xC ) {
-				outx = ( outx << mRange ) >> 1;
+			if ( mVoice[v].range <= 0xC ) {
+				outx = ( outx << mVoice[v].range ) >> 1;
 			}
 			else {
 				outx &= ~0x7FF;
 			}
 			//outx:4bitデータ*Range
 			
-			switch( mFilter ) {
+			switch( mVoice[v].filter ) {
 				case 0:
 					break;
 					
 				case 1:
-					outx += filter1(mSmp1);
+					outx += filter1(mVoice[v].smp1);
 					break;
 					
 				case 2:
-					outx += filter2(mSmp1,mSmp2);
+					outx += filter2(mVoice[v].smp1,mVoice[v].smp2);
 					break;
 					
 				case 3:
-					outx += filter3(mSmp1,mSmp2);
+					outx += filter3(mVoice[v].smp1,mVoice[v].smp2);
 					break;
 			}
 			
-			if( outx < -32768 ) {
+			if ( outx < -32768 ) {
 				outx = -32768;
 			}
-			else if( outx > 32767 ) {
+			else if ( outx > 32767 ) {
 				outx = 32767;
 			}
 			if (clipper) {
-				mSmp2 = ( signed short )mSmp1;
-				mSmp1 = ( signed short )( outx << 1 );
-				mSampbuf[mSampptr] = ( signed short )mSmp1;
+				mVoice[v].smp2 = ( signed short )mVoice[v].smp1;
+				mVoice[v].smp1 = ( signed short )( outx << 1 );
+				mVoice[v].sampbuf[mVoice[v].sampptr] = ( signed short )mVoice[v].smp1;
 			}
 			else {
-				mSmp2 = mSmp1;
-				mSmp1 = outx << 1;
-				mSampbuf[mSampptr] = mSmp1;
+				mVoice[v].smp2 = mVoice[v].smp1;
+				mVoice[v].smp1 = outx << 1;
+				mVoice[v].sampbuf[mVoice[v].sampptr] = mVoice[v].smp1;
 			}
-			mSampptr = ( mSampptr + 1 ) & 3;
+			mVoice[v].sampptr = ( mVoice[v].sampptr + 1 ) & 3;
 		}
 		
-		vl = mMixfrac >> 4;
-		vr = ( ( G4[ -vl ] * mSampbuf[ mSampptr ] ) >> 11 ) & ~1;
+		vl = mVoice[v].mixfrac >> 4;
+		vr = ( ( G4[ -vl ] * mVoice[v].sampbuf[ mVoice[v].sampptr ] ) >> 11 ) & ~1;
 		vr += ( ( G3[ -vl ]
-				  * mSampbuf[ ( mSampptr + 1 ) & 3 ] ) >> 11 ) & ~1;
+				  * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 1 ) & 3 ] ) >> 11 ) & ~1;
 		vr += ( ( G2[ vl ]
-				  * mSampbuf[ ( mSampptr + 2 ) & 3 ] ) >> 11 ) & ~1;
+				  * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 2 ) & 3 ] ) >> 11 ) & ~1;
 		
 		if (clipper) {
 			vr = ( signed short )vr;
 		}
 		vr += ( ( G1[ vl ]
-				  * mSampbuf[ ( mSampptr + 3 ) & 3 ] ) >> 11 ) & ~1;
+				  * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 3 ) & 3 ] ) >> 11 ) & ~1;
 		
-		if( vr > 32767 ) {
+		if ( vr > 32767 ) {
 			vr = 32767;
 		}
-		else if( vr < -32768 ) {
+		else if ( vr < -32768 ) {
 			vr = -32768;
 		}
 		outx = vr;
 		
-		mMixfrac += pitch;
+		mVoice[v].mixfrac += pitch;
 		
-		outx = ( ( outx * envx ) >> 11 ) & ~1;
-		outx = ( outx * mVelo ) >> 11;
+		outx = ( ( outx * mVoice[v].envx ) >> 11 ) & ~1;
+		outx = ( outx * mVoice[v].velo ) >> 11;
 		
 		//ボリューム値の反映
-		vl = ( vol_l * outx ) >> 7;
-		vr = ( vol_r * outx ) >> 7;
+		vl = ( mVoice[v].vol_l * outx ) >> 7;
+		vr = ( mVoice[v].vol_r * outx ) >> 7;
 		
 		//エコー処理
-		if ( mEchoOn ) {
+		if ( mVoice[v].echoOn ) {
 			mEcho[0].Input(vl);
 			mEcho[1].Input(vr);
 		}
 		//メインボリュームの反映
-		vl = ( vl * main_vol_l ) >> 7;
-		vr = ( vr * main_vol_r ) >> 7;
-		vl += mEcho[0].GetOut();
-		vr += mEcho[1].GetOut();
-		
-		mProcessbuf[0][mProcessbufPtr]=vl;
-		mProcessbuf[1][mProcessbufPtr]=vr;
+		outl += ( vl * main_vol_l ) >> 7;
+		outr += ( vr * main_vol_r ) >> 7;
+		}
+		outl += mEcho[0].GetOut();
+		outr += mEcho[1].GetOut();
+		mProcessbuf[0][mProcessbufPtr] = outl;
+		mProcessbuf[1][mProcessbufPtr] = outr;
 		mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
 		}
 		//--

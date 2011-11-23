@@ -25,7 +25,6 @@ typedef enum
 	FASTRELEASE
 } env_state_t32;
 
-
 class EchoKernel
 {
 public:
@@ -89,17 +88,59 @@ public:
 	virtual void		Kill(UInt32 inFrame);
 	virtual void		Release(UInt32 inFrame);
 	virtual void		FastRelease(UInt32 inFrame);
-	virtual Float32		Amplitude() { return mEnvx; }
+	virtual Float32		Amplitude();
 	virtual OSStatus	Render(UInt32 inNumFrames, AudioBufferList& inBufferList);
 	
+	void ScheduleKeyOn( unsigned char ch, unsigned char note, unsigned char velo, int inFrame );
+	void ScheduleKeyOff( unsigned char ch, unsigned char note, unsigned char velo, int inFrame );
+
 private:
+	static const int MAX_VOICES = 16;
+	enum EvtType {
+		NOTE_ON = 0,
+		NOTE_OFF
+	};
+	
 	typedef struct {
-		bool	isOn;
-		int		note;
-		int		ch;
-		int		velo;
+		unsigned char	type;
+		unsigned char	ch;
+		unsigned char	note;
+		unsigned char	velo;
 		int		remain_samples;
 	} NoteEvt;
+	
+	struct VoiceState {
+		unsigned char	*brrdata;
+		int				memPtr;        /* Sample data memory pointer   */
+		int             end;            /* End or loop after block      */
+		int             envcnt;         /* Counts to envelope update    */
+		env_state_t32   envstate;       /* Current envelope state       */
+		int             envx;           /* Last env height (0-0x7FFF)   */
+		int             filter;         /* Last header's filter         */
+		int             half;           /* Active nybble of BRR         */
+		int             headerCnt;     /* Bytes before new header (0-8)*/
+		int             mixfrac;        /* Fractional part of smpl pstn */	//サンプル間を4096分割した位置
+		int				pitch;          /* Sample pitch (4096->32000Hz) */
+		int             range;          /* Last header's range          */
+		int             sampptr;        /* Where in sampbuf we are      */
+		int				smp1;           /* Last sample (for BRR filter) */
+		int				smp2;           /* Second-to-last sample decoded*/
+		int				sampbuf[4];   /* Buffer for Gaussian interp   */
+		
+		int				ar,dr,sl,sr,vol_l,vol_r;
+		
+		int				velo;
+		unsigned int	loopPoint;
+		bool			loop;
+		
+//		bool			FRFlag;
+		
+		float			vibPhase;
+		
+		bool			echoOn;
+		
+		void Reset();
+	};
 	
 	int				mInternalClock;
 	int				mProcessFrac;
@@ -110,22 +151,24 @@ private:
 	std::list<NoteEvt>	mNoteEvt;
 	
 	
+	VoiceState		mVoice[MAX_VOICES];
+	/*
 	unsigned char	*brrdata;
-	int				mMemPtr;        /* Sample data memory pointer   */
-	int             mEnd;            /* End or loop after block      */
-	int             mEnvcnt;         /* Counts to envelope update    */
-	env_state_t32   mEnvstate;       /* Current envelope state       */
-	int             mEnvx;           /* Last env height (0-0x7FFF)   */
-	int             mFilter;         /* Last header's filter         */
-	int             mHalf;           /* Active nybble of BRR         */
-	int             mHeaderCnt;     /* Bytes before new header (0-8)*/
-	int             mMixfrac;        /* Fractional part of smpl pstn */	//サンプル間を4096分割した位置
-	int				mPitch;          /* Sample pitch (4096->32000Hz) */
-	int             mRange;          /* Last header's range          */
-	int             mSampptr;        /* Where in sampbuf we are      */
-	int				mSmp1;           /* Last sample (for BRR filter) */
-	int				mSmp2;           /* Second-to-last sample decoded*/
-	int				mSampbuf[4];   /* Buffer for Gaussian interp   */
+	int				mMemPtr;     
+	int             mEnd;        
+	int             mEnvcnt;     
+	env_state_t32   mEnvstate;   
+	int             mEnvx;       
+	int             mFilter;     
+	int             mHalf;       
+	int             mHeaderCnt;  
+	int             mMixfrac;    
+	int				mPitch;      
+	int             mRange;      
+	int             mSampptr;    
+	int				mSmp1;       
+	int				mSmp2;       
+	int				mSampbuf[4]; 
 	
 	int				ar,dr,sl,sr,vol_l,vol_r;
 	
@@ -138,8 +181,11 @@ private:
 	float			mVibPhase;
 	
 	bool			mEchoOn;
+	*/
 	
+	int		_note;
 	
+	int FindVoice( const NoteEvt *evt );
 	void KeyOn(NoteEvt *evt);
 	float VibratoWave(float phase);
 };
