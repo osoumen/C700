@@ -1,5 +1,5 @@
 /*
- *  Chip700Note.cpp
+ *  Chip700Generator.cpp
  *  Chip700
  *
  *  Created by 開発用 on 06/09/06.
@@ -7,8 +7,7 @@
  *
  */
 
-#include "Chip700.h"
-#include "Chip700Note.h"
+#include "Chip700Generator.h"
 #include "gauss.h"
 
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
@@ -69,15 +68,23 @@ static unsigned char silence_brr[] = {
 	0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-Chip700Note::Chip700Note()
+Chip700Generator::Chip700Generator()
 : mSampleRate(44100.0),
+  mClipper( false ),
+  mDrumMode( false ),
+  mVelocitySens( true ),
   mVPset(NULL)
 {
+	for ( int i=0; i<128; i++ ) {
+		mKeyMap[i] = 0;
+	}
+	Reset();
 }
 
-void Chip700Note::VoiceState::Reset()
+void Chip700Generator::VoiceState::Reset()
 {
 	midi_ch = 0;
+	uniqueID = 0;
 	
 	smp1=0;
 	smp2=0;
@@ -106,10 +113,8 @@ void Chip700Note::VoiceState::Reset()
 	envstate = RELEASE;	
 }
 
-void Chip700Note::Reset()
+void Chip700Generator::Reset()
 {
-	SynthNote::Reset();
-
 	for (int i=0; i<16; i++) {
 		mProcessbuf[0][i]=0;
 		mProcessbuf[1][i]=0;
@@ -119,10 +124,11 @@ void Chip700Note::Reset()
 	
 	mNoteEvt.clear();
 	
-	for ( int i=0; i<MAX_VOICES; i++ ) {
+	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mVoice[i].Reset();
 	}
 	
+	mVoiceLimit = 8;
 	mMainVolume_L = 127;
 	mMainVolume_R = 127;
 	mVibfreq = 0.00137445;
@@ -134,71 +140,87 @@ void Chip700Note::Reset()
 		mChPitchBend[i] = 0;
 		mChVibDepth[i] = 0;
 	}
-	mClipper = 0;
 	
 	mEcho[0].Reset();
 	mEcho[1].Reset();
 }
 
-void Chip700Note::Attack(const MusicDeviceNoteParams &inParams)
-{
-	//MIDIチャンネルの取得
-	SynthGroupElement	*group = GetGroup();
-	unsigned int		chID = group->GroupID();
-	
-	KeyOn( chID, inParams.mPitch, inParams.mVelocity, GetRelativeStartFrame() );
-	
-	_note = inParams.mPitch;	//仮
-}
-
-void Chip700Note::KeyOn( unsigned char ch, unsigned char note, unsigned char velo, int inFrame )
+void Chip700Generator::KeyOn( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame )
 {
 	NoteEvt			mNoteOnEvt;
 	mNoteOnEvt.type = NOTE_ON;
 	mNoteOnEvt.note = note;
 	mNoteOnEvt.velo = velo;
 	mNoteOnEvt.ch = ch;
+	mNoteOnEvt.uniqueID = uniqueID;
 	mNoteOnEvt.remain_samples = inFrame;
 	mNoteEvt.push_back( mNoteOnEvt );
 }
 
-void Chip700Note::KeyOff( unsigned char ch, unsigned char note, unsigned char velo, int inFrame )
+void Chip700Generator::KeyOff( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame )
 {
 	NoteEvt			mNoteOffEvt;
 	mNoteOffEvt.type = NOTE_OFF;
 	mNoteOffEvt.note = note;
 	mNoteOffEvt.velo = velo;
 	mNoteOffEvt.ch = ch;
+	mNoteOffEvt.uniqueID = uniqueID;
 	mNoteOffEvt.remain_samples = inFrame;
 	mNoteEvt.push_back( mNoteOffEvt );
 }
 
-void Chip700Note::ProgramChange( int ch, int pgnum, int inFrame )
+void Chip700Generator::AllNotesOff()
+{
+	mNoteEvt.clear();
+	for ( int i=0; i<kMaximumVoices; i++ ) {
+		mVoice[i].Reset();
+	}
+}
+
+void Chip700Generator::AllSoundOff()
+{
+	mNoteEvt.clear();
+	for ( int i=0; i<kMaximumVoices; i++ ) {
+		mVoice[i].Reset();
+	}
+	mEcho[0].Reset();
+	mEcho[1].Reset();	
+}
+
+void Chip700Generator::ResetAllControllers()
+{
+	for (int i=0; i<16; i++) {
+		mChPitchBend[i] = 0;
+		mChVibDepth[i] = 0;
+	}	
+}
+
+void Chip700Generator::ProgramChange( int ch, int pgnum, int inFrame )
 {
 	mChProgram[ch] = pgnum;
 }
 
-void Chip700Note::CalcPBValue( float pitchBend, int basePitch )
+int Chip700Generator::CalcPBValue( float pitchBend, int basePitch )
 {
-	return (pow(2., (pitchBend*mPbrange) / 12.) - 1.0)*basePitch;
+	return (int)((pow(2., (pitchBend*mPbrange) / 12.) - 1.0)*basePitch);
 }
 
-void Chip700Note::PitchBend( int ch, int value, int inFrame )
+void Chip700Generator::PitchBend( int ch, int value, int inFrame )
 {
 	float pb_value = value / 8192.0;
 	
 	mChPitchBend[ch] = pb_value;
-	for ( int i=0; i<MAX_VOICES; i++ ) {
+	for ( int i=0; i<kMaximumVoices; i++ ) {
 		if ( mVoice[i].midi_ch == ch ) {
 			mVoice[i].pb = CalcPBValue( pb_value, mVoice[i].pitch );
 		}
 	}
 }
 
-void Chip700Note::ModWheel( int ch, int value, int inFrame )
+void Chip700Generator::ModWheel( int ch, int value, int inFrame )
 {
 	mChVibDepth[ch] = value;
-	for ( int i=0; i<MAX_VOICES; i++ ) {
+	for ( int i=0; i<kMaximumVoices; i++ ) {
 		if ( mVoice[i].midi_ch == ch ) {
 			mVoice[i].vibdepth = value;
 			mVoice[i].reg_pmod = value > 0 ? true:false;
@@ -206,115 +228,133 @@ void Chip700Note::ModWheel( int ch, int value, int inFrame )
 	}
 }
 
-void Chip700Note::Damper( int ch, int value, int inFrame )
+void Chip700Generator::Damper( int ch, int value, int inFrame )
 {
 }
 
+void Chip700Generator::SetVoiceLimit( int value )
+{
+	mVoiceLimit = value;
+}
 
-void Chip700Note::SetPBRange( float value )
+void Chip700Generator::SetPBRange( float value )
 {
 	mPbrange = value / 2.0;
 }
 
-void Chip700Note::SetClipper( int value )
+void Chip700Generator::SetClipper( bool value )
 {
 	mClipper = value;
 }
 
-void Chip700Note::SetVibFreq( float value )
+void Chip700Generator::SetDrumMode( bool value )
+{
+	mDrumMode = value;
+}
+
+void Chip700Generator::SetVelocitySens( bool value )
+{
+	mVelocitySens = value;
+}
+
+void Chip700Generator::SetVibFreq( float value )
 {
 	mVibfreq = value*((onepi*2)/INTERNAL_CLOCK);
 }
 
-void Chip700Note::SetVibDepth( float value )
+void Chip700Generator::SetVibDepth( float value )
 {
 	mVibdepth = value / 2;
 }
 
-void Chip700Note::SetMainVol_L( int value )
+void Chip700Generator::SetMainVol_L( int value )
 {
 	mMainVolume_L = value;
 }
 
-void Chip700Note::SetMainVol_R( int value )
+void Chip700Generator::SetMainVol_R( int value )
 {
 	mMainVolume_R = value;
 }
 
-void Chip700Note::SetEchoVol_L( int value )
+void Chip700Generator::SetEchoVol_L( int value )
 {
 	mEcho[0].SetEchoVol( value );
 }
 
-void Chip700Note::SetEchoVol_R( int value )
+void Chip700Generator::SetEchoVol_R( int value )
 {
 	mEcho[1].SetEchoVol( value );
 }
 
-void Chip700Note::SetFeedBackLevel( int value )
+void Chip700Generator::SetFeedBackLevel( int value )
 {
 	mEcho[0].SetFBLevel( value );
 	mEcho[1].SetFBLevel( value );
 }
 
-void Chip700Note::SetDelayTime( int value )
+void Chip700Generator::SetDelayTime( int value )
 {
 	mEcho[0].SetDelayTime( value );
 	mEcho[1].SetDelayTime( value );
 }
 
-void Chip700Note::SetFIRTap( int tap, int value )
+void Chip700Generator::SetFIRTap( int tap, int value )
 {
 	mEcho[0].SetFIRTap(tap, value);
 	mEcho[1].SetFIRTap(tap, value);
 }
 
 
-int Chip700Note::FindVoice( const NoteEvt *evt )
+int Chip700Generator::FindFreeVoice( const NoteEvt *evt )
 {
-	return 0;		//仮
-}
+	int	v=-1;
 
-void Chip700Note::Release(UInt32 inFrame)
-{
-	SynthNote::Release(inFrame);
-
-	//MIDIチャンネルの取得
-	SynthGroupElement	*group = GetGroup();
-	unsigned int		chID = group->GroupID();
+	//空きボイスを探す
+	for ( int i=0; i<kMaximumVoices && i<mVoiceLimit; i++ ) {
+		if ( mVoice[i].envstate == RELEASE ) {
+			v = i;
+		}
+	}
 	
-	KeyOff( chID, _note, 0, inFrame );
-}
-
-void Chip700Note::FastRelease(UInt32 inFrame)
-{
-	SynthNote::Release(inFrame);
+	//空きボイスがあった場合
+	if ( v != -1 ) {
+		return v;
+	}
 	
-	//MIDIチャンネルの取得
-	SynthGroupElement	*group = GetGroup();
-	unsigned int		chID = group->GroupID();
-	
-	KeyOff( chID, _note, 0, inFrame );
+	//空きボイスが無かった場合
+	v = 0;
+	for ( int i=0; i<kMaximumVoices && i<mVoiceLimit; i++ ) {
+		if ( mVoice[i].envx < mVoice[v].envx ) {
+			v = i;
+		}
+	}
+	return v;
 }
 
-void Chip700Note::Kill(UInt32 inFrame)
+int Chip700Generator::StopPlayingVoice( const NoteEvt *evt )
 {
-	SynthNote::Kill(inFrame);
-	mVoice[0].envstate = FASTRELEASE;
+	int	stops=0;
+
+	for ( int i=0; i<kMaximumVoices; i++ ) {
+		if ( mVoice[i].uniqueID == evt->uniqueID ) {
+			mVoice[i].envstate = RELEASE;
+			stops++;
+		}
+	}
+	return stops;
 }
 
-void Chip700Note::DoKeyOn(NoteEvt *evt)
+void Chip700Generator::DoKeyOn(NoteEvt *evt)
 {
-	Chip700		*synth;
 	VoiceParams		vp;
 	
 	//波形アドレスの取得
-	synth = (Chip700*)GetAudioUnit();
-	if (GetGlobalParameter(kParam_drummode)) {
-		vp = synth->getMappedVP(evt->note);
+	if ( mDrumMode ) {
+		vp = getMappedVP(evt->note);
 	}
 	else {
-		vp = synth->getVP( mChProgram[evt->ch] );
+		vp = getVP( mChProgram[evt->ch] );
 	}
 	
 	//波形データが存在しない場合は、ここで中断
@@ -323,13 +363,14 @@ void Chip700Note::DoKeyOn(NoteEvt *evt)
 	}
 	
 	//空きボイスを取得
-	int	v = FindVoice( evt );
+	int	v = FindFreeVoice( evt );
 	
 	//MIDIチャンネルを設定
 	mVoice[v].midi_ch = evt->ch;
+	mVoice[v].uniqueID = evt->uniqueID;
 	
 	//ベロシティの取得
-	if (GetGlobalParameter(kParam_velocity) != 0.) {
+	if ( mVelocitySens ) {
 		mVoice[v].velo = VELOCITY_CURB[evt->velo];
 	}
 	else {
@@ -367,7 +408,7 @@ void Chip700Note::DoKeyOn(NoteEvt *evt)
 	mVoice[v].envstate = ATTACK;
 }
 
-float Chip700Note::VibratoWave(float phase)
+float Chip700Generator::VibratoWave(float phase)
 {
 	float x2=phase*phase;
 	float vibwave = 7.61e-03f;
@@ -379,69 +420,12 @@ float Chip700Note::VibratoWave(float phase)
 	return vibwave;
 }
 
-Float32	Chip700Note::Amplitude()
-{
-	Float32	max = .0;
-	for ( int i=0; i<MAX_VOICES; i++ ) {
-		if ( mVoice[i].envx > max ) {
-			max = mVoice[i].envx;
-		}
-	}
-	return max;
-}
-
-OSStatus Chip700Note::Render(UInt32 inNumFrames, AudioBufferList& inBufferList)
-{
-	float			*output[2];
-	
-	//バッファの確保
-	{
-		int numChans = inBufferList.mNumberBuffers;
-		if (numChans > 2) return -1;
-		output[0] = (float*)inBufferList.mBuffers[0].mData;
-		output[1] = numChans==2 ? (float*)inBufferList.mBuffers[1].mData : NULL;
-	}
-
-	//パラメータの読み込み
-	SetSampleRate( SampleRate() );
-	
-	SetVibFreq( GetGlobalParameter(kParam_vibrate) );
-	SetVibDepth( GetGlobalParameter(kParam_vibdepth2) );
-	SetClipper( GetGlobalParameter(kParam_clipnoise)==0 ? 0:1 );
-	SetPBRange( GetGlobalParameter(kParam_bendrange) );
-	
-	ModWheel( 0, GetGlobalParameter(kParam_vibdepth), 0 );
-	for ( int i=1; i<16; i++ ) {
-		ModWheel( i, GetGlobalParameter(kParam_vibdepth_2 - 1 + i), 0 );
-	}	
-
-	ProgramChange( 0, GetGlobalParameter(kParam_program), 0 );
-	for ( int i=1; i<16; i++ ) {
-		ProgramChange( i, GetGlobalParameter(kParam_program_2 - 1 + i), 0 );
-	}	
-	
-	//エコーパラメータの読み込み
-	SetMainVol_L( GetGlobalParameter(kParam_mainvol_L) );
-	SetMainVol_R( GetGlobalParameter(kParam_mainvol_R) );
-	SetEchoVol_L( GetGlobalParameter(kParam_echovol_L) );
-	SetEchoVol_R( GetGlobalParameter(kParam_echovol_R) );
-	SetFeedBackLevel( GetGlobalParameter(kParam_echoFB) );
-	SetDelayTime( GetGlobalParameter( kParam_echodelay ) );
-	for ( int i=0; i<8; i++ ) {
-		SetFIRTap( i, GetGlobalParameter( kParam_fir0+i ) );
-	}
-	
-	Process( inNumFrames, output );
-	
-	return noErr;
-}
-
-void Chip700Note::Process( unsigned int frames, float *output[2] )
+void Chip700Generator::Process( unsigned int frames, float *output[2] )
 {
 	int		outx;
 	int		vl, vr;
 	int		pitch;
-	int		procstep = (32000*21168) / mSampleRate;
+	int		procstep = (INTERNAL_CLOCK*21168) / mSampleRate;
 	
 	//メイン処理
 	for (unsigned int frame=0; frame<frames; ++frame) {
@@ -454,11 +438,9 @@ void Chip700Note::Process( unsigned int frames, float *output[2] )
 					if ( it->remain_samples < 0 ) {
 						if ( it->type == NOTE_ON ) {
 							DoKeyOn( &(*it) );
-							//if (endFrame != 0xFFFFFFFF) endFrame = 0xFFFFFFFF;
 						}
 						else if ( it->type == NOTE_OFF ) {
-							int voice = FindVoice( &(*it) );
-							mVoice[voice].envstate = RELEASE;
+							StopPlayingVoice( &(*it) );
 						}
 						mNoteEvt.erase( it );
 					}
@@ -469,7 +451,7 @@ void Chip700Note::Process( unsigned int frames, float *output[2] )
 		
 		for ( ; mProcessFrac >= 0; mProcessFrac -= 21168 ) {
 			int outl=0,outr=0;
-			for ( int v=0; v<MAX_VOICES; v++ ) {
+			for ( int v=0; v<kMaximumVoices; v++ ) {
 				outx = 0;
 				//--
 				{
@@ -532,14 +514,13 @@ void Chip700Note::Process( unsigned int frames, float *output[2] )
 				
 				if ( mVoice[v].envx < 0 ) {
 					outx = 0;
-					//if (endFrame == 0xFFFFFFFF) endFrame = frame;
 					continue;
 				}
 				
 				//ピッチの算出
 				pitch = (mVoice[v].pitch + mVoice[v].pb) & 0x3fff;
 				
-				if (mVoice[v].reg_pmod == true) {
+				if (mVoice[v].reg_pmod) {
 					mVoice[v].vibPhase += mVibfreq;
 					if (mVoice[v].vibPhase > onepi) {
 						mVoice[v].vibPhase -= onepi*2;
@@ -561,11 +542,6 @@ void Chip700Note::Process( unsigned int frames, float *output[2] )
 								mVoice[v].memPtr = mVoice[v].loopPoint;	//読み出し位置をループポイントまで戻す
 							}
 							else {	//ループなし
-								/*
-								 if (endFrame == 0xFFFFFFFF) {
-								 endFrame = frame;	//キー状態をオフにする
-								 }
-								 */
 								mVoice[v].envx = 0;
 								while( mVoice[v].mixfrac >= 0 ) {
 									mVoice[v].sampbuf[mVoice[v].sampptr] = 0;
@@ -717,7 +693,7 @@ void Chip700Note::Process( unsigned int frames, float *output[2] )
 	}
 }
 					  
-void Chip700Note::RefreshKeyMap(void)
+void Chip700Generator::RefreshKeyMap(void)
 {
 	if ( mVPset ) {
 		for (int i=0; i<128; i++) {

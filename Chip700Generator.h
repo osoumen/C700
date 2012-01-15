@@ -1,5 +1,5 @@
 /*
- *  Chip700Note.h
+ *  Chip700Generator.h
  *  Chip700
  *
  *  Created by 開発用 on 06/09/06.
@@ -7,12 +7,11 @@
  *
  */
 
-#ifndef __Chip700Note_h__
-#define __Chip700Note_h__
+#ifndef __Chip700Generator_h__
+#define __Chip700Generator_h__
 
-#include "AUInstrumentBase.h"
-#include "Chip700Version.h"
 #include "Chip700defines.h"
+#include <AUBuffer.h>
 #include <list>
 
 typedef enum
@@ -77,30 +76,29 @@ private:
 	int			m_input;
 };
 
-struct Chip700Note : public SynthNote
+class Chip700Generator
 {
 public:
-	Chip700Note();
-	virtual				~Chip700Note() {}
+	Chip700Generator();
+	virtual				~Chip700Generator() {}
 	virtual void		Reset();
-	
-	virtual void		Attack(const MusicDeviceNoteParams &inParams);
-	virtual void		Kill(UInt32 inFrame);
-	virtual void		Release(UInt32 inFrame);
-	virtual void		FastRelease(UInt32 inFrame);
-	virtual Float32		Amplitude();
-	virtual OSStatus	Render(UInt32 inNumFrames, AudioBufferList& inBufferList);
-	
-	void KeyOn( unsigned char ch, unsigned char note, unsigned char velo, int inFrame );
-	void KeyOff( unsigned char ch, unsigned char note, unsigned char velo, int inFrame );
+
+	void KeyOn( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame );
+	void KeyOff( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame );
+	void AllNotesOff();
+	void AllSoundOff();
+	void ResetAllControllers();
 	
 	void ProgramChange( int ch, int pgnum, int inFrame );
 	void PitchBend( int ch, int value, int inFrame );
 	void ModWheel( int ch, int value, int inFrame );
 	void Damper( int ch, int value, int inFrame );
 	
+	void SetVoiceLimit( int value );
 	void SetPBRange( float value );
-	void SetClipper( int value );
+	void SetClipper( bool value );
+	void SetDrumMode( bool value );
+	void SetVelocitySens( bool value );
 	void SetVibFreq( float value );
 	void SetVibDepth( float value );
 	
@@ -115,7 +113,7 @@ public:
 	void SetSampleRate( double samplerate ) { mSampleRate = samplerate; }
 	
 	void Process( unsigned int frames, float *output[2] );
-	int *GetKeyMap() { return mKeyMap; }
+	int GetKeyMap( int key ) { return mKeyMap[key]; }
 	VoiceParams getVP(int pg) {return mVPset[pg];};
 	VoiceParams getMappedVP(int key) {return mVPset[mKeyMap[key]];};
 	void SetVPSet( VoiceParams *vp ) { mVPset = vp; }
@@ -124,7 +122,6 @@ public:
 	
 private:
 	static const int INTERNAL_CLOCK = 32000;
-	static const int MAX_VOICES = 16;
 	enum EvtType {
 		NOTE_ON = 0,
 		NOTE_OFF
@@ -135,11 +132,13 @@ private:
 		unsigned char	ch;
 		unsigned char	note;
 		unsigned char	velo;
-		int		remain_samples;
+		unsigned int	uniqueID;
+		int				remain_samples;
 	} NoteEvt;
 	
 	struct VoiceState {
 		int				midi_ch;
+		unsigned int	uniqueID;
 		
 		unsigned char	*brrdata;
 		int				memPtr;        /* Sample data memory pointer   */
@@ -184,27 +183,29 @@ private:
 	
 	std::list<NoteEvt>	mNoteEvt;			//受け取ったイベントのキュー
 	
-	VoiceState		mVoice[MAX_VOICES];		//ボイスの状況
+	VoiceState		mVoice[kMaximumVoices];		//ボイスの状況
 	
+	int				mVoiceLimit;
 	int				mMainVolume_L;
 	int				mMainVolume_R;
 	float			mVibfreq;
-	int				mVibdepth;
+	float			mVibdepth;
 	float			mPbrange;
-	int				mClipper;
+	bool			mClipper;
+	bool			mDrumMode;
+	bool			mVelocitySens;
 	int				mChProgram[16];
 	float			mChPitchBend[16];
 	int				mChVibDepth[16];
 	
 	int				mKeyMap[128];	//各キーに対応するプログラムNo.
 	VoiceParams		*mVPset;
-
-	int		_note;
 	
-	int FindVoice( const NoteEvt *evt );
+	int FindFreeVoice( const NoteEvt *evt );
+	int StopPlayingVoice( const NoteEvt *evt );
 	void DoKeyOn(NoteEvt *evt);
 	float VibratoWave(float phase);
-	void CalcPBValue(float pitchBend, int basePitch);
+	int CalcPBValue(float pitchBend, int basePitch);
 };
 
 

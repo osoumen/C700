@@ -1,6 +1,6 @@
-#include "AUEffectBase.h"
+#include "AUInstrumentBase.h"
 #include "Chip700Version.h"
-#include "Chip700Note.h"
+#include "Chip700Generator.h"
 
 #if AU_DEBUG_DISPATCHER
 	#include "AUDebugDispatcher.h"
@@ -13,7 +13,7 @@
 #include "Chip700defines.h"
 
 #pragma mark ____Chip700
-class Chip700 : public AUMonotimbralInstrumentBase
+class Chip700 : public AUInstrumentBase
 {
 public:
 	Chip700(AudioUnit component);
@@ -23,7 +23,15 @@ public:
 	
 	virtual ComponentResult		Initialize();
 	virtual void				Cleanup();
+	virtual ComponentResult		Reset(	AudioUnitScope 					inScope,
+										AudioUnitElement 				inElement);
 
+	virtual OSStatus			SetParameter(					AudioUnitParameterID	inID,
+									 AudioUnitScope 			inScope,
+									 AudioUnitElement 			inElement,
+									 Float32					inValue,
+									 UInt32						inBufferOffsetInFrames);
+	
 	virtual	ComponentResult		GetParameterInfo(AudioUnitScope			inScope,
 												 AudioUnitParameterID	inParameterID,
 												 AudioUnitParameterInfo	&outParameterInfo);
@@ -56,6 +64,20 @@ public:
  	virtual	bool				SupportsTail() {return true;}
 	//virtual Float64				GetLatency() {return 8.0/32000.0;}
 	
+	virtual ComponentResult		RealTimeStartNote(		SynthGroupElement 			*inGroup,
+												  NoteInstanceID 				inNoteInstanceID, 
+												  UInt32 						inOffsetSampleFrame, 
+												  const MusicDeviceNoteParams &inParams);
+	
+	virtual ComponentResult		RealTimeStopNote(		SynthGroupElement 			*inGroup, 
+												 NoteInstanceID 				inNoteInstanceID, 
+												 UInt32 						inOffsetSampleFrame);
+
+	virtual void HandlePitchWheel(	int 	inChannel,
+								   UInt8 	inPitch1,
+								   UInt8 	inPitch2,
+								   long	inStartFrame);
+	
 	virtual void				HandleControlChange(int 	inChannel,
 											UInt8 	inController,
 											UInt8 	inValue,
@@ -64,11 +86,11 @@ public:
 	virtual void				HandleProgramChange(int 	inChannel,
 											UInt8 	inValue);
 	
-	virtual ComponentResult		StartNote(MusicDeviceInstrumentID		inInstrument, 
-										  MusicDeviceGroupID 			inGroupID, 
-										  NoteInstanceID 				&outNoteInstanceID, 
-										  UInt32 						inOffsetSampleFrame, 
-										  const MusicDeviceNoteParams &inParams);
+	virtual void				HandleResetAllControllers(	UInt8 	inChannel);
+	
+	virtual void				HandleAllNotesOff( UInt8 	inChannel);
+	
+	virtual void				HandleAllSoundOff( UInt8 	inChannel);
 	
 	virtual ComponentResult		Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 									   const AudioTimeStamp &			inTimeStamp,
@@ -86,26 +108,23 @@ public:
         inDescArray[0].componentFlags = 0;
         inDescArray[0].componentFlagsMask = 0;
 	}
-	
-	VoiceParams getVP(int pg) {return mVPset[pg];};
-	VoiceParams getMappedVP(int key) {return mVPset[mKeyMap[key]];};
-	
+
 private:
 	int					mEditProg;		//編集中のプログラムNo.
-	int					mKeyMap[128];	//各キーに対応するプログラムNo.
-	VoiceParams			mVPset[128];
-	TAUBuffer<UInt8>	mBRRdata[128];
-	Chip700Note			mChip700Notes[kMaximumVoices];
 	Float64				mTempo;
 	
+	VoiceParams			mVPset[128];
+	TAUBuffer<UInt8>	mBRRdata[128];
 	//エコー
 	Float32				mFilterBand[5];
 	
-	void		RefreshKeyMap(void);
+	Chip700Generator	mGenerator;
+	
 	int			CreateXIData( CFDataRef *data );
 	int			CreatePGDataDic(CFDictionaryRef *data, int pgnum);
 	void		RestorePGDataDic(CFPropertyListRef data, int pgnum);
 	void		SetBandParam( int band, Float32 value );
+	UInt32		GetTotalRAM();
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

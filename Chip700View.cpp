@@ -168,13 +168,11 @@ bool Chip700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
 			
 		case 'copy':
 		{
-			CFStringRef param_str = CreateXMSNESText();
-			
 			HIViewID	id = {'text',0};
 			HIViewRef	control;
 			OSStatus	result;
 			result = HIViewFindByID(mRootUserPane, id, &control);
-			HIViewSetText( control, param_str );
+			CFStringRef param_str = HIViewCopyText( control );
 			
 			OSStatus err = noErr;
 			PasteboardRef theClipboard;
@@ -576,8 +574,29 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 				cval = SInt32(floatValue*maximum + 0.5);
 				SetControl32BitValue(control, cval);
 			}
+			
+			//XMSNESテキストの更新
+			CFStringRef param_str = CreateXMSNESText();
+			HIViewID	id = {'text',0};
+			HIViewRef	control;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			HIViewSetText( control, param_str );
+			CFRelease(param_str);
+			
 			break;
 		}
+			
+		case kAudioUnitCustomProperty_TotalRAM:
+			size = sizeof(int);
+			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
+			id.signature = 'text';
+			id.id=1;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			if (result == noErr) {
+				CFStringRef	cfstr=CFStringCreateWithFormat(NULL,NULL,CFSTR("%d bytes"),intValue);
+				HIViewSetText(control, cfstr);
+			}
+			break;
 	}
 	mEventDisable = false;
 }

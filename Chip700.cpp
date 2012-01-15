@@ -119,7 +119,7 @@ COMPONENT_ENTRY(Chip700)
 //	Chip700::Chip700
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Chip700::Chip700(AudioUnit component)
-: AUMonotimbralInstrumentBase(component, 0, 1)
+: AUInstrumentBase(component, 0, 1)
 {
 	CreateElements();
 	Globals()->UseIndexedParameters(kNumberOfParameters);
@@ -177,9 +177,10 @@ Chip700::Chip700(AudioUnit component)
 		mVPset[i].dr=kDefaultValue_DR;
 		mVPset[i].sl=kDefaultValue_SL;
 		mVPset[i].sr=kDefaultValue_SR;
-		
-		mKeyMap[i] = 0;
 	}
+	
+	mGenerator.SetVPSet(mVPset);
+	
 #if AU_DEBUG_DISPATCHER
 	mDebugDispatcher = new AUDebugDispatcher(this);
 #endif
@@ -187,9 +188,7 @@ Chip700::Chip700(AudioUnit component)
 
 ComponentResult Chip700::Initialize()
 {	
-	AUMonotimbralInstrumentBase::Initialize();
-	SetNotes(kMaximumVoices, Globals()->GetParameter(kParam_poly), mChip700Notes, sizeof(Chip700Note));
-
+	AUInstrumentBase::Initialize();
 	return noErr;
 }
 
@@ -202,22 +201,99 @@ void Chip700::Cleanup()
 	}
 }
 
-ComponentResult Chip700::StartNote(MusicDeviceInstrumentID		inInstrument, 
-						  MusicDeviceGroupID 			inGroupID, 
-						  NoteInstanceID 				&outNoteInstanceID, 
-						  UInt32 						inOffsetSampleFrame, 
-						  const MusicDeviceNoteParams &inParams)
+ComponentResult Chip700::Reset(	AudioUnitScope 		inScope,
+							   AudioUnitElement 	inElement)
 {
-	ChangeMaxActiveNotes(Globals()->GetParameter(kParam_poly));
-	return AUMonotimbralInstrumentBase::StartNote(inInstrument,inGroupID,outNoteInstanceID,inOffsetSampleFrame,inParams);
+	if (inScope == kAudioUnitScope_Global) {
+		mGenerator.Reset();
+	}
+	return AUInstrumentBase::Reset(inScope, inElement);
 }
 
 ComponentResult	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 												const AudioTimeStamp &			inTimeStamp,
 												UInt32							inNumberFrames)
 {
+	OSStatus result = AUInstrumentBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
+	
 	CallHostBeatAndTempo(NULL, &mTempo);
-	return AUMonotimbralInstrumentBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
+	//バッファの確保
+	float				*output[2];
+	AudioBufferList&	bufferList = GetOutput(0)->GetBufferList();
+	
+	int numChans = bufferList.mNumberBuffers;
+	if (numChans > 2) return -1;
+	output[0] = (float*)bufferList.mBuffers[0].mData;
+	output[1] = numChans==2 ? (float*)bufferList.mBuffers[1].mData : NULL;
+
+	//パラメータの読み込み
+	mGenerator.SetSampleRate( GetOutput(0)->GetStreamFormat().mSampleRate );
+	
+	mGenerator.SetVoiceLimit( Globals()->GetParameter(kParam_poly) );
+	mGenerator.SetVibFreq( Globals()->GetParameter(kParam_vibrate) );
+	mGenerator.SetVibDepth( Globals()->GetParameter(kParam_vibdepth2) );
+	mGenerator.SetClipper( Globals()->GetParameter(kParam_clipnoise)==0 ? false:true );
+	mGenerator.SetDrumMode( Globals()->GetParameter(kParam_drummode)==0 ? false:true );
+	mGenerator.SetVelocitySens( Globals()->GetParameter(kParam_velocity)==0 ? false:true );
+	mGenerator.SetPBRange( Globals()->GetParameter(kParam_bendrange) );
+	
+	mGenerator.ModWheel( 0, Globals()->GetParameter(kParam_vibdepth), 0 );
+	for ( int i=1; i<16; i++ ) {
+		mGenerator.ModWheel( i, Globals()->GetParameter(kParam_vibdepth_2 - 1 + i), 0 );
+	}	
+	
+	mGenerator.ProgramChange( 0, Globals()->GetParameter(kParam_program), 0 );
+	for ( int i=1; i<16; i++ ) {
+		mGenerator.ProgramChange( i, Globals()->GetParameter(kParam_program_2 - 1 + i), 0 );
+	}	
+	
+	//エコーパラメータの読み込み
+	mGenerator.SetMainVol_L( Globals()->GetParameter(kParam_mainvol_L) );
+	mGenerator.SetMainVol_R( Globals()->GetParameter(kParam_mainvol_R) );
+	mGenerator.SetEchoVol_L( Globals()->GetParameter(kParam_echovol_L) );
+	mGenerator.SetEchoVol_R( Globals()->GetParameter(kParam_echovol_R) );
+	mGenerator.SetFeedBackLevel( Globals()->GetParameter(kParam_echoFB) );
+	mGenerator.SetDelayTime( Globals()->GetParameter( kParam_echodelay ) );
+	for ( int i=0; i<8; i++ ) {
+		mGenerator.SetFIRTap( i, Globals()->GetParameter( kParam_fir0+i ) );
+	}
+
+	mGenerator.Process(inNumberFrames, output);
+	
+	return result;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//	Chip700::SetParameter
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+OSStatus Chip700::SetParameter(	AudioUnitParameterID			inID,
+								 AudioUnitScope 				inScope,
+								 AudioUnitElement 				inElement,
+								 Float32						inValue,
+								 UInt32							inBufferOffsetInFrames)
+{
+	OSStatus result = AUInstrumentBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
+	if ( inScope == kAudioUnitScope_Global ) {
+		switch ( inID ) {
+			case kParam_echodelay:
+				PropertyChanged(kAudioUnitCustomProperty_TotalRAM, kAudioUnitScope_Global, 0);
+				
+			case kParam_echovol_L:
+			case kParam_echovol_R:
+			case kParam_echoFB:
+			case kParam_fir0:
+			case kParam_fir1:
+			case kParam_fir2:
+			case kParam_fir3:
+			case kParam_fir4:
+			case kParam_fir5:
+			case kParam_fir6:
+			case kParam_fir7:
+				PropertyChanged(kAudioUnitCustomProperty_Band1, kAudioUnitScope_Global, 0);
+				break;
+		}
+	}
+	return result;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -236,7 +312,7 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
         switch(inParameterID)
         {
 			case kParam_poly:
-                AUBase::FillInParameterName (outParameterInfo, kParam_poly_Name, false);
+                AUBase::FillInParameterName(outParameterInfo, kParam_poly_Name, false);
                 outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
                 outParameterInfo.minValue = kMinimumValue_1;
                 outParameterInfo.maxValue = kMaximumVoices;
@@ -434,13 +510,12 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 				result = kAudioUnitErr_InvalidParameter;
 				break;
             }
-	} else {
+	}
+	else {
         result = kAudioUnitErr_InvalidParameter;
     }
 
-
-
-return result;
+	return result;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -504,6 +579,11 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 				outWritable = false;
 				return noErr;
 				
+			case kAudioUnitCustomProperty_TotalRAM:
+				outDataSize = sizeof(UInt32);
+				outWritable = false;
+				return noErr;
+			
 			//エコー
 			case kAudioUnitCustomProperty_Band1:
 			case kAudioUnitCustomProperty_Band2:
@@ -516,7 +596,7 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 		}
 	}
 	
-	return AUMonotimbralInstrumentBase::GetPropertyInfo(inID, inScope, inElement, outDataSize, outWritable);
+	return AUInstrumentBase::GetPropertyInfo(inID, inScope, inElement, outDataSize, outWritable);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -587,6 +667,10 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 				*((int *)outData) = mEditProg;
 				return noErr;
 				
+			case kAudioUnitCustomProperty_TotalRAM:
+				*((UInt32 *)outData) = GetTotalRAM();
+				return noErr;
+			
 			case kAudioUnitCustomProperty_PGDictionary:
 			{
 				CFDictionaryRef	pgdata;
@@ -617,7 +701,7 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 				return noErr;
 		}
 	}
-	return AUMonotimbralInstrumentBase::GetProperty(inID, inScope, inElement, outData);
+	return AUInstrumentBase::GetProperty(inID, inScope, inElement, outData);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -653,6 +737,7 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 						PropertyChanged(kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0);
 					}
 				}
+				PropertyChanged(kAudioUnitCustomProperty_TotalRAM, kAudioUnitScope_Global, 0);
 				return noErr;
 			}
 			
@@ -662,15 +747,15 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 				
 			case kAudioUnitCustomProperty_BaseKey:
 				mVPset[mEditProg].basekey = *((int*)inData);
-				RefreshKeyMap();
+				mGenerator.RefreshKeyMap();
 				return noErr;
 			case kAudioUnitCustomProperty_LowKey:
 				mVPset[mEditProg].lowkey = *((int*)inData);
-				RefreshKeyMap();
+				mGenerator.RefreshKeyMap();
 				return noErr;
 			case kAudioUnitCustomProperty_HighKey:
 				mVPset[mEditProg].highkey = *((int*)inData);
-				RefreshKeyMap();
+				mGenerator.RefreshKeyMap();
 				return noErr;
 				
 			case kAudioUnitCustomProperty_LoopPoint:
@@ -725,6 +810,9 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 				return noErr;
 			}
 				
+			case kAudioUnitCustomProperty_TotalRAM:
+				return noErr;
+				
 			case kAudioUnitCustomProperty_PGDictionary:
 			{
 				CFDictionaryRef	pgdata = *((CFDictionaryRef*)inData);
@@ -753,7 +841,7 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 				return noErr;
 		}
 	}
-	return AUMonotimbralInstrumentBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
+	return AUInstrumentBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
 }
 
 void Chip700::SetBandParam( int band, Float32 value )
@@ -792,6 +880,19 @@ void Chip700::SetBandParam( int band, Float32 value )
 		auEvent.mArgument.mParameter.mElement = 0;
 		AUEventListenerNotify(NULL, NULL, &auEvent);
 	}
+}
+
+UInt32 Chip700::GetTotalRAM()
+{
+	//使用メモリを合計
+	UInt32	totalRam = 0;
+	for ( int i=0; i<128; i++ ) {
+		if ( mVPset[i].brr.data ) {
+			totalRam += mVPset[i].brr.size;
+		}
+	}
+	totalRam += 2048 * Globals()->GetParameter(kParam_echodelay );
+	return totalRam;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -842,7 +943,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[0].lowkey=0;
 					mVPset[0].highkey=127;
 					mVPset[0].loop=true;
-					mVPset[0].echo=true;
+					mVPset[0].echo=false;
 					mVPset[0].lp=18;
 					mVPset[0].rate=28160.0;
 					mVPset[0].volL=100;
@@ -926,7 +1027,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 			}
 			SetAFactoryPresetAsCurrent(kPresets[i]);
 			
-			RefreshKeyMap();
+			mGenerator.RefreshKeyMap();
 			
 			return noErr;
 		}
@@ -945,14 +1046,12 @@ static void AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int
 
 static void AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key, bool value)
 {
-	//CFBooleanRef num = CFNumberCreate(NULL, kCFNumberIntType, &value);
 	if ( value ) {
 		CFDictionarySetValue(dict, key, kCFBooleanTrue);
 	}
 	else {
 		CFDictionarySetValue(dict, key, kCFBooleanFalse);
 	}
-	//CFRelease(num);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -961,7 +1060,7 @@ static void AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key,
 ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
 {
 	ComponentResult result;
-	result = AUMonotimbralInstrumentBase::SaveState(outData);
+	result = AUInstrumentBase::SaveState(outData);
 	CFMutableDictionaryRef	dict=(CFMutableDictionaryRef)*outData;
 	if (result == noErr) {
 		CFDictionaryRef	pgdata;
@@ -992,7 +1091,7 @@ ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
 ComponentResult	Chip700::RestoreState(CFPropertyListRef plist)
 {
 	ComponentResult result;
-	result = AUMonotimbralInstrumentBase::RestoreState(plist);
+	result = AUInstrumentBase::RestoreState(plist);
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(plist);
 	if (result == noErr) {
 		//波形情報の復元
@@ -1015,24 +1114,14 @@ ComponentResult	Chip700::RestoreState(CFPropertyListRef plist)
 			//変更の通知
 			PropertyChanged(kAudioUnitCustomProperty_EditingProgram, kAudioUnitScope_Global, 0);
 		}
+		for (int i=kAudioUnitCustomProperty_Band1; i<=kAudioUnitCustomProperty_TotalRAM; i++) {
+			PropertyChanged(i, kAudioUnitScope_Global, 0);
+		}
 	}
 	return result;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void Chip700::RefreshKeyMap(void)
-{
-	for (int i=0; i<128; i++) {
-		mKeyMap[i]=0;
-
-	}	for (int i=0; i<128; i++) {
-		if (mVPset[i].brr.data) {
-			for (int j=mVPset[i].lowkey; j<=mVPset[i].highkey; j++) {
-				mKeyMap[j]=i;
-			}
-		}
-	}
-}
 
 int Chip700::CreateXIData( CFDataRef *data )
 {
@@ -1075,10 +1164,10 @@ int Chip700::CreateXIData( CFDataRef *data )
 	
 	if ( multisample ) {
 		for ( int i=0; i<96; i++ ) {
-			xih.snum[i] = mKeyMap[i+12];
-			if ( (mKeyMap[i+12]+1) > nsamples ) {
-				nsamples = mKeyMap[i+12]+1;
-				end_prg = mKeyMap[i+12];
+			xih.snum[i] = mGenerator.GetKeyMap(i+12);
+			if ( (mGenerator.GetKeyMap(i+12)+1) > nsamples ) {
+				nsamples = mGenerator.GetKeyMap(i+12)+1;
+				end_prg = mGenerator.GetKeyMap(i+12);
 			}
 		}
 	}
@@ -1351,7 +1440,7 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		mVPset[pgnum].highkey = value;
 	}
 	else mVPset[pgnum].highkey = 127;
-	RefreshKeyMap();
+	mGenerator.RefreshKeyMap();
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_ar)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_ar));
@@ -1407,12 +1496,45 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	}
 	
 	if (pgnum == mEditProg) {
-		for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_VolR; i++) {
+		for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Echo; i++) {
 			PropertyChanged(i, kAudioUnitScope_Global, 0);
 		}
 	}
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ComponentResult Chip700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
+											NoteInstanceID 				inNoteInstanceID, 
+											UInt32 						inOffsetSampleFrame, 
+											const MusicDeviceNoteParams &inParams)
+{
+	//MIDIチャンネルの取得
+	unsigned int		chID = inGroup->GroupID();
+	
+	mGenerator.KeyOn(chID, inParams.mPitch, inParams.mVelocity, inNoteInstanceID+chID*256, inOffsetSampleFrame);
+	return noErr;
+}
+
+ComponentResult Chip700::RealTimeStopNote( SynthGroupElement 			*inGroup, 
+										   NoteInstanceID 				inNoteInstanceID, 
+										   UInt32 						inOffsetSampleFrame)
+{
+	AUInstrumentBase::RealTimeStopNote( inGroup, inNoteInstanceID, inOffsetSampleFrame );
+	//MIDIチャンネルの取得
+	unsigned int		chID = inGroup->GroupID();
+	
+	mGenerator.KeyOff(chID, 0xff, 0, inNoteInstanceID+chID*256, inOffsetSampleFrame);
+	return noErr;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+void Chip700::HandlePitchWheel(	int 	inChannel,
+							   UInt8 	inPitch1,
+							   UInt8 	inPitch2,
+							   long	inStartFrame)
+{
+	int pitchBend = (inPitch2 << 7) | inPitch1;
+	mGenerator.PitchBend(inChannel, pitchBend - 8192, inStartFrame);
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //	Chip700::HandleControlChange
@@ -1437,7 +1559,7 @@ void Chip700::HandleControlChange(	int 	inChannel,
 		auEvent.mArgument.mParameter.mElement = 0;
 		AUEventListenerNotify(NULL, NULL, &auEvent);
 	}
-	AUMonotimbralInstrumentBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
+	AUInstrumentBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1458,5 +1580,23 @@ void Chip700::HandleProgramChange(	int 	inChannel,
 	auEvent.mArgument.mParameter.mParameterID = paramID;
 	auEvent.mArgument.mParameter.mElement = 0;
 	AUEventListenerNotify(NULL, NULL, &auEvent);
-	AUMonotimbralInstrumentBase::HandleProgramChange(inChannel, inValue);
+	AUInstrumentBase::HandleProgramChange(inChannel, inValue);
+}
+
+void Chip700::HandleResetAllControllers( UInt8 	inChannel)
+{
+	mGenerator.ResetAllControllers();
+	AUInstrumentBase::HandleResetAllControllers( inChannel);
+}
+
+void Chip700::HandleAllNotesOff( UInt8 inChannel )
+{
+	mGenerator.AllNotesOff();
+	AUInstrumentBase::HandleAllNotesOff( inChannel);
+}
+
+void Chip700::HandleAllSoundOff( UInt8 inChannel )
+{
+	mGenerator.AllSoundOff();
+	AUInstrumentBase::HandleAllSoundOff( inChannel);
 }

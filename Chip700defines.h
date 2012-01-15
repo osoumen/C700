@@ -21,7 +21,6 @@ enum {
 	kParam_vibdepth,
 	kParam_vibrate,
 	kParam_vibdepth2,
-	//kParam_noise,
 	kParam_velocity,
 	kParam_bendrange,
 	kParam_program,
@@ -106,10 +105,12 @@ enum
 	kAudioUnitCustomProperty_Band4,
 	kAudioUnitCustomProperty_Band5,
 	
+	kAudioUnitCustomProperty_TotalRAM,
+	
 	kAudioUnitCustomProperty_PGDictionary,
 	kAudioUnitCustomProperty_XIData,
 	
-	kNumberOfProperties = 23
+	kNumberOfProperties = 24
 };
 
 static const float kMinimumValue_n128 = -128;
@@ -121,7 +122,8 @@ static const float kMaximumValue_7 = 7;
 static const float kMaximumValue_15 = 15;
 static const float kMaximumValue_31 = 31;
 static const float kMaximumValue_127 = 127;
-static const UInt32 kMaximumVoices = 8;
+
+static const int kMaximumVoices = 16;
 
 
 typedef struct {
@@ -176,22 +178,22 @@ typedef struct {
 } XISAMPLEHEADER;
 
 typedef struct {
-	UInt32 manufacturer;
-	UInt32 product;
-	UInt32 sample_period;
-	UInt32 note;
-	UInt32 pitch_fraction;
-	UInt32 smpte_format;
-	UInt32 smpte_offset;
-	UInt32 loops;
-	UInt32 sampler_data;
+	unsigned long manufacturer;
+	unsigned long product;
+	unsigned long sample_period;
+	unsigned long note;
+	unsigned long pitch_fraction;
+	unsigned long smpte_format;
+	unsigned long smpte_offset;
+	unsigned long loops;
+	unsigned long sampler_data;
 	
-	UInt32 cue_id;
-	UInt32 type;
-	UInt32 start;
-	UInt32 end;
-	UInt32 fraction;
-	UInt32 play_count;
+	unsigned long cue_id;
+	unsigned long type;
+	unsigned long start;
+	unsigned long end;
+	unsigned long fraction;
+	unsigned long play_count;
 } WAV_smpl;
 
 #endif
