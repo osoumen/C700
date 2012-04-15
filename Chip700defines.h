@@ -97,6 +97,7 @@ enum
 	kAudioUnitCustomProperty_VolR,
 	kAudioUnitCustomProperty_Echo,
 	kAudioUnitCustomProperty_EditingProgram,
+	kAudioUnitCustomProperty_EditingChannel,
 	
 	//↓エコー部
 	kAudioUnitCustomProperty_Band1,
@@ -105,12 +106,29 @@ enum
 	kAudioUnitCustomProperty_Band4,
 	kAudioUnitCustomProperty_Band5,
 	
-	kAudioUnitCustomProperty_TotalRAM,
+	kAudioUnitCustomProperty_TotalRAM,			// read only
 	
 	kAudioUnitCustomProperty_PGDictionary,
-	kAudioUnitCustomProperty_XIData,
+	kAudioUnitCustomProperty_XIData,			// read only
 	
-	kNumberOfProperties = 24
+	kAudioUnitCustomProperty_NoteOnTrack_1,		// read only
+	kAudioUnitCustomProperty_NoteOnTrack_2,		// read only
+	kAudioUnitCustomProperty_NoteOnTrack_3,		// read only
+	kAudioUnitCustomProperty_NoteOnTrack_4,		// read only
+	kAudioUnitCustomProperty_NoteOnTrack_5,		// read only
+	kAudioUnitCustomProperty_NoteOnTrack_6,		// read only
+	kAudioUnitCustomProperty_NoteOnTrack_7,		// read only
+	kAudioUnitCustomProperty_NoteOnTrack_8,		// read only
+	kAudioUnitCustomProperty_NoteOnTrack_9,		// read only
+	kAudioUnitCustomProperty_NoteOnTrack_10,	// read only
+	kAudioUnitCustomProperty_NoteOnTrack_11,	// read only
+	kAudioUnitCustomProperty_NoteOnTrack_12,	// read only
+	kAudioUnitCustomProperty_NoteOnTrack_13,	// read only
+	kAudioUnitCustomProperty_NoteOnTrack_14,	// read only
+	kAudioUnitCustomProperty_NoteOnTrack_15,	// read only
+	kAudioUnitCustomProperty_NoteOnTrack_16,	// read only
+	
+	kNumberOfProperties = 41
 };
 
 static const float kMinimumValue_n128 = -128;

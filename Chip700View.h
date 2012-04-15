@@ -60,6 +60,7 @@ private:
 																		SInt16 *keyCode, SInt16 *charCode, 
 																		EventModifiers *modifiers);
 	
+	void changeEditingChannel( int trk );
 	CFStringRef CreateXMSNESText();
 	
 	void setBRRData(UInt8 *data, UInt32 length);

@@ -92,6 +92,7 @@ static const int kDefaultValue_SR = 0;
 
 static CFStringRef kSaveKey_ProgName = CFSTR("progname");
 static CFStringRef kSaveKey_EditProg = CFSTR("editprog");
+static CFStringRef kSaveKey_EditChan = CFSTR("editchan");
 static CFStringRef kSaveKey_brrdata = CFSTR("brrdata");
 static CFStringRef kSaveKey_looppoint = CFSTR("looppoint");
 static CFStringRef kSaveKey_samplerate = CFSTR("samplerate");
@@ -158,6 +159,13 @@ Chip700::Chip700(AudioUnit component)
 	}
 	
 	mEditProg = 0;
+	mEditChannel = 0;
+	
+	// ノートオンインジケータ初期化
+	for ( int i=0; i<16; i++ ) {
+		mIsNoteOn[i] = false;
+	}
+	
 	//プログラムの初期化
 	for (int i=0; i<128; i++) {
 		mVPset[i].pgname = NULL;
@@ -195,8 +203,9 @@ ComponentResult Chip700::Initialize()
 void Chip700::Cleanup()
 {
 	for (int i=0; i<128; i++) {
-		if (mVPset[i].pgname)
+		if (mVPset[i].pgname) {
 			CFRelease(mVPset[i].pgname);
+		}
 		mVPset[i].pgname = NULL;
 	}
 }
@@ -207,6 +216,13 @@ ComponentResult Chip700::Reset(	AudioUnitScope 		inScope,
 	if (inScope == kAudioUnitScope_Global) {
 		mGenerator.Reset();
 	}
+	
+	// MIDIインジケータをリセット
+	for ( int i=0; i<16; i++ ) {
+		mIsNoteOn[i] = false;
+		PropertyChanged(kAudioUnitCustomProperty_NoteOnTrack_1+i, kAudioUnitScope_Global, 0);
+	}
+	
 	return AUInstrumentBase::Reset(inScope, inElement);
 }
 
@@ -539,6 +555,7 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 			case kAudioUnitCustomProperty_VolL:
 			case kAudioUnitCustomProperty_VolR:
 			case kAudioUnitCustomProperty_EditingProgram:
+			case kAudioUnitCustomProperty_EditingChannel:
 			case kAudioUnitCustomProperty_LoopPoint:
 				outDataSize = sizeof(int);
 				outWritable = false;
@@ -592,6 +609,27 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 			case kAudioUnitCustomProperty_Band5:
 				outWritable = false;
 				outDataSize = sizeof(Float32);
+				return noErr;
+				
+			// トラックインジケーター
+			case kAudioUnitCustomProperty_NoteOnTrack_1:
+			case kAudioUnitCustomProperty_NoteOnTrack_2:
+			case kAudioUnitCustomProperty_NoteOnTrack_3:
+			case kAudioUnitCustomProperty_NoteOnTrack_4:
+			case kAudioUnitCustomProperty_NoteOnTrack_5:	
+			case kAudioUnitCustomProperty_NoteOnTrack_6:
+			case kAudioUnitCustomProperty_NoteOnTrack_7:
+			case kAudioUnitCustomProperty_NoteOnTrack_8:
+			case kAudioUnitCustomProperty_NoteOnTrack_9:
+			case kAudioUnitCustomProperty_NoteOnTrack_10:
+			case kAudioUnitCustomProperty_NoteOnTrack_11:
+			case kAudioUnitCustomProperty_NoteOnTrack_12:
+			case kAudioUnitCustomProperty_NoteOnTrack_13:
+			case kAudioUnitCustomProperty_NoteOnTrack_14:
+			case kAudioUnitCustomProperty_NoteOnTrack_15:
+			case kAudioUnitCustomProperty_NoteOnTrack_16:
+				outWritable = false;
+				outDataSize = sizeof(bool);
 				return noErr;
 		}
 	}
@@ -667,6 +705,10 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 				*((int *)outData) = mEditProg;
 				return noErr;
 				
+			case kAudioUnitCustomProperty_EditingChannel:
+				*((int *)outData) = mEditChannel;
+				return noErr;
+				
 			case kAudioUnitCustomProperty_TotalRAM:
 				*((UInt32 *)outData) = GetTotalRAM();
 				return noErr;
@@ -698,6 +740,25 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_Band4:
 			case kAudioUnitCustomProperty_Band5:
 				*((Float32 *)outData) = mFilterBand[inID-kAudioUnitCustomProperty_Band1];
+				return noErr;
+				
+			case kAudioUnitCustomProperty_NoteOnTrack_1:
+			case kAudioUnitCustomProperty_NoteOnTrack_2:
+			case kAudioUnitCustomProperty_NoteOnTrack_3:
+			case kAudioUnitCustomProperty_NoteOnTrack_4:
+			case kAudioUnitCustomProperty_NoteOnTrack_5:
+			case kAudioUnitCustomProperty_NoteOnTrack_6:
+			case kAudioUnitCustomProperty_NoteOnTrack_7:
+			case kAudioUnitCustomProperty_NoteOnTrack_8:
+			case kAudioUnitCustomProperty_NoteOnTrack_9:
+			case kAudioUnitCustomProperty_NoteOnTrack_10:
+			case kAudioUnitCustomProperty_NoteOnTrack_11:
+			case kAudioUnitCustomProperty_NoteOnTrack_12:
+			case kAudioUnitCustomProperty_NoteOnTrack_13:
+			case kAudioUnitCustomProperty_NoteOnTrack_14:
+			case kAudioUnitCustomProperty_NoteOnTrack_15:
+			case kAudioUnitCustomProperty_NoteOnTrack_16:
+				*((bool *)outData) = mIsNoteOn[inID-kAudioUnitCustomProperty_NoteOnTrack_1];
 				return noErr;
 		}
 	}
@@ -803,8 +864,38 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 				if (pg<0) pg=0;
 				mEditProg = pg;
 				
-				Globals()->SetParameter(kParam_program, mEditProg);
+				// 選択チャンネルのプログラムをチェンジ
+				if ( mEditChannel == 0 ) {
+					Globals()->SetParameter(kParam_program, mEditProg);
+				}
+				else {
+					Globals()->SetParameter(kParam_program_2 + mEditChannel - 1, mEditProg);
+				}
+				
+				// 表示更新が必要なプロパティの変更を通知する
 				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Echo; i++) {
+					PropertyChanged(i, kAudioUnitScope_Global, 0);
+				}
+				return noErr;
+			}
+				
+			case kAudioUnitCustomProperty_EditingChannel:
+			{
+				int	ch = *((int*)inData);
+				if (ch>15) ch=15;
+				if (ch<0) ch=0;
+				mEditChannel = ch;
+				
+				// 変更したチャンネルのプログラムチェンジを取得してmEditProgに設定する
+				if ( mEditChannel == 0 ) {
+					mEditProg = Globals()->GetParameter(kParam_program);
+				}
+				else {
+					mEditProg = Globals()->GetParameter(kParam_program_2 + mEditChannel - 1);
+				}
+				
+				// 表示更新が必要なプロパティの変更を通知する
+				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_EditingProgram; i++) {
 					PropertyChanged(i, kAudioUnitScope_Global, 0);
 				}
 				return noErr;
@@ -838,6 +929,24 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_Band4:
 			case kAudioUnitCustomProperty_Band5:
 				SetBandParam( inID-kAudioUnitCustomProperty_Band1, *((Float32*)inData) );
+				return noErr;
+				
+			case kAudioUnitCustomProperty_NoteOnTrack_1:
+			case kAudioUnitCustomProperty_NoteOnTrack_2:
+			case kAudioUnitCustomProperty_NoteOnTrack_3:
+			case kAudioUnitCustomProperty_NoteOnTrack_4:
+			case kAudioUnitCustomProperty_NoteOnTrack_5:
+			case kAudioUnitCustomProperty_NoteOnTrack_6:
+			case kAudioUnitCustomProperty_NoteOnTrack_7:
+			case kAudioUnitCustomProperty_NoteOnTrack_8:
+			case kAudioUnitCustomProperty_NoteOnTrack_9:
+			case kAudioUnitCustomProperty_NoteOnTrack_10:
+			case kAudioUnitCustomProperty_NoteOnTrack_11:
+			case kAudioUnitCustomProperty_NoteOnTrack_12:
+			case kAudioUnitCustomProperty_NoteOnTrack_13:
+			case kAudioUnitCustomProperty_NoteOnTrack_14:
+			case kAudioUnitCustomProperty_NoteOnTrack_15:
+			case kAudioUnitCustomProperty_NoteOnTrack_16:
 				return noErr;
 		}
 	}
@@ -1076,7 +1185,9 @@ ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
 			}
 		}
 		
+		// 作業状態を保存
 		AddNumToDictionary(dict, kSaveKey_EditProg, mEditProg);
+		AddNumToDictionary(dict, kSaveKey_EditChan, mEditChannel);
 		
 		pgname = CFStringCreateCopy(NULL,CFSTR("C700"));
 		CFDictionarySetValue(dict, CFSTR(kAUPresetNameKey), pgname);
@@ -1114,8 +1225,12 @@ ComponentResult	Chip700::RestoreState(CFPropertyListRef plist)
 			//変更の通知
 			PropertyChanged(kAudioUnitCustomProperty_EditingProgram, kAudioUnitScope_Global, 0);
 		}
-		for (int i=kAudioUnitCustomProperty_Band1; i<=kAudioUnitCustomProperty_TotalRAM; i++) {
-			PropertyChanged(i, kAudioUnitScope_Global, 0);
+		if (CFDictionaryContainsKey(dict, kSaveKey_EditChan)) {
+			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_EditChan));
+			CFNumberGetValue(cfnum, kCFNumberIntType, &mEditChannel);
+			
+			//変更の通知
+			PropertyChanged(kAudioUnitCustomProperty_EditingChannel, kAudioUnitScope_Global, 0);
 		}
 	}
 	return result;
@@ -1508,9 +1623,14 @@ ComponentResult Chip700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
 											const MusicDeviceNoteParams &inParams)
 {
 	//MIDIチャンネルの取得
-	unsigned int		chID = inGroup->GroupID();
+	unsigned int		chID = inGroup->GroupID() % 16;
 	
 	mGenerator.KeyOn(chID, inParams.mPitch, inParams.mVelocity, inNoteInstanceID+chID*256, inOffsetSampleFrame);
+	
+	// MIDIインジケーターに反映
+	mIsNoteOn[chID] = true;
+	PropertyChanged(kAudioUnitCustomProperty_NoteOnTrack_1+chID, kAudioUnitScope_Global, 0);
+	
 	return noErr;
 }
 
@@ -1520,9 +1640,14 @@ ComponentResult Chip700::RealTimeStopNote( SynthGroupElement 			*inGroup,
 {
 	AUInstrumentBase::RealTimeStopNote( inGroup, inNoteInstanceID, inOffsetSampleFrame );
 	//MIDIチャンネルの取得
-	unsigned int		chID = inGroup->GroupID();
+	unsigned int		chID = inGroup->GroupID() % 16;
 	
 	mGenerator.KeyOff(chID, 0xff, 0, inNoteInstanceID+chID*256, inOffsetSampleFrame);
+	
+	// MIDIインジケーターに反映
+	mIsNoteOn[chID] = false;
+	PropertyChanged(kAudioUnitCustomProperty_NoteOnTrack_1+chID, kAudioUnitScope_Global, 0);
+	
 	return noErr;
 }
 

@@ -25,14 +25,17 @@ typedef enum
 
 class EchoKernel
 {
+private:
+	static const int DELAY_UNIT = 512;
+	static const int ECHO_BUFFER_SIZE = 7680;
+	static const int FIR_LENGTH = 8;
+	static const int FILTER_STLIDE = 1;
+	
 public:
 	EchoKernel()
 	{
-		mDelayUnit=512;
-		mEchoBuffer.AllocateClear(7680);
-		mFIRLength=8;
-		mFIRbuf.AllocateClear(mFIRLength);
-		mFilterStride=1;
+		mEchoBuffer.AllocateClear(ECHO_BUFFER_SIZE);
+		mFIRbuf.AllocateClear(FIR_LENGTH);
 		mEchoIndex=0;
 		mFIRIndex=0;
 		
@@ -57,16 +60,14 @@ public:
 	}
 	void	SetDelayTime( int val )
 	{
-		m_delay_samples = val * mDelayUnit;
+		m_delay_samples = val * DELAY_UNIT;
 	}
 	
 private:
 	TAUBuffer<int>	mEchoBuffer;
 	TAUBuffer<int>	mFIRbuf;
 	int			mEchoIndex;
-	int			mFIRIndex, mFIRLength;
-	int			mDelayUnit;
-	int			mFilterStride;
+	int			mFIRIndex;
 	
 	int			m_echo_vol;
 	int			m_fb_lev;

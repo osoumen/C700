@@ -15,7 +15,7 @@
 #include "TWaveView.h"
 #include "TImageCache.h"
 
-static Boolean MyFilterProc(AEDesc *theItem, void *info, void *callBackUD, 
+static Boolean MyFileSelectFilterProc(AEDesc *theItem, void *info, void *callBackUD, 
 					 NavFilterModes filterMode);
 static void LittleArrowsControlAction(ControlRef theControl, ControlPartCode partCode);
 static OSErr MyTrackingHandler(DragTrackingMessage theMessage, WindowRef win,
@@ -36,6 +36,7 @@ void Chip700View::InitWindow(CFBundleRef sBundle)
 	TViewNoCompositingCompatible::RegisterClassForBundleID<TWaveView>(GetBundleID());
 }
 
+// ウィンドウの初回生成後
 void Chip700View::FinishWindow(CFBundleRef sBundle)
 {
 	HIViewRef	control;
@@ -44,6 +45,7 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 	
 	OSStatus styleOK = 0;
     ControlFontStyleRec textStyle = { 0 };
+	// テキストスタイル設定用構造体を作成
     if (GetFontname()) {
         char fname[255];
         CFStringGetCString(GetFontname(), fname+1, sizeof(fname)-1, kCFStringEncodingASCII);
@@ -64,16 +66,19 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 			id.id=i+j;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
+				// コントロールのリファレンスにこのクラスへのポインタを登録する
 				SetControlReference(control, SInt32(this));
 				
 				if (styleOK) {
 					if (i==0) {
+						// kAudioUnitCustomProperty_ProgramName コントロールの文字色を黒に設定する
 						textStyle.just = teJustLeft;
 						textStyle.foreColor.red = 0;
 						textStyle.foreColor.green = 0;
 						textStyle.foreColor.blue = 0;
 					}
 					else {
+						// それ以外のコントロールの文字色を水色に設定する
 						textStyle.just = teJustRight;
 						textStyle.foreColor.red = 180*256;
 						textStyle.foreColor.green = 248*256;
@@ -85,25 +90,31 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 				ControlKind	thekind;
 				GetControlKind(control,&thekind);
 				if (thekind.kind == 'eutx') {
+					// edittextのフォーカス変更イベント
 					EventTypeSpec events[] = {
 					{kEventClassControl, kEventControlSetFocusPart}
 					};
 					WantEventTypes(GetControlEventTarget(control), GetEventTypeCount(events), events);
+					// キーフィルターを登録する
 					ControlKeyFilterUPP proc = i?NumericKeyFilterCallback:StdKeyFilterCallback;
 					SetControlData(control, 0, kControlEditTextKeyFilterTag, sizeof(proc), &proc);
 				}
 				else {
+					// 値変更イベントハンドラを登録する
 					EventTypeSpec events[] = {
 					{kEventClassControl, kEventControlValueFieldChanged}
 					};
 					WantEventTypes(GetControlEventTarget(control), GetEventTypeCount(events), events);
 				}
 				if (thekind.kind == 'larr') {
+					// LittleArrowコントロールの上下操作アクションを登録する
 					SetControlAction(control, LittleArrowsControlAction);
 				}
 			}
 		}
 	}
+	
+	// 波形ビューにクリックイベントを登録
 	EventTypeSpec clickevents[] = {
 	{kEventClassControl, kEventControlClick}
 	};
@@ -120,12 +131,12 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 	InstallTrackingHandler((DragTrackingHandlerUPP)MyTrackingHandler, mCarbonWindow, this);
 	InstallReceiveHandler((DragReceiveHandlerUPP)MyReceiveHandler, mCarbonWindow, this);
 	
-	//プロパティ変更イベントの登録
+	// プロパティが変更されたらPropertyHasChangedが呼ばれるように設定
 	for (int i=0; i<kNumberOfProperties; i++) {
 		RegisterPropertyChanges(kAudioUnitCustomProperty_First+i);
+		// デフォルト値を反映させる
 		PropertyHasChanged(kAudioUnitCustomProperty_First+i,kAudioUnitScope_Global,0);
 	}
-
 }
 
 Chip700View::~Chip700View()
@@ -134,6 +145,7 @@ Chip700View::~Chip700View()
 	RemoveReceiveHandler((DragReceiveHandlerUPP)MyReceiveHandler, mCarbonWindow);
 }
 
+// Commandを持つボタンコントロールが押されたときの動作
 bool Chip700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
 {
 	switch (cmd.commandID) {
@@ -168,6 +180,7 @@ bool Chip700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
 			
 		case 'copy':
 		{
+			// FIRパラメータをクリップボードにコピー
 			HIViewID	id = {'text',0};
 			HIViewRef	control;
 			OSStatus	result;
@@ -190,8 +203,64 @@ bool Chip700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
 			
 			return true;
 		}
+			
+		case 'tra0':
+			changeEditingChannel( 0 );
+			return true;
+		case 'tra1':
+			changeEditingChannel( 1 );
+			return true;
+		case 'tra2':
+			changeEditingChannel( 2 );
+			return true;
+		case 'tra3':
+			changeEditingChannel( 3 );
+			return true;
+		case 'tra4':
+			changeEditingChannel( 4 );
+			return true;
+		case 'tra5':
+			changeEditingChannel( 5 );
+			return true;
+		case 'tra6':
+			changeEditingChannel( 6 );
+			return true;
+		case 'tra7':
+			changeEditingChannel( 7 );
+			return true;
+		case 'tra8':
+			changeEditingChannel( 8 );
+			return true;
+		case 'tra9':
+			changeEditingChannel( 9 );
+			return true;
+		case 'traA':
+			changeEditingChannel( 10 );
+			return true;
+		case 'traB':
+			changeEditingChannel( 11 );
+			return true;
+		case 'traC':
+			changeEditingChannel( 12 );
+			return true;
+		case 'traD':
+			changeEditingChannel( 13 );
+			return true;
+		case 'traE':
+			changeEditingChannel( 14 );
+			return true;
+		case 'traF':
+			changeEditingChannel( 15 );
+			return true;
 	}
 	return false;
+}
+
+void Chip700View::changeEditingChannel( int ch )
+{
+	int intValue = ch;
+	AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_EditingChannel,
+						 kAudioUnitScope_Global,0,&intValue,sizeof(int));
 }
 
 CFStringRef Chip700View::CreateXMSNESText()
@@ -257,6 +326,8 @@ CFStringRef Chip700View::CreateXMSNESText()
 	return param_str;
 }
 
+// View上のコントロールが値変更の操作されたときに呼ばれる。
+// Parameter変更コントロール以外は手動でAU側に反映させる必要あり。
 bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 {
 	TCarbonEvent theEvent = event;
@@ -277,7 +348,7 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 				case kEventControlClick:
 				{
 					if (propertyID == kAudioUnitCustomProperty_BRRData) {
-					//ドラッグ処理
+					//波形部分のクリックならドラッグ処理開始
 					EventRecord	eventrec;
 					if (!ConvertEventRefToEventRecord(event,&eventrec))
 						return dragStart(view, &eventrec);
@@ -321,6 +392,7 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 						case kAudioUnitCustomProperty_VolL:
 						case kAudioUnitCustomProperty_VolR:
 						case kAudioUnitCustomProperty_EditingProgram:
+						case kAudioUnitCustomProperty_EditingChannel:
 							intValue = HIViewGetValue(view);
 							AudioUnitSetProperty(mEditAudioUnit,propertyID,
 												 kAudioUnitScope_Global,0,&intValue,sizeof(int));
@@ -337,7 +409,7 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 							maximum = GetControl32BitMaximum(view);
 							cval = GetControl32BitValue(view);
 							floatValue = (float)cval / (float)maximum;
-							AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Band1+id.id-16/*16番目*/,
+							AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_First+id.id,
 												 kAudioUnitScope_Global,0,&floatValue,sizeof(float));
 							break;
 						}
@@ -353,6 +425,7 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 	return false;
 }
 
+// テキストボックスの変更内容をAudioUnit側に反映させる
 void Chip700View::applyEditTextProp(ControlRef control)
 {
 	HIViewID	id;
@@ -380,6 +453,7 @@ void Chip700View::applyEditTextProp(ControlRef control)
 		case kAudioUnitCustomProperty_LowKey:
 		case kAudioUnitCustomProperty_HighKey:
 		case kAudioUnitCustomProperty_EditingProgram:
+		case kAudioUnitCustomProperty_EditingChannel:
 			intValue = CFStringGetIntValue(cstr);
 			AudioUnitSetProperty(mEditAudioUnit,propertyID,
 								 kAudioUnitScope_Global,0,&intValue,sizeof(int));
@@ -394,6 +468,7 @@ void Chip700View::applyEditTextProp(ControlRef control)
 	CFRelease(cstr);
 }
 
+// プロパティが変更されたときに呼ばれ、表示内容を変更する処理を行う
 void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnitScope inScope,  
 						AudioUnitElement inElement)
 {
@@ -542,9 +617,10 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			break;
 			
 		case kAudioUnitCustomProperty_EditingProgram:
+		case kAudioUnitCustomProperty_EditingChannel:
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id = inPropertyID-kAudioUnitCustomProperty_First;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue);
@@ -567,7 +643,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			
 			size = sizeof(float);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,inScope,inElement,&floatValue,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_Band1+16;
+			id.id=inPropertyID-kAudioUnitCustomProperty_First;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				maximum = GetControl32BitMaximum(control);
@@ -587,6 +663,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 		}
 			
 		case kAudioUnitCustomProperty_TotalRAM:
+			// メモリ表示を更新する
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
 			id.signature = 'text';
@@ -597,13 +674,47 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 				HIViewSetText(control, cfstr);
 			}
 			break;
+			
+		case kAudioUnitCustomProperty_NoteOnTrack_1:
+		case kAudioUnitCustomProperty_NoteOnTrack_2:
+		case kAudioUnitCustomProperty_NoteOnTrack_3:
+		case kAudioUnitCustomProperty_NoteOnTrack_4:
+		case kAudioUnitCustomProperty_NoteOnTrack_6:
+		case kAudioUnitCustomProperty_NoteOnTrack_7:
+		case kAudioUnitCustomProperty_NoteOnTrack_8:
+		case kAudioUnitCustomProperty_NoteOnTrack_9:
+		case kAudioUnitCustomProperty_NoteOnTrack_10:
+		case kAudioUnitCustomProperty_NoteOnTrack_11:
+		case kAudioUnitCustomProperty_NoteOnTrack_12:
+		case kAudioUnitCustomProperty_NoteOnTrack_13:
+		case kAudioUnitCustomProperty_NoteOnTrack_14:
+		case kAudioUnitCustomProperty_NoteOnTrack_15:
+		case kAudioUnitCustomProperty_NoteOnTrack_16:
+		{
+			// トラックインジケーターを反映させる
+			bool	boolValue;
+			size = sizeof(bool);
+			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&boolValue,&size);
+			id.signature = 'trac';
+			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			if (result == noErr) {
+				if ( boolValue ) {
+					SetControl32BitValue(control, 1);
+				}
+				else {
+					SetControl32BitValue(control, 0);
+				}
+			}
+			break;
+		}
 	}
 	mEventDisable = false;
 }
 
 
 //
-// private function
+// internal function
 //
 
 pascal ControlKeyFilterResult Chip700View::StdKeyFilterCallback(ControlRef theControl, 
@@ -639,7 +750,7 @@ pascal ControlKeyFilterResult Chip700View::NumericKeyFilterCallback(ControlRef t
 	return kControlKeyFilterBlockKey;
 }
 
-//波形を表示する
+//波形表示をbrrデータで更新する
 void Chip700View::setBRRData(UInt8 *data, UInt32 length)
 {
 	HIRect	bounds;
@@ -668,7 +779,7 @@ void Chip700View::setBRRData(UInt8 *data, UInt32 length)
 	}
 }
 
-//setBRRDataを呼び出した後に呼び出す
+// ループポイント表示を更新する
 void Chip700View::setLoopoint(UInt32 lp)
 {
 	short	*wavedata;
@@ -696,6 +807,7 @@ void Chip700View::setLoopoint(UInt32 lp)
 	delete[] wavedata;
 }
 
+// 波形のサンプリングレートを検出
 void Chip700View::correctSampleRateSelected(void)
 {
 	int		looppoint, key;
@@ -729,6 +841,7 @@ void Chip700View::correctSampleRateSelected(void)
 	delete[] buffer;
 }
 
+// 波形の基本ノートを検出
 void Chip700View::correctBaseKeySelected(void)
 {
 	int		looppoint, key;
@@ -919,7 +1032,7 @@ int Chip700View::getLoadFile(FSRef *ref)
 	status=NavGetDefaultDialogCreationOptions(&myDialogOptions);
 	myDialogOptions.optionFlags &= ~kNavAllowMultipleFiles;
 	
-	status = NavCreateChooseFileDialog(&myDialogOptions,NULL,NULL,NULL,MyFilterProc,NULL,&myDialogRef);
+	status = NavCreateChooseFileDialog(&myDialogOptions,NULL,NULL,NULL,MyFileSelectFilterProc,NULL,&myDialogRef);
 	status = NavDialogRun(myDialogRef);
 	
 	NavUserAction userAction = NavDialogGetUserAction(myDialogRef);
@@ -941,7 +1054,7 @@ int Chip700View::getLoadFile(FSRef *ref)
 	return 0;
 }
 
-static Boolean MyFilterProc(AEDesc *theItem, void *info, void *callBackUD, 
+static Boolean MyFileSelectFilterProc(AEDesc *theItem, void *info, void *callBackUD, 
 					  NavFilterModes filterMode)
 {
 	OSStatus status;
@@ -1405,7 +1518,7 @@ int Chip700View::loadSPCFile(CFURLRef path)
 		
 		cEditNum++;
 	}
-//別に０に戻す必要は無いな
+//別に０に戻す必要は無いよね
 //	cEditNum = 0;
 //	AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_EditingProgram,kAudioUnitScope_Global,0,&cEditNum,sizeof(int));
 
@@ -1420,7 +1533,7 @@ int Chip700View::loadSPCFile(CFURLRef path)
 
 static void LittleArrowsControlAction(ControlRef theControl, ControlPartCode partCode)
 {
-	// increment値をコントロールから取得
+	// コントロールに設定されているincrement値を取得
 	// 設定されていなければ１を使う
 	SInt32 increment;
 	OSStatus status = GetControlData(theControl, kControlEntireControl, kControlLittleArrowsIncrementValueTag, sizeof(increment), &increment, NULL);

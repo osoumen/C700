@@ -726,9 +726,9 @@ int EchoKernel::GetFxOut()
 	mFIRbuf[mFIRIndex] = mEchoBuffer[mEchoIndex];
 	int i;
 	int sum = 0;
-	for (i=0; i<mFIRLength-1; i++) {
+	for (i=0; i<FIR_LENGTH-1; i++) {
 		sum += mFIRbuf[mFIRIndex] * m_fir_taps[i];
-		mFIRIndex = (mFIRIndex + 1)%mFIRLength;
+		mFIRIndex = (mFIRIndex + 1)%FIR_LENGTH;
 	}
 	sum += mFIRbuf[mFIRIndex] * m_fir_taps[i];
 	sum >>= 7;

@@ -305,7 +305,7 @@ OSStatus CAUCarbonViewNib::CreateUI(Float32 x, Float32 y)
     
     // Register standard SDK controls - other classes must be registered in the application view class
     TViewNoCompositingCompatible::SetClassBundle(mBundleRef);
-    //TViewNoCompositingCompatible::RegisterClassForBundleID<TValuePictControl>(mBundleID);
+    TViewNoCompositingCompatible::RegisterClassForBundleID<TValuePictControl>(mBundleID);
     TViewNoCompositingCompatible::RegisterClassForBundleID<TPngPictControl>(mBundleID);
     TViewNoCompositingCompatible::RegisterClassForBundleID<TValuePictButtonControl>(mBundleID);
     TViewNoCompositingCompatible::RegisterClassForBundleID<TKnobControl>(mBundleID);

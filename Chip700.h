@@ -110,12 +110,15 @@ public:
 	}
 
 private:
-	int					mEditProg;		//編集中のプログラムNo.
+	int					mEditProg;		// 編集中のプログラムNo.
+	int					mEditChannel;	// 編集中のチャンネル
 	Float64				mTempo;
+	// MIDIチャンネルノートon/off
+	bool				mIsNoteOn[16];
 	
 	VoiceParams			mVPset[128];
 	TAUBuffer<UInt8>	mBRRdata[128];
-	//エコー
+	// エコー
 	Float32				mFilterBand[5];
 	
 	Chip700Generator	mGenerator;
