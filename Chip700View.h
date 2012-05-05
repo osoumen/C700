@@ -53,6 +53,9 @@ public:
 	void saveToFile(CFURLRef savefile);
 	void saveToXIFile(CFURLRef savefile);
 private:
+	void ChangeTrackSelectorValue( int track );
+	void ChangeBankSelectorValue( int bank );
+	
 	static pascal ControlKeyFilterResult StdKeyFilterCallback(ControlRef theControl, 
 																		SInt16 *keyCode, SInt16 *charCode, 
 																		EventModifiers *modifiers);
@@ -61,6 +64,8 @@ private:
 																		EventModifiers *modifiers);
 	
 	void changeEditingChannel( int trk );
+	void changeBank( int bank );
+	
 	CFStringRef CreateXMSNESText();
 	
 	void setBRRData(UInt8 *data, UInt32 length);

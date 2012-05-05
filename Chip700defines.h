@@ -25,7 +25,7 @@ enum {
 	kParam_bendrange,
 	kParam_program,
 	kParam_clipnoise,
-	kParam_drummode,
+	kParam_bankAmulti,
 	
 	kParam_program_2,
 	kParam_program_3,
@@ -73,6 +73,10 @@ enum {
 	kParam_fir6,
 	kParam_fir7,
 	
+	kParam_bankBmulti,			// 追加 12.04.16
+	kParam_bankCmulti,			// 追加 12.04.16
+	kParam_bankDmulti,			// 追加 12.04.16
+	
 	kNumberOfParameters
 };
 
@@ -96,6 +100,7 @@ enum
 	kAudioUnitCustomProperty_VolL,
 	kAudioUnitCustomProperty_VolR,
 	kAudioUnitCustomProperty_Echo,
+	kAudioUnitCustomProperty_Bank,			// 追加 12.04.16
 	kAudioUnitCustomProperty_EditingProgram,
 	kAudioUnitCustomProperty_EditingChannel,
 	
@@ -128,7 +133,7 @@ enum
 	kAudioUnitCustomProperty_NoteOnTrack_15,	// read only
 	kAudioUnitCustomProperty_NoteOnTrack_16,	// read only
 	
-	kNumberOfProperties = 41
+	kNumberOfProperties = kAudioUnitCustomProperty_NoteOnTrack_16-kAudioUnitCustomProperty_First+1
 };
 
 static const float kMinimumValue_n128 = -128;
@@ -143,6 +148,7 @@ static const float kMaximumValue_127 = 127;
 
 static const int kMaximumVoices = 16;
 
+static const int NUM_BANKS = 4;
 
 typedef struct {
 	int				size;
@@ -158,6 +164,7 @@ typedef struct {
 	int					lp;
 	bool				loop;
 	bool				echo;
+	int					bank;			// 追加 12.04.16
 	BRRData				brr;
 } VoiceParams;
 

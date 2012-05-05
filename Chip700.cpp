@@ -2,7 +2,7 @@
 #include "samplebrr.h"
 #include "brrcodec.h"
 #include <AudioToolbox/AudioToolbox.h>
-
+#include <algorithm>
 
 static CFStringRef kParam_poly_Name = CFSTR("Voices");
 static const float kDefaultValue_poly = 8;
@@ -36,8 +36,17 @@ static const float kDefaultValue_bendrange = 2;
 static CFStringRef kParam_program_Name = CFSTR("Program");
 static const float kDefaultValue_program = 0;
 
-static CFStringRef kParam_drummode_Name = CFSTR("Drum Mode");
-static const float kDefaultValue_drummode = 0;
+static CFStringRef kParam_bankAmulti_Name = CFSTR("Bank A Multi");
+static const float kDefaultValue_bankAmulti = 0;
+
+static CFStringRef kParam_bankBmulti_Name = CFSTR("Bank B Multi");
+static const float kDefaultValue_bankBmulti = 0;
+
+static CFStringRef kParam_bankCmulti_Name = CFSTR("Bank C Multi");
+static const float kDefaultValue_bankCmulti = 0;
+
+static CFStringRef kParam_bankDmulti_Name = CFSTR("Bank D Multi");
+static const float kDefaultValue_bankDmulti = 0;
 
 //エコー部
 static CFStringRef kParameter_echovol_L_Name = CFSTR("Wet(L)");
@@ -106,7 +115,9 @@ static CFStringRef kSaveKey_sr = CFSTR("sr");
 static CFStringRef kSaveKey_volL = CFSTR("volL");
 static CFStringRef kSaveKey_volR = CFSTR("volR");
 static CFStringRef kSaveKey_echo = CFSTR("echo");
+static CFStringRef kSaveKey_bank = CFSTR("bank");
 
+int RenumberKeyMap( unsigned char *snum, int size );
 int GetARTicks( int ar, Float64 tempo );
 int GetDRTicks( int dr, Float64 tempo );
 int GetSRTicks( int sr, Float64 tempo );
@@ -135,7 +146,10 @@ Chip700::Chip700(AudioUnit component)
 	Globals()->SetParameter(kParam_clipnoise, kDefaultValue_clipnoise);
 	Globals()->SetParameter(kParam_bendrange, kDefaultValue_bendrange);
 	Globals()->SetParameter(kParam_program, kDefaultValue_program);
-	Globals()->SetParameter(kParam_drummode, kDefaultValue_drummode);
+	Globals()->SetParameter(kParam_bankAmulti, kDefaultValue_bankAmulti);
+	Globals()->SetParameter(kParam_bankBmulti, kDefaultValue_bankBmulti);
+	Globals()->SetParameter(kParam_bankCmulti, kDefaultValue_bankCmulti);
+	Globals()->SetParameter(kParam_bankDmulti, kDefaultValue_bankDmulti);
 	for ( int i=0; i<15; i++ ) {
 		Globals()->SetParameter(kParam_program_2+i, kDefaultValue_program);
 		Globals()->SetParameter(kParam_vibdepth_2+i, kDefaultValue_vibdepth);
@@ -169,24 +183,26 @@ Chip700::Chip700(AudioUnit component)
 	//プログラムの初期化
 	for (int i=0; i<128; i++) {
 		mVPset[i].pgname = NULL;
-		mVPset[i].brr.size=0;
-		mVPset[i].brr.data=NULL;
-		mVPset[i].basekey=0;
-		mVPset[i].lowkey=0;
-		mVPset[i].highkey=0;
-		mVPset[i].loop=false;
-		mVPset[i].echo=false;
-		mVPset[i].lp=0;
-		mVPset[i].rate=0;
-		mVPset[i].volL=100;
-		mVPset[i].volR=100;
+		mVPset[i].brr.size = 0;
+		mVPset[i].brr.data = NULL;
+		mVPset[i].basekey = 0;
+		mVPset[i].lowkey = 0;
+		mVPset[i].highkey = 0;
+		mVPset[i].loop = false;
+		mVPset[i].echo = false;
+		mVPset[i].bank = 0;
+		mVPset[i].lp = 0;
+		mVPset[i].rate = 0;
+		mVPset[i].volL = 100;
+		mVPset[i].volR = 100;
 		
-		mVPset[i].ar=kDefaultValue_AR;
-		mVPset[i].dr=kDefaultValue_DR;
-		mVPset[i].sl=kDefaultValue_SL;
-		mVPset[i].sr=kDefaultValue_SR;
+		mVPset[i].ar = kDefaultValue_AR;
+		mVPset[i].dr = kDefaultValue_DR;
+		mVPset[i].sl = kDefaultValue_SL;
+		mVPset[i].sr = kDefaultValue_SR;
 	}
 	
+	// 音源にプログラムのメモリを渡す
 	mGenerator.SetVPSet(mVPset);
 	
 #if AU_DEBUG_DISPATCHER
@@ -249,7 +265,10 @@ ComponentResult	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 	mGenerator.SetVibFreq( Globals()->GetParameter(kParam_vibrate) );
 	mGenerator.SetVibDepth( Globals()->GetParameter(kParam_vibdepth2) );
 	mGenerator.SetClipper( Globals()->GetParameter(kParam_clipnoise)==0 ? false:true );
-	mGenerator.SetDrumMode( Globals()->GetParameter(kParam_drummode)==0 ? false:true );
+	mGenerator.SetMultiMode( 0, Globals()->GetParameter(kParam_bankAmulti)==0 ? false:true );
+	mGenerator.SetMultiMode( 1, Globals()->GetParameter(kParam_bankBmulti)==0 ? false:true );
+	mGenerator.SetMultiMode( 2, Globals()->GetParameter(kParam_bankCmulti)==0 ? false:true );
+	mGenerator.SetMultiMode( 3, Globals()->GetParameter(kParam_bankDmulti)==0 ? false:true );
 	mGenerator.SetVelocitySens( Globals()->GetParameter(kParam_velocity)==0 ? false:true );
 	mGenerator.SetPBRange( Globals()->GetParameter(kParam_bendrange) );
 	
@@ -413,14 +432,36 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 				outParameterInfo.maxValue = kMaximumValue_127;
 				outParameterInfo.defaultValue = kDefaultValue_program;
 				break;
-			case kParam_drummode:
-				AUBase::FillInParameterName (outParameterInfo, kParam_drummode_Name, false);
+				
+			case kParam_bankAmulti:
+				AUBase::FillInParameterName (outParameterInfo, kParam_bankAmulti_Name, false);
 				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
 				outParameterInfo.minValue = kMinimumValue_0;
 				outParameterInfo.maxValue = 1;
-				outParameterInfo.defaultValue = kDefaultValue_drummode;
+				outParameterInfo.defaultValue = kDefaultValue_bankAmulti;
 				break;
-			
+			case kParam_bankBmulti:
+				AUBase::FillInParameterName (outParameterInfo, kParam_bankBmulti_Name, false);
+				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
+				outParameterInfo.minValue = kMinimumValue_0;
+				outParameterInfo.maxValue = 1;
+				outParameterInfo.defaultValue = kDefaultValue_bankBmulti;
+				break;
+			case kParam_bankCmulti:
+				AUBase::FillInParameterName (outParameterInfo, kParam_bankCmulti_Name, false);
+				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
+				outParameterInfo.minValue = kMinimumValue_0;
+				outParameterInfo.maxValue = 1;
+				outParameterInfo.defaultValue = kDefaultValue_bankCmulti;
+				break;
+			case kParam_bankDmulti:
+				AUBase::FillInParameterName (outParameterInfo, kParam_bankDmulti_Name, false);
+				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
+				outParameterInfo.minValue = kMinimumValue_0;
+				outParameterInfo.maxValue = 1;
+				outParameterInfo.defaultValue = kDefaultValue_bankDmulti;
+				break;
+				
 			//エコー
 			case kParam_mainvol_L:
                 AUBase::FillInParameterName (outParameterInfo, kParameter_mainvol_L_Name, false);
@@ -576,6 +617,11 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 				outWritable = false;
 				return noErr;
 
+			case kAudioUnitCustomProperty_Bank:
+				outDataSize = sizeof(UInt32);
+				outWritable = false;
+				return noErr;
+				
 			case kAudioUnitCustomProperty_BRRData:
 				outDataSize = sizeof(BRRData);
 				outWritable = false;
@@ -675,6 +721,10 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 				
 			case kAudioUnitCustomProperty_Echo:
 				*((bool *)outData) = mVPset[mEditProg].echo;
+				return noErr;
+				
+			case kAudioUnitCustomProperty_Bank:
+				*((int *)outData) = mVPset[mEditProg].bank;
 				return noErr;
 
 			case kAudioUnitCustomProperty_AR:
@@ -792,8 +842,9 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 						mBRRdata[mEditProg].Deallocate();
 						mVPset[mEditProg].brr.data = NULL;
 						mVPset[mEditProg].brr.size = 0;
-						if (mVPset[mEditProg].pgname)
+						if (mVPset[mEditProg].pgname) {
 							CFRelease(mVPset[mEditProg].pgname);
+						}
 						mVPset[mEditProg].pgname = NULL;
 						PropertyChanged(kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0);
 					}
@@ -832,7 +883,12 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_Echo:
 				mVPset[mEditProg].echo = *((bool*)inData);
 				return noErr;
-				
+			
+			case kAudioUnitCustomProperty_Bank:
+				mVPset[mEditProg].bank = *((int*)inData);
+				mGenerator.RefreshKeyMap();
+				return noErr;
+			
 			case kAudioUnitCustomProperty_AR:
 				mVPset[mEditProg].ar = *((int*)inData);
 				return noErr;
@@ -873,7 +929,7 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 				}
 				
 				// 表示更新が必要なプロパティの変更を通知する
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Echo; i++) {
+				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Bank; i++) {
 					PropertyChanged(i, kAudioUnitScope_Global, 0);
 				}
 				return noErr;
@@ -1053,6 +1109,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[0].highkey=127;
 					mVPset[0].loop=true;
 					mVPset[0].echo=false;
+					mVPset[0].bank=0;
 					mVPset[0].lp=18;
 					mVPset[0].rate=28160.0;
 					mVPset[0].volL=100;
@@ -1070,6 +1127,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[1].highkey=127;
 					mVPset[1].loop=true;
 					mVPset[1].echo=true;
+					mVPset[1].bank=0;
 					mVPset[1].lp=9;
 					mVPset[1].rate=28160.0;
 					mVPset[1].volL=100;
@@ -1087,6 +1145,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[2].highkey=127;
 					mVPset[2].loop=true;
 					mVPset[2].echo=true;
+					mVPset[2].bank=0;
 					mVPset[2].lp=9;
 					mVPset[2].rate=28160.0;
 					mVPset[2].volL=100;
@@ -1104,6 +1163,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[3].highkey=127;
 					mVPset[3].loop=true;
 					mVPset[3].echo=true;
+					mVPset[3].bank=0;
 					mVPset[3].lp=9;
 					mVPset[3].rate=28160.0;
 					mVPset[3].volL=100;
@@ -1121,6 +1181,7 @@ OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 					mVPset[4].highkey=127;
 					mVPset[4].loop=true;
 					mVPset[4].echo=true;
+					mVPset[4].bank=0;
 					mVPset[4].lp=9;
 					mVPset[4].rate=28160.0;
 					mVPset[4].volL=100;
@@ -1243,11 +1304,21 @@ int Chip700::CreateXIData( CFDataRef *data )
 	CFMutableDataRef mdata;
 	mdata = CFDataCreateMutable( NULL, 0 );
 	
-	int start_prg = 0;
-	int end_prg = 127;
-	bool multisample = Globals()->GetParameter(kParam_drummode) != 0 ? true:false;
+	int start_prg;
+	int end_prg;
+	bool isBankMulti[4];
+	isBankMulti[0] = Globals()->GetParameter(kParam_bankAmulti) != 0 ? true:false;
+	isBankMulti[1] = Globals()->GetParameter(kParam_bankBmulti) != 0 ? true:false;
+	isBankMulti[2] = Globals()->GetParameter(kParam_bankCmulti) != 0 ? true:false;
+	isBankMulti[3] = Globals()->GetParameter(kParam_bankDmulti) != 0 ? true:false;
+	int	selectBank = mVPset[mEditProg].bank;
+	bool multisample = isBankMulti[selectBank];
 	
-	if ( !multisample ) {
+	if ( multisample ) {
+		start_prg = 0;
+		end_prg = 127;
+	}
+	else {
 		start_prg = end_prg = mEditProg;
 	}
 	
@@ -1260,10 +1331,23 @@ int Chip700::CreateXIData( CFDataRef *data )
 	memset(&xfh, 0, sizeof(xfh));
 	memcpy(xfh.extxi, "Extended Instrument: ", 21);
 	if ( multisample ) {
-		memcpy(xfh.name, "Multi sampled Inst", 22);
+		char multi_instname[][22] = {
+			"Bank A (Multi)",
+			"Bank B (Multi)",
+			"Bank C (Multi)",
+			"Bank D (Multi)"
+		};
+		memcpy(xfh.name, multi_instname[selectBank], 22);
 	}
 	else {
-		if ( CFStringGetCString(mVPset[mEditProg].pgname,xsh.name,22,kCFStringEncodingASCII) == false ) {
+		bool	noname = false;
+		if ( mVPset[mEditProg].pgname == NULL ) {
+			noname = true;
+		}
+		else if ( CFStringGetCString(mVPset[mEditProg].pgname,xsh.name,22,kCFStringEncodingASCII) == false ) {
+			noname = true;
+		}
+		if ( noname ) {
 			memcpy(xsh.name, "Inst", 22);
 		}
 	}
@@ -1279,12 +1363,9 @@ int Chip700::CreateXIData( CFDataRef *data )
 	
 	if ( multisample ) {
 		for ( int i=0; i<96; i++ ) {
-			xih.snum[i] = mGenerator.GetKeyMap(i+12);
-			if ( (mGenerator.GetKeyMap(i+12)+1) > nsamples ) {
-				nsamples = mGenerator.GetKeyMap(i+12)+1;
-				end_prg = mGenerator.GetKeyMap(i+12);
-			}
+			xih.snum[i] = mGenerator.GetKeyMap(selectBank, i+12);
 		}
+		nsamples = RenumberKeyMap( xih.snum, 96 );
 	}
 	else {
 		for ( int i=0; i<96; i++ ) {
@@ -1298,12 +1379,12 @@ int Chip700::CreateXIData( CFDataRef *data )
 	Float64 tempo = mTempo;
 
 	if ( multisample ) {
-		//サンプル毎には設定出来ないので非対応
+		//サンプル毎には設定出来ないようなので非対応
 		for (int i=0; i<4; i++) {
 			xih.venv[i*2] = EndianU16_NtoL( i*10 );
 			xih.venv[i*2+1] = EndianU16_NtoL( 64 );
 		}
-		xih.venv[7] = 0;
+		//xih.venv[7] = 0;
 	}
 	else {
 		xih.venv[0] = 0;
@@ -1343,49 +1424,95 @@ int Chip700::CreateXIData( CFDataRef *data )
 	
 	// XI Sample Headers
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
-		xsh.samplen = EndianU32_NtoL( mVPset[ismp].brr.size/9*32 );
-		xsh.loopstart = EndianU32_NtoL( mVPset[ismp].lp/9*32 );
-		xsh.looplen = EndianU32_NtoL( xsh.samplen - xsh.loopstart );
-		double avr = ( abs(mVPset[ismp].volL) + abs(mVPset[ismp].volR) ) / 2;
-		double pan = (abs(mVPset[ismp].volR) * 128) / avr;
-		if ( pan > 256 ) pan = 256;
-		xsh.vol = 64;	//変化しない？
-		xsh.pan = pan;
-		xsh.type = 0x10;	//CHN_16BIT
-		if ( mVPset[ismp].loop ) {
-			xsh.type |= 0x01;	//Normal Loop
+		if ( mVPset[ismp].brr.data != nil && mVPset[ismp].bank == selectBank ) {
+			xsh.samplen = EndianU32_NtoL( mVPset[ismp].brr.size/9*32 );
+			xsh.loopstart = EndianU32_NtoL( mVPset[ismp].lp/9*32 );
+			xsh.looplen = EndianU32_NtoL( xsh.samplen - xsh.loopstart );
+			double avr = ( abs(mVPset[ismp].volL) + abs(mVPset[ismp].volR) ) / 2;
+			double pan = (abs(mVPset[ismp].volR) * 128) / avr;
+			if ( pan > 256 ) pan = 256;
+			xsh.vol = 64;	//変化しない？
+			xsh.pan = pan;
+			xsh.type = 0x10;	//CHN_16BIT
+			if ( mVPset[ismp].loop ) {
+				xsh.type |= 0x01;	//Normal Loop
+			}
+			double trans = 12*(log(mVPset[ismp].rate / 8363.0)/log(2.0));
+			int trans_i = (trans + (60-mVPset[ismp].basekey) ) * 128 + 0.5;
+			xsh.relnote = trans_i >> 7;
+			xsh.finetune = trans_i & 0x7f;
+			xsh.res = 0;
+			if ( mVPset[ismp].pgname == NULL || CFStringGetCString(mVPset[ismp].pgname,xsh.name,22,kCFStringEncodingASCII) == false ) {
+				memcpy(xsh.name, "Sample", 22);
+			}
+			CFDataAppendBytes( mdata, (const UInt8 *)&xsh, sizeof(xsh) );
 		}
-		double trans = 12*(log(mVPset[ismp].rate / 8363.0)/log(2.0));
-		int trans_i = (trans + (60-mVPset[ismp].basekey) ) * 128 + 0.5;
-		xsh.relnote = trans_i >> 7;
-		xsh.finetune = trans_i & 0x7f;
-		xsh.res = 0;
-		if ( mVPset[ismp].pgname == NULL || CFStringGetCString(mVPset[ismp].pgname,xsh.name,22,kCFStringEncodingASCII) == false ) {
-			memcpy(xsh.name, "Sample", 22);
-		}
-		CFDataAppendBytes( mdata, (const UInt8 *)&xsh, sizeof(xsh) );
 	}
 	
 	// XI Sample Data
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
-		short	*wavedata;
-		long	numSamples = mVPset[ismp].brr.size/9*16;
-		wavedata = new short[numSamples];
-		brrdecode(mVPset[ismp].brr.data, wavedata,0,0);
-		short s_new,s_old;
-		s_old = wavedata[0];
-		for ( int i=0; i<numSamples; i++ ) {
-			s_new = wavedata[i];
-			wavedata[i] = s_new - s_old;
-			wavedata[i] = EndianS16_NtoL( wavedata[i] );
-			s_old = s_new;
+		if ( mVPset[ismp].brr.data != nil && mVPset[ismp].bank == selectBank ) {
+			short	*wavedata;
+			long	numSamples = mVPset[ismp].brr.size/9*16;
+			wavedata = new short[numSamples];
+			brrdecode(mVPset[ismp].brr.data, wavedata,0,0);
+			short s_new,s_old;
+			s_old = wavedata[0];
+			for ( int i=0; i<numSamples; i++ ) {
+				s_new = wavedata[i];
+				// 差分値に変換が必要？
+				wavedata[i] = s_new - s_old;
+				wavedata[i] = EndianS16_NtoL( wavedata[i] );
+				s_old = s_new;
+			}
+			CFDataAppendBytes( mdata, (const UInt8 *)wavedata, numSamples*2 );
+			delete [] wavedata;
 		}
-		CFDataAppendBytes( mdata, (const UInt8 *)wavedata, numSamples*2 );
-		delete [] wavedata;
 	}
 	*data = mdata;
 	
 	return 0;
+}
+
+int	RenumberKeyMap( unsigned char *snum, int size )
+{
+	static const int MAX_PROGS = 128;
+	int progs[MAX_PROGS];
+	int num_progs = 0;
+	// 総プログラム数を調べる
+	for ( int i=0; i<size; i++ ) {
+		bool exist = false;
+		// 探す
+		for ( int j=0; j<num_progs; j++ ) {
+			if ( snum[i] == progs[j] ) {
+				// 見つけた
+				exist = true;
+				break;
+			}
+		}
+		// 新しいプログラム番号を見つけたら配列に追加
+		if ( !exist ) {
+			progs[num_progs] = snum[i];
+			num_progs++;
+		}
+	}
+	// progsを昇順にソート
+	std::sort(progs, progs+num_progs);
+	
+	// 変換テーブルを作成
+	int trans_table[MAX_PROGS];
+	for ( int i=0; i<MAX_PROGS; i++ ) {
+		trans_table[i] = i;
+	}
+	for ( int i=0; i<num_progs; i++ ) {
+		trans_table[progs[i]] = i;
+	}
+	
+	// 変換
+	for ( int i=0; i<size; i++ ) {
+		snum[i] = trans_table[ snum[i] ];
+	}
+	return num_progs;
 }
 
 int GetARTicks( int ar, Float64 tempo )
@@ -1501,9 +1628,11 @@ int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 	AddNumToDictionary(dict, kSaveKey_volL, mVPset[pgnum].volL);
 	AddNumToDictionary(dict, kSaveKey_volR, mVPset[pgnum].volR);
 	AddBooleanToDictionary(dict, kSaveKey_echo, mVPset[pgnum].echo);
+	AddNumToDictionary(dict, kSaveKey_bank, mVPset[pgnum].bank);
 	
-	if (mVPset[pgnum].pgname)
+	if (mVPset[pgnum].pgname) {
 		CFDictionarySetValue(dict, kSaveKey_ProgName, mVPset[pgnum].pgname);
+	}
 	
 	*data = dict;
 	return 0;
@@ -1542,19 +1671,25 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
 		mVPset[pgnum].basekey = value;
 	}
-	else mVPset[pgnum].basekey = 60;
+	else {
+		mVPset[pgnum].basekey = 60;
+	}
 	if (CFDictionaryContainsKey(dict, kSaveKey_lowkey)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_lowkey));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
 		mVPset[pgnum].lowkey = value;
 	}
-	else mVPset[pgnum].lowkey = 0;
+	else {
+		mVPset[pgnum].lowkey = 0;
+	}
 	if (CFDictionaryContainsKey(dict, kSaveKey_highkey)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_highkey));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
 		mVPset[pgnum].highkey = value;
 	}
-	else mVPset[pgnum].highkey = 127;
+	else {
+		mVPset[pgnum].highkey = 127;
+	}
 	mGenerator.RefreshKeyMap();
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_ar)) {
@@ -1586,23 +1721,39 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
 		mVPset[pgnum].volL = value;
 	}
-	else mVPset[pgnum].volL = 100;
+	else {
+		mVPset[pgnum].volL = 100;
+	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_volR)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volR));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
 		mVPset[pgnum].volR = value;
 	}
-	else mVPset[pgnum].volR = 100;
+	else {
+		mVPset[pgnum].volR = 100;
+	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_echo)) {
 		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_echo));
 		mVPset[pgnum].echo = CFBooleanGetValue(cfbool) ? true:false;
 	}
-	else mVPset[pgnum].echo = false;
+	else {
+		mVPset[pgnum].echo = false;
+	}
 	
-	if (mVPset[pgnum].pgname)
+	if (CFDictionaryContainsKey(dict, kSaveKey_bank)) {
+		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_bank));
+		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
+		mVPset[pgnum].bank = value;
+	}
+	else {
+		mVPset[pgnum].bank = 0;
+	}
+	
+	if (mVPset[pgnum].pgname) {
 		CFRelease(mVPset[pgnum].pgname);
+	}
 	if (CFDictionaryContainsKey(dict, kSaveKey_ProgName)) {
 		mVPset[pgnum].pgname = CFStringCreateCopy(NULL,reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, kSaveKey_ProgName)));
 	}
@@ -1611,7 +1762,7 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	}
 	
 	if (pgnum == mEditProg) {
-		for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Echo; i++) {
+		for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Bank; i++) {
 			PropertyChanged(i, kAudioUnitScope_Global, 0);
 		}
 	}

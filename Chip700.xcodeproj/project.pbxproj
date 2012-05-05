@@ -206,6 +206,16 @@
 		8BC6025C073B072D006C4272 /* Chip700.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC6025B073B072D006C4272 /* Chip700.h */; };
 		8D01CCC80486CAD60068D4B7 /* Chip700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */; };
 		8D01CCCA0486CAD60068D4B7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		F516853F15553AB700D1F408 /* ind_track1.png in Resources */ = {isa = PBXBuildFile; fileRef = F516853D15553AB700D1F408 /* ind_track1.png */; };
+		F516854015553AB700D1F408 /* ind_track0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516853E15553AB700D1F408 /* ind_track0.png */; };
+		F516854F1555476100D1F408 /* bank_a0.png in Resources */ = {isa = PBXBuildFile; fileRef = F51685471555476100D1F408 /* bank_a0.png */; };
+		F51685501555476100D1F408 /* bank_a1.png in Resources */ = {isa = PBXBuildFile; fileRef = F51685481555476100D1F408 /* bank_a1.png */; };
+		F51685511555476100D1F408 /* bank_c1.png in Resources */ = {isa = PBXBuildFile; fileRef = F51685491555476100D1F408 /* bank_c1.png */; };
+		F51685521555476100D1F408 /* bank_b1.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854A1555476100D1F408 /* bank_b1.png */; };
+		F51685531555476100D1F408 /* bank_d1.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854B1555476100D1F408 /* bank_d1.png */; };
+		F51685541555476100D1F408 /* bank_d0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854C1555476100D1F408 /* bank_d0.png */; };
+		F51685551555476100D1F408 /* bank_b0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854D1555476100D1F408 /* bank_b0.png */; };
+		F51685561555476100D1F408 /* bank_c0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854E1555476100D1F408 /* bank_c0.png */; };
 		F543D0AC147D285F00DC53A3 /* Chip700Generator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */; };
 		F543D0AD147D285F00DC53A3 /* Chip700Generator.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* Chip700Generator.h */; };
 		F5855D2A1478E8F800D87CF2 /* bt_copy0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D271478E8F800D87CF2 /* bt_copy0.png */; };
@@ -449,6 +459,16 @@
 		8BC6025B073B072D006C4272 /* Chip700.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = Chip700.h; sourceTree = "<group>"; };
 		8D01CCD10486CAD60068D4B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D01CCD20486CAD60068D4B7 /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
+		F516853D15553AB700D1F408 /* ind_track1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ind_track1.png; sourceTree = "<group>"; };
+		F516853E15553AB700D1F408 /* ind_track0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ind_track0.png; sourceTree = "<group>"; };
+		F51685471555476100D1F408 /* bank_a0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bank_a0.png; sourceTree = "<group>"; };
+		F51685481555476100D1F408 /* bank_a1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bank_a1.png; sourceTree = "<group>"; };
+		F51685491555476100D1F408 /* bank_c1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bank_c1.png; sourceTree = "<group>"; };
+		F516854A1555476100D1F408 /* bank_b1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bank_b1.png; sourceTree = "<group>"; };
+		F516854B1555476100D1F408 /* bank_d1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bank_d1.png; sourceTree = "<group>"; };
+		F516854C1555476100D1F408 /* bank_d0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bank_d0.png; sourceTree = "<group>"; };
+		F516854D1555476100D1F408 /* bank_b0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bank_b0.png; sourceTree = "<group>"; };
+		F516854E1555476100D1F408 /* bank_c0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bank_c0.png; sourceTree = "<group>"; };
 		F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chip700Generator.cpp; sourceTree = "<group>"; };
 		F543D0AB147D285F00DC53A3 /* Chip700Generator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chip700Generator.h; sourceTree = "<group>"; };
 		F5855D271478E8F800D87CF2 /* bt_copy0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_copy0.png; sourceTree = "<group>"; };
@@ -630,6 +650,16 @@
 		8ACF4C250B2144FD00EC1825 /* graphics */ = {
 			isa = PBXGroup;
 			children = (
+				F51685471555476100D1F408 /* bank_a0.png */,
+				F51685481555476100D1F408 /* bank_a1.png */,
+				F516854D1555476100D1F408 /* bank_b0.png */,
+				F516854A1555476100D1F408 /* bank_b1.png */,
+				F516854E1555476100D1F408 /* bank_c0.png */,
+				F51685491555476100D1F408 /* bank_c1.png */,
+				F516854C1555476100D1F408 /* bank_d0.png */,
+				F516854B1555476100D1F408 /* bank_d1.png */,
+				F516853D15553AB700D1F408 /* ind_track1.png */,
+				F516853E15553AB700D1F408 /* ind_track0.png */,
 				F5855D871478FD9300D87CF2 /* bt_echo0.png */,
 				F5855D881478FD9300D87CF2 /* bt_echo1.png */,
 				F5855D271478E8F800D87CF2 /* bt_copy0.png */,
@@ -1071,6 +1101,16 @@
 				F5855D2B1478E8F800D87CF2 /* bt_copy1.png in Resources */,
 				F5855D891478FD9300D87CF2 /* bt_echo0.png in Resources */,
 				F5855D8A1478FD9300D87CF2 /* bt_echo1.png in Resources */,
+				F516853F15553AB700D1F408 /* ind_track1.png in Resources */,
+				F516854015553AB700D1F408 /* ind_track0.png in Resources */,
+				F516854F1555476100D1F408 /* bank_a0.png in Resources */,
+				F51685501555476100D1F408 /* bank_a1.png in Resources */,
+				F51685511555476100D1F408 /* bank_c1.png in Resources */,
+				F51685521555476100D1F408 /* bank_b1.png in Resources */,
+				F51685531555476100D1F408 /* bank_d1.png in Resources */,
+				F51685541555476100D1F408 /* bank_d0.png in Resources */,
+				F51685551555476100D1F408 /* bank_b0.png in Resources */,
+				F51685561555476100D1F408 /* bank_c0.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

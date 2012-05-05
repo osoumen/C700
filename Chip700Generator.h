@@ -98,7 +98,7 @@ public:
 	void SetVoiceLimit( int value );
 	void SetPBRange( float value );
 	void SetClipper( bool value );
-	void SetDrumMode( bool value );
+	void SetMultiMode( int bank, bool value );
 	void SetVelocitySens( bool value );
 	void SetVibFreq( float value );
 	void SetVibDepth( float value );
@@ -114,15 +114,16 @@ public:
 	void SetSampleRate( double samplerate ) { mSampleRate = samplerate; }
 	
 	void Process( unsigned int frames, float *output[2] );
-	int GetKeyMap( int key ) { return mKeyMap[key]; }
+	int GetKeyMap( int bank, int key ) { return mKeyMap[bank][key]; }
 	VoiceParams getVP(int pg) {return mVPset[pg];};
-	VoiceParams getMappedVP(int key) {return mVPset[mKeyMap[key]];};
+	VoiceParams getMappedVP(int bank, int key) {return mVPset[mKeyMap[bank][key]];};
 	void SetVPSet( VoiceParams *vp ) { mVPset = vp; }
 	
 	void RefreshKeyMap(void);
 	
 private:
 	static const int INTERNAL_CLOCK = 32000;
+	
 	enum EvtType {
 		NOTE_ON = 0,
 		NOTE_OFF
@@ -193,13 +194,13 @@ private:
 	float			mVibdepth;
 	float			mPbrange;
 	bool			mClipper;
-	bool			mDrumMode;
+	bool			mDrumMode[NUM_BANKS];
 	bool			mVelocitySens;
 	int				mChProgram[16];
 	float			mChPitchBend[16];
 	int				mChVibDepth[16];
 	
-	int				mKeyMap[128];	//各キーに対応するプログラムNo.
+	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
 	VoiceParams		*mVPset;
 	
 	int FindFreeVoice( const NoteEvt *evt );

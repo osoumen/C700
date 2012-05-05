@@ -252,6 +252,19 @@ bool Chip700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
 		case 'traF':
 			changeEditingChannel( 15 );
 			return true;
+			
+		case 'bnka':
+			changeBank( 0 );
+			return true;
+		case 'bnkb':
+			changeBank( 1 );
+			return true;
+		case 'bnkc':
+			changeBank( 2 );
+			return true;
+		case 'bnkd':
+			changeBank( 3 );
+			return true;
 	}
 	return false;
 }
@@ -260,6 +273,13 @@ void Chip700View::changeEditingChannel( int ch )
 {
 	int intValue = ch;
 	AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_EditingChannel,
+						 kAudioUnitScope_Global,0,&intValue,sizeof(int));
+}
+
+void Chip700View::changeBank( int bank )
+{
+	int intValue = bank;
+	AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Bank,
 						 kAudioUnitScope_Global,0,&intValue,sizeof(int));
 }
 
@@ -326,7 +346,7 @@ CFStringRef Chip700View::CreateXMSNESText()
 	return param_str;
 }
 
-// View上のコントロールが値変更の操作されたときに呼ばれる。
+// View上のコントロールをユーザーが操作されたときに呼ばれる。
 // Parameter変更コントロール以外は手動でAU側に反映させる必要あり。
 bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 {
@@ -378,12 +398,24 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 							break;
 						}
 							
+						case kAudioUnitCustomProperty_Bank:
+						{
+							/*
+							intValue = HIViewGetValue(view);
+							AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Bank,
+												 kAudioUnitScope_Global,0,&intValue,sizeof(int));
+							 */
+							break;
+						}
+							
 						case kAudioUnitCustomProperty_LoopPoint:
+						{
 							intValue = HIViewGetValue(view);
 							intValue = intValue/16*9;
 							AudioUnitSetProperty(mEditAudioUnit,propertyID,
 												 kAudioUnitScope_Global,0,&intValue,sizeof(int));
 							break;
+						}
 							
 						case kAudioUnitCustomProperty_AR:
 						case kAudioUnitCustomProperty_DR:
@@ -581,6 +613,23 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			break;
 		}
 		
+		case kAudioUnitCustomProperty_Bank:
+			size = sizeof(int);
+			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
+			/*
+			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			if (result == noErr) {
+				HIViewSetValue(control, intValue);
+			}
+			id.id=inPropertyID-kAudioUnitCustomProperty_First+1000;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			if (result == noErr) {
+				HIViewSetValue(control, intValue);
+			}*/
+			ChangeBankSelectorValue( intValue );
+			break;
+			
 		case kAudioUnitCustomProperty_BaseKey:
 		case kAudioUnitCustomProperty_LowKey:
 		case kAudioUnitCustomProperty_HighKey:
@@ -617,7 +666,6 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			break;
 			
 		case kAudioUnitCustomProperty_EditingProgram:
-		case kAudioUnitCustomProperty_EditingChannel:
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
 			id.id = inPropertyID-kAudioUnitCustomProperty_First;
@@ -631,6 +679,25 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 				CFStringRef	cfstr=CFStringCreateWithFormat(NULL,NULL,CFSTR("%d"),intValue);
 				HIViewSetText(control, cfstr);
 			}
+			break;
+			
+		case kAudioUnitCustomProperty_EditingChannel:
+			size = sizeof(int);
+			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
+			/*
+			id.id = inPropertyID-kAudioUnitCustomProperty_First;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			if (result == noErr) {
+				HIViewSetValue(control, intValue);
+			}
+			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			if (result == noErr) {
+				CFStringRef	cfstr=CFStringCreateWithFormat(NULL,NULL,CFSTR("%d"),intValue);
+				HIViewSetText(control, cfstr);
+			}
+			*/
+			ChangeTrackSelectorValue( intValue );
 			break;
 			
 		case kAudioUnitCustomProperty_Band1:
@@ -712,6 +779,50 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 	mEventDisable = false;
 }
 
+void Chip700View::ChangeTrackSelectorValue( int track )
+{
+	static const int BEGIN_TRACKSELECTOR_ID = 3000;
+	static const int NUM_TRACKSELECTOR = 16;
+	
+	OSStatus	result;
+	HIViewID	id = {'tsel', BEGIN_TRACKSELECTOR_ID};
+	HIViewRef	control;
+	SInt32		maximum,minimum,cval;
+	
+	for ( int i=0; i<NUM_TRACKSELECTOR; i++ ) {
+		id.id = BEGIN_TRACKSELECTOR_ID + i;
+		
+		result = HIViewFindByID(mRootUserPane, id, &control);
+		if (result == noErr) {
+			maximum = GetControl32BitMaximum(control);
+			minimum = GetControl32BitMinimum(control);
+			cval = (i==track)?maximum:minimum;
+			HIViewSetValue(control, cval);
+		}
+	}
+}
+
+void Chip700View::ChangeBankSelectorValue( int bank )
+{
+	static const int BEGIN_BANKSELECTOR_ID = 0;
+	
+	OSStatus	result;
+	HIViewID	id = {'bank', BEGIN_BANKSELECTOR_ID};
+	HIViewRef	control;
+	SInt32		maximum,minimum,cval;
+	
+	for ( int i=0; i<NUM_BANKS; i++ ) {
+		id.id = BEGIN_BANKSELECTOR_ID + i;
+		
+		result = HIViewFindByID(mRootUserPane, id, &control);
+		if (result == noErr) {
+			maximum = GetControl32BitMaximum(control);
+			minimum = GetControl32BitMinimum(control);
+			cval = (i==bank)?maximum:minimum;
+			HIViewSetValue(control, cval);
+		}
+	}
+}
 
 //
 // internal function

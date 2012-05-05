@@ -71,12 +71,17 @@ static unsigned char silence_brr[] = {
 Chip700Generator::Chip700Generator()
 : mSampleRate(44100.0),
   mClipper( false ),
-  mDrumMode( false ),
+//  mDrumMode( false ),
   mVelocitySens( true ),
   mVPset(NULL)
 {
-	for ( int i=0; i<128; i++ ) {
-		mKeyMap[i] = 0;
+	for ( int i=0; i<NUM_BANKS; i++ ) {
+		mDrumMode[i] = false;
+	}
+	for ( int bnk=0; bnk<NUM_BANKS; bnk++ ) {
+		for ( int i=0; i<128; i++ ) {
+			mKeyMap[bnk][i] = 0;
+		}
 	}
 	Reset();
 }
@@ -247,9 +252,9 @@ void Chip700Generator::SetClipper( bool value )
 	mClipper = value;
 }
 
-void Chip700Generator::SetDrumMode( bool value )
+void Chip700Generator::SetMultiMode( int bank, bool value )
 {
-	mDrumMode = value;
+	mDrumMode[bank] = value;
 }
 
 void Chip700Generator::SetVelocitySens( bool value )
@@ -350,11 +355,9 @@ void Chip700Generator::DoKeyOn(NoteEvt *evt)
 	VoiceParams		vp;
 	
 	//波形アドレスの取得
-	if ( mDrumMode ) {
-		vp = getMappedVP(evt->note);
-	}
-	else {
-		vp = getVP( mChProgram[evt->ch] );
+	vp = getVP(mChProgram[evt->ch]);
+	if ( mDrumMode[vp.bank]) {
+		vp = getMappedVP(vp.bank, evt->note);
 	}
 	
 	//波形データが存在しない場合は、ここで中断
@@ -696,13 +699,21 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 void Chip700Generator::RefreshKeyMap(void)
 {
 	if ( mVPset ) {
-		for (int i=0; i<128; i++) {
-			mKeyMap[i]=0;
+		bool	initialized[NUM_BANKS];
+		for (int i=0; i<NUM_BANKS; i++ ) {
+			initialized[i] = false;
 		}
-		for (int i=0; i<128; i++) {
-			if (mVPset[i].brr.data) {
-				for (int j=mVPset[i].lowkey; j<=mVPset[i].highkey; j++) {
-					mKeyMap[j]=i;
+		
+		for (int prg=0; prg<128; prg++) {
+			if (mVPset[prg].brr.data) {
+				if ( !initialized[mVPset[prg].bank] ) {
+					for (int i=0; i<128; i++) {
+						mKeyMap[mVPset[prg].bank][i]=prg;
+					}
+					initialized[mVPset[prg].bank] = true;
+				}
+				for (int i=mVPset[prg].lowkey; i<=mVPset[prg].highkey; i++) {
+					mKeyMap[mVPset[prg].bank][i]=prg;
 				}
 			}
 		}
