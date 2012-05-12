@@ -39,7 +39,7 @@ const float kMinDoubleClickDistance = 5.0;
 
 //! Constructor. The real initialisation takes place in Initialize().
 TTransparentEditText::TTransparentEditText(HIViewRef inControl)
-	: TViewNoCompositingCompatible(inControl), mTextStyle(0), mTextLayout(0), mTextStorage(), mIsActive(false), mIsFocused(false), mDrawFrame(false), mSelectionStart(0), mSelectionEnd(0), mSelectionIsLeading(true), mCaretUpdateTimer(0), mLastClickTime(0), mFocusImage(0), mBackImage(0), mIsLocked(false), mKeyFilter(0), mNextFocusControl(0), mNextFocusPart(kControlEditTextPart)
+	: TViewNoCompositingCompatible(inControl), mTextStyle(0), mTextLayout(0), mTextStorage(), mIsActive(false), mIsFocused(false), mDrawFrame(true), mSelectionStart(0), mSelectionEnd(0), mSelectionIsLeading(true), mCaretUpdateTimer(0), mLastClickTime(0), mFocusImage(0), mBackImage(0), mIsLocked(false), mKeyFilter(0), mNextFocusControl(0), mNextFocusPart(kControlEditTextPart)
 {
     ChangeAutoInvalidateFlags(kAutoInvalidateOnActivate | kAutoInvalidateOnEnable, 0);
 	
@@ -595,7 +595,8 @@ void TTransparentEditText::CompatibleDraw(RgnHandle inLimitRgn, CGContextRef inC
 		if( IsActive() )
 			state = kThemeStatePressed;
 		
-		CGContextSetRGBFillColor(inContext, 1., 1., 1., 1.);
+		CGContextSetRGBFillColor(inContext, 0., 0., 0., 1.);
+		//CGContextSetRGBFillColor(inContext, 1., 1., 1., 1.);
 		CGContextFillRect(inContext, bounds);
 		CGContextSetRGBFillColor(inContext, 0., 0., 0., 1.);
 		Rect r;
@@ -603,9 +604,9 @@ void TTransparentEditText::CompatibleDraw(RgnHandle inLimitRgn, CGContextRef inC
 		r.right -= r.left;
 		r.bottom -= r.top;
 		r.top = r.left = 0;
-		DrawThemeEditTextFrame(&r, state);
+		//DrawThemeEditTextFrame(&r, state);
 		InsetRect(&r, 3, 3);
-		DrawThemeFocusRect(&r, mIsFocused);
+		//DrawThemeFocusRect(&r, mIsFocused);
 		CGContextRestoreGState(inContext);	
 #endif
 	}
@@ -626,7 +627,7 @@ void TTransparentEditText::CompatibleDraw(RgnHandle inLimitRgn, CGContextRef inC
 	ATSUSetLayoutControls(mTextLayout, 1, theTags, theSizes, theValues);
 	
 	// draw the text
-	float baseline = GetBaselineForLine(kATSUFromTextBeginning);
+	float baseline = GetBaselineForLine(kATSUFromTextBeginning)-3;
 	
 	Fixed baselineX = X2Fix(0.0);
 	Fixed baselineY = X2Fix(baseline);
@@ -645,6 +646,8 @@ void TTransparentEditText::CompatibleDraw(RgnHandle inLimitRgn, CGContextRef inC
 				verify_noerr( ATSUOffsetToPosition(mTextLayout, mSelectionStart, mSelectionIsLeading, &primaryCaret, &secondaryCaret, &isCaretSplit));
 				
 				// draw the caret or carets
+				CGContextSetRGBStrokeColor(inContext, 1., 1., 1., 1.);
+				
 				CGContextBeginPath(inContext);
 				
 				CGContextMoveToPoint(inContext, Fix2X(primaryCaret.fX), baseline - Fix2X(primaryCaret.fY));

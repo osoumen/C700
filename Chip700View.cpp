@@ -73,9 +73,6 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 					if (i==0) {
 						// kAudioUnitCustomProperty_ProgramName コントロールの文字色を黒に設定する
 						textStyle.just = teJustLeft;
-						textStyle.foreColor.red = 0;
-						textStyle.foreColor.green = 0;
-						textStyle.foreColor.blue = 0;
 					}
 					else {
 						// それ以外のコントロールの文字色を水色に設定する
@@ -128,6 +125,28 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 	WantEventTypes(GetControlEventTarget(hiTailView), GetEventTypeCount(clickevents), clickevents);
 	WantEventTypes(GetControlEventTarget(hiHeadView), GetEventTypeCount(clickevents), clickevents);
 	
+	for ( int i=0; i<1; i++ ) {
+		Size actualSize;
+		id.signature = 'text';
+		id.id = i;
+		result = HIViewFindByID(mRootUserPane, id, &control);
+		GetControlData(control,0, kControlFontStyleTag, sizeof(textStyle), &textStyle, &actualSize);
+		textStyle.font = FMGetFontFamilyFromName("\pMonaco");
+		SetControlData(control,0, kControlFontStyleTag, sizeof(textStyle), &textStyle);
+	}
+	for ( int i=2; i<=30; i++ ) {
+		Size actualSize;
+		id.signature = 'text';
+		id.id = i;
+		result = HIViewFindByID(mRootUserPane, id, &control);
+		GetControlData(control,0, kControlFontStyleTag, sizeof(textStyle), &textStyle, &actualSize);
+		textStyle.font = FMGetFontFamilyFromName("\pHelvetica");
+		textStyle.style = 1;
+		textStyle.flags |= kControlUseFaceMask;
+		SetControlData(control,0, kControlFontStyleTag, sizeof(textStyle), &textStyle);
+	}
+	
+	// ドラッグ受付を登録
 	InstallTrackingHandler((DragTrackingHandlerUPP)MyTrackingHandler, mCarbonWindow, this);
 	InstallReceiveHandler((DragReceiveHandlerUPP)MyReceiveHandler, mCarbonWindow, this);
 	
@@ -155,6 +174,10 @@ bool Chip700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
 			
 		case 'load':	//load button
 			loadSelected();
+			return true;
+		
+		case 'sav2':	//save XI button
+			saveSelectedXI();
 			return true;
 			
 		case 'save':	//save button
@@ -746,6 +769,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 		case kAudioUnitCustomProperty_NoteOnTrack_2:
 		case kAudioUnitCustomProperty_NoteOnTrack_3:
 		case kAudioUnitCustomProperty_NoteOnTrack_4:
+		case kAudioUnitCustomProperty_NoteOnTrack_5:
 		case kAudioUnitCustomProperty_NoteOnTrack_6:
 		case kAudioUnitCustomProperty_NoteOnTrack_7:
 		case kAudioUnitCustomProperty_NoteOnTrack_8:
@@ -996,6 +1020,41 @@ void Chip700View::loadSelected(void)
 }
 
 void Chip700View::saveSelected(void)
+{
+	UInt32		size;
+	int			intValue;
+	
+	//編集中のプログラム番号を調べる
+	size = sizeof(int);
+	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_EditingProgram,kAudioUnitScope_Global,0,&intValue,&size);
+	
+	//サンプルデータを取得する
+	BRRData		brr;
+	size = sizeof(BRRData);
+	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_BRRData,kAudioUnitScope_Global,0,&brr,&size);
+	//データが無ければ終了する
+	if (brr.data == NULL)
+		return;
+	
+	//ファイルダイアログ
+	CFStringRef	pgname;
+	size = sizeof(CFStringRef);
+	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,kAudioUnitScope_Global,0,&pgname,&size);
+	CFStringRef	defaultname;
+	if (pgname == NULL || CFStringGetLength(pgname)==0)
+		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("program_%03d.brr"),intValue);
+	else
+		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("%@.brr"),pgname);
+	CFURLRef	savefile=getSaveFile(defaultname);
+	CFRelease(defaultname);
+	if (savefile == NULL)
+		return;
+	
+	saveToFile(savefile);
+	CFRelease(savefile);
+}
+
+void Chip700View::saveSelectedXI(void)
 {
 	UInt32		size;
 	int			intValue;

@@ -18,7 +18,7 @@
 #include "TSliderControl.h"
 //#include "TMeterControl.h"
 //#include "TMeterPartialControl.h"
-//#include "TValueTextControl.h"
+#include "TValueTextControl.h"
 //#include "TImageButton.h"
 //#include "TImagePopup.h"
 #include "TTransparentEditText.h"
@@ -313,7 +313,7 @@ OSStatus CAUCarbonViewNib::CreateUI(Float32 x, Float32 y)
     TViewNoCompositingCompatible::RegisterClassForBundleID<TSliderControl>(mBundleID);
     //TViewNoCompositingCompatible::RegisterClassForBundleID<TMeterControl>(mBundleID);
     //TViewNoCompositingCompatible::RegisterClassForBundleID<TMeterPartialControl>(mBundleID);
-    //TViewNoCompositingCompatible::RegisterClassForBundleID<TValueTextControl>(mBundleID);
+    TViewNoCompositingCompatible::RegisterClassForBundleID<TValueTextControl>(mBundleID);
     //TViewNoCompositingCompatible::RegisterClassForBundleID<TImageButton>(mBundleID);
     //TViewNoCompositingCompatible::RegisterClassForBundleID<TImagePopup>(mBundleID);
     TViewNoCompositingCompatible::RegisterClassForBundleID<TTransparentEditText>(mBundleID);

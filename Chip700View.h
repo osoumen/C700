@@ -75,6 +75,7 @@ private:
 	void correctBaseKeySelected(void);
 	void loadSelected(void);
 	void saveSelected(void);
+	void saveSelectedXI(void);
 	bool dragStart(ControlRef cont, EventRecord *event);
 	int getLoadFile(FSRef *ref);
 	CFURLRef getSaveFile(CFStringRef defaultName);
