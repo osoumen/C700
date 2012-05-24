@@ -607,10 +607,10 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 					else if ( outx > 32767 ) {
 						outx = 32767;
 					}
-					if (mClipper) {
-						mVoice[v].smp2 = ( signed short )mVoice[v].smp1;
+					if (/*mClipper*/true) {
+						mVoice[v].smp2 = mVoice[v].smp1;
 						mVoice[v].smp1 = ( signed short )( outx << 1 );
-						mVoice[v].sampbuf[mVoice[v].sampptr] = ( signed short )mVoice[v].smp1;
+						mVoice[v].sampbuf[mVoice[v].sampptr] = mVoice[v].smp1;
 					}
 					else {
 						mVoice[v].smp2 = mVoice[v].smp1;
@@ -627,7 +627,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 				vr += ( ( G2[ vl ]
 						 * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 2 ) & 3 ] ) >> 11 ) & ~1;
 				
-				if (mClipper) {
+				if (/*mClipper*/true) {
 					vr = ( signed short )vr;
 				}
 				vr += ( ( G1[ vl ]
@@ -707,6 +707,7 @@ void Chip700Generator::RefreshKeyMap(void)
 		for (int prg=0; prg<128; prg++) {
 			if (mVPset[prg].brr.data) {
 				if ( !initialized[mVPset[prg].bank] ) {
+					// 一番最初のプログラムで初期化することで、未使用パッチが0にならないようにする
 					for (int i=0; i<128; i++) {
 						mKeyMap[mVPset[prg].bank][i]=prg;
 					}

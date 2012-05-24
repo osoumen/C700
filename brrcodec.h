@@ -9,5 +9,5 @@
 
 int brrencode(short *input_data, unsigned char *output_data, long inputframes);
 int brrdecode(unsigned char *src, short *output, int looppoint, int loops);
-bool checkbrrsize(unsigned char *src, int *size);
+int checkbrrsize(unsigned char *src, int *size);
 int emphasis(short *data, unsigned int length);

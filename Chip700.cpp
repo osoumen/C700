@@ -28,7 +28,7 @@ static CFStringRef kParam_velocity_Name = CFSTR("Velocity");
 static const float kDefaultValue_velocity = 1;
 
 static CFStringRef kParam_clipnoise_Name = CFSTR("Cliping Noise");
-static const float kDefaultValue_clipnoise = 0;
+static const float kDefaultValue_clipnoise = 1;
 
 static CFStringRef kParam_bendrange_Name = CFSTR("Bend Range");
 static const float kDefaultValue_bendrange = 2;
@@ -1384,7 +1384,7 @@ int Chip700::CreateXIData( CFDataRef *data )
 			xih.venv[i*2] = EndianU16_NtoL( i*10 );
 			xih.venv[i*2+1] = EndianU16_NtoL( 64 );
 		}
-		//xih.venv[7] = 0;
+		xih.venv[7] = 0;
 	}
 	else {
 		xih.venv[0] = 0;
@@ -1690,7 +1690,6 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	else {
 		mVPset[pgnum].highkey = 127;
 	}
-	mGenerator.RefreshKeyMap();
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_ar)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_ar));
@@ -1766,6 +1765,8 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 			PropertyChanged(i, kAudioUnitScope_Global, 0);
 		}
 	}
+	
+	mGenerator.RefreshKeyMap();
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ComponentResult Chip700::RealTimeStartNote(	SynthGroupElement 			*inGroup,

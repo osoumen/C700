@@ -1649,7 +1649,7 @@ int Chip700View::loadSPCFile(CFURLRef path)
 		looppoint = loopaddr-startaddr;
 		
 		brr.data = &ramdata[startaddr];
-		loop = checkbrrsize(&ramdata[startaddr], &brr.size);
+		loop = checkbrrsize(&ramdata[startaddr], &brr.size) == 1?true:false;
 		
 		if ( startaddr == 0 || startaddr == 0xffff ||
 			 looppoint < 0 || brr.size < looppoint || (looppoint%9) != 0 )

@@ -252,6 +252,9 @@
 		F546EE53155E7A7A002D6E59 /* bt_save_xi1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */; };
 		F557B4A11555BB8F009B4165 /* TValueTextControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD80B2144CA00EC1825 /* TValueTextControl.h */; };
 		F557B4A21555BB90009B4165 /* TValueTextControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD70B2144CA00EC1825 /* TValueTextControl.cpp */; };
+		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
+		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
+		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
 		F5855D2A1478E8F800D87CF2 /* bt_copy0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D271478E8F800D87CF2 /* bt_copy0.png */; };
 		F5855D2B1478E8F800D87CF2 /* bt_copy1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D281478E8F800D87CF2 /* bt_copy1.png */; };
 		F5855D891478FD9300D87CF2 /* bt_echo0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D871478FD9300D87CF2 /* bt_echo0.png */; };
@@ -545,6 +548,10 @@
 		F546EE19155E6950002D6E59 /* track16_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = track16_1.png; sourceTree = "<group>"; };
 		F546EE50155E7A7A002D6E59 /* bt_save_xi0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_save_xi0.png; sourceTree = "<group>"; };
 		F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_save_xi1.png; sourceTree = "<group>"; };
+		F56D351F156A0EA000038960 /* encodetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = encodetest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
+		F56D359F156A185300038960 /* libMiniAiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMiniAiff.a; path = encodetest/libMiniAiff.a; sourceTree = "<group>"; };
+		F56D35A1156A185D00038960 /* MiniAiff.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = MiniAiff.h; path = encodetest/MiniAiff.h; sourceTree = "<group>"; };
 		F5855D271478E8F800D87CF2 /* bt_copy0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_copy0.png; sourceTree = "<group>"; };
 		F5855D281478E8F800D87CF2 /* bt_copy1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_copy1.png; sourceTree = "<group>"; };
 		F5855D871478FD9300D87CF2 /* bt_echo0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_echo0.png; sourceTree = "<group>"; };
@@ -572,6 +579,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F56D351D156A0EA000038960 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -589,6 +604,7 @@
 		089C1671FE841209C02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				F56D359F156A185300038960 /* libMiniAiff.a */,
 				8ACF4CE40B21489800EC1825 /* Carbon.framework */,
 				8A2134090B199D8500DC9811 /* Accelerate.framework */,
 				8BA05B01072074F900365D66 /* CoreServices.framework */,
@@ -611,6 +627,7 @@
 		08FB77ADFE841716C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				F56D353D156A114300038960 /* encodetest */,
 				8ACF4D010B214B0400EC1825 /* CarbonUI */,
 				8ACF4B8B0B2144AF00EC1825 /* AU View */,
 				8ACF4BA60B2144C900EC1825 /* Controls */,
@@ -628,6 +645,7 @@
 			isa = PBXGroup;
 			children = (
 				8D01CCD20486CAD60068D4B7 /* C700.component */,
+				F56D351F156A0EA000038960 /* encodetest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1035,6 +1053,15 @@
 			name = "Public Utility";
 			sourceTree = "<group>";
 		};
+		F56D353D156A114300038960 /* encodetest */ = {
+			isa = PBXGroup;
+			children = (
+				F56D35A1156A185D00038960 /* MiniAiff.h */,
+				F56D353F156A115300038960 /* enccodetest.cpp */,
+			);
+			name = encodetest;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1164,6 +1191,22 @@
 			productReference = 8D01CCD20486CAD60068D4B7 /* C700.component */;
 			productType = "com.apple.product-type.bundle";
 		};
+		F56D351E156A0EA000038960 /* encodetest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F56D3523156A0EBF00038960 /* Build configuration list for PBXNativeTarget "encodetest" */;
+			buildPhases = (
+				F56D351C156A0EA000038960 /* Sources */,
+				F56D351D156A0EA000038960 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = encodetest;
+			productName = encodetest;
+			productReference = F56D351F156A0EA000038960 /* encodetest */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1184,6 +1227,7 @@
 			projectRoot = "";
 			targets = (
 				8D01CCC60486CAD60068D4B7 /* C700 */,
+				F56D351E156A0EA000038960 /* encodetest */,
 			);
 		};
 /* End PBXProject section */
@@ -1372,6 +1416,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F56D351C156A0EA000038960 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */,
+				F56D3540156A115300038960 /* enccodetest.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
@@ -1509,6 +1562,44 @@
 			};
 			name = Deployment;
 		};
+		F56D3521156A0EA000038960 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/encodetest\"",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = encodetest;
+			};
+			name = Development;
+		};
+		F56D3522156A0EA000038960 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/encodetest\"",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = encodetest;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1526,6 +1617,15 @@
 			buildConfigurations = (
 				3E0BED070898391C00E1F0F7 /* Development */,
 				3E0BED080898391C00E1F0F7 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		F56D3523156A0EBF00038960 /* Build configuration list for PBXNativeTarget "encodetest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F56D3521156A0EA000038960 /* Development */,
+				F56D3522156A0EA000038960 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;
