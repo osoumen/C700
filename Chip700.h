@@ -113,8 +113,9 @@ private:
 	int					mEditProg;		// 編集中のプログラムNo.
 	int					mEditChannel;	// 編集中のチャンネル
 	Float64				mTempo;
-	// MIDIチャンネルノートon/off
-	bool				mIsNoteOn[16];
+	// MIDIチャンネルノート別発音数
+	int					mOnNotes[16];
+	int					mMaxNote[16];
 	
 	VoiceParams			mVPset[128];
 	TAUBuffer<UInt8>	mBRRdata[128];

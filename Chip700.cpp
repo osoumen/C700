@@ -27,7 +27,7 @@ static const float kDefaultValue_vibdepth2 = 1;
 static CFStringRef kParam_velocity_Name = CFSTR("Velocity");
 static const float kDefaultValue_velocity = 1;
 
-static CFStringRef kParam_clipnoise_Name = CFSTR("Cliping Noise");
+static CFStringRef kParam_clipnoise_Name = CFSTR("New ADPCM");
 static const float kDefaultValue_clipnoise = 1;
 
 static CFStringRef kParam_bendrange_Name = CFSTR("Bend Range");
@@ -177,7 +177,8 @@ Chip700::Chip700(AudioUnit component)
 	
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
-		mIsNoteOn[i] = false;
+		mOnNotes[i] = 0;
+		mMaxNote[i] = 0;
 	}
 	
 	//プログラムの初期化
@@ -235,8 +236,10 @@ ComponentResult Chip700::Reset(	AudioUnitScope 		inScope,
 	
 	// MIDIインジケータをリセット
 	for ( int i=0; i<16; i++ ) {
-		mIsNoteOn[i] = false;
+		mOnNotes[i] = 0;
+		mMaxNote[i] = 0;
 		PropertyChanged(kAudioUnitCustomProperty_NoteOnTrack_1+i, kAudioUnitScope_Global, 0);
+		PropertyChanged(kAudioUnitCustomProperty_MaxNoteTrack_1+i, kAudioUnitScope_Global, 0);
 	}
 	
 	return AUInstrumentBase::Reset(inScope, inElement);
@@ -675,7 +678,28 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 			case kAudioUnitCustomProperty_NoteOnTrack_15:
 			case kAudioUnitCustomProperty_NoteOnTrack_16:
 				outWritable = false;
-				outDataSize = sizeof(bool);
+				outDataSize = sizeof(UInt32);
+				return noErr;
+				
+			//トラック最大発音数
+			case kAudioUnitCustomProperty_MaxNoteTrack_1:
+			case kAudioUnitCustomProperty_MaxNoteTrack_2:
+			case kAudioUnitCustomProperty_MaxNoteTrack_3:
+			case kAudioUnitCustomProperty_MaxNoteTrack_4:
+			case kAudioUnitCustomProperty_MaxNoteTrack_5:
+			case kAudioUnitCustomProperty_MaxNoteTrack_6:
+			case kAudioUnitCustomProperty_MaxNoteTrack_7:
+			case kAudioUnitCustomProperty_MaxNoteTrack_8:
+			case kAudioUnitCustomProperty_MaxNoteTrack_9:
+			case kAudioUnitCustomProperty_MaxNoteTrack_10:
+			case kAudioUnitCustomProperty_MaxNoteTrack_11:
+			case kAudioUnitCustomProperty_MaxNoteTrack_12:
+			case kAudioUnitCustomProperty_MaxNoteTrack_13:
+			case kAudioUnitCustomProperty_MaxNoteTrack_14:
+			case kAudioUnitCustomProperty_MaxNoteTrack_15:
+			case kAudioUnitCustomProperty_MaxNoteTrack_16:
+				outWritable = false;
+				outDataSize = sizeof(UInt32);
 				return noErr;
 		}
 	}
@@ -808,7 +832,26 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_NoteOnTrack_14:
 			case kAudioUnitCustomProperty_NoteOnTrack_15:
 			case kAudioUnitCustomProperty_NoteOnTrack_16:
-				*((bool *)outData) = mIsNoteOn[inID-kAudioUnitCustomProperty_NoteOnTrack_1];
+				*((int *)outData) = mOnNotes[inID-kAudioUnitCustomProperty_NoteOnTrack_1];
+				return noErr;
+				
+			case kAudioUnitCustomProperty_MaxNoteTrack_1:
+			case kAudioUnitCustomProperty_MaxNoteTrack_2:
+			case kAudioUnitCustomProperty_MaxNoteTrack_3:
+			case kAudioUnitCustomProperty_MaxNoteTrack_4:
+			case kAudioUnitCustomProperty_MaxNoteTrack_5:
+			case kAudioUnitCustomProperty_MaxNoteTrack_6:
+			case kAudioUnitCustomProperty_MaxNoteTrack_7:
+			case kAudioUnitCustomProperty_MaxNoteTrack_8:
+			case kAudioUnitCustomProperty_MaxNoteTrack_9:
+			case kAudioUnitCustomProperty_MaxNoteTrack_10:
+			case kAudioUnitCustomProperty_MaxNoteTrack_11:
+			case kAudioUnitCustomProperty_MaxNoteTrack_12:
+			case kAudioUnitCustomProperty_MaxNoteTrack_13:
+			case kAudioUnitCustomProperty_MaxNoteTrack_14:
+			case kAudioUnitCustomProperty_MaxNoteTrack_15:
+			case kAudioUnitCustomProperty_MaxNoteTrack_16:
+				*((int *)outData) = mMaxNote[inID-kAudioUnitCustomProperty_MaxNoteTrack_1];
 				return noErr;
 		}
 	}
@@ -1003,6 +1046,26 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_NoteOnTrack_14:
 			case kAudioUnitCustomProperty_NoteOnTrack_15:
 			case kAudioUnitCustomProperty_NoteOnTrack_16:
+				return noErr;
+				
+			case kAudioUnitCustomProperty_MaxNoteTrack_1:
+			case kAudioUnitCustomProperty_MaxNoteTrack_2:
+			case kAudioUnitCustomProperty_MaxNoteTrack_3:
+			case kAudioUnitCustomProperty_MaxNoteTrack_4:
+			case kAudioUnitCustomProperty_MaxNoteTrack_5:
+			case kAudioUnitCustomProperty_MaxNoteTrack_6:
+			case kAudioUnitCustomProperty_MaxNoteTrack_7:
+			case kAudioUnitCustomProperty_MaxNoteTrack_8:
+			case kAudioUnitCustomProperty_MaxNoteTrack_9:
+			case kAudioUnitCustomProperty_MaxNoteTrack_10:
+			case kAudioUnitCustomProperty_MaxNoteTrack_11:
+			case kAudioUnitCustomProperty_MaxNoteTrack_12:
+			case kAudioUnitCustomProperty_MaxNoteTrack_13:
+			case kAudioUnitCustomProperty_MaxNoteTrack_14:
+			case kAudioUnitCustomProperty_MaxNoteTrack_15:
+			case kAudioUnitCustomProperty_MaxNoteTrack_16:
+				mMaxNote[inID-kAudioUnitCustomProperty_MaxNoteTrack_1] = *((int *)inData);
+				mOnNotes[inID-kAudioUnitCustomProperty_MaxNoteTrack_1] = 0;
 				return noErr;
 		}
 	}
@@ -1780,9 +1843,13 @@ ComponentResult Chip700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
 	mGenerator.KeyOn(chID, inParams.mPitch, inParams.mVelocity, inNoteInstanceID+chID*256, inOffsetSampleFrame);
 	
 	// MIDIインジケーターに反映
-	mIsNoteOn[chID] = true;
+	mOnNotes[chID]++;
+	if ( mOnNotes[chID] > mMaxNote[chID] ) {
+		mMaxNote[chID] = mOnNotes[chID];
+	}
+	PropertyChanged(kAudioUnitCustomProperty_MaxNoteTrack_1+chID, kAudioUnitScope_Global, 0);
 	PropertyChanged(kAudioUnitCustomProperty_NoteOnTrack_1+chID, kAudioUnitScope_Global, 0);
-	
+//printf("noteon chID=%d inOffsetSampleFrame=%d inNoteInstanceID=%d\n", chID, inOffsetSampleFrame, inNoteInstanceID );
 	return noErr;
 }
 
@@ -1797,9 +1864,11 @@ ComponentResult Chip700::RealTimeStopNote( SynthGroupElement 			*inGroup,
 	mGenerator.KeyOff(chID, 0xff, 0, inNoteInstanceID+chID*256, inOffsetSampleFrame);
 	
 	// MIDIインジケーターに反映
-	mIsNoteOn[chID] = false;
+	if ( mOnNotes[chID] > 0 ) {
+		mOnNotes[chID]--;
+	}
 	PropertyChanged(kAudioUnitCustomProperty_NoteOnTrack_1+chID, kAudioUnitScope_Global, 0);
-	
+//printf("noteoff chID=%d inOffsetSampleFrame=%d inNoteInstanceID=%d\n", chID, inOffsetSampleFrame, inNoteInstanceID );
 	return noErr;
 }
 
@@ -1869,11 +1938,19 @@ void Chip700::HandleResetAllControllers( UInt8 	inChannel)
 void Chip700::HandleAllNotesOff( UInt8 inChannel )
 {
 	mGenerator.AllNotesOff();
+	// ノートオンインジケータ初期化
+	for ( int i=0; i<16; i++ ) {
+		mOnNotes[i] = 0;
+	}
 	AUInstrumentBase::HandleAllNotesOff( inChannel);
 }
 
 void Chip700::HandleAllSoundOff( UInt8 inChannel )
 {
 	mGenerator.AllSoundOff();
+	// ノートオンインジケータ初期化
+	for ( int i=0; i<16; i++ ) {
+		mOnNotes[i] = 0;
+	}
 	AUInstrumentBase::HandleAllSoundOff( inChannel);
 }

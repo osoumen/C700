@@ -89,7 +89,8 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 				if (thekind.kind == 'eutx') {
 					// edittextのフォーカス変更イベント
 					EventTypeSpec events[] = {
-					{kEventClassControl, kEventControlSetFocusPart}
+						{kEventClassControl, kEventControlSetFocusPart},
+						{kEventClassControl, kEventControlClick}
 					};
 					WantEventTypes(GetControlEventTarget(control), GetEventTypeCount(events), events);
 					// キーフィルターを登録する
@@ -99,7 +100,8 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 				else {
 					// 値変更イベントハンドラを登録する
 					EventTypeSpec events[] = {
-					{kEventClassControl, kEventControlValueFieldChanged}
+						{kEventClassControl, kEventControlValueFieldChanged},
+						{kEventClassControl, kEventControlClick}
 					};
 					WantEventTypes(GetControlEventTarget(control), GetEventTypeCount(events), events);
 				}
@@ -113,7 +115,7 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 	
 	// 波形ビューにクリックイベントを登録
 	EventTypeSpec clickevents[] = {
-	{kEventClassControl, kEventControlClick}
+		{kEventClassControl, kEventControlClick}
 	};
 	id.id=1;
 	HIViewFindByID(mRootUserPane, id, &hiOverView);
@@ -386,19 +388,30 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 	if (eclass == kEventClassControl) {
 		HIViewGetID(view,&id);
 		propertyID = (id.id%1000)+kAudioUnitCustomProperty_First;
+//printf("propertyID=%d\n",propertyID);
 		if (id.signature == 'user') {
 			switch (ekind) {
 				case kEventControlClick:
 				{
 					if (propertyID == kAudioUnitCustomProperty_BRRData) {
-					//波形部分のクリックならドラッグ処理開始
-					EventRecord	eventrec;
-					if (!ConvertEventRefToEventRecord(event,&eventrec))
-						return dragStart(view, &eventrec);
-					else
+						//波形部分のクリックならドラッグ処理開始
+						EventRecord	eventrec;
+						if ( !ConvertEventRefToEventRecord(event,&eventrec) ) {
+							return dragStart(view, &eventrec);
+						}
+						else {
+							return false;
+						}
+					}
+					else if ( propertyID >= kAudioUnitCustomProperty_MaxNoteTrack_1 && 
+							 propertyID <= kAudioUnitCustomProperty_MaxNoteTrack_16 ) {
+						intValue = 0;
+						AudioUnitSetProperty(mEditAudioUnit,propertyID,
+											 kAudioUnitScope_Global,0,&intValue,sizeof(int));
+					}
+					else {
 						return false;
 					}
-					else return false;
 				}
 					
 				case kEventControlValueFieldChanged:
@@ -783,19 +796,52 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 		case kAudioUnitCustomProperty_NoteOnTrack_16:
 		{
 			// トラックインジケーターを反映させる
-			bool	boolValue;
-			size = sizeof(bool);
-			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&boolValue,&size);
+			size = sizeof(int);
+			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
+			
+			//printf("cnote=%d\n",intValue);
+			
 			id.signature = 'trac';
 			id.id=inPropertyID-kAudioUnitCustomProperty_First;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
-				if ( boolValue ) {
+				if ( intValue > 0 ) {
 					SetControl32BitValue(control, 1);
 				}
 				else {
 					SetControl32BitValue(control, 0);
 				}
+			}
+			break;
+		}
+			
+		case kAudioUnitCustomProperty_MaxNoteTrack_1:
+		case kAudioUnitCustomProperty_MaxNoteTrack_2:
+		case kAudioUnitCustomProperty_MaxNoteTrack_3:
+		case kAudioUnitCustomProperty_MaxNoteTrack_4:
+		case kAudioUnitCustomProperty_MaxNoteTrack_5:
+		case kAudioUnitCustomProperty_MaxNoteTrack_6:
+		case kAudioUnitCustomProperty_MaxNoteTrack_7:
+		case kAudioUnitCustomProperty_MaxNoteTrack_8:
+		case kAudioUnitCustomProperty_MaxNoteTrack_9:
+		case kAudioUnitCustomProperty_MaxNoteTrack_10:
+		case kAudioUnitCustomProperty_MaxNoteTrack_11:
+		case kAudioUnitCustomProperty_MaxNoteTrack_12:
+		case kAudioUnitCustomProperty_MaxNoteTrack_13:
+		case kAudioUnitCustomProperty_MaxNoteTrack_14:
+		case kAudioUnitCustomProperty_MaxNoteTrack_15:
+		case kAudioUnitCustomProperty_MaxNoteTrack_16:
+		{
+			size = sizeof(int);
+			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
+			
+			//printf("mnote=%d\n",intValue);
+			
+			//id.signature = 'user';
+			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			result = HIViewFindByID(mRootUserPane, id, &control);
+			if (result == noErr) {
+				SetControl32BitValue(control, intValue);
 			}
 			break;
 		}
@@ -1353,6 +1399,7 @@ void Chip700View::loadFile(FSRef *ref)
 		BRRData	brr;
 		int		looppoint;
 		bool	loop;
+		int		pad;
 		
 		wavedata = loadPCMFile(ref,&numSamples,&inst);
 		if (wavedata == NULL) return;
@@ -1360,13 +1407,15 @@ void Chip700View::loadFile(FSRef *ref)
 		if (preemphasis)
 			emphasis(wavedata,numSamples);
 		
-		brr.data = new unsigned char[numSamples/16*9+9];
+		brr.data = new unsigned char[numSamples/16*9+18];
 		if (inst.loop)
 			numSamples=inst.lp_end;
-		brr.size = brrencode(wavedata, brr.data, numSamples);
-		
 		looppoint = (inst.lp + 15)/16*9;
 		loop = inst.loop?true:false;
+		pad = 16-(numSamples % 16);
+		brr.size = brrencode(wavedata, brr.data, numSamples, loop, (looppoint/9)*16, pad);
+		looppoint += pad/16 * 9;
+		
 		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_BRRData,kAudioUnitScope_Global,0,&brr,sizeof(BRRData));
 		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Rate,kAudioUnitScope_Global,0,&inst.srcSamplerate,sizeof(double));
 		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_BaseKey,kAudioUnitScope_Global,0,&inst.basekey,sizeof(int));
@@ -1552,7 +1601,7 @@ short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 		
 		Float64	adjustment = ( (long long)((end_point-st_point)/16) ) / ((end_point-st_point)/16.0);
 		outputFormat.mSampleRate *= adjustment;
-		st_point *= adjustment;
+		st_point *= adjustment;		//16サンプル境界にFIXする
 		end_point *= adjustment;
 		
 	}

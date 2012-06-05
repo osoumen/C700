@@ -133,7 +133,24 @@ enum
 	kAudioUnitCustomProperty_NoteOnTrack_15,	// read only
 	kAudioUnitCustomProperty_NoteOnTrack_16,	// read only
 	
-	kNumberOfProperties = kAudioUnitCustomProperty_NoteOnTrack_16-kAudioUnitCustomProperty_First+1
+	kAudioUnitCustomProperty_MaxNoteTrack_1,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_2,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_3,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_4,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_5,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_6,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_7,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_8,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_9,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_10,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_11,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_12,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_13,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_14,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_15,	// read only
+	kAudioUnitCustomProperty_MaxNoteTrack_16,	// read only
+	
+	kNumberOfProperties = kAudioUnitCustomProperty_MaxNoteTrack_16-kAudioUnitCustomProperty_First+1
 };
 
 static const float kMinimumValue_n128 = -128;

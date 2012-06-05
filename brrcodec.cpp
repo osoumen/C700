@@ -3,13 +3,19 @@
  *  Chip700
  *
  *  Created by 開発用 on 06/11/06.
- *  Copyright 2006 Vermicelli Magic. All rights reserved.
+ *  Copyright 2006 osoumen. All rights reserved.
  *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "brrcodec.h"
+
+int abs( int value ) { return value < 0 ? -value : value; }
+
+#define XMSNES_LIKE_ENC
+
+#define looploss_tolerance 30000
 
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
 #define filter2(a1,a2)	(a1 \
@@ -20,101 +26,197 @@
 								  + ( a1 << 3 ) ) ) >> 7 ) \
 						 - ( a2 >> 1 ) \
 						 + ( ( a2 + ( a2 >> 1 ) ) >> 4 ))
-/*
-#define filter1(a1)	( a1 + ( ( -a1 ) >> 4 ))
-#define filter2(a1,a2)	(( a1 << 1) \
-						 + ( ( -( a1 + ( a1 << 1 ) ) ) >> 5 ) \
-						 - a2 + ( a2 >> 4 ))
-#define filter3(a1,a2)	(( a1 << 1 ) \
-						 + ( -( a1 + ( a1 << 2 ) + ( a1 << 3 )) >> 6 ) \
-						 - a2 \
-						 + ( a2 + ( a2 << 1 )) >> 4 )
-*/
+
+
+#ifdef XMSNES_LIKE_ENC
+int ComputeFilter( int x_2, int x_1, int filter )
+{
+	int cp;
+	switch( filter )
+	{
+		case 0:											// 0, 0
+			cp = 0;										// add 0
+			break;
+		case 1:											// 15/16
+			cp  = x_1;									// add 16/16
+			cp += -x_1 >> 4;							// add -1/16
+			break;
+		case 2:											// 61/32, -15/16
+			cp  = x_1<<1;								// add 64/32
+			cp += -(x_1 + (x_1 << 1)) >> 5;				// add -3/32
+			cp += -x_2;									// add -16/16
+			cp += x_2 >> 4;								// add 1/16
+			break;
+		case 3:											// 115/64, -13/16
+			cp  = x_1 << 1;								// add 128/64
+			cp += -(x_1 + (x_1 << 2) + (x_1 << 3)) >> 6;// add -13/64
+			cp += -x_2;									// add -16/16
+			cp += (x_2 + (x_2 << 1)) >> 4;				// add 3/16
+	}
+	return cp;
+}
+#else
+int ComputeFilter( int x_2, int x_1, int filter )
+{
+	int cp;
+	switch( filter )
+	{
+		case 0:											// 0, 0
+			cp = 0;										// add 0
+			break;
+		case 1:											// 15/16
+			cp  = x_1 >> 1;									// add 16/16
+			cp += -x_1 >> 5;							// add -1/16
+			break;
+		case 2:											// 61/32, -15/16
+			cp  = x_1;								// add 64/32
+			cp += -(x_1 + (x_1 >> 1)) >> 5;				// add -3/32
+			cp += -(x_2 >> 1);									// add -16/16
+			cp += x_2 >> 5;								// add 1/16
+			break;
+		case 3:											// 115/64, -13/16
+			cp  = x_1;								// add 128/64
+			cp += -(x_1 + (x_1 << 2) + (x_1 << 3)) >> 7;// add -13/64
+			cp += -(x_2 >> 1);									// add -16/16
+			cp += (x_2 + (x_2 >> 1)) >> 4;				// add 3/16
+	}
+	return cp;
+}
+#endif
 
 //入力データ：ネイティブエンディアン１６bit、モノラル、３２kHz
 //inputframeが 16*n でないとき、先頭に無音を付け加えます
-int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, int filter_fix, int range_fix, bool clip_fix, int *filter, int *range, int blockout[16] );
+int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, int filter_fix, int range_fix, bool clip_fix, int *filter, int *range, int blockout[16], int blockdec[16], int *err );
 
-int brrencode(short *input_data, unsigned char *output_data, long inputframes)
+
+int brrencode(short *input_data, unsigned char *output_data, long inputframes, bool isLoop, long loop_point, int pad_frames)
 {
 	int				frm;
 	short			*input;
 	unsigned char	*output;
 	
 	int				out_1, out_2;
-	long			frames_remain,frame_offset,outbytes=0;
+	int				frames_remain,frame_offset,outbytes=0;
 	int				*filter, *range, half;
 	int				numblocks;
 	int				current_block;
+	int				loopstart_block = (pad_frames+loop_point)/16;
+	int				loopstart_sample;
 	int				blockout[16];
+	int				blockdec[16];
+	bool			use_filter0;
+	bool			redo_loopf;
+	int				adv_frame;
 	
-	
-	input_data[0]=0;
-	out_1 = out_2 = 0;
-	
-	frame_offset = (16-(inputframes % 16))%16;
-	frames_remain = inputframes;
-	
+	//frame_offset = (16-(inputframes % 16))%16;
+	frame_offset = pad_frames;
 	numblocks = (inputframes+frame_offset) / 16;
 	filter = new int[numblocks];
 	range = new int[numblocks];
 	
-	//1パス目--filter rangeを計算--
-	/*
-	input = input_data;
-	current_block = 0;
-	while (frames_remain > 0) {
-		int adv_frame;
-		adv_frame = encodeBlock( input, frame_offset, &out_1, &out_2, -1, -1, true, &filter[current_block], &range[current_block], blockout );
-		input += adv_frame;
-		frames_remain -= adv_frame;
-		frame_offset = 0;
-				
-		current_block++;
-	}
-	 */
-	
-	//2パス目--filter rangeを固定してクリップ回避--
+	use_filter0 = false;
+	redo_loopf = true;
+	frames_remain = inputframes;
+	out_1 = out_2 = 0;
 	input = input_data;
 	output = output_data;
-	out_1 = out_2 = 0;
-	frame_offset = (16-(inputframes % 16))%16;
-	frames_remain = inputframes;
 	current_block = 0;
-	while (frames_remain > 0) {
-		int adv_frame;
-		//adv_frame = encodeBlock( input, frame_offset, &out_1, &out_2, filter[current_block], range[current_block], true, &filter[current_block], &range[current_block], blockout );
-		adv_frame = encodeBlock( input, frame_offset, &out_1, &out_2, -1, -1, false, &filter[current_block], &range[current_block], blockout );
-		input += adv_frame;
-		frames_remain -= adv_frame;
-		frame_offset = 0;
-		
-		//Headerバイトの設定
-		*output = range[current_block]<<4;
-		*output |= filter[current_block]<<2;
-		if (frames_remain <= 0) {
-			*output |= 1;	//ENDbitの付加
-		}
-		output++;
-		outbytes++;
-		
-		//データバイトの書き込み
-		half = 0;
-		for (frm=0; frm<16; frm++) {
-			if (half == 0) {
-				*output = (blockout[frm] << 4) & 0xf0;
-				half = 1;
+	
+	while ( redo_loopf ) {
+		redo_loopf=false;
+		//int	err_sum = 0;
+		while (frames_remain > 0) {
+//			printf("current_block=%d\n",current_block);
+			
+			int	err;
+			int filter_fix = -1;
+			int range_fix = -1;
+			if ( current_block == 0 || use_filter0 ) {
+				filter_fix = 0;
 			}
-			else {
-				*output |= blockout[frm] & 0xf;
-				half = 0;
-				output++;
-				outbytes++;
+			adv_frame = encodeBlock( input, frame_offset, &out_1, &out_2, filter_fix, range_fix, true, &filter[current_block], &range[current_block], blockout, blockdec, &err );
+			use_filter0 = false;
+			if ( current_block == loopstart_block ) {
+				loopstart_sample = blockdec[0];
 			}
+			//		err_sum += err;
+			input += adv_frame;
+			frames_remain -= adv_frame;
+			frame_offset -= 16-adv_frame;
+			
+			//Headerバイトの設定
+//			printf("filter=%d\n",filter[current_block]);
+			*output = range[current_block]<<4;
+			*output |= filter[current_block]<<2;
+			if (frames_remain <= 0) {
+				*output |= 1;	//ENDbitの付加
+			}
+			if (isLoop) {
+				*output |= 2;	//ループフラグの付加
+			}
+			output++;
+			outbytes++;
+			
+			//データバイトの書き込み
+			half = 0;
+			for (frm=0; frm<16; frm++) {
+				if (half == 0) {
+					*output = (blockout[frm] << 4) & 0xf0;
+					half = 1;
+				}
+				else {
+					*output |= blockout[frm] & 0xf;
+					half = 0;
+					output++;
+					outbytes++;
+				}
+			}
+			
+			current_block++;
 		}
 		
-		current_block++;
+		if ( isLoop ) {
+			int lc_range;
+			int lc_filter;
+			int lc_value;
+			int	loop_w = loopstart_block*9;
+			lc_filter = (output_data[loop_w] & 0x0c) >> 2;
+			if ( lc_filter != 0 ) {
+				lc_range = (output_data[loop_w] & 0xf0) >> 4;
+				lc_value = output_data[loop_w+1] >> 4;
+				lc_value <<= lc_range;
+//				printf("lc_value=%d\n",lc_value);
+				input -= adv_frame;
+				lc_value += ComputeFilter( input[13], input[12], lc_filter );
+//				printf("out_2=%d\n",out_2);
+//				printf("out_1=%d\n",out_1);
+//				printf("lc_value=%d\n",lc_value);
+//				printf("loopstart_sample=%d\n",loopstart_sample);
+				if( abs( lc_value - loopstart_sample ) > looploss_tolerance )
+				{
+					// ループ地点から再エンコード
+					frame_offset = pad_frames;
+					if ( 16*loopstart_block < frame_offset ) {
+						frame_offset -= 16*loopstart_block;
+						frames_remain = inputframes;
+						input = input_data;
+					}
+					else {
+						frames_remain = inputframes+frame_offset - 16*loopstart_block;
+						input = input_data + (16*loopstart_block - frame_offset);
+						frame_offset = 0;
+					}
+					output = output_data + loopstart_block*9;
+					current_block = loopstart_block;
+					outbytes = loopstart_block*9;
+					
+					redo_loopf = true;
+					use_filter0 = true;
+				}
+			}
+		}
 	}
+//	printf( "err_sum=%d\n",err_sum);
 	
 	delete [] filter;
 	delete [] range;
@@ -122,11 +224,12 @@ int brrencode(short *input_data, unsigned char *output_data, long inputframes)
 	return outbytes;
 }
 
-int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, int filter_fix, int range_fix, bool clip_fix, int *filter, int *range, int blockout[16] )
+int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, int filter_fix, int range_fix, bool clip_fix, int *filter, int *range, int blockout[16], int blockdec[16], int *err )
 {
 	int				r,f,frm;
 	int				out1[13][4], out2[13][4], err_sum[13][4];
 	int				blockdata[13][4][16];
+	int				blocksamp[13][4][16];
 	int				adv_frame = 0;
 	
 	int				f_begin = 0;
@@ -154,35 +257,32 @@ int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, i
 		for (f=f_begin; f<=f_end; f++) {
 			for (r=r_begin; r<=r_end; r++) {
 				int		in,nbl[2],c1,c2,out[2],cp=0;
-				int		df[2] = {0x7fffffff, 0x7fffffff};
+				int		df[2] = {0x7fffffff, 0x7fffffff};	//max
 				
-				if (frame_offset > 0)
+				if (frame_offset > 0) {
 					in = 0;
-				else
+				}
+				else {
 					in = (*input);
+#ifdef XMSNES_LIKE_ENC
+					in >>= 1;
+#endif
+				}
 				
 				c1=out1[r][f];
 				c2=out2[r][f];
 				
 				//各フィルタの予測誤差を求める
-				if (f==1) {
-					cp = filter1(c1);
-				}
-				else if (f==2) {
-					cp = filter2(c1,c2);
-				}
-				else if (f==3) {
-					cp = filter3(c1,c2);
-				}
-				else {
-					cp = 0;
-				}
+				cp = ComputeFilter(0,c1,f);
 				
 				for (int i=0; i<(clip_fix?2:1); i++ ) {
 					
 					nbl[i]	= in;
 					nbl[i] -= cp;
 					
+#ifdef XMSNES_LIKE_ENC
+					nbl[i] <<= 1;
+#endif
 					//4bitに量子化する
 					nbl[i] += (1 << r) >> 1;
 					nbl[i] >>= r;
@@ -195,25 +295,53 @@ int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, i
 					
 					//最終的な誤差を求めるためデコードする
 					out[i] = (nbl[i]<<r);
+#ifdef XMSNES_LIKE_ENC
+					out[i] >>= 1;
+#endif
 					out[i] += cp;
 				
+#ifdef XMSNES_LIKE_ENC
+					if ( f >= 2 ) {
+						if( out[i] < -32768 ) {
+							out[i] = -32768;
+						}
+						else if( out[i] > 32767 ) {
+							out[i] = 32767;
+						}
+					}
+#else
 					if( out[i] < -65536 ) {
 						out[i] = -65536;
 					}
 					else if( out[i] > 65535 ) {
 						out[i] = 65535;
 					}
+#endif
 
 					out[i] <<= 1;
 					if ( clip_fix ) {
-						//out[i] = (signed short)out[i];
+#ifdef XMSNES_LIKE_ENC
+						out[i] = ((signed short)out[i])/*>>1*/;
+#else
 						out[i] = out[i] & 0x1ffff;
 						if ( out[i] > 0xffff ) {
 							out[i] = out[i] | 0xffff0000;
 						}
+#endif
 					}
-					
+
 					//元信号との差の絶対値を求める
+#ifdef XMSNES_LIKE_ENC
+					df[i] = ( (out[i]) - ((*input)/*>>1*/) );
+					df[i] = df[i]<0 ? -df[i]:df[i];
+					
+					if ( in < 0 ) {
+						in = in & 0x7fff;
+					}
+					else {
+						in = in | (~0x7fff);
+					}
+#else
 					df[i] = out[i]-((*input)<<1);
 					df[i] = df[i]<0 ? -df[i]:df[i];
 					
@@ -221,21 +349,23 @@ int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, i
 						in = in & 0xffff;
 					}
 					else {
-						in = in | -0x10000;
+						in = in | (~0xffff);
 					}
-					
+#endif
 				}
 				
-				if ( df[0] > df[1] ) {
+				if ( df[1] < df[0] ) {
 					blockdata[r][f][frm] = nbl[1];
+					blocksamp[r][f][frm] = out[1]>>1;
 					out2[r][f]=c1;
-					out1[r][f]=out[1];
+					out1[r][f]=out[1]>>1;
 					err_sum[r][f] += df[1];
 				}
 				else {
 					blockdata[r][f][frm] = nbl[0];
+					blocksamp[r][f][frm] = out[0]>>1;
 					out2[r][f]=c1;
-					out1[r][f]=out[0];
+					out1[r][f]=out[0]>>1;
 					err_sum[r][f] += df[0];
 				}
 			}
@@ -250,9 +380,9 @@ int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, i
 	
 	//誤差の合計が最小なフィルタ＆レンジを選択
 	*filter = f_begin;
-	*range = r_begin;
+	*range = r_end;
 	for (f=f_begin; f<=f_end; f++) {
-		for (r=r_begin; r<=r_end; r++) {
+		for (r=r_end; r>=r_begin; r--) {
 			if (err_sum[r][f] < err_sum[*range][*filter]) {
 				*filter = f;
 				*range = r;
@@ -263,8 +393,13 @@ int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, i
 	*out_1 = out1[*range][*filter];
 	*out_2 = out2[*range][*filter];
 	
+	//データの出力
 	for (frm=0; frm<16; frm++) {
 		blockout[frm] = blockdata[*range][*filter][frm];
+		blockdec[frm] = blocksamp[*range][*filter][frm];
+	}
+	if ( err ) {
+		*err = err_sum[*range][*filter];
 	}
 	
 	return adv_frame;
@@ -285,8 +420,7 @@ int brrdecode(unsigned char *src, short *output, int looppoint, int loops)
 {
 	int range, end=0, loop, filter, counter, temp;
 	short input;
-	long	out=0,out1=0,out2=0, temp2;
-	long	outb1=0,outb2=0;
+	long	out=0,out1=0,out2=0, temp2=0;
 	int		now=0;
 	int		remainloop=loops-1;
 	unsigned char *loopaddr = src+looppoint;
@@ -308,15 +442,10 @@ int brrdecode(unsigned char *src, short *output, int looppoint, int loops)
 				input |= ~0xF;
 			
 			out2=out1;
-			out1=out<<1;
-			out=input<<range;
+			out1=temp2>>1;
+			out=(input<<range)>>1;
 			
-			if(filter==1)
-				out+=filter1(out1);
-			else if(filter==2)
-				out+=filter2(out1,out2);
-			else if(filter==3)
-				out+=filter3(out1,out2);
+			out += ComputeFilter( out2, out1, filter );
 			
 			temp2 = out;
 			if( temp2 < -32768 )
@@ -327,9 +456,8 @@ int brrdecode(unsigned char *src, short *output, int looppoint, int loops)
 			{
 				temp2 = 32767;
 			}
+			temp2 = (signed short)(temp2 << 1);
 			output[now] = temp2;
-			outb2=outb1;
-			outb1=temp2;
 			
 			now++;
 			
@@ -338,15 +466,10 @@ int brrdecode(unsigned char *src, short *output, int looppoint, int loops)
 				input |= ~0xF;
 			
 			out2=out1;
-			out1=out<<1;
-			out=input<<range;
+			out1=temp2>>1;
+			out=(input<<range)>>1;
 			
-			if(filter==1)
-				out+=filter1(out1);
-			else if(filter==2)
-				out+=filter2(out1,out2);
-			else if(filter==3)
-				out+=filter3(out1,out2);
+			out += ComputeFilter( out2, out1, filter );
 			
 			temp2 = out;
 			if( temp2 < -32768 )
@@ -357,9 +480,8 @@ int brrdecode(unsigned char *src, short *output, int looppoint, int loops)
 			{
 				temp2 = 32767;
 			}
+			temp2 = (signed short)(temp2 << 1);
 			output[now] = temp2;
-			outb2=outb1;
-			outb1=temp2;
 			
 			now++;
         }

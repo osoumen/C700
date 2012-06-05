@@ -71,7 +71,6 @@ static unsigned char silence_brr[] = {
 Chip700Generator::Chip700Generator()
 : mSampleRate(44100.0),
   mClipper( false ),
-//  mDrumMode( false ),
   mVelocitySens( true ),
   mVPset(NULL)
 {
@@ -607,7 +606,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 					else if ( outx > 32767 ) {
 						outx = 32767;
 					}
-					if (/*mClipper*/true) {
+					if (mClipper) {
 						mVoice[v].smp2 = mVoice[v].smp1;
 						mVoice[v].smp1 = ( signed short )( outx << 1 );
 						mVoice[v].sampbuf[mVoice[v].sampptr] = mVoice[v].smp1;
@@ -627,7 +626,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 				vr += ( ( G2[ vl ]
 						 * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 2 ) & 3 ] ) >> 11 ) & ~1;
 				
-				if (/*mClipper*/true) {
+				if (mClipper) {
 					vr = ( signed short )vr;
 				}
 				vr += ( ( G1[ vl ]

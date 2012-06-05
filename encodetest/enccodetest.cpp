@@ -20,15 +20,15 @@ typedef struct spc_header {
 	char	psw;
 	char	sp;
 	char	reserved_2ch[2];
-}spc_header;
+} spc_header;
 
-static const int MAIN_CODE_SIZE = 0x2c;
-const unsigned char spc_main[MAIN_CODE_SIZE] = {
-	0xE8, 0x5D, 0xC4, 0xF2, 0xE8, 0x02, 0xC4, 0xF3, 0xE8, 0x00, 0xC5, 0x00, 0x02, 0xC5, 0x02, 0x02, 
-	0xE8, 0x05, 0xC5, 0x01, 0x02, 0xC5, 0x03, 0x02, 0xCD, 0x00, 0xF5, 0x2C, 0x04, 0x30, 0x0B, 0xC4, 
-	0xF2, 0x3D, 0xF5, 0x2C, 0x04, 0xC4, 0xF3, 0x3D, 0x2F, 0xF0, 0x2F, 0xFE
+static const char spc_main[] = {
+    0xe8, 0x5d, 0xc4, 0xf2, 0xe8, 0x02, 0xc4, 0xf3, 0xe8, 0x00, 0xc5, 0x00, 0x02, 0x8d, 0x00, 0xcc,
+    0x02, 0x02, 0xe8, 0x05, 0xc5, 0x01, 0x02, 0xc5, 0x03, 0x02, 0xcd, 0x00, 0xf5, 0x60, 0x04, 0x30,
+    0x0b, 0xc4, 0xf2, 0x3d, 0xf5, 0x60, 0x04, 0xc4, 0xf3, 0x3d, 0x2f, 0xf0, 0x2f, 0xfe
 };
 
+static const int	SOUND_TABLE_POS = 0x560;
 unsigned char soundtable[] = {
 	0x00,
 	0x7f,           //Left volume (V1)
@@ -71,7 +71,7 @@ unsigned char soundtable[] = {
 		
 	0xFF           //Terminator Byte (do not remove!)
 };
-	
+
 int main (int argc, char * argv[]) {
 		FILE	*fp;
 	int		inframes;
@@ -101,10 +101,11 @@ int main (int argc, char * argv[]) {
 	}
 	
 	//高域強調処理
-	emphasis((short*)readbuff, inframes);
+	//emphasis((short*)readbuff, inframes);
 	
 	//エンコード処理
-	outsize=brrencode((short*)readbuff,writebuff,inframes);
+	int pad = 16-(inframes % 16);
+	outsize=brrencode((short*)readbuff,writebuff,inframes, true, 0, pad);
 	
 	//SPCヘッダ初期化
 	for ( int i=0; i<SPC_FILE_SIZE; i++ ) {
@@ -119,14 +120,15 @@ int main (int argc, char * argv[]) {
 	header->reg_pc[0] = 0x00;
 	header->reg_pc[1] = 0x04;
 	//SPCコード
-	memcpy(spc+0x500, spc_main, MAIN_CODE_SIZE);
+	int main_code_sice = sizeof( spc_main );
+	memcpy(spc+0x500, spc_main, main_code_sice);
 	//サンプリングレート調整
 	int samplerate = mAiffGetSampleRate(argv[1]);
 	int	pitch = 4096 * samplerate / 32000;
 	soundtable[5] = pitch & 0x00ff;
 	soundtable[7] = pitch >> 8;
 	//サウンドテーブル
-	memcpy(spc+0x500+MAIN_CODE_SIZE, soundtable, sizeof(soundtable));
+	memcpy(spc+SOUND_TABLE_POS, soundtable, sizeof(soundtable));
 	
 	//波形データ
 	if ( outsize > (65536 - 0x500) ) {
@@ -134,12 +136,10 @@ int main (int argc, char * argv[]) {
 	}
 	memcpy(spc+0x600, writebuff, outsize);
 	
-	if (argc >= 3) {
-		fp = fopen(argv[2],"wb");
-	}
-	else {
-		fp = fopen("output.spc","wb");
-	}
+	char	outfname[256];
+	sprintf(outfname, "%s.spc", argv[1]);
+	fp = fopen(outfname,"wb");
+
 	fwrite(spc,sizeof(char),SPC_FILE_SIZE,fp);
 	fclose(fp);
 	
