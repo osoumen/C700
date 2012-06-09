@@ -16,7 +16,7 @@ int abs( int value ) { return value < 0 ? -value : value; }
 #define XMSNES_LIKE_ENC
 
 #define looploss_tolerance 30000
-
+/*
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
 #define filter2(a1,a2)	(a1 \
 						 + ( ( -( a1 + ( a1 >> 1 ) ) ) >> 5 ) \
@@ -27,7 +27,7 @@ int abs( int value ) { return value < 0 ? -value : value; }
 						 - ( a2 >> 1 ) \
 						 + ( ( a2 + ( a2 >> 1 ) ) >> 4 ))
 
-
+*/
 #ifdef XMSNES_LIKE_ENC
 int ComputeFilter( int x_2, int x_1, int filter )
 {
