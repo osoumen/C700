@@ -1142,6 +1142,7 @@ ComponentResult Chip700::GetPresets(CFArrayRef *outData) const
 OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 {
 	SInt32 chosenPreset = inNewFactoryPreset.presetNumber;
+	//与えられたプリセット番号に一致するプリセットを内部で呼び出す
 	for(int i = 0; i < kNumberPresets; ++i)
 	{
 		if(chosenPreset == kPresets[i].presetNumber)
