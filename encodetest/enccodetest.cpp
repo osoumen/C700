@@ -101,7 +101,7 @@ int main (int argc, char * argv[]) {
 	}
 	
 	//高域強調処理
-	//emphasis((short*)readbuff, inframes);
+	emphasis((short*)readbuff, inframes);
 	
 	//エンコード処理
 	int pad = 16-(inframes % 16);

@@ -273,7 +273,7 @@ int encodeBlock( const short *input, int frame_offset, int *out_1, int *out_2, i
 				c2=out2[r][f];
 				
 				//各フィルタの予測誤差を求める
-				cp = ComputeFilter(0,c1,f);
+				cp = ComputeFilter(c2,c1,f);
 				
 				for (int i=0; i<(clip_fix?2:1); i++ ) {
 					
