@@ -71,7 +71,7 @@ static unsigned char silence_brr[] = {
 Chip700Generator::Chip700Generator()
 : mSampleRate(44100.0),
   mClipper( false ),
-  mVelocitySens( true ),
+  mVelocityMode( kVelocityMode_Square ),
   mVPset(NULL)
 {
 	for ( int i=0; i<NUM_BANKS; i++ ) {
@@ -256,9 +256,9 @@ void Chip700Generator::SetMultiMode( int bank, bool value )
 	mDrumMode[bank] = value;
 }
 
-void Chip700Generator::SetVelocitySens( bool value )
+void Chip700Generator::SetVelocityMode( velocity_mode value )
 {
-	mVelocitySens = value;
+	mVelocityMode = value;
 }
 
 void Chip700Generator::SetVibFreq( float value )
@@ -372,8 +372,11 @@ void Chip700Generator::DoKeyOn(NoteEvt *evt)
 	mVoice[v].uniqueID = evt->uniqueID;
 	
 	//ベロシティの取得
-	if ( mVelocitySens ) {
+	if ( mVelocityMode == kVelocityMode_Square ) {
 		mVoice[v].velo = VELOCITY_CURB[evt->velo];
+	}
+	else if ( mVelocityMode == kVelocityMode_Linear ) {
+		mVoice[v].velo = evt->velo << 4;
 	}
 	else {
 		mVoice[v].velo=VELOCITY_CURB[127];

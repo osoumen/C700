@@ -23,6 +23,13 @@ typedef enum
 	FASTRELEASE
 } env_state_t32;
 
+typedef enum
+{
+    kVelocityMode_Constant,
+    kVelocityMode_Square,
+    kVelocityMode_Linear
+} velocity_mode;
+
 class EchoKernel
 {
 private:
@@ -99,7 +106,7 @@ public:
 	void SetPBRange( float value );
 	void SetClipper( bool value );
 	void SetMultiMode( int bank, bool value );
-	void SetVelocitySens( bool value );
+	void SetVelocityMode( velocity_mode value );
 	void SetVibFreq( float value );
 	void SetVibDepth( float value );
 	
@@ -195,7 +202,7 @@ private:
 	float			mPbrange;
 	bool			mClipper;
 	bool			mDrumMode[NUM_BANKS];
-	bool			mVelocitySens;
+	velocity_mode	mVelocityMode;
 	int				mChProgram[16];
 	float			mChPitchBend[16];
 	int				mChVibDepth[16];

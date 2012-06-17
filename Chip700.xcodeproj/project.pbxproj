@@ -252,6 +252,7 @@
 		F546EE53155E7A7A002D6E59 /* bt_save_xi1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */; };
 		F557B4A11555BB8F009B4165 /* TValueTextControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD80B2144CA00EC1825 /* TValueTextControl.h */; };
 		F557B4A21555BB90009B4165 /* TValueTextControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD70B2144CA00EC1825 /* TValueTextControl.cpp */; };
+		F56AAB01158DCB6000864DD4 /* bt_velocitysens2.png in Resources */ = {isa = PBXBuildFile; fileRef = F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */; };
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
@@ -548,6 +549,7 @@
 		F546EE19155E6950002D6E59 /* track16_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = track16_1.png; sourceTree = "<group>"; };
 		F546EE50155E7A7A002D6E59 /* bt_save_xi0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_save_xi0.png; sourceTree = "<group>"; };
 		F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_save_xi1.png; sourceTree = "<group>"; };
+		F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_velocitysens2.png; sourceTree = "<group>"; };
 		F56D351F156A0EA000038960 /* encodetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = encodetest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
 		F56D359F156A185300038960 /* libMiniAiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMiniAiff.a; path = encodetest/libMiniAiff.a; sourceTree = "<group>"; };
@@ -824,6 +826,7 @@
 				8AD2C4FB0B2AA99100ED85CB /* bt_properlydecode1.png */,
 				8AD2C4FC0B2AA99100ED85CB /* bt_velocitysens0.png */,
 				8AD2C4FD0B2AA99100ED85CB /* bt_velocitysens1.png */,
+				F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */,
 				8ACF4C260B2144FD00EC1825 /* AUBackground.png */,
 				8AC1D32A0B27525A00FFD294 /* dragimg.png */,
 				8ACF4C280B2144FD00EC1825 /* editor.nib */,
@@ -1319,6 +1322,7 @@
 				F5DFB756155E851500BC9F4A /* bt_multi_bank_c1.png in Resources */,
 				F5DFB757155E851500BC9F4A /* bt_multi_bank_d0.png in Resources */,
 				F5DFB758155E851500BC9F4A /* bt_multi_bank_d1.png in Resources */,
+				F56AAB01158DCB6000864DD4 /* bt_velocitysens2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

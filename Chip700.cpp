@@ -272,7 +272,19 @@ ComponentResult	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 	mGenerator.SetMultiMode( 1, Globals()->GetParameter(kParam_bankBmulti)==0 ? false:true );
 	mGenerator.SetMultiMode( 2, Globals()->GetParameter(kParam_bankCmulti)==0 ? false:true );
 	mGenerator.SetMultiMode( 3, Globals()->GetParameter(kParam_bankDmulti)==0 ? false:true );
-	mGenerator.SetVelocitySens( Globals()->GetParameter(kParam_velocity)==0 ? false:true );
+	switch ( (int)Globals()->GetParameter(kParam_velocity) ) {
+		case 0:
+			mGenerator.SetVelocityMode( kVelocityMode_Constant );
+			break;
+		case 1:
+			mGenerator.SetVelocityMode( kVelocityMode_Square );
+			break;
+		case 2:
+			mGenerator.SetVelocityMode( kVelocityMode_Linear );
+			break;
+		default:
+			mGenerator.SetVelocityMode( kVelocityMode_Square );
+	}
 	mGenerator.SetPBRange( Globals()->GetParameter(kParam_bendrange) );
 	
 	mGenerator.ModWheel( 0, Globals()->GetParameter(kParam_vibdepth), 0 );
@@ -394,9 +406,9 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 				break;
 			case kParam_velocity:
 				AUBase::FillInParameterName (outParameterInfo, kParam_velocity_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
+				outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
 				outParameterInfo.minValue = kMinimumValue_0;
-				outParameterInfo.maxValue = 1;
+				outParameterInfo.maxValue = 2;
 				outParameterInfo.defaultValue = kDefaultValue_velocity;
 				break;
 			case kParam_clipnoise:
