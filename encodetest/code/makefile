@@ -9,7 +9,7 @@ IFILES = defines.i
 OFILES = VIOLIN.o
 
 all: $(OFILES) makefile
-	$(LD) $(LDFLAGS) linkfile result.rom
+	$(LD) $(LDFLAGS) linkfile result.spc
 
 VIOLIN.o: VIOLIN.s defines.i
 	$(CC) $(CFLAGS) VIOLIN.s

@@ -30,44 +30,58 @@ static const char spc_main[] = {
 
 static const int	SOUND_TABLE_POS = 0x560;
 unsigned char soundtable[] = {
+	0x00,	//VOL(L)
+	0x00,           //Left volume (V1)
+	0x01,	//VOL(R)
+	0x00,           //Right volume (V1)
+	0x02,	//P(L)
 	0x00,
-	0x7f,           //Left volume (V1)
-	0x01,
-	0x7f,           //Right volume (V1)
-	0x02,
-	0x00,
-	0x03,
+	0x03,	//P(H)
 	0x10,          //Pitch is 1:2 of original
-
-	0x04,
+	0x04,	//SRCN
 	0x00,           //Sample #0
-	0x05,
+	0x05,	//ADSR(1)
+	0x9a,
+	0x06,	//ADSR(2)
 	0x00,
-	0x07,
-	0x7f,           //GAIN Settings
-	0x0C,
-	0x7F ,          //Main volume left
+	
 
-	0x1C,
-	0x7F ,          //Main volume right
-	0x2C,
+	0x10,	//VOL(L)
+	0x7f,           //Left volume (V1)
+	0x11,	//VOL(R)
+	0x7f,           //Right volume (V1)
+	0x12,	//P(L)
+	0x00,
+	0x13,	//P(H)
+	0x10,          //Pitch is 1:2 of original
+	0x14,	//SRCN
+	0x00,           //Sample #0
+	0x15,	//ADSR(1)
+	0x00,
+	0x17,	//GAIN
+	0x7f,           //GAIN Settings
+	
+	
+	0x0C,	//MVOL(L)
+	0x3F ,          //Main volume left
+	0x1C,	//MVOL(R)
+	0x3F ,          //Main volume right
+	0x2C,	//EVOL(L)
 	0x00 ,          //Echo volume left
-	0x3C,
+	0x3C,	//EVOL(R)
 	0x00 ,          //Echo volume right
-	0x4D,
+	0x4D,	//EON
 	0x00 ,          //Echo off
 
-	0x3D,
+	0x3D,	//NON
 	0x00,           //Noise off
-	0x2D,
-	0x00 ,          //Modulation off
-	0x07,
-	0x7F ,          //Gain off
-	0x6C,
+	0x2D,	//PMON
+	0x02 ,          //Modulation off
+	0x6C,	//FLG
 	0x20 ,          //Mute off, echo off
 
-	0x4C,
-	0x01 ,          //Key On for voice 1
+	0x4C,	//KOL
+	0x03 ,          //Key On for voice 1
 		
 	0xFF           //Terminator Byte (do not remove!)
 };
@@ -105,12 +119,10 @@ int main (int argc, char * argv[]) {
 	
 	//エンコード処理
 	int pad = 16-(inframes % 16);
-	outsize=brrencode((short*)readbuff,writebuff,inframes, true, 0, pad);
+	outsize=brrencode((short*)readbuff,writebuff,inframes, true, 0, 0);
 	
 	//SPCヘッダ初期化
-	for ( int i=0; i<SPC_FILE_SIZE; i++ ) {
-		spc[i] = 0;
-	}
+	memset(spc, 0, SPC_FILE_SIZE);
 	spc_header	*header = (spc_header*)spc;
 	strncpy(header->file_header, "SNES-SPC700 Sound File Data v0.30", 33);
 	header->info_21h[0] = 0x26;
@@ -119,14 +131,16 @@ int main (int argc, char * argv[]) {
 	header->version_minor = 0x1e;
 	header->reg_pc[0] = 0x00;
 	header->reg_pc[1] = 0x04;
-	//SPCコード
+	//プログラムコード
 	int main_code_sice = sizeof( spc_main );
 	memcpy(spc+0x500, spc_main, main_code_sice);
-	//サンプリングレート調整
+	//再生周波数設定
 	int samplerate = mAiffGetSampleRate(argv[1]);
 	int	pitch = 4096 * samplerate / 32000;
 	soundtable[5] = pitch & 0x00ff;
 	soundtable[7] = pitch >> 8;
+	soundtable[5+14] = pitch & 0x00ff;
+	soundtable[7+14] = pitch >> 8;
 	//サウンドテーブル
 	memcpy(spc+SOUND_TABLE_POS, soundtable, sizeof(soundtable));
 	

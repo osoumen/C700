@@ -97,5 +97,5 @@ soundtable:
 
 endsoundtable:
 
-.org $0500
+.org $1000
 .incbin "output.brr"
