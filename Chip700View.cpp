@@ -25,6 +25,7 @@ static OSErr MyReceiveHandler(WindowRef win, void *handlerRefCon,
 
 bool DragItemsAreAcceptable(DragReference theDrag);
 
+short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst);
 
 COMPONENT_ENTRY(Chip700View)
 
@@ -1109,13 +1110,39 @@ void Chip700View::saveSelectedXI(void)
 	size = sizeof(int);
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_EditingProgram,kAudioUnitScope_Global,0,&intValue,&size);
 	
-	//サンプルデータを取得する
+	//サンプルデータの存在確認
 	BRRData		brr;
 	size = sizeof(BRRData);
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_BRRData,kAudioUnitScope_Global,0,&brr,&size);
 	//データが無ければ終了する
 	if (brr.data == NULL)
 		return;
+	
+	//ソースファイルURLが無ければ選択ダイアログを出す
+	bool	existSrcFile = false;
+	CFURLRef	srcURL;
+	size = sizeof(CFURLRef);
+	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_SourceFileRef,kAudioUnitScope_Global,0,&srcURL,&size);
+	if ( srcURL ) {
+		//オーディオファイルとしてオープンを試みる
+		AudioFileID mAudioFileID;
+		FSRef		ref;
+		CFURLGetFSRef(srcURL, &ref);
+		OSStatus err = AudioFileOpen(&ref, fsRdPerm, 0, &mAudioFileID);
+		if (err == noErr) {
+			existSrcFile = true;
+			AudioFileClose(mAudioFileID);
+		}
+	}
+	if ( existSrcFile == false ) {
+		FSRef		ref;
+		getLoadFile(&ref, CFSTR("Select Source File"));
+		CFURLRef	url;
+		url = CFURLCreateFromFSRef(NULL, &ref);
+		if ( url ) {
+			AudioUnitSetProperty(mEditAudioUnit, kAudioUnitCustomProperty_SourceFileRef, kAudioUnitScope_Global, 0, &url, sizeof(CFURLRef));
+		}
+	}
 	
 	//ファイルダイアログ
 	CFStringRef	pgname;
@@ -1146,7 +1173,7 @@ bool Chip700View::dragStart(ControlRef cont, EventRecord *event)
 	
 	RgnHandle	rgn1;
 	
-	//サンプルデータを取得する
+	//サンプルデータ存在確認
 	BRRData		brr;
 	UInt32		size = sizeof(BRRData);
 	AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_BRRData,kAudioUnitScope_Global,0,&brr,&size);
@@ -1239,7 +1266,7 @@ void Chip700View::saveToXIFile(CFURLRef savefile)
 	CFRelease(propertydata);
 }
 
-int Chip700View::getLoadFile(FSRef *ref)
+int Chip700View::getLoadFile(FSRef *ref, CFStringRef window_title)
 {
 	OSStatus	status;
 	NavDialogCreationOptions	myDialogOptions;
@@ -1247,6 +1274,7 @@ int Chip700View::getLoadFile(FSRef *ref)
 	
 	status=NavGetDefaultDialogCreationOptions(&myDialogOptions);
 	myDialogOptions.optionFlags &= ~kNavAllowMultipleFiles;
+	myDialogOptions.windowTitle = window_title;
 	
 	status = NavCreateChooseFileDialog(&myDialogOptions,NULL,NULL,NULL,MyFileSelectFilterProc,NULL,&myDialogRef);
 	status = NavDialogRun(myDialogRef);
@@ -1404,12 +1432,14 @@ void Chip700View::loadFile(FSRef *ref)
 		wavedata = loadPCMFile(ref,&numSamples,&inst);
 		if (wavedata == NULL) return;
 		
-		if (preemphasis)
+		if (preemphasis) {
 			emphasis(wavedata,numSamples);
+		}
 		
 		brr.data = new unsigned char[numSamples/16*9+18];
-		if (inst.loop)
+		if (inst.loop) {
 			numSamples=inst.lp_end;
+		}
 		looppoint = (inst.lp + 15)/16*9;
 		loop = inst.loop?true:false;
 		pad = 16-(numSamples % 16);
@@ -1423,7 +1453,12 @@ void Chip700View::loadFile(FSRef *ref)
 		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_HighKey,kAudioUnitScope_Global,0,&inst.highkey,sizeof(int));
 		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_LoopPoint,kAudioUnitScope_Global,0,&looppoint,sizeof(int));
 		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Loop,kAudioUnitScope_Global,0,&loop,sizeof(bool));
+
+		//元波形データの情報をセットする
+		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_SourceFileRef,kAudioUnitScope_Global,0,&path,sizeof(CFURLRef));
+		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_IsEmaphasized,kAudioUnitScope_Global,0,&preemphasis,sizeof(bool));
 		
+		//拡張子を除いたファイル名をプログラム名に設定する
 		CFURLRef	noextpath=CFURLCreateCopyDeletingPathExtension(NULL,path);
 		CFStringRef	dataname = CFURLCopyLastPathComponent(noextpath);
 		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,kAudioUnitScope_Global,0,&dataname,sizeof(CFStringRef));
@@ -1438,7 +1473,7 @@ void Chip700View::loadFile(FSRef *ref)
 }
 
 //--------------------------------------------------------------------------------------------------
-short* Chip700View::loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
+short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 {
 #define	EXPAND_BUFFER	4096
     AudioFileID mAudioFileID;

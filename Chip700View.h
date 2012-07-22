@@ -14,11 +14,6 @@
 #include "AUCarbonViewNib.h"
 #include "Chip700defines.h"
 
-typedef struct {
-	int		basekey,lowkey,highkey,loop,lp,lp_end;
-	double	srcSamplerate;
-}InstData;
-
 static OSErr MyDragSendDataFunction(FlavorType theType, void *dragSendRefCon,
 									DragItemRef theItemRef, DragRef theDrag);
 
@@ -77,9 +72,8 @@ private:
 	void saveSelected(void);
 	void saveSelectedXI(void);
 	bool dragStart(ControlRef cont, EventRecord *event);
-	int getLoadFile(FSRef *ref);
+	int getLoadFile(FSRef *ref, CFStringRef window_title = NULL);
 	CFURLRef getSaveFile(CFStringRef defaultName);
-	short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst);
 	int loadSPCFile(CFURLRef path);
 	
 	

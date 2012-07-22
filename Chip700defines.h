@@ -150,6 +150,9 @@ enum
 	kAudioUnitCustomProperty_MaxNoteTrack_15,	// read only
 	kAudioUnitCustomProperty_MaxNoteTrack_16,	// read only
 	
+	kAudioUnitCustomProperty_SourceFileRef,
+	kAudioUnitCustomProperty_IsEmaphasized,
+	
 	kNumberOfProperties = kAudioUnitCustomProperty_MaxNoteTrack_16-kAudioUnitCustomProperty_First+1
 };
 
@@ -172,6 +175,12 @@ typedef struct {
 	unsigned char	*data;
 } BRRData;
 
+
+typedef struct {
+	int		basekey,lowkey,highkey,loop,lp,lp_end;
+	double	srcSamplerate;
+} InstData;
+
 typedef struct {
 	CFStringRef			pgname;
 	int					ar,dr,sl,sr;
@@ -183,6 +192,8 @@ typedef struct {
 	bool				echo;
 	int					bank;			// 追加 12.04.16
 	BRRData				brr;
+	CFURLRef			sourceFile;
+	bool				isEmphasized;
 } VoiceParams;
 
 typedef struct {

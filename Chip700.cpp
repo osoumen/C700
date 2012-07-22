@@ -116,11 +116,15 @@ static CFStringRef kSaveKey_volL = CFSTR("volL");
 static CFStringRef kSaveKey_volR = CFSTR("volR");
 static CFStringRef kSaveKey_echo = CFSTR("echo");
 static CFStringRef kSaveKey_bank = CFSTR("bank");
+static CFStringRef kSaveKey_IsEmphasized = CFSTR("isemph");
+static CFStringRef kSaveKey_SourceFile = CFSTR("srcfile");
 
 int RenumberKeyMap( unsigned char *snum, int size );
 int GetARTicks( int ar, Float64 tempo );
 int GetDRTicks( int dr, Float64 tempo );
 int GetSRTicks( int sr, Float64 tempo );
+
+short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -197,6 +201,9 @@ Chip700::Chip700(AudioUnit component)
 		mVPset[i].volL = 100;
 		mVPset[i].volR = 100;
 		
+		mVPset[i].sourceFile = NULL;
+		mVPset[i].isEmphasized = true;
+		
 		mVPset[i].ar = kDefaultValue_AR;
 		mVPset[i].dr = kDefaultValue_DR;
 		mVPset[i].sl = kDefaultValue_SL;
@@ -223,7 +230,11 @@ void Chip700::Cleanup()
 		if (mVPset[i].pgname) {
 			CFRelease(mVPset[i].pgname);
 		}
+		if (mVPset[i].sourceFile) {
+			CFRelease(mVPset[i].sourceFile);
+		}
 		mVPset[i].pgname = NULL;
+		mVPset[i].sourceFile = NULL;
 	}
 }
 
@@ -713,6 +724,17 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 				outWritable = false;
 				outDataSize = sizeof(UInt32);
 				return noErr;
+				
+			case kAudioUnitCustomProperty_SourceFileRef:
+				outDataSize = sizeof(CFURLRef);
+				outWritable = false;
+				return noErr;
+								
+			case kAudioUnitCustomProperty_IsEmaphasized:
+				outDataSize = sizeof(bool);
+				outWritable = false;
+				return noErr;
+								
 		}
 	}
 	
@@ -865,6 +887,16 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_MaxNoteTrack_16:
 				*((int *)outData) = mMaxNote[inID-kAudioUnitCustomProperty_MaxNoteTrack_1];
 				return noErr;
+				
+			case kAudioUnitCustomProperty_SourceFileRef:
+				*((CFURLRef *)outData) = mVPset[mEditProg].sourceFile;
+				return noErr;
+				
+			case kAudioUnitCustomProperty_IsEmaphasized:
+				*((bool *)outData) = mVPset[mEditProg].isEmphasized;
+				return noErr;
+				
+				
 		}
 	}
 	return AUInstrumentBase::GetProperty(inID, inScope, inElement, outData);
@@ -1028,8 +1060,9 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			}
 			
 			case kAudioUnitCustomProperty_ProgramName:
-				if (mVPset[mEditProg].pgname)
+				if (mVPset[mEditProg].pgname) {
 					CFRelease(mVPset[mEditProg].pgname);
+				}
 				mVPset[mEditProg].pgname = CFStringCreateCopy(NULL,*((CFStringRef*)inData));
 				return noErr;
 				
@@ -1078,6 +1111,18 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_MaxNoteTrack_16:
 				mMaxNote[inID-kAudioUnitCustomProperty_MaxNoteTrack_1] = *((int *)inData);
 				mOnNotes[inID-kAudioUnitCustomProperty_MaxNoteTrack_1] = 0;
+				return noErr;
+				
+			case kAudioUnitCustomProperty_SourceFileRef:
+				if (mVPset[mEditProg].sourceFile) {
+					CFRelease(mVPset[mEditProg].sourceFile);
+				}
+				mVPset[mEditProg].sourceFile = *((CFURLRef*)inData);
+				CFRetain(mVPset[mEditProg].sourceFile);
+				return noErr;
+								
+			case kAudioUnitCustomProperty_IsEmaphasized:
+				mVPset[mEditProg].isEmphasized = *((bool *)inData);
 				return noErr;
 		}
 	}
@@ -1501,9 +1546,29 @@ int Chip700::CreateXIData( CFDataRef *data )
 	// XI Sample Headers
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
 		if ( mVPset[ismp].brr.data != nil && mVPset[ismp].bank == selectBank ) {
-			xsh.samplen = EndianU32_NtoL( mVPset[ismp].brr.size/9*32 );
-			xsh.loopstart = EndianU32_NtoL( mVPset[ismp].lp/9*32 );
-			xsh.looplen = EndianU32_NtoL( xsh.samplen - xsh.loopstart );
+			
+			//元ファイルのヘッダー情報を読み込む
+			bool	existSrcFile = false;
+			if ( mVPset[ismp].sourceFile ) {
+				InstData	inst;
+				FSRef		ref;
+				long		numSamples;
+				CFURLGetFSRef(mVPset[ismp].sourceFile , &ref);
+				short	*wavedata = loadPCMFile(&ref, &numSamples, &inst);
+				if ( wavedata ) {
+					xsh.samplen = EndianU32_NtoL( numSamples * 2 );
+					xsh.loopstart = EndianU32_NtoL( inst.lp * 2 );
+					xsh.looplen = EndianU32_NtoL( (inst.lp_end - inst.lp) * 2 );
+					existSrcFile = true;
+					free(wavedata);
+				}
+			}
+			if ( existSrcFile == false ) {
+				xsh.samplen = EndianU32_NtoL( mVPset[ismp].brr.size/9*32 );
+				xsh.loopstart = EndianU32_NtoL( mVPset[ismp].lp/9*32 );
+				xsh.looplen = EndianU32_NtoL( xsh.samplen - xsh.loopstart );
+			}
+			
 			double avr = ( abs(mVPset[ismp].volL) + abs(mVPset[ismp].volR) ) / 2;
 			double pan = (abs(mVPset[ismp].volR) * 128) / avr;
 			if ( pan > 256 ) pan = 256;
@@ -1529,9 +1594,34 @@ int Chip700::CreateXIData( CFDataRef *data )
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
 		if ( mVPset[ismp].brr.data != nil && mVPset[ismp].bank == selectBank ) {
 			short	*wavedata;
-			long	numSamples = mVPset[ismp].brr.size/9*16;
-			wavedata = new short[numSamples];
-			brrdecode(mVPset[ismp].brr.data, wavedata,0,0);
+			long	numSamples;
+			bool	existSrcFile = false;	//元ファイルが存在するか？
+			
+			if ( mVPset[ismp].sourceFile ) {
+				//元ファイルから波形を読み込む
+				InstData	inst;
+				FSRef		ref;
+				CFURLGetFSRef(mVPset[ismp].sourceFile , &ref);
+				wavedata = loadPCMFile(&ref, &numSamples, &inst);
+				
+				if ( wavedata ) {
+					if ( mVPset[ismp].isEmphasized ) {
+						emphasis(wavedata, numSamples);
+					}
+					wavedata[0] = 0;	//先頭に挿入するのは本当は良いのだが
+					
+					existSrcFile = true;
+				}
+			}
+			
+			//ソースファイルが無い場合はbrrデータをデコードして使用する
+			if ( existSrcFile == false ) {
+				numSamples = mVPset[ismp].brr.size/9*16;
+				//wavedata = new short[numSamples];
+				wavedata = (short *)malloc(numSamples * sizeof(short));
+				brrdecode(mVPset[ismp].brr.data, wavedata,0,0);
+			}
+			
 			short s_new,s_old;
 			s_old = wavedata[0];
 			for ( int i=0; i<numSamples; i++ ) {
@@ -1542,7 +1632,7 @@ int Chip700::CreateXIData( CFDataRef *data )
 				s_old = s_new;
 			}
 			CFDataAppendBytes( mdata, (const UInt8 *)wavedata, numSamples*2 );
-			delete [] wavedata;
+			free(wavedata);
 		}
 	}
 	*data = mdata;
@@ -1706,6 +1796,15 @@ int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 	AddBooleanToDictionary(dict, kSaveKey_echo, mVPset[pgnum].echo);
 	AddNumToDictionary(dict, kSaveKey_bank, mVPset[pgnum].bank);
 	
+	//元波形情報
+	AddBooleanToDictionary(dict, kSaveKey_IsEmphasized, mVPset[pgnum].isEmphasized);
+	if ( mVPset[pgnum].sourceFile ) {
+		CFDataRef urlData = CFURLCreateData( NULL, mVPset[pgnum].sourceFile, kCFStringEncodingUTF8, false );
+		CFDictionarySetValue(dict, kSaveKey_SourceFile, urlData);
+		CFRelease(urlData);
+	}
+	
+	//プログラム名
 	if (mVPset[pgnum].pgname) {
 		CFDictionarySetValue(dict, kSaveKey_ProgName, mVPset[pgnum].pgname);
 	}
@@ -1836,6 +1935,23 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		mVPset[pgnum].pgname = NULL;
 	}
 	
+	//元波形ファイル情報を復元
+	if (mVPset[pgnum].sourceFile) {
+		CFRelease(mVPset[pgnum].sourceFile);
+	}
+	if (CFDictionaryContainsKey(dict, kSaveKey_SourceFile)) {
+		CFDataRef urlData = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_SourceFile));
+		mVPset[pgnum].sourceFile = CFURLCreateWithBytes( NULL, CFDataGetBytePtr(urlData), CFDataGetLength(urlData), kCFStringEncodingUTF8, NULL );
+
+		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_IsEmphasized));
+		mVPset[pgnum].isEmphasized = CFBooleanGetValue(cfbool) ? true:false;
+	}
+	else {
+		mVPset[pgnum].sourceFile = NULL;
+		mVPset[pgnum].isEmphasized = true;
+	}
+	
+	//UIに変更を反映
 	if (pgnum == mEditProg) {
 		for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Bank; i++) {
 			PropertyChanged(i, kAudioUnitScope_Global, 0);
