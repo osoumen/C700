@@ -1062,6 +1062,7 @@ bool TViewNoCompositingCompatible::GetProperty(OSType propID, AUGUI::rect_t &r)
 	bool result = true;
 	switch(propID) {
 		case 'fram':
+		{
 			HIRect frame = Frame();
 			if (!IsCompositing()) {
 				// Offset the frame by the parent origin
@@ -1078,6 +1079,7 @@ bool TViewNoCompositingCompatible::GetProperty(OSType propID, AUGUI::rect_t &r)
 			r.w = frame.size.width ;
 			r.h = frame.size.height;
 			break;
+		}
 		default:
 			result = false;
 			break;

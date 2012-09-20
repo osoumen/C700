@@ -1142,10 +1142,10 @@ bool CAUCarbonViewNib::HandleEventPlayMode(EventRef event)
                 break;
         }
     }
-    return res || AUCarbonViewBase::HandleEvent(event);
+    return res || AUCarbonViewBase::HandleEvent(NULL,event);
 }
 
-bool CAUCarbonViewNib::HandleEvent(EventRef event)
+bool CAUCarbonViewNib::HandleEvent(EventHandlerCallRef inHandlerRef, EventRef event)
 {
     TCarbonEvent theEvent = event;
     

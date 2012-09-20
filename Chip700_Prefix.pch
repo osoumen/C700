@@ -3,3 +3,13 @@
 //
 
 #include <Carbon/Carbon.h>
+
+#define PLUGGUI 1
+#define AU 1
+#define PluginGUIEditor AEffGUIEditor
+#define AudioEffectX AudioEffectXIntf
+#define VSTGUI_NEW_CFILESELECTOR 1
+//#define VSTGUI_ENABLE_DEPRECATED_METHODS 1
+#define USE_NAMESPACE 0
+
+//#define	DEBUG_PRINT	1

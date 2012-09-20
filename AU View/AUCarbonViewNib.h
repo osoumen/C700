@@ -144,7 +144,7 @@ public:
     //! Override if you want to do special processing on some events
     virtual bool HandleEventForContextualMenu(EventRef event, HIViewRef view) { return false; }
 
-    virtual bool HandleEvent(EventRef event);
+    virtual bool HandleEvent(EventHandlerCallRef inHandlerRef, EventRef event);
     
     // Used by QD patch for controls to have the window background (for non compositing windows)
     virtual CGImageRef GetBackgroundImage() { return mBackgroundImage; }

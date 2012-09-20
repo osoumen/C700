@@ -1,4 +1,5 @@
 #include "AUInstrumentBase.h"
+#include "AUCarbonViewBase.h"
 #include "Chip700Version.h"
 #include "Chip700Generator.h"
 
@@ -21,9 +22,9 @@ public:
 	virtual ~Chip700 () { delete mDebugDispatcher; }
 #endif
 	
-	virtual ComponentResult		Initialize();
+	virtual OSStatus			Initialize();
 	virtual void				Cleanup();
-	virtual ComponentResult		Reset(	AudioUnitScope 					inScope,
+	virtual OSStatus			Reset(	AudioUnitScope 					inScope,
 										AudioUnitElement 				inElement);
 
 	virtual OSStatus			SetParameter(					AudioUnitParameterID	inID,
@@ -32,22 +33,22 @@ public:
 									 Float32					inValue,
 									 UInt32						inBufferOffsetInFrames);
 	
-	virtual	ComponentResult		GetParameterInfo(AudioUnitScope			inScope,
+	virtual	OSStatus			GetParameterInfo(AudioUnitScope			inScope,
 												 AudioUnitParameterID	inParameterID,
 												 AudioUnitParameterInfo	&outParameterInfo);
     
-	virtual ComponentResult		GetPropertyInfo(AudioUnitPropertyID		inID,
+	virtual OSStatus			GetPropertyInfo(AudioUnitPropertyID		inID,
 												AudioUnitScope			inScope,
 												AudioUnitElement		inElement,
 												UInt32 &			outDataSize,
 												Boolean	&			outWritable );
 	
-	virtual ComponentResult		GetProperty(AudioUnitPropertyID inID,
+	virtual OSStatus			GetProperty(AudioUnitPropertyID inID,
 											AudioUnitScope 		inScope,
 											AudioUnitElement 		inElement,
 											void *			outData);
 	
-	virtual ComponentResult		SetProperty(AudioUnitPropertyID inID,
+	virtual OSStatus			SetProperty(AudioUnitPropertyID inID,
 											AudioUnitScope 		inScope,
 											AudioUnitElement 	inElement,
 											const void *		inData,
@@ -58,46 +59,46 @@ public:
     virtual OSStatus			NewFactoryPresetSet (const AUPreset & inNewFactoryPreset);
 	
 	
-	virtual ComponentResult		SaveState(CFPropertyListRef *outData);
-	virtual ComponentResult		RestoreState(CFPropertyListRef plist);
+	virtual OSStatus			SaveState(CFPropertyListRef *outData);
+	virtual OSStatus			RestoreState(CFPropertyListRef plist);
 	
  	virtual	bool				SupportsTail() {return true;}
 	//virtual Float64				GetLatency() {return 8.0/32000.0;}
 	
-	virtual ComponentResult		RealTimeStartNote(		SynthGroupElement 			*inGroup,
-												  NoteInstanceID 				inNoteInstanceID, 
-												  UInt32 						inOffsetSampleFrame, 
-												  const MusicDeviceNoteParams &inParams);
+	virtual OSStatus			RealTimeStartNote(		SynthGroupElement 			*inGroup,
+														NoteInstanceID 				inNoteInstanceID, 
+														UInt32 						inOffsetSampleFrame, 
+														const MusicDeviceNoteParams &inParams);
 	
-	virtual ComponentResult		RealTimeStopNote(		SynthGroupElement 			*inGroup, 
-												 NoteInstanceID 				inNoteInstanceID, 
-												 UInt32 						inOffsetSampleFrame);
+	virtual OSStatus			RealTimeStopNote(		MusicDeviceGroupID 			inGroup, 
+														NoteInstanceID 				inNoteInstanceID, 
+														UInt32 						inOffsetSampleFrame);
 
-	virtual void HandlePitchWheel(	int 	inChannel,
+	virtual OSStatus			HandlePitchWheel(	UInt8 	inChannel,
 								   UInt8 	inPitch1,
 								   UInt8 	inPitch2,
-								   long	inStartFrame);
+								   UInt32	inStartFrame);
 	
-	virtual void				HandleControlChange(int 	inChannel,
+	virtual OSStatus			HandleControlChange(UInt8 	inChannel,
 											UInt8 	inController,
 											UInt8 	inValue,
-											long	inStartFrame);
+											UInt32	inStartFrame);
 	
-	virtual void				HandleProgramChange(int 	inChannel,
-											UInt8 	inValue);
+	virtual OSStatus			HandleProgramChange(UInt8 	inChannel,
+													UInt8 	inValue);
 	
-	virtual void				HandleResetAllControllers(	UInt8 	inChannel);
+	virtual OSStatus			HandleResetAllControllers(	UInt8 	inChannel);
 	
-	virtual void				HandleAllNotesOff( UInt8 	inChannel);
+	virtual OSStatus			HandleAllNotesOff( UInt8 	inChannel);
 	
-	virtual void				HandleAllSoundOff( UInt8 	inChannel);
+	virtual OSStatus			HandleAllSoundOff( UInt8 	inChannel);
 	
-	virtual ComponentResult		Render(   AudioUnitRenderActionFlags &	ioActionFlags,
-									   const AudioTimeStamp &			inTimeStamp,
+	virtual OSStatus			Render(   AudioUnitRenderActionFlags &	ioActionFlags,
+										const AudioTimeStamp &			inTimeStamp,
 									   UInt32							inNumberFrames);
 	
 	/*! @method Version */
-	virtual ComponentResult	Version() { return kChip700Version; }
+	virtual OSStatus	Version() { return kChip700Version; }
 	
 	int		GetNumCustomUIComponents () { return 1; }
 	

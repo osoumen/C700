@@ -171,13 +171,13 @@ public:
     // UnRegisterAllClasses is usually used.
     template <class V>  static void UnRegisterClassForBundleID(CFStringRef str);
 	
-	static OSStatus TViewNoCompositingCompatible::NewView(
+	static OSStatus NewView(
 														  HIViewRef*		outControl,
 														  const HIRect*		inBounds,
 														  HIViewRef			inView,
 														  CFStringRef 	classID);
 
-	static OSStatus TViewNoCompositingCompatible::NewViewForCurrentBundle(
+	static OSStatus NewViewForCurrentBundle(
 														  HIViewRef*		outControl,
 														  const HIRect*		inBounds,
 														  HIViewRef			inView,

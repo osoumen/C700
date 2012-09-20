@@ -1,7 +1,7 @@
+#include <AudioToolbox/AudioToolbox.h>
 #include "Chip700.h"
 #include "samplebrr.h"
 #include "brrcodec.h"
-#include <AudioToolbox/AudioToolbox.h>
 #include <algorithm>
 
 static CFStringRef kParam_poly_Name = CFSTR("Voices");
@@ -256,7 +256,7 @@ ComponentResult Chip700::Reset(	AudioUnitScope 		inScope,
 	return AUInstrumentBase::Reset(inScope, inElement);
 }
 
-ComponentResult	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
+OSStatus	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 												const AudioTimeStamp &			inTimeStamp,
 												UInt32							inNumberFrames)
 {
@@ -1982,13 +1982,13 @@ ComponentResult Chip700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
 	return noErr;
 }
 
-ComponentResult Chip700::RealTimeStopNote( SynthGroupElement 			*inGroup, 
+ComponentResult Chip700::RealTimeStopNote( MusicDeviceGroupID 			inGroup, 
 										   NoteInstanceID 				inNoteInstanceID, 
 										   UInt32 						inOffsetSampleFrame)
 {
 	AUInstrumentBase::RealTimeStopNote( inGroup, inNoteInstanceID, inOffsetSampleFrame );
 	//MIDIチャンネルの取得
-	unsigned int		chID = inGroup->GroupID() % 16;
+	unsigned int		chID = inGroup % 16;
 	
 	mGenerator.KeyOff(chID, 0xff, 0, inNoteInstanceID+chID*256, inOffsetSampleFrame);
 	
@@ -2002,22 +2002,23 @@ ComponentResult Chip700::RealTimeStopNote( SynthGroupElement 			*inGroup,
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void Chip700::HandlePitchWheel(	int 	inChannel,
+OSStatus Chip700::HandlePitchWheel(	UInt8 	inChannel,
 							   UInt8 	inPitch1,
 							   UInt8 	inPitch2,
-							   long	inStartFrame)
+							   UInt32	inStartFrame)
 {
 	int pitchBend = (inPitch2 << 7) | inPitch1;
 	mGenerator.PitchBend(inChannel, pitchBend - 8192, inStartFrame);
+	return noErr;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //	Chip700::HandleControlChange
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void Chip700::HandleControlChange(	int 	inChannel,
+OSStatus Chip700::HandleControlChange(	UInt8 	inChannel,
 									UInt8 	inController,
 									UInt8 	inValue,
-									long	inStartFrame)
+									UInt32	inStartFrame)
 {
 	//モジュレーションホイール
 	if (inController == kMidiController_ModWheel) {
@@ -2034,14 +2035,14 @@ void Chip700::HandleControlChange(	int 	inChannel,
 		auEvent.mArgument.mParameter.mElement = 0;
 		AUEventListenerNotify(NULL, NULL, &auEvent);
 	}
-	AUInstrumentBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
+	return AUInstrumentBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //	Chip700::HandleProgramChange
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void Chip700::HandleProgramChange(	int 	inChannel,
-									UInt8 	inValue)
+OSStatus Chip700::HandleProgramChange(	UInt8	inChannel,
+										UInt8	inValue)
 {
 	AudioUnitParameterID	paramID = kParam_program;
 	if ( inChannel > 0 ) {
@@ -2055,31 +2056,31 @@ void Chip700::HandleProgramChange(	int 	inChannel,
 	auEvent.mArgument.mParameter.mParameterID = paramID;
 	auEvent.mArgument.mParameter.mElement = 0;
 	AUEventListenerNotify(NULL, NULL, &auEvent);
-	AUInstrumentBase::HandleProgramChange(inChannel, inValue);
+	return AUInstrumentBase::HandleProgramChange(inChannel, inValue);
 }
 
-void Chip700::HandleResetAllControllers( UInt8 	inChannel)
+OSStatus Chip700::HandleResetAllControllers( UInt8 	inChannel)
 {
 	mGenerator.ResetAllControllers();
-	AUInstrumentBase::HandleResetAllControllers( inChannel);
+	return AUInstrumentBase::HandleResetAllControllers( inChannel);
 }
 
-void Chip700::HandleAllNotesOff( UInt8 inChannel )
+OSStatus Chip700::HandleAllNotesOff( UInt8 inChannel )
 {
 	mGenerator.AllNotesOff();
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
 	}
-	AUInstrumentBase::HandleAllNotesOff( inChannel);
+	return AUInstrumentBase::HandleAllNotesOff( inChannel);
 }
 
-void Chip700::HandleAllSoundOff( UInt8 inChannel )
+OSStatus Chip700::HandleAllSoundOff( UInt8 inChannel )
 {
 	mGenerator.AllSoundOff();
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
 	}
-	AUInstrumentBase::HandleAllSoundOff( inChannel);
+	return AUInstrumentBase::HandleAllSoundOff( inChannel);
 }
