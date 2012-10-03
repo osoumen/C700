@@ -40,6 +40,60 @@ void Chip700View::InitWindow(CFBundleRef sBundle)
 // ウィンドウの初回生成後
 void Chip700View::FinishWindow(CFBundleRef sBundle)
 {
+	HIViewRef	viewIte = HIViewGetFirstSubview(mRootUserPane);
+	do {
+		//クラスIDの出力
+		HIViewKind	outKind;
+		HIViewGetKind(viewIte, &outKind);
+		printf("sig = '%c%c%c%c', kind = '%c%c%c%c', ",
+			   (char)((outKind.signature >>24)	& 0xff),
+			   (char)((outKind.signature >>16)	& 0xff),
+			   (char)((outKind.signature >>8)	& 0xff),
+			   (char)(outKind.signature		& 0xff),
+			   (char)((outKind.kind >>24)	& 0xff),
+			   (char)((outKind.kind >>16)	& 0xff),
+			   (char)((outKind.kind >>8)	& 0xff),
+			   (char)(outKind.kind		& 0xff)
+			   );
+		
+		//titleの出力
+		CFStringRef	title = HIViewCopyText(viewIte);
+		printf("title = '%s', ",
+			   CFStringGetCStringPtr(title, kCFStringEncodingMacRoman)
+			   );
+		CFRelease(title);
+		
+		//idの出力
+		HIViewID	outId;
+		HIViewGetID(viewIte, &outId);
+		printf("sig = '%c%c%c%c', id = %d, ",
+			   (char)((outId.signature >>24)	& 0xff),
+			   (char)((outId.signature >>16)	& 0xff),
+			   (char)((outId.signature >>8)	& 0xff),
+			   (char)(outId.signature		& 0xff),
+			   outId.id );
+		
+		//コマンドIDの出力
+		UInt32	cmdId;
+		HIViewGetCommandID(viewIte, &cmdId);
+		printf("command = '%c%c%c%c', ",
+			   (char)((cmdId >>24)	& 0xff),
+			   (char)((cmdId >>16)	& 0xff),
+			   (char)((cmdId >>8)	& 0xff),
+			   (char)(cmdId		& 0xff));
+		
+		//座標領域の出力
+		HIRect	outRect;
+		HIViewGetFrame( viewIte, &outRect );
+		printf("x=%f, y=%f, w=%f, h=%f\n"
+			   ,outRect.origin.x
+			   ,outRect.origin.y
+			   ,outRect.size.width
+			   ,outRect.size.height
+			   );
+	} while ( viewIte = HIViewGetNextView(viewIte) );
+	
+	
 	HIViewRef	control;
 	HIViewID	id = {'user', 0};
 	OSStatus	result;
