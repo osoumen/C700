@@ -155,8 +155,6 @@
 		8ACF4CED0B2148CF00EC1825 /* CACFString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE90B2148CF00EC1825 /* CACFString.cpp */; };
 		8ACF4D060B214D2F00EC1825 /* Chip700View.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */; };
 		8ACF4D070B214D2F00EC1825 /* Chip700View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4D050B214D2F00EC1825 /* Chip700View.cpp */; };
-		8AD2C5020B2AA99200ED85CB /* bt_properlydecode0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FA0B2AA99100ED85CB /* bt_properlydecode0.png */; };
-		8AD2C5030B2AA99200ED85CB /* bt_properlydecode1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FB0B2AA99100ED85CB /* bt_properlydecode1.png */; };
 		8AD2C5040B2AA99200ED85CB /* bt_velocitysens0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FC0B2AA99100ED85CB /* bt_velocitysens0.png */; };
 		8AD2C5050B2AA99200ED85CB /* bt_velocitysens1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FD0B2AA99100ED85CB /* bt_velocitysens1.png */; };
 		8AD671490B2709AA002CB536 /* TValuePictControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD60B2144CA00EC1825 /* TValuePictControl.h */; };
@@ -252,6 +250,21 @@
 		F546EE53155E7A7A002D6E59 /* bt_save_xi1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */; };
 		F557B4A11555BB8F009B4165 /* TValueTextControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD80B2144CA00EC1825 /* TValueTextControl.h */; };
 		F557B4A21555BB90009B4165 /* TValueTextControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD70B2144CA00EC1825 /* TValueTextControl.cpp */; };
+		F569A3F61619527F006C91AD /* C700_CocoaViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */; };
+		F569A3F71619527F006C91AD /* C700_CocoaViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */; };
+		F569A40516195488006C91AD /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
+		F569A40616195488006C91AD /* C700Edit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A40416195488006C91AD /* C700Edit.cpp */; };
+		F569A486161964FD006C91AD /* C700GUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A484161964FD006C91AD /* C700GUI.h */; };
+		F569A487161964FD006C91AD /* C700GUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A485161964FD006C91AD /* C700GUI.cpp */; };
+		F569A8031619DEA6006C91AD /* ctooltipsupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A8011619DEA6006C91AD /* ctooltipsupport.cpp */; };
+		F569A8041619DEA6006C91AD /* ctooltipsupport.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A8021619DEA6006C91AD /* ctooltipsupport.h */; };
+		F569A94F161AB0F1006C91AD /* MyKnob.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A94D161AB0F1006C91AD /* MyKnob.h */; };
+		F569A950161AB0F1006C91AD /* MyKnob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A94E161AB0F1006C91AD /* MyKnob.cpp */; };
+		F569AA26161AD9F4006C91AD /* MySlider.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AA24161AD9F4006C91AD /* MySlider.h */; };
+		F569AA27161AD9F4006C91AD /* MySlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AA25161AD9F4006C91AD /* MySlider.cpp */; };
+		F569AA86161BFFA8006C91AD /* bt_check.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AA85161BFFA8006C91AD /* bt_check.png */; };
+		F569AAA4161C0114006C91AD /* LabelOnOffButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AAA2161C0114006C91AD /* LabelOnOffButton.h */; };
+		F569AAA5161C0114006C91AD /* LabelOnOffButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */; };
 		F56AAB01158DCB6000864DD4 /* bt_velocitysens2.png in Resources */ = {isa = PBXBuildFile; fileRef = F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */; };
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
@@ -391,12 +404,12 @@
 		8ACF4BDA0B2144CA00EC1825 /* TViewNoCompositingCompatible.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = TViewNoCompositingCompatible.h; sourceTree = "<group>"; };
 		8ACF4BDB0B2144CA00EC1825 /* TXYControl.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; path = TXYControl.cpp; sourceTree = "<group>"; };
 		8ACF4BDC0B2144CA00EC1825 /* TXYControl.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = TXYControl.h; sourceTree = "<group>"; };
-		8ACF4C260B2144FD00EC1825 /* AUBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AUBackground.png; sourceTree = "<group>"; };
+		8ACF4C260B2144FD00EC1825 /* AUBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AUBackground.png; path = graphics/AUBackground.png; sourceTree = "<group>"; };
 		8ACF4C280B2144FD00EC1825 /* editor.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = editor.nib; sourceTree = "<group>"; };
 		8ACF4C290B2144FD00EC1825 /* knob.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = knob.png; sourceTree = "<group>"; };
-		8ACF4C2F0B2144FD00EC1825 /* knobBack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = knobBack.png; sourceTree = "<group>"; };
+		8ACF4C2F0B2144FD00EC1825 /* knobBack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = knobBack.png; path = graphics/knobBack.png; sourceTree = "<group>"; };
 		8ACF4C3D0B2144FD00EC1825 /* slider.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slider.png; sourceTree = "<group>"; };
-		8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sliderThumb.png; sourceTree = "<group>"; };
+		8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sliderThumb.png; path = graphics/sliderThumb.png; sourceTree = "<group>"; };
 		8ACF4C3F0B2144FD00EC1825 /* window.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = window.nib; sourceTree = "<group>"; };
 		8ACF4C600B21457100EC1825 /* TArray.cp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; path = TArray.cp; sourceTree = "<group>"; };
 		8ACF4C610B21457100EC1825 /* TArray.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = TArray.h; sourceTree = "<group>"; };
@@ -562,6 +575,21 @@
 		F546EE19155E6950002D6E59 /* track16_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = track16_1.png; sourceTree = "<group>"; };
 		F546EE50155E7A7A002D6E59 /* bt_save_xi0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_save_xi0.png; sourceTree = "<group>"; };
 		F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_save_xi1.png; sourceTree = "<group>"; };
+		F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700_CocoaViewFactory.h; sourceTree = "<group>"; };
+		F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.objcpp; path = C700_CocoaViewFactory.mm; sourceTree = "<group>"; };
+		F569A40316195488006C91AD /* C700Edit.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Edit.h; sourceTree = "<group>"; };
+		F569A40416195488006C91AD /* C700Edit.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Edit.cpp; sourceTree = "<group>"; };
+		F569A484161964FD006C91AD /* C700GUI.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700GUI.h; sourceTree = "<group>"; };
+		F569A485161964FD006C91AD /* C700GUI.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700GUI.cpp; sourceTree = "<group>"; };
+		F569A8011619DEA6006C91AD /* ctooltipsupport.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = ctooltipsupport.cpp; path = "Extras/VST3 SDK/vstgui.sf/vstgui/ctooltipsupport.cpp"; sourceTree = DEVELOPER_DIR; };
+		F569A8021619DEA6006C91AD /* ctooltipsupport.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = ctooltipsupport.h; path = "Extras/VST3 SDK/vstgui.sf/vstgui/ctooltipsupport.h"; sourceTree = DEVELOPER_DIR; };
+		F569A94D161AB0F1006C91AD /* MyKnob.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = MyKnob.h; sourceTree = "<group>"; };
+		F569A94E161AB0F1006C91AD /* MyKnob.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = MyKnob.cpp; sourceTree = "<group>"; };
+		F569AA24161AD9F4006C91AD /* MySlider.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = MySlider.h; path = "Extras/VST3 SDK/vstgui.sf/vstgui/MySlider.h"; sourceTree = DEVELOPER_DIR; };
+		F569AA25161AD9F4006C91AD /* MySlider.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = MySlider.cpp; path = "Extras/VST3 SDK/vstgui.sf/vstgui/MySlider.cpp"; sourceTree = DEVELOPER_DIR; };
+		F569AA85161BFFA8006C91AD /* bt_check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bt_check.png; path = graphics/bt_check.png; sourceTree = "<group>"; };
+		F569AAA2161C0114006C91AD /* LabelOnOffButton.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = LabelOnOffButton.h; sourceTree = "<group>"; };
+		F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = LabelOnOffButton.cpp; sourceTree = "<group>"; };
 		F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_velocitysens2.png; sourceTree = "<group>"; };
 		F56D351F156A0EA000038960 /* encodetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = encodetest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
@@ -650,6 +678,10 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8ACF4C260B2144FD00EC1825 /* AUBackground.png */,
+				8ACF4C2F0B2144FD00EC1825 /* knobBack.png */,
+				8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */,
+				F569AA85161BFFA8006C91AD /* bt_check.png */,
 				8D01CCD10486CAD60068D4B7 /* Info.plist */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 			);
@@ -659,16 +691,17 @@
 		08FB77ADFE841716C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */,
 				8ACF4D010B214B0400EC1825 /* CarbonUI */,
 				8ACF4B8B0B2144AF00EC1825 /* AU View */,
 				8ACF4BA60B2144C900EC1825 /* Controls */,
 				8ACF4C250B2144FD00EC1825 /* graphics */,
 				8ACF4C5E0B21457100EC1825 /* HIFramework */,
 				8BA05A56072072A900365D66 /* AU Source */,
+				F569A40E161954C9006C91AD /* UI */,
 				F56D353D156A114300038960 /* encodetest */,
 				8BA05AEB0720742700365D66 /* PublicUtility */,
 				8BA05A7D072073D200365D66 /* AUPublic */,
-				32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */,
 				F597AD27160B67860003E710 /* vstgui */,
 			);
 			name = Source;
@@ -829,6 +862,7 @@
 				F5855D881478FD9300D87CF2 /* bt_echo1.png */,
 				F5855D271478E8F800D87CF2 /* bt_copy0.png */,
 				F5855D281478E8F800D87CF2 /* bt_copy1.png */,
+				8AC8EEC70B2ADF27008D2265 /* bt_calc0.png */,
 				8ACBD6F30B2B006500A73622 /* bt_calc1.png */,
 				8ACBD6F40B2B006500A73622 /* bt_load1.png */,
 				8ACBD6F50B2B006500A73622 /* bt_save1.png */,
@@ -843,7 +877,6 @@
 				F5DFB750155E851500BC9F4A /* bt_multi_bank_d1.png */,
 				8AC8EED40B2ADFB2008D2265 /* bt_preemphasis0.png */,
 				8AC8EED50B2ADFB2008D2265 /* bt_preemphasis1.png */,
-				8AC8EEC70B2ADF27008D2265 /* bt_calc0.png */,
 				8AC8EEC80B2ADF27008D2265 /* bt_load0.png */,
 				8AC8EEC90B2ADF27008D2265 /* bt_loop0.png */,
 				8AC8EECA0B2ADF27008D2265 /* bt_loop1.png */,
@@ -858,13 +891,10 @@
 				8AD2C4FC0B2AA99100ED85CB /* bt_velocitysens0.png */,
 				8AD2C4FD0B2AA99100ED85CB /* bt_velocitysens1.png */,
 				F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */,
-				8ACF4C260B2144FD00EC1825 /* AUBackground.png */,
 				8AC1D32A0B27525A00FFD294 /* dragimg.png */,
 				8ACF4C280B2144FD00EC1825 /* editor.nib */,
 				8ACF4C290B2144FD00EC1825 /* knob.png */,
-				8ACF4C2F0B2144FD00EC1825 /* knobBack.png */,
 				8ACF4C3D0B2144FD00EC1825 /* slider.png */,
-				8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */,
 				8ACF4C3F0B2144FD00EC1825 /* window.nib */,
 			);
 			path = graphics;
@@ -996,6 +1026,8 @@
 				8AEECD2E0B020BC6002C9BB7 /* czt.h */,
 				8AD362300AFE59F900FC48D2 /* brrcodec.h */,
 				8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */,
+				F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */,
+				F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */,
 			);
 			name = "AU Source";
 			sourceTree = "<group>";
@@ -1086,6 +1118,23 @@
 			path = Extras/CoreAudio/PublicUtility;
 			sourceTree = DEVELOPER_DIR;
 		};
+		F569A40E161954C9006C91AD /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				F569A40316195488006C91AD /* C700Edit.h */,
+				F569A40416195488006C91AD /* C700Edit.cpp */,
+				F569A484161964FD006C91AD /* C700GUI.h */,
+				F569A485161964FD006C91AD /* C700GUI.cpp */,
+				F569A94D161AB0F1006C91AD /* MyKnob.h */,
+				F569A94E161AB0F1006C91AD /* MyKnob.cpp */,
+				F569AA24161AD9F4006C91AD /* MySlider.h */,
+				F569AA25161AD9F4006C91AD /* MySlider.cpp */,
+				F569AAA2161C0114006C91AD /* LabelOnOffButton.h */,
+				F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */,
+			);
+			name = UI;
+			sourceTree = "<group>";
+		};
 		F56D353D156A114300038960 /* encodetest */ = {
 			isa = PBXGroup;
 			children = (
@@ -1108,6 +1157,8 @@
 				F597AD2F160B67860003E710 /* aeffguieditor.h */,
 				F597AD30160B67860003E710 /* cfileselector.cpp */,
 				F597AD31160B67860003E710 /* cfileselector.h */,
+				F569A8011619DEA6006C91AD /* ctooltipsupport.cpp */,
+				F569A8021619DEA6006C91AD /* ctooltipsupport.h */,
 				F597AD32160B67860003E710 /* plugguieditor.h */,
 				F597AD33160B67860003E710 /* vstcontrols.cpp */,
 				F597AD34160B67860003E710 /* vstgui.cpp */,
@@ -1225,6 +1276,13 @@
 				F597AD3F160B67860003E710 /* cfileselector.h in Headers */,
 				F597AD40160B67860003E710 /* plugguieditor.h in Headers */,
 				F597AD43160B67860003E710 /* vstgui.h in Headers */,
+				F569A3F61619527F006C91AD /* C700_CocoaViewFactory.h in Headers */,
+				F569A40516195488006C91AD /* C700Edit.h in Headers */,
+				F569A486161964FD006C91AD /* C700GUI.h in Headers */,
+				F569A8041619DEA6006C91AD /* ctooltipsupport.h in Headers */,
+				F569A94F161AB0F1006C91AD /* MyKnob.h in Headers */,
+				F569AA26161AD9F4006C91AD /* MySlider.h in Headers */,
+				F569AAA4161C0114006C91AD /* LabelOnOffButton.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1307,8 +1365,6 @@
 				8ACF4C5A0B2144FD00EC1825 /* sliderThumb.png in Resources */,
 				8ACF4C5B0B2144FD00EC1825 /* window.nib in Resources */,
 				8AC1D32B0B27525A00FFD294 /* dragimg.png in Resources */,
-				8AD2C5020B2AA99200ED85CB /* bt_properlydecode0.png in Resources */,
-				8AD2C5030B2AA99200ED85CB /* bt_properlydecode1.png in Resources */,
 				8AD2C5040B2AA99200ED85CB /* bt_velocitysens0.png in Resources */,
 				8AD2C5050B2AA99200ED85CB /* bt_velocitysens1.png in Resources */,
 				8AC8EECD0B2ADF27008D2265 /* bt_calc0.png in Resources */,
@@ -1380,6 +1436,7 @@
 				F5DFB757155E851500BC9F4A /* bt_multi_bank_d0.png in Resources */,
 				F5DFB758155E851500BC9F4A /* bt_multi_bank_d1.png in Resources */,
 				F56AAB01158DCB6000864DD4 /* bt_velocitysens2.png in Resources */,
+				F569AA86161BFFA8006C91AD /* bt_check.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1497,6 +1554,13 @@
 				F597AD3E160B67860003E710 /* cfileselector.cpp in Sources */,
 				F597AD41160B67860003E710 /* vstcontrols.cpp in Sources */,
 				F597AD42160B67860003E710 /* vstgui.cpp in Sources */,
+				F569A3F71619527F006C91AD /* C700_CocoaViewFactory.mm in Sources */,
+				F569A40616195488006C91AD /* C700Edit.cpp in Sources */,
+				F569A487161964FD006C91AD /* C700GUI.cpp in Sources */,
+				F569A8031619DEA6006C91AD /* ctooltipsupport.cpp in Sources */,
+				F569A950161AB0F1006C91AD /* MyKnob.cpp in Sources */,
+				F569AA27161AD9F4006C91AD /* MySlider.cpp in Sources */,
+				F569AAA5161C0114006C91AD /* LabelOnOffButton.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

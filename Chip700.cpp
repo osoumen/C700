@@ -612,6 +612,11 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 {
 	if (inScope == kAudioUnitScope_Global) {
 		switch (inID) {
+			case kAudioUnitProperty_CocoaUI:
+				outWritable = false;
+				outDataSize = sizeof (AudioUnitCocoaViewInfo);
+				return noErr;
+			
 			case kAudioUnitCustomProperty_BaseKey:
 			case kAudioUnitCustomProperty_LowKey:
 			case kAudioUnitCustomProperty_HighKey:
@@ -751,6 +756,31 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 {
 	if (inScope == kAudioUnitScope_Global) {
 		switch (inID) {
+			case kAudioUnitProperty_CocoaUI:
+			{
+				// Look for a resource in the main bundle by name and type.
+				CFBundleRef bundle = CFBundleGetBundleWithIdentifier( CFSTR("com.VeMa.audiounit.Chip700") );
+				
+				if (bundle == NULL) return fnfErr;
+				/*
+				 CFURLRef bundleURL = CFBundleCopyResourceURL( bundle, 
+				 CFSTR("VOPM"), 
+				 CFSTR("component"), 
+				 NULL);
+				 */
+				CFURLRef bundleURL = CFBundleCopyBundleURL( bundle );
+				
+				if (bundleURL == NULL) return fnfErr;
+				
+				AudioUnitCocoaViewInfo cocoaInfo;
+				cocoaInfo.mCocoaAUViewBundleLocation = bundleURL;
+				cocoaInfo.mCocoaAUViewClass[0] = CFStringCreateWithCString(NULL, "C700_CocoaViewFactory", kCFStringEncodingUTF8);
+				
+				*((AudioUnitCocoaViewInfo *)outData) = cocoaInfo;
+				
+				return noErr;
+			}
+			
 			case kAudioUnitCustomProperty_BRRData:
 				*((BRRData *)outData) = mVPset[mEditProg].brr;
 				return noErr;
