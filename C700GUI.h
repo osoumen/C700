@@ -10,6 +10,7 @@
 #pragma once
 
 #include "vstgui.h"
+#include "DummyCntl.h"
 #include "MyKnob.h"
 #include "MySlider.h"
 #include "LabelOnOffButton.h"
@@ -35,4 +36,5 @@ private:
 	CLabelOnOffButton	*cCheckBox;
 	CRockerSwitch		*cRockerSwitch;
 	CWaveView			*cWaveView;
+	CDummyCntl			*cDummyTest;
 };

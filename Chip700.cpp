@@ -612,11 +612,11 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 {
 	if (inScope == kAudioUnitScope_Global) {
 		switch (inID) {
-			case kAudioUnitProperty_CocoaUI:
+	/*		case kAudioUnitProperty_CocoaUI:
 				outWritable = false;
 				outDataSize = sizeof (AudioUnitCocoaViewInfo);
 				return noErr;
-			
+			*/
 			case kAudioUnitCustomProperty_BaseKey:
 			case kAudioUnitCustomProperty_LowKey:
 			case kAudioUnitCustomProperty_HighKey:

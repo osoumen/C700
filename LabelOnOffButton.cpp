@@ -1,6 +1,6 @@
 /*
  *  LabelOnOffButton.cpp
- *  Chip700
+ *  文字ラベル付きオンオフボタン
  *
  *  Created by 藤田 匡彦 on 12/10/03.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
@@ -12,38 +12,70 @@
 static CFontDesc g_LabelFont("Helvetica Bold", 9);
 
 //-----------------------------------------------------------------------------
-CLabelOnOffButton::CLabelOnOffButton(const CRect& size, CFrame *frame, CControlListener* listener, long tag, CBitmap* background, const char *txt, long style)
-: CViewContainer(size, frame, 0)
+CLabelOnOffButton::CLabelOnOffButton(const CRect& size, CControlListener* listener, long tag, CBitmap* background, const char *txt, long style)
+: COnOffButton(size, listener, tag, background, style)
+, text(NULL)
 {
-	setTransparency(true);
-	
-	CRect	local_size(0, 0, background->getWidth(), background->getHeight());
-	m_pOnOffButton = new COnOffButton(local_size, listener, tag, background, style);
-	addView(m_pOnOffButton);
-	
-	local_size(background->getWidth(), 0, size.getWidth() - background->getWidth(), size.getHeight() );
-	m_pText = new CTextLabel(local_size, txt, 0, 0);
-	
-	m_pText->setFont(&g_LabelFont);
-	m_pText->setHoriAlign(kLeftText);
-	m_pText->setTransparency(true);
-	m_pText->setFontColor(kBlackCColor);
-	addView(m_pText);
+	setText(txt);
 }
 
 //-----------------------------------------------------------------------------
 CLabelOnOffButton::~CLabelOnOffButton()
 {
-	removeAll();
+	freeText();
+}
+
+//------------------------------------------------------------------------
+void CLabelOnOffButton::freeText()
+{
+	if (text)
+	{
+		free(text);
+	}
+	text = 0;
 }
 
 //-----------------------------------------------------------------------------
-CMouseEventResult CLabelOnOffButton::onMouseDown(CPoint& where, const long& buttons)
+void CLabelOnOffButton::setText(const char* txt)
 {
-	CMouseEventResult	result = CViewContainer::onMouseDown(where, buttons);
-	if ( result != kMouseDownEventHandledButDontNeedMovedOrUpEvents )
+	if (!text && !txt || (text && txt && strcmp(text, txt) == 0))
 	{
-		result = m_pOnOffButton->onMouseDown(where, buttons);
+		return;
 	}
-	return result;
+	freeText();
+	if (txt)
+	{
+		text = (char*)malloc(strlen(txt)+1);
+		strcpy(text, txt);
+	}
+	setDirty(true);
+}
+
+//-----------------------------------------------------------------------------
+const char* CLabelOnOffButton::getText() const
+{
+	return text;
+}
+
+//-----------------------------------------------------------------------------
+void CLabelOnOffButton::draw(CDrawContext* pContext)
+{
+	COnOffButton::draw(pContext);
+	//文字を描画
+	
+	CRect oldClip;
+	pContext->getClipRect(oldClip);
+	CRect newClip(size);
+	newClip.offset( getBackground()->getWidth(), 0 );
+	newClip.bound(oldClip);
+	pContext->setClipRect(newClip);
+	pContext->setFont(&g_LabelFont);
+	pContext->setFontColor(kBlackCColor);
+	
+#if VSTGUI_USES_UTF8
+	pContext->drawStringUTF8(text, newClip, kLeftText, true);
+#else
+	pContext->drawString(text, newClip, true, kLeftText);
+#endif
+	pContext->setClipRect(oldClip);
 }

@@ -8,6 +8,7 @@
  */
 
 #include "C700GUI.h"
+#include "ControlInstances.h"
 
 //-----------------------------------------------------------------------------
 C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
@@ -54,7 +55,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	
 	size(0, 0, 80, onOffButton->getHeight() / 2);
 	size.offset(20, 20);
-	cCheckBox = new CLabelOnOffButton(size, frame, this, 808, onOffButton, "Echo");
+	cCheckBox = new CLabelOnOffButton(size, this, 808, onOffButton, "Echo");
 	addView(cCheckBox);
 	cCheckBox->setAttribute(kCViewTooltipAttribute,strlen("CLabelOnOffButton")+1,"CLabelOnOffButton");
 	
@@ -75,15 +76,22 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	size.offset(64, 128);
 	cWaveView = new CWaveView(size, frame);
 	{
-		float	testWave[64];
-		for ( int i=0; i<64; i++ )
+		float	testWave[128];
+		for ( int i=0; i<128; i++ )
 		{
-			testWave[i] = sin( 3.14*2 * i / 64 );
-			cWaveView->setWave(testWave, 64);
+			testWave[i] = sin( 3.14*2*4 * i / 128 );
+			cWaveView->setWave(testWave, 128);
 		}
 	}
 	addView(cWaveView);
-	cWaveView->setAttribute(kCViewTooltipAttribute,strlen("cWaveView")+1,"cWaveView");
+	cWaveView->setAttribute(kCViewTooltipAttribute,strlen("CWaveView")+1,"CWaveView");
+	
+	//--CDummyCntl--------------------------------------
+ 	size(0, 0, 200, 100);
+	size.offset(256, 256);
+	cDummyTest = new CDummyCntl(size);
+	addView(cDummyTest);
+	cDummyTest->setAttribute(kCViewTooltipAttribute,strlen("CDummyCntl")+1,"CDummyCntl");
 }
 
 //-----------------------------------------------------------------------------

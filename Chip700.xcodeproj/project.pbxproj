@@ -250,6 +250,9 @@
 		F546EE53155E7A7A002D6E59 /* bt_save_xi1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */; };
 		F557B4A11555BB8F009B4165 /* TValueTextControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD80B2144CA00EC1825 /* TValueTextControl.h */; };
 		F557B4A21555BB90009B4165 /* TValueTextControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD70B2144CA00EC1825 /* TValueTextControl.cpp */; };
+		F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
+		F55D63DB161D6FFE001CF9AB /* DummyCntl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */; };
+		F55D6448161D7A94001CF9AB /* ControlInstances.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6447161D7A94001CF9AB /* ControlInstances.h */; };
 		F569A3F61619527F006C91AD /* C700_CocoaViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */; };
 		F569A3F71619527F006C91AD /* C700_CocoaViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */; };
 		F569A40516195488006C91AD /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
@@ -578,6 +581,9 @@
 		F546EE19155E6950002D6E59 /* track16_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = track16_1.png; sourceTree = "<group>"; };
 		F546EE50155E7A7A002D6E59 /* bt_save_xi0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_save_xi0.png; sourceTree = "<group>"; };
 		F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_save_xi1.png; sourceTree = "<group>"; };
+		F55D63D8161D6FFE001CF9AB /* DummyCntl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummyCntl.h; sourceTree = "<group>"; };
+		F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DummyCntl.cpp; sourceTree = "<group>"; };
+		F55D6447161D7A94001CF9AB /* ControlInstances.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlInstances.h; sourceTree = "<group>"; };
 		F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700_CocoaViewFactory.h; sourceTree = "<group>"; };
 		F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.objcpp; path = C700_CocoaViewFactory.mm; sourceTree = "<group>"; };
 		F569A40316195488006C91AD /* C700Edit.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Edit.h; sourceTree = "<group>"; };
@@ -1130,6 +1136,7 @@
 			children = (
 				F569A40316195488006C91AD /* C700Edit.h */,
 				F569A40416195488006C91AD /* C700Edit.cpp */,
+				F55D6447161D7A94001CF9AB /* ControlInstances.h */,
 				F569A484161964FD006C91AD /* C700GUI.h */,
 				F569A485161964FD006C91AD /* C700GUI.cpp */,
 				F569A94D161AB0F1006C91AD /* MyKnob.h */,
@@ -1140,6 +1147,8 @@
 				F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */,
 				F569AD34161D3490006C91AD /* WaveView.h */,
 				F569AD35161D3490006C91AD /* WaveView.cpp */,
+				F55D63D8161D6FFE001CF9AB /* DummyCntl.h */,
+				F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -1293,6 +1302,8 @@
 				F569AA26161AD9F4006C91AD /* MySlider.h in Headers */,
 				F569AAA4161C0114006C91AD /* LabelOnOffButton.h in Headers */,
 				F569AD36161D3490006C91AD /* WaveView.h in Headers */,
+				F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */,
+				F55D6448161D7A94001CF9AB /* ControlInstances.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1573,6 +1584,7 @@
 				F569AA27161AD9F4006C91AD /* MySlider.cpp in Sources */,
 				F569AAA5161C0114006C91AD /* LabelOnOffButton.cpp in Sources */,
 				F569AD37161D3490006C91AD /* WaveView.cpp in Sources */,
+				F55D63DB161D6FFE001CF9AB /* DummyCntl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

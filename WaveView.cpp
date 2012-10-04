@@ -13,7 +13,7 @@
 CWaveView::CWaveView(CRect &size, CFrame *pFrame)
 : CControl(size, 0, 0, 0)
 {
-	buffer = new COffscreenContext(pFrame, size.right-size.left, size.bottom-size.top);
+	m_pDrawBuffer = new COffscreenContext(pFrame, size.right-size.left, size.bottom-size.top);
 	
 	lineColor = MakeCColor(180, 248, 255, 255);
 	backColor = MakeCColor(67, 75, 88, 255);
@@ -23,7 +23,7 @@ CWaveView::CWaveView(CRect &size, CFrame *pFrame)
 //-----------------------------------------------------------------------------
 CWaveView::~CWaveView()
 {
-	delete buffer;
+	delete m_pDrawBuffer;
 }
 
 //-----------------------------------------------------------------------------
@@ -42,50 +42,71 @@ void CWaveView::draw(CDrawContext *pContext)
 {
 	if (isWaveLoaded)
 	{
-		buffer->copyFrom(pContext, size);
+		m_pDrawBuffer->copyFrom(pContext, size);
 	}
 }
 
 //------------------------------------------------------------------------
 void CWaveView::setWave(float *wavedata, long frames)
 {
-	CRect	r(-1, -1, buffer->getWidth(), buffer->getHeight());
-	buffer->setFrameColor(kBlackCColor);
-	buffer->setFillColor(backColor);
-	buffer->drawRect(r, kDrawFilledAndStroked);
+	CRect	r(0, 0, m_pDrawBuffer->getWidth(), m_pDrawBuffer->getHeight());
+	m_pDrawBuffer->setFrameColor(kBlackCColor);
+	m_pDrawBuffer->setFillColor(backColor);
+	m_pDrawBuffer->drawRect(r, kDrawFilledAndStroked);
 	
-	float	*temp=wavedata;
-	float	pixelPerFrame=(float)buffer->getWidth()/(float)frames;
+	float	*dataptr=wavedata;
+	float	*dataend=wavedata+frames;
+	float	pixelPerFrame=(float)m_pDrawBuffer->getWidth()/(float)frames;
+	
+	dataptr++;
+	m_pDrawBuffer->setFrameColor(lineColor);
+	m_pDrawBuffer->setDrawMode(kAntialias);
 	
 	CPoint p;
-	p(0, 0);
-	temp++;
-	buffer->setFrameColor(lineColor);
-	buffer->setDrawMode(kAntialias);
-	float	xLoc=0.0f;
-	float	max=0.0f,min=1.0f;
-	while (temp < wavedata+frames) {
-		if (fabs(*temp) > max) max = fabs(*temp);
-		if (fabs(*temp) < min) min = fabs(*temp);
+	float	center = m_pDrawBuffer->getHeight()/2 - 1;	//外枠１ドット分余白のため
+	float	x=1,y=0;
+	float	xLoc=1.0f;
+	float	max=.0f,min=.0f;
+	while (dataptr < dataend) {
+		float	temp = *dataptr * center;
+		if (max==.0f) max=temp;
+		if (min==.0f) min=temp;
+		if (temp > max) max = temp;
+		if (temp < min) min = temp;
 		if (xLoc > 1.0f) {
 			double	xadd;
 			xLoc = modf(xLoc, &xadd);
-			p.y = (1.0f - min)*(buffer->getHeight() - 1) + 0.5f;
-			if (p.x == 0)
-				buffer->moveTo(p);
+			y = center - min + 2;	//外枠１ドット分余白のため
+			p.x = x;
+			p.y = y;
+			if ( x == 1 )
+			{
+				m_pDrawBuffer->moveTo(p);
+			}
 			else
-				buffer->lineTo(p);
+			{
+				m_pDrawBuffer->lineTo(p);
+			}
+				
 			if (max != min) {
-				p.y = (1.0f - max)*(buffer->getHeight() - 1) + 0.5f;
-				buffer->lineTo(p);
+				y = center-max;
+				m_pDrawBuffer->lineTo(p);
 			}
 			max=0.0f;
-			min=1.0f;
+			min=0.0f;
 			
-			p.x += xadd;
+			x += xadd;
 		}
-		temp++;
+		dataptr++;
 		xLoc += pixelPerFrame;
+	}
+	if (max != 0.0f) {
+		y = center-min;
+		m_pDrawBuffer->lineTo(p);
+		if (max != min) {
+			y = center-max;
+			m_pDrawBuffer->lineTo(p);
+		}
 	}
 	isWaveLoaded = true;
 	

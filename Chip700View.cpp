@@ -42,10 +42,12 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 {
 	HIViewRef	viewIte = HIViewGetFirstSubview(mRootUserPane);
 	do {
+		printf("{\n");
+		
 		//クラスIDの出力
 		HIViewKind	outKind;
 		HIViewGetKind(viewIte, &outKind);
-		printf("sig = '%c%c%c%c', kind = '%c%c%c%c', ",
+		printf("'%c%c%c%c',\t//sig\n'%c%c%c%c',\t//kind\n",
 			   (char)((outKind.signature >>24)	& 0xff),
 			   (char)((outKind.signature >>16)	& 0xff),
 			   (char)((outKind.signature >>8)	& 0xff),
@@ -58,39 +60,58 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		
 		//titleの出力
 		CFStringRef	title = HIViewCopyText(viewIte);
-		printf("title = '%s', ",
+		printf("\"%s\",\t//title\n",
 			   CFStringGetCStringPtr(title, kCFStringEncodingMacRoman)
 			   );
 		CFRelease(title);
 		
+		//value,max,minの出力
+		int value = HIViewGetValue(viewIte);
+		int min = HIViewGetMinimum(viewIte);
+		int max = HIViewGetMaximum(viewIte);
+		printf("%d,\t//Value\n",value);
+		printf("%d,\t//Minimum\n",min);
+		printf("%d,\t//Maximum\n",max);
+		
 		//idの出力
 		HIViewID	outId;
 		HIViewGetID(viewIte, &outId);
-		printf("sig = '%c%c%c%c', id = %d, ",
-			   (char)((outId.signature >>24)	& 0xff),
-			   (char)((outId.signature >>16)	& 0xff),
-			   (char)((outId.signature >>8)	& 0xff),
-			   (char)(outId.signature		& 0xff),
-			   outId.id );
+		if ( outId.signature != 0 ) {
+			printf("'%c%c%c%c',\t//sig\n", 
+				   (char)((outId.signature >>24)	& 0xff),
+				   (char)((outId.signature >>16)	& 0xff),
+				   (char)((outId.signature >>8)	& 0xff),
+				   (char)(outId.signature		& 0xff));
+		}
+		else {
+			printf("0,\t//sig\n");
+		}
+		printf("%d,\t//id\n", outId.id );
 		
 		//コマンドIDの出力
 		UInt32	cmdId;
 		HIViewGetCommandID(viewIte, &cmdId);
-		printf("command = '%c%c%c%c', ",
-			   (char)((cmdId >>24)	& 0xff),
-			   (char)((cmdId >>16)	& 0xff),
-			   (char)((cmdId >>8)	& 0xff),
-			   (char)(cmdId		& 0xff));
+		if ( cmdId != 0 ) {
+			printf("'%c%c%c%c',\t//command\n",
+				   (char)((cmdId >>24)	& 0xff),
+				   (char)((cmdId >>16)	& 0xff),
+				   (char)((cmdId >>8)	& 0xff),
+				   (char)(cmdId		& 0xff));
+		}
+		else {
+			printf("0,\t//command\n");
+		}
 		
 		//座標領域の出力
 		HIRect	outRect;
 		HIViewGetFrame( viewIte, &outRect );
-		printf("x=%f, y=%f, w=%f, h=%f\n"
+		printf("%.0f, %.0f, %.0f, %.0f\t//x,y,w,h\n"
 			   ,outRect.origin.x
 			   ,outRect.origin.y
 			   ,outRect.size.width
 			   ,outRect.size.height
 			   );
+		printf("},\n");
 	} while ( viewIte = HIViewGetNextView(viewIte) );
 	
 	

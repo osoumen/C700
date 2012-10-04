@@ -26,7 +26,7 @@ public:
 	
 	CLASS_METHODS(CWaveView, CControl)
 protected:
-	COffscreenContext	*buffer;
+	COffscreenContext	*m_pDrawBuffer;
 	CColor	lineColor;
 	CColor	backColor;
 	bool	isWaveLoaded;
