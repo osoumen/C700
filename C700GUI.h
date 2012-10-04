@@ -13,6 +13,7 @@
 #include "MyKnob.h"
 #include "MySlider.h"
 #include "LabelOnOffButton.h"
+#include "WaveView.h"
 
 class C700GUI : public CViewContainer, public CControlListener
 {
@@ -32,4 +33,6 @@ private:
 	CMyKnob				*cKnob;
 	CMySlider			*cVerticalSlider;
 	CLabelOnOffButton	*cCheckBox;
+	CRockerSwitch		*cRockerSwitch;
+	CWaveView			*cWaveView;
 };

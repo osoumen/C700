@@ -265,6 +265,9 @@
 		F569AA86161BFFA8006C91AD /* bt_check.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AA85161BFFA8006C91AD /* bt_check.png */; };
 		F569AAA4161C0114006C91AD /* LabelOnOffButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AAA2161C0114006C91AD /* LabelOnOffButton.h */; };
 		F569AAA5161C0114006C91AD /* LabelOnOffButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */; };
+		F569AD18161D3277006C91AD /* rocker_sw.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AD17161D3277006C91AD /* rocker_sw.png */; };
+		F569AD36161D3490006C91AD /* WaveView.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AD34161D3490006C91AD /* WaveView.h */; };
+		F569AD37161D3490006C91AD /* WaveView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AD35161D3490006C91AD /* WaveView.cpp */; };
 		F56AAB01158DCB6000864DD4 /* bt_velocitysens2.png in Resources */ = {isa = PBXBuildFile; fileRef = F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */; };
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
@@ -590,6 +593,9 @@
 		F569AA85161BFFA8006C91AD /* bt_check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bt_check.png; path = graphics/bt_check.png; sourceTree = "<group>"; };
 		F569AAA2161C0114006C91AD /* LabelOnOffButton.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = LabelOnOffButton.h; sourceTree = "<group>"; };
 		F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = LabelOnOffButton.cpp; sourceTree = "<group>"; };
+		F569AD17161D3277006C91AD /* rocker_sw.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rocker_sw.png; path = graphics/rocker_sw.png; sourceTree = "<group>"; };
+		F569AD34161D3490006C91AD /* WaveView.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = WaveView.h; sourceTree = "<group>"; };
+		F569AD35161D3490006C91AD /* WaveView.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = WaveView.cpp; sourceTree = "<group>"; };
 		F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_velocitysens2.png; sourceTree = "<group>"; };
 		F56D351F156A0EA000038960 /* encodetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = encodetest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
@@ -679,6 +685,7 @@
 			isa = PBXGroup;
 			children = (
 				8ACF4C260B2144FD00EC1825 /* AUBackground.png */,
+				F569AD17161D3277006C91AD /* rocker_sw.png */,
 				8ACF4C2F0B2144FD00EC1825 /* knobBack.png */,
 				8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */,
 				F569AA85161BFFA8006C91AD /* bt_check.png */,
@@ -1131,6 +1138,8 @@
 				F569AA25161AD9F4006C91AD /* MySlider.cpp */,
 				F569AAA2161C0114006C91AD /* LabelOnOffButton.h */,
 				F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */,
+				F569AD34161D3490006C91AD /* WaveView.h */,
+				F569AD35161D3490006C91AD /* WaveView.cpp */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -1283,6 +1292,7 @@
 				F569A94F161AB0F1006C91AD /* MyKnob.h in Headers */,
 				F569AA26161AD9F4006C91AD /* MySlider.h in Headers */,
 				F569AAA4161C0114006C91AD /* LabelOnOffButton.h in Headers */,
+				F569AD36161D3490006C91AD /* WaveView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1437,6 +1447,7 @@
 				F5DFB758155E851500BC9F4A /* bt_multi_bank_d1.png in Resources */,
 				F56AAB01158DCB6000864DD4 /* bt_velocitysens2.png in Resources */,
 				F569AA86161BFFA8006C91AD /* bt_check.png in Resources */,
+				F569AD18161D3277006C91AD /* rocker_sw.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1561,6 +1572,7 @@
 				F569A950161AB0F1006C91AD /* MyKnob.cpp in Sources */,
 				F569AA27161AD9F4006C91AD /* MySlider.cpp in Sources */,
 				F569AAA5161C0114006C91AD /* LabelOnOffButton.cpp in Sources */,
+				F569AD37161D3490006C91AD /* WaveView.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -59,6 +59,31 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	cCheckBox->setAttribute(kCViewTooltipAttribute,strlen("CLabelOnOffButton")+1,"CLabelOnOffButton");
 	
 	onOffButton->forget();
+	
+	//--CRockerSwitch--------------------------------------
+	CBitmap *rocker = new CBitmap("rocker_sw.png");
+ 	size(0, 0, rocker->getWidth(), rocker->getHeight() / 3);
+	size.offset(9, 70 + 29);
+	point(0, 0);
+	cRockerSwitch = new CRockerSwitch(size, this, 707, rocker->getHeight() / 3, rocker, point, kVertical);
+	addView(cRockerSwitch);
+	rocker->forget();
+	cRockerSwitch->setAttribute(kCViewTooltipAttribute,strlen("CRockerSwitch")+1,"CRockerSwitch");
+	
+	//--CWaveView--------------------------------------
+ 	size(0, 0, 200, 100);
+	size.offset(64, 128);
+	cWaveView = new CWaveView(size, frame);
+	{
+		float	testWave[64];
+		for ( int i=0; i<64; i++ )
+		{
+			testWave[i] = sin( 3.14*2 * i / 64 );
+			cWaveView->setWave(testWave, 64);
+		}
+	}
+	addView(cWaveView);
+	cWaveView->setAttribute(kCViewTooltipAttribute,strlen("cWaveView")+1,"cWaveView");
 }
 
 //-----------------------------------------------------------------------------
