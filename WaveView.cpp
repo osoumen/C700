@@ -15,8 +15,8 @@ CWaveView::CWaveView(CRect &size, CFrame *pFrame)
 {
 	buffer = new COffscreenContext(pFrame, size.right-size.left, size.bottom-size.top);
 	
-	lineColor = kWhiteCColor;
-	backColor = kBlackCColor;
+	lineColor = MakeCColor(180, 248, 255, 255);
+	backColor = MakeCColor(67, 75, 88, 255);
 	isWaveLoaded = false;
 }
 
@@ -49,9 +49,10 @@ void CWaveView::draw(CDrawContext *pContext)
 //------------------------------------------------------------------------
 void CWaveView::setWave(float *wavedata, long frames)
 {
-	buffer->setFillColor(backColor);
 	CRect	r(-1, -1, buffer->getWidth(), buffer->getHeight());
-	buffer->drawRect(r, kDrawFilled);
+	buffer->setFrameColor(kBlackCColor);
+	buffer->setFillColor(backColor);
+	buffer->drawRect(r, kDrawFilledAndStroked);
 	
 	float	*temp=wavedata;
 	float	pixelPerFrame=(float)buffer->getWidth()/(float)frames;
