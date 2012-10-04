@@ -588,8 +588,8 @@
 		F569A8021619DEA6006C91AD /* ctooltipsupport.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = ctooltipsupport.h; path = "Extras/VST3 SDK/vstgui.sf/vstgui/ctooltipsupport.h"; sourceTree = DEVELOPER_DIR; };
 		F569A94D161AB0F1006C91AD /* MyKnob.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = MyKnob.h; sourceTree = "<group>"; };
 		F569A94E161AB0F1006C91AD /* MyKnob.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = MyKnob.cpp; sourceTree = "<group>"; };
-		F569AA24161AD9F4006C91AD /* MySlider.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = MySlider.h; path = "Extras/VST3 SDK/vstgui.sf/vstgui/MySlider.h"; sourceTree = DEVELOPER_DIR; };
-		F569AA25161AD9F4006C91AD /* MySlider.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = MySlider.cpp; path = "Extras/VST3 SDK/vstgui.sf/vstgui/MySlider.cpp"; sourceTree = DEVELOPER_DIR; };
+		F569AA24161AD9F4006C91AD /* MySlider.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = MySlider.h; sourceTree = "<group>"; };
+		F569AA25161AD9F4006C91AD /* MySlider.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = MySlider.cpp; sourceTree = "<group>"; };
 		F569AA85161BFFA8006C91AD /* bt_check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bt_check.png; path = graphics/bt_check.png; sourceTree = "<group>"; };
 		F569AAA2161C0114006C91AD /* LabelOnOffButton.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = LabelOnOffButton.h; sourceTree = "<group>"; };
 		F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = LabelOnOffButton.cpp; sourceTree = "<group>"; };
