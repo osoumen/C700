@@ -2,7 +2,7 @@
  *  LabelOnOffButton.h
  *  文字ラベル付きオンオフボタン
  *
- *  Created by 藤田 匡彦 on 12/10/03.
+ *  Created by osoumen on 12/10/03.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
  *
  */

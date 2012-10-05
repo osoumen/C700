@@ -8,8 +8,7 @@
  */
 
 
-#ifndef __Chip700defines__
-#define __Chip700defines__
+#pragma once
 
 #pragma mark ____Chip700 Parameters
 
@@ -249,4 +248,19 @@ typedef struct {
 	unsigned long play_count;
 } WAV_smpl;
 
-#endif
+
+typedef struct {
+	unsigned int	kind_sig;
+	unsigned int	kind;
+	char			title[256];
+	int				value;
+	int				minimum;
+	int				maximum;
+	unsigned int	sig;
+	int				id;
+	unsigned int	command;
+	int				x;
+	int				y;
+	int				w;
+	int				h;
+} ControlInstances;

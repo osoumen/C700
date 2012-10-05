@@ -2,14 +2,14 @@
  *  LabelOnOffButton.cpp
  *  文字ラベル付きオンオフボタン
  *
- *  Created by 藤田 匡彦 on 12/10/03.
+ *  Created by osoumen on 12/10/03.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
  *
  */
 
 #include "LabelOnOffButton.h"
 
-static CFontDesc g_LabelFont("Helvetica Bold", 9);
+extern CFontRef kLabelFont;
 
 //-----------------------------------------------------------------------------
 CLabelOnOffButton::CLabelOnOffButton(const CRect& size, CControlListener* listener, long tag, CBitmap* background, const char *txt, long style)
@@ -69,7 +69,7 @@ void CLabelOnOffButton::draw(CDrawContext* pContext)
 	newClip.offset( getBackground()->getWidth(), 0 );
 	newClip.bound(oldClip);
 	pContext->setClipRect(newClip);
-	pContext->setFont(&g_LabelFont);
+	pContext->setFont(kLabelFont);
 	pContext->setFontColor(kBlackCColor);
 	
 #if VSTGUI_USES_UTF8

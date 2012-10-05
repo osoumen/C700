@@ -2,7 +2,7 @@
  *  C700GUI.h
  *  Chip700
  *
- *  Created by 藤田 匡彦 on 12/10/01.
+ *  Created by osoumen on 12/10/01.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
  *
  */
@@ -10,6 +10,8 @@
 #pragma once
 
 #include "vstgui.h"
+#include "Chip700defines.h"
+
 #include "DummyCntl.h"
 #include "MyKnob.h"
 #include "MySlider.h"
@@ -29,12 +31,21 @@ public:
 	CMessageResult	notify(CBaseObject* sender, const char* message);
 	
 private:
+	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
 	
-	//Test
+	//初期化時にのみ使用
+	CBitmap				*sliderHandleBitmap;
+	CBitmap				*onOffButton;
+	CBitmap				*bgKnob;
+	CBitmap				*rocker;
+	
+	//Test用
+#if 0
 	CMyKnob				*cKnob;
 	CMySlider			*cVerticalSlider;
 	CLabelOnOffButton	*cCheckBox;
 	CRockerSwitch		*cRockerSwitch;
 	CWaveView			*cWaveView;
 	CDummyCntl			*cDummyTest;
+#endif
 };

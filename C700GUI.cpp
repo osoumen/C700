@@ -2,7 +2,7 @@
  *  C700GUI.cpp
  *  Chip700
  *
- *  Created by 藤田 匡彦 on 12/10/01.
+ *  Created by osoumen on 12/10/01.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
  *
  */
@@ -10,10 +10,143 @@
 #include "C700GUI.h"
 #include "ControlInstances.h"
 
+static CFontDesc g_LabelFont("Helvetica Bold", 9);
+CFontRef kLabelFont = &g_LabelFont;
+
+//-----------------------------------------------------------------------------
+CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame )
+{
+	CControl	*cntl = NULL;
+	CRect size(0, 0, desc->w , desc->h);
+	size.offset(desc->x, desc->y);
+	
+	switch (desc->kind_sig) {
+		case 'VeMa':
+			switch (desc->kind ) {
+				case 'wave':
+				{
+					CWaveView	*waveview;
+					waveview = new CWaveView(size, frame, this, desc->id);
+					cntl = waveview;
+					break;
+				}
+				default:
+					goto makeDummy;
+					break;
+			}
+			break;
+			
+		case 'airy':
+			switch (desc->kind) {
+				case 'slid':
+				{
+					CMySlider	*slider;
+					if ( desc->w < desc->h )
+					{
+						slider = new CMySlider(size, this, desc->id, size.top, size.bottom - sliderHandleBitmap->getHeight(), sliderHandleBitmap, 0, CPoint(0, 0), kBottom|kVertical );
+					}
+					else
+					{
+						slider = new CMySlider(size, this, desc->id, size.left, size.right - sliderHandleBitmap->getWidth(), sliderHandleBitmap, 0, CPoint(0, 0), kLeft|kHorizontal );
+					}
+					cntl = slider;
+					break;
+				}
+				case 'knob':
+				{
+					CMyKnob		*knob;
+					knob = new CMyKnob(size, this, desc->id, bgKnob, 0);
+					knob->setColorHandle( MakeCColor(67, 75, 88, 255) );
+					knob->setColorShadowHandle( kTransparentCColor );
+					knob->setInsetValue(1);
+					cntl = knob;
+					break;
+				}
+				case 'cbtn':
+				{
+					CLabelOnOffButton	*button;
+					button = new CLabelOnOffButton(size, this, desc->id, onOffButton, desc->title);
+					cntl = button;
+					break;
+				}
+				default:
+					goto makeDummy;
+					break;
+			}
+			break;
+			
+		case 'appl':
+			switch (desc->kind) {
+				case 'stxt':
+				{
+					CTextLabel	*textLabel;
+					textLabel = new CTextLabel(size, desc->title, 0, 0);
+					textLabel->setFont(kLabelFont);
+					textLabel->setFontColor(kBlackCColor);
+					textLabel->setTransparency(true);
+					cntl = textLabel;
+					break;
+				}
+				case 'larr':
+				{
+					CRockerSwitch *rockerSwitch;
+					rockerSwitch = new CRockerSwitch(size, this, desc->id, rocker->getHeight() / 3, rocker, CPoint(0, 0), kVertical);
+					cntl = rockerSwitch;
+					break;
+				}
+				default:
+					goto makeDummy;
+					break;
+			}
+			break;
+			
+		default:
+			goto makeDummy;
+			break;
+	}
+	goto setupCntl;
+	
+makeDummy:
+	cntl = new CDummyCntl(size);
+	
+setupCntl:
+	if ( cntl )
+	{
+		//cntl->setMin(desc->minimum);
+		//cntl->setMax(desc->maximum);
+		//cntl->setValue(desc->value);
+		cntl->setAttribute(kCViewTooltipAttribute,strlen(desc->title)+1,desc->title);
+	}
+	return cntl;
+}
+
 //-----------------------------------------------------------------------------
 C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 : CViewContainer (inSize, frame, pBackground)
 {
+	bgKnob = new CBitmap("knobBack.png");
+	sliderHandleBitmap = new CBitmap("sliderThumb.png");
+	onOffButton = new CBitmap("bt_check.png");
+	rocker = new CBitmap("rocker_sw.png");
+	
+	int	numCntls = sizeof(sCntl) / sizeof(ControlInstances);
+	for ( int i=0; i<numCntls; i++ )
+	{
+		CControl	*cntl;
+		cntl = makeControlFrom( &sCntl[i], frame );
+		if ( cntl )
+		{
+			addView(cntl);
+		}
+	}
+	
+	bgKnob->forget();
+	sliderHandleBitmap->forget();
+	onOffButton->forget();
+	rocker->forget();
+	
+	//以下テストコード
+#if 0
 	//--CMyKnob--------------------------------------
 	CBitmap *bgKnob = new CBitmap("knobBack.png");
 	
@@ -74,7 +207,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	//--CWaveView--------------------------------------
  	size(0, 0, 200, 100);
 	size.offset(64, 128);
-	cWaveView = new CWaveView(size, frame);
+	cWaveView = new CWaveView(size, frame, this, 606);
 	{
 		float	testWave[128];
 		for ( int i=0; i<128; i++ )
@@ -92,6 +225,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	cDummyTest = new CDummyCntl(size);
 	addView(cDummyTest);
 	cDummyTest->setAttribute(kCViewTooltipAttribute,strlen("CDummyCntl")+1,"CDummyCntl");
+#endif
 }
 
 //-----------------------------------------------------------------------------

@@ -29,6 +29,7 @@ protected:
     TPushButton(HIViewRef inControl);
     virtual ~TPushButton();
     
+    virtual ControlKind		GetKind();
     virtual bool UseNonblockingTracking() { return true; }
     virtual OSStatus ControlHit(ControlPartCode inPart, UInt32 inModifiers );
     virtual OSStatus		StartTracking(TCarbonEvent&inEvent, HIPoint& from);

@@ -2,7 +2,7 @@
 //  C700_CocoaViewFactory.m
 //  Chip700
 //
-//  Created by “¡“c ‹§•F on 12/10/01.
+//  Created by osoumen on 12/10/01.
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 

@@ -2,7 +2,7 @@
  *  WaveView.cpp
  *  Chip700
  *
- *  Created by “¡“c ‹§•F on 12/10/04.
+ *  Created by osoumen on 12/10/04.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
  *
  */
@@ -10,8 +10,8 @@
 #include "WaveView.h"
 
 //-----------------------------------------------------------------------------
-CWaveView::CWaveView(CRect &size, CFrame *pFrame)
-: CControl(size, 0, 0, 0)
+CWaveView::CWaveView(CRect &size, CFrame *pFrame, CControlListener* listener, long tag)
+: CControl(size, listener, tag, 0)
 {
 	m_pDrawBuffer = new COffscreenContext(pFrame, size.right-size.left, size.bottom-size.top);
 	
@@ -43,6 +43,12 @@ void CWaveView::draw(CDrawContext *pContext)
 	if (isWaveLoaded)
 	{
 		m_pDrawBuffer->copyFrom(pContext, size);
+	}
+	else
+	{
+		pContext->setFrameColor(kBlackCColor);
+		pContext->setFillColor(backColor);
+		pContext->drawRect(getVisibleSize(), kDrawFilledAndStroked);
 	}
 }
 

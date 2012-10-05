@@ -2,7 +2,7 @@
  *  WaveView.h
  *  Chip700
  *
- *  Created by “¡“c ‹§•F on 12/10/04.
+ *  Created by osoumen on 12/10/04.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
  *
  */
@@ -14,7 +14,7 @@
 class CWaveView : public CControl
 {
 public:
-	CWaveView(CRect &size, CFrame *pFrame);
+	CWaveView(CRect &size, CFrame *pFrame, CControlListener* listener, long tag);
 	~CWaveView();
 	
 	virtual bool onDrop(void **ptrItems, long nbItems, long type, CPoint &where);

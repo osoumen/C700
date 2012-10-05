@@ -10,22 +10,7 @@
 #pragma once
 
 #include "vstgui.h"
-
-typedef struct {
-	unsigned int	kind_sig;
-	unsigned int	kind;
-	char			title[256];
-	int				value;
-	int				minimum;
-	int				maximum;
-	unsigned int	sig;
-	int				id;
-	unsigned int	command;
-	int				x;
-	int				y;
-	int				w;
-	int				h;
-} ControlInstances;
+#include "Chip700defines.h"
 
 ControlInstances	sCntl[] = {
 	{
@@ -846,7 +831,7 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
+		'push',	//kind
 		"bt_copy",	//title
 		0,	//Value
 		0,	//Minimum
@@ -956,7 +941,7 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'dtxt',	//kind
 		"Monaco 10 180 248 255 0 2 1 0",	//title
-		127,	//Value
+		64,	//Value
 		-128,	//Minimum
 		127,	//Maximum
 		'AUid',	//sig
@@ -968,7 +953,7 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'dtxt',	//kind
 		"Monaco 10 180 248 255 0 2 1 0",	//title
-		127,	//Value
+		64,	//Value
 		-128,	//Minimum
 		127,	//Maximum
 		'AUid',	//sig
@@ -1136,7 +1121,7 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'slid',	//kind
 		"slider",	//title
-		127,	//Value
+		64,	//Value
 		-128,	//Minimum
 		127,	//Maximum
 		'AUid',	//sig
@@ -1148,7 +1133,7 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'slid',	//kind
 		"slider",	//title
-		127,	//Value
+		64,	//Value
 		-128,	//Minimum
 		127,	//Maximum
 		'AUid',	//sig
@@ -1170,8 +1155,8 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
-		"bt_preemphasis",	//title
+		'cbtn',	//kind
+		"Preemphasis",	//title
 		1,	//Value
 		0,	//Minimum
 		1,	//Maximum
@@ -1182,7 +1167,7 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
+		'push',	//kind
 		"bt_unload",	//title
 		0,	//Value
 		0,	//Minimum
@@ -1194,7 +1179,7 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
+		'push',	//kind
 		"bt_load",	//title
 		0,	//Value
 		0,	//Minimum
@@ -1206,7 +1191,7 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
+		'push',	//kind
 		"bt_save",	//title
 		0,	//Value
 		0,	//Minimum
@@ -1218,7 +1203,7 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
+		'push',	//kind
 		"bt_save_xi",	//title
 		0,	//Value
 		0,	//Minimum
@@ -1230,7 +1215,7 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
+		'push',	//kind
 		"bt_calc",	//title
 		0,	//Value
 		0,	//Minimum
@@ -1242,7 +1227,7 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
+		'push',	//kind
 		"bt_calc",	//title
 		0,	//Value
 		0,	//Minimum
@@ -1494,8 +1479,8 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
-		"bt_echo",	//title
+		'cbtn',	//kind
+		"Echo",	//title
 		0,	//Value
 		0,	//Minimum
 		1,	//Maximum
@@ -1506,8 +1491,8 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
-		"bt_loop",	//title
+		'cbtn',	//kind
+		"Loop",	//title
 		0,	//Value
 		0,	//Minimum
 		1,	//Maximum
@@ -1518,8 +1503,8 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
-		"bt_multi_bank_d",	//title
+		'cbtn',	//kind
+		"Multi Bank D",	//title
 		0,	//Value
 		0,	//Minimum
 		1,	//Maximum
@@ -1530,8 +1515,8 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
-		"bt_multi_bank_c",	//title
+		'cbtn',	//kind
+		"Multi Bank C",	//title
 		0,	//Value
 		0,	//Minimum
 		1,	//Maximum
@@ -1542,8 +1527,8 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
-		"bt_multi_bank_b",	//title
+		'cbtn',	//kind
+		"Multi Bank B",	//title
 		0,	//Value
 		0,	//Minimum
 		1,	//Maximum
@@ -1554,9 +1539,9 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'bttn',	//kind
-		"bt_multi_bank_a",	//title
-		0,	//Value
+		'cbtn',	//kind
+		"Multi Bank A",	//title
+		1,	//Value
 		0,	//Minimum
 		1,	//Maximum
 		'AUid',	//sig
