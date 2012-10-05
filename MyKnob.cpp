@@ -9,6 +9,7 @@
 
 #include "MyKnob.h"
 
+//-----------------------------------------------------------------------------
 CMyKnob::CMyKnob(const CRect& size, CControlListener* listener, long tag, CBitmap* background, CBitmap* handle, const CPoint& offset)
 : CKnob(size, listener, tag, background, handle, offset)
 {

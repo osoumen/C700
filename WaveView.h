@@ -15,7 +15,7 @@ class CWaveView : public CControl
 {
 public:
 	CWaveView(CRect &size, CFrame *pFrame, CControlListener* listener, long tag);
-	~CWaveView();
+	virtual ~CWaveView();
 	
 	virtual bool onDrop(void **ptrItems, long nbItems, long type, CPoint &where);
 	void draw(CDrawContext *pContext);

@@ -17,6 +17,11 @@
 #include "MySlider.h"
 #include "LabelOnOffButton.h"
 #include "WaveView.h"
+#include "SeparatorLine.h"
+#include "MyParamDisplay.h"
+#include "MyTextEdit.h"
+
+#define GUITEST 0
 
 class C700GUI : public CViewContainer, public CControlListener
 {
@@ -40,7 +45,7 @@ private:
 	CBitmap				*rocker;
 	
 	//Test—p
-#if 0
+#if GUITEST
 	CMyKnob				*cKnob;
 	CMySlider			*cVerticalSlider;
 	CLabelOnOffButton	*cCheckBox;

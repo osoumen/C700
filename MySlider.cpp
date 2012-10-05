@@ -39,19 +39,19 @@ void CMySlider::draw(CDrawContext* pContext)
 	
 	//’†Sü‚ð•`‚­
 	if ( style & kVertical ) {
-		CPoint point( getWidth()/2, getHandle()->getHeight() / 2 );
+		CPoint point( getWidth()/2, 0 );
 		point.offset(size.left, size.top);
 		pContext->moveTo(point);
-		point( getWidth()/2, getHeight() - getHandle()->getHeight() / 2 );
+		point( getWidth()/2, getHeight() );
 		point.offset(size.left, size.top);
 		pContext->lineTo(point);
 	}
 	else if ( style & kHorizontal )
 	{
-		CPoint point( getHandle()->getWidth() / 2, getHeight()/2 );
+		CPoint point( 0, getHeight()/2 );
 		point.offset(size.left, size.top);
 		pContext->moveTo(point);
-		point( getWidth() - getHandle()->getWidth() / 2, getHeight()/2 );
+		point( getWidth(), getHeight()/2 );
 		point.offset(size.left, size.top);
 		pContext->lineTo(point);
 	}

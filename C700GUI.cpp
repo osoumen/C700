@@ -69,6 +69,60 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					cntl = button;
 					break;
 				}
+				case 'dtxt':
+				{
+					char fontName[100], unitStr[100];
+					float fontSize, fontRColour, fontGColour, fontBColour, horizBorder, vertBorder, valueMultipler;
+					sscanf(desc->title, "%s %f %f %f %f %f %f %f %s", fontName, &fontSize, &fontRColour, &fontGColour, &fontBColour, &horizBorder, &vertBorder, &valueMultipler, unitStr);
+					if (valueMultipler == 0)
+					{
+						valueMultipler=1;
+					}
+					CFontRef	fontDesc = new CFontDesc(fontName, fontSize);
+					CMyParamDisplay	*paramdisp;
+					paramdisp = new CMyParamDisplay(size, valueMultipler, unitStr, 0, 0);
+					paramdisp->setFont(fontDesc);
+					paramdisp->setFontColor(MakeCColor(fontRColour, fontGColour, fontBColour, 255));
+					paramdisp->setAntialias(true);
+					fontDesc->forget();
+					cntl = paramdisp;
+					break;
+				}
+				case 'eutx':
+				{
+					CMyTextEdit	*textEdit;
+					textEdit = new CMyTextEdit(size, this, desc->id, desc->title);
+					CFontRef	fontDesc = new CFontDesc("Monaco", 10);
+					textEdit->setFont(fontDesc);
+					textEdit->setFontColor(MakeCColor(180, 248, 255, 255));
+					textEdit->setAntialias(true);
+					fontDesc->forget();
+					cntl = textEdit;
+					break;
+				}
+				case 'valp':
+				{
+					char		rsrcName[100];
+					snprintf(rsrcName, 99, "%s.png", desc->title);
+					CBitmap		*btnImage = new CBitmap(rsrcName);
+					CMovieBitmap	*button;
+					button = new CMovieBitmap(size, this, desc->id, btnImage );
+					btnImage->forget();
+					cntl = button;
+					break;
+				}
+				case 'bttn':
+				case 'push':
+				{
+					char		rsrcName[100];
+					snprintf(rsrcName, 99, "%s.png", desc->title);
+					CBitmap		*btnImage = new CBitmap(rsrcName);
+					CKickButton	*button;
+					button = new CKickButton(size, this, desc->id, btnImage );
+					btnImage->forget();
+					cntl = button;
+					break;
+				}
 				default:
 					goto makeDummy;
 					break;
@@ -84,6 +138,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					textLabel->setFont(kLabelFont);
 					textLabel->setFontColor(kBlackCColor);
 					textLabel->setTransparency(true);
+					textLabel->setAntialias(true);
 					cntl = textLabel;
 					break;
 				}
@@ -92,6 +147,13 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					CRockerSwitch *rockerSwitch;
 					rockerSwitch = new CRockerSwitch(size, this, desc->id, rocker->getHeight() / 3, rocker, CPoint(0, 0), kVertical);
 					cntl = rockerSwitch;
+					break;
+				}
+				case 'sepa':
+				{
+					CSeparatorLine	*sepa;
+					sepa = new CSeparatorLine(size, this, desc->id);
+					cntl = sepa;
 					break;
 				}
 				default:
@@ -114,7 +176,7 @@ setupCntl:
 	{
 		//cntl->setMin(desc->minimum);
 		//cntl->setMax(desc->maximum);
-		//cntl->setValue(desc->value);
+		cntl->setValue(desc->value);
 		cntl->setAttribute(kCViewTooltipAttribute,strlen(desc->title)+1,desc->title);
 	}
 	return cntl;
@@ -124,6 +186,7 @@ setupCntl:
 C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 : CViewContainer (inSize, frame, pBackground)
 {
+	//共通グラフィックの読み込み
 	bgKnob = new CBitmap("knobBack.png");
 	sliderHandleBitmap = new CBitmap("sliderThumb.png");
 	onOffButton = new CBitmap("bt_check.png");
@@ -146,7 +209,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	rocker->forget();
 	
 	//以下テストコード
-#if 0
+#if GUITEST
 	//--CMyKnob--------------------------------------
 	CBitmap *bgKnob = new CBitmap("knobBack.png");
 	
@@ -168,7 +231,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	size.offset(280, 70);
 #if 1
 	point(0, 0);
-	cVerticalSlider = new CMySlider(size, this, 505, size.top, size.top + 128 - sliderHandleBitmap->getHeight(), sliderHandleBitmap, 0, point, kBottom);
+	cVerticalSlider = new CMySlider(size, this, 505, size.top, size.top + 128 - sliderHandleBitmap->getHeight(), sliderHandleBitmap, 0, point, kBottom|kVertical);
 //	point(0, 0);
 //	cVerticalSlider->setOffsetHandle(point);
 #else
