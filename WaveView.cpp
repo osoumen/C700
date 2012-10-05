@@ -9,6 +9,8 @@
 
 #include "WaveView.h"
 
+static CFontDesc g_MessageFont("Courier", 18);
+
 //-----------------------------------------------------------------------------
 CWaveView::CWaveView(CRect &size, CFrame *pFrame, CControlListener* listener, long tag)
 : CControl(size, listener, tag, 0)
@@ -18,6 +20,9 @@ CWaveView::CWaveView(CRect &size, CFrame *pFrame, CControlListener* listener, lo
 	lineColor = MakeCColor(180, 248, 255, 255);
 	backColor = MakeCColor(67, 75, 88, 255);
 	isWaveLoaded = false;
+	looppoint = 0;
+	datanum = 0;
+	converting = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -40,15 +45,64 @@ bool CWaveView::onDrop(void **ptrItems, long nbItems, long type, CPoint &where)
 //------------------------------------------------------------------------
 void CWaveView::draw(CDrawContext *pContext)
 {
-	if (isWaveLoaded)
-	{
-		m_pDrawBuffer->copyFrom(pContext, size);
-	}
-	else
+	if (converting)
 	{
 		pContext->setFrameColor(kBlackCColor);
 		pContext->setFillColor(backColor);
 		pContext->drawRect(getVisibleSize(), kDrawFilledAndStroked);
+		
+		CRect oldClip;
+		pContext->getClipRect(oldClip);
+		CRect newClip(size);
+		newClip.offset(10, 32);
+		newClip.bound(oldClip);
+		pContext->setClipRect(newClip);
+		pContext->setFont(&g_MessageFont);
+		pContext->setFontColor(lineColor);
+		
+#if VSTGUI_USES_UTF8
+		pContext->drawStringUTF8("Converting to ADPCM...", newClip, kLeftText, true);
+#else
+		pContext->drawString("Converting to ADPCM...", newClip, true, kLeftText);
+#endif
+		pContext->setClipRect(oldClip);
+	}
+	else
+	{
+		if (isWaveLoaded)
+		{
+			m_pDrawBuffer->copyFrom(pContext, size);
+			//ループポイントの位置を描画
+			if (looppoint > 0) {
+				pContext->setFrameColor(kYellowCColor);
+				CPoint	point(size.left + getWidth()*looppoint/datanum, size.top + 2);
+				pContext->moveTo(point);
+				point.offset(0, getHeight() - 3);
+				pContext->lineTo(point);
+			}
+		}
+		else
+		{
+			pContext->setFrameColor(kBlackCColor);
+			pContext->setFillColor(backColor);
+			pContext->drawRect(getVisibleSize(), kDrawFilledAndStroked);
+			
+			CRect oldClip;
+			pContext->getClipRect(oldClip);
+			CRect newClip(size);
+			newClip.offset(10, 32);
+			newClip.bound(oldClip);
+			pContext->setClipRect(newClip);
+			pContext->setFont(&g_MessageFont);
+			pContext->setFontColor(lineColor);
+			
+#if VSTGUI_USES_UTF8
+			pContext->drawStringUTF8("Drop audio file here.", newClip, kLeftText, true);
+#else
+			pContext->drawString("Drop audio file here.", newClip, true, kLeftText);
+#endif
+			pContext->setClipRect(oldClip);
+		}
 	}
 }
 
@@ -64,7 +118,7 @@ void CWaveView::setWave(float *wavedata, long frames)
 	float	*dataend=wavedata+frames;
 	float	pixelPerFrame=(float)m_pDrawBuffer->getWidth()/(float)frames;
 	
-	dataptr++;
+	//dataptr++;
 	m_pDrawBuffer->setFrameColor(lineColor);
 	m_pDrawBuffer->setDrawMode(kAntialias);
 	
@@ -115,6 +169,8 @@ void CWaveView::setWave(float *wavedata, long frames)
 		}
 	}
 	isWaveLoaded = true;
+	converting = false;
+	datanum = frames;
 	
 	setDirty();
 }
@@ -129,4 +185,25 @@ void CWaveView::setBackColor(CColor color)
 void CWaveView::setLineColor(CColor color)
 {
 	lineColor = color;
+}
+
+//------------------------------------------------------------------------
+void CWaveView::beginConverting()
+{
+	converting = true;
+	setDirty();
+}
+
+//------------------------------------------------------------------------
+void CWaveView::endConverting()
+{
+	converting = false;
+	setDirty();
+}
+
+//------------------------------------------------------------------------
+void CWaveView::setLooppoint(int loopStartSamp)
+{
+	looppoint = loopStartSamp;
+	setDirty();
 }

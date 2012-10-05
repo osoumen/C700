@@ -277,6 +277,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 		{
 			testWave[i] = sin( 3.14*2*4 * i / 128 );
 			cWaveView->setWave(testWave, 128);
+			cWaveView->setLooppoint(96);
 		}
 	}
 	addView(cWaveView);

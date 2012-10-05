@@ -23,11 +23,18 @@ public:
 	void setBackColor(CColor color);
 	void setLineColor(CColor color);
 	bool isActive(void) {return isWaveLoaded;}
+	void beginConverting();
+	void endConverting();
+	void setLooppoint(int loopStartSamp);
 	
 	CLASS_METHODS(CWaveView, CControl)
 protected:
 	COffscreenContext	*m_pDrawBuffer;
 	CColor	lineColor;
 	CColor	backColor;
+	
 	bool	isWaveLoaded;
+	bool	converting;
+	int		datanum;
+	int		looppoint;
 };
