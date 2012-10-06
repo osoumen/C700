@@ -17,7 +17,11 @@ public:
 	CWaveView(CRect &size, CFrame *pFrame, CControlListener* listener, long tag);
 	virtual ~CWaveView();
 	
-	virtual bool onDrop(void **ptrItems, long nbItems, long type, CPoint &where);
+	virtual bool onDrop (CDragContainer* drag, const CPoint& where);
+	virtual void onDragEnter (CDragContainer* drag, const CPoint& where);
+	virtual void onDragLeave (CDragContainer* drag, const CPoint& where);
+	virtual void onDragMove (CDragContainer* drag, const CPoint& where);
+	
 	void draw(CDrawContext *pContext);
 	void setWave(float *wavedata, long frames);
 	void setBackColor(CColor color);

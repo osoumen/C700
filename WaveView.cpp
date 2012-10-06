@@ -32,14 +32,49 @@ CWaveView::~CWaveView()
 }
 
 //-----------------------------------------------------------------------------
-bool CWaveView::onDrop(void **ptrItems, long nbItems, long type, CPoint &where)
+bool CWaveView::onDrop(CDragContainer* drag, const CPoint& where)
 {
-//	if (nbItems > 0 && type == kDropFiles) {
-//		X_fierGUI	*editor = (X_fierGUI *)getEditor();
-//		editor->fileDropped((FSSpec *)ptrItems[0]);
-//	}
-	
+	/*
+	long size, type;
+	void* ptr = drag->first (size, type);
+	if (ptr)
+	{
+		if (type == CDragContainer::kText || type == CDragContainer::kFile || type == CDragContainer::kUnicodeText)
+			setText ((char*)ptr);
+		if (type == CDragContainer::kUnicodeText)
+		{
+#if DEVELOPMENT
+			for (long i = 0; i < size; i++)
+			{
+				DebugPrint ("%x", ((char*)ptr)[i]);
+			}
+			DebugPrint ("\n");
+#endif
+		}
+	}
+	 */
 	return true;
+}
+
+//------------------------------------------------------------------------
+void CWaveView::onDragEnter (CDragContainer* drag, const CPoint& where)
+{
+	getFrame ()->setCursor (kCursorCopy);
+	//focus = true;
+	setDirty ();
+}
+
+//------------------------------------------------------------------------
+void CWaveView::onDragLeave (CDragContainer* drag, const CPoint& where)
+{
+	getFrame ()->setCursor (kCursorNotAllowed);
+	//focus = false;
+	setDirty ();
+}
+
+//------------------------------------------------------------------------
+void CWaveView::onDragMove (CDragContainer* drag, const CPoint& where)
+{
 }
 
 //------------------------------------------------------------------------

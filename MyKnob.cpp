@@ -28,6 +28,7 @@ void CMyKnob::drawHandle(CDrawContext* pContext)
 	
 	pContext->setDrawMode(kAntialias);
 	pContext->setLineWidth(2);
+	
 	CKnob::drawHandle( pContext );
 	
 	pContext->setDrawMode(oldDrawMode);

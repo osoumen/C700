@@ -40,13 +40,80 @@ void Chip700View::InitWindow(CFBundleRef sBundle)
 // ウィンドウの初回生成後
 void Chip700View::FinishWindow(CFBundleRef sBundle)
 {
+	int	cntlcmdId = kControlCommandsFirst;
 	HIViewRef	viewIte = HIViewGetFirstSubview(mRootUserPane);
 	do {
 		printf("{\n");
 		
-		//クラスIDの出力
 		HIViewKind	outKind;
 		HIViewGetKind(viewIte, &outKind);
+		CFStringRef	ctitle = HIViewCopyText(viewIte);
+		const char	*title = CFStringGetCStringPtr( ctitle, kCFStringEncodingMacRoman );
+		HIViewID	outId;
+		HIViewGetID(viewIte, &outId);
+		UInt32	cmdId;
+		HIViewGetCommandID(viewIte, &cmdId);
+		HIRect	outRect;
+		HIViewGetFrame( viewIte, &outRect );
+		char			fontname[256] = "";
+		int				fontsize = 0;
+		char			fontalign[256] = "kCenterText";
+		int				style = 0;
+		int				futureuse = 0;
+		
+		//チェックボックスのkind変更
+		if ( outKind.kind == 'bttn' && outId.signature != 'tsel' && outId.signature != 'bank' && strncmp(title, "bt_velocitysens", 15) != 0 )
+		{
+			outKind.kind = 'cbtn';
+		}
+		//IDの変更
+		if ( outId.signature == 'user' )
+		{
+			outId.id += kAudioUnitCustomProperty_First;
+		}
+		if ( outId.signature != 'user' && outId.signature != 'AUid' )
+		{
+			if ( (outKind.kind == 'stxt' && (strcmp(title, "0 bytes")!=0) && (strcmp(title, "0123456abcde")!=0) ) ||
+				outKind.kind == 'sepa' )
+			{
+				outId.id = -1;
+			}
+			else
+			{
+				outId.id = cntlcmdId++;
+			}
+		}
+		//ベロシティカーブコントロールのkind変更
+		if ( outKind.kind == 'bttn' && (strcmp(title, "bt_velocitysens")==0) )
+		{
+			outKind.kind = 'vtsw';
+		}
+		//Fontの設定
+		if ( strcmp(title, "0 bytes") == 0 )
+		{
+			strcpy(fontname, "Helvetica Bold");
+			fontsize = 11;
+			strcpy(fontalign, "kRightText");
+		}
+		if ( strcmp(title, "0123456abcde") == 0 )
+		{
+			strcpy(fontname, "Monaco");
+			fontsize = 9;
+			strcpy(fontalign, "kRightText");
+		}
+		if ( outKind.kind == 'eutx' && outId.signature == 'user' )
+		{
+			if ( outId.id == kAudioUnitCustomProperty_First )
+			{
+				strcpy(fontalign, "kLeftText");
+			}
+			else
+			{
+				strcpy(fontalign, "kRightText");
+			}
+		}
+		
+		//クラスIDの出力
 		printf("'%c%c%c%c',\t//sig\n'%c%c%c%c',\t//kind\n",
 			   (char)((outKind.signature >>24)	& 0xff),
 			   (char)((outKind.signature >>16)	& 0xff),
@@ -59,11 +126,43 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 			   );
 		
 		//titleの出力
-		CFStringRef	title = HIViewCopyText(viewIte);
-		printf("\"%s\",\t//title\n",
-			   CFStringGetCStringPtr(title, kCFStringEncodingMacRoman)
-			   );
-		CFRelease(title);
+		if ( strcmp(title, "bt_preemphasis") == 0 )
+		{
+			printf("\"Preemphasis\",\t//title\n");
+		}
+		else if ( strcmp(title, "bt_echo") == 0 )
+		{
+			printf("\"Echo\",\t//title\n");
+		}
+		else if ( strcmp(title, "bt_loop") == 0 )
+		{
+			printf("\"Loop\",\t//title\n");
+		}
+		else if ( strcmp(title, "bt_multi_bank_d") == 0 )
+		{
+			printf("\"Multi Bank D\",\t//title\n");
+		}
+		else if ( strcmp(title, "bt_multi_bank_c") == 0 )
+		{
+			printf("\"Multi Bank C\",\t//title\n");
+		}
+		else if ( strcmp(title, "bt_multi_bank_b") == 0 )
+		{
+			printf("\"Multi Bank B\",\t//title\n");
+		}
+		else if ( strcmp(title, "bt_multi_bank_a") == 0 )
+		{
+			printf("\"Multi Bank A\",\t//title\n");
+		}
+		else if ( strcmp(title, "bt_preemphasis") == 0 )
+		{
+			printf("\"Preemphasis\",\t//title\n");
+		}
+		else
+		{
+			printf("\"%s\",\t//title\n", title );
+		}
+		CFRelease(ctitle);
 		
 		//value,max,minの出力
 		int value = HIViewGetValue(viewIte);
@@ -74,8 +173,6 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		printf("%d,\t//Maximum\n",max);
 		
 		//idの出力
-		HIViewID	outId;
-		HIViewGetID(viewIte, &outId);
 		if ( outId.signature != 0 ) {
 			printf("'%c%c%c%c',\t//sig\n", 
 				   (char)((outId.signature >>24)	& 0xff),
@@ -89,8 +186,6 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		printf("%d,\t//id\n", outId.id );
 		
 		//コマンドIDの出力
-		UInt32	cmdId;
-		HIViewGetCommandID(viewIte, &cmdId);
 		if ( cmdId != 0 ) {
 			printf("'%c%c%c%c',\t//command\n",
 				   (char)((cmdId >>24)	& 0xff),
@@ -103,14 +198,23 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		}
 		
 		//座標領域の出力
-		HIRect	outRect;
-		HIViewGetFrame( viewIte, &outRect );
-		printf("%.0f, %.0f, %.0f, %.0f\t//x,y,w,h\n"
+		printf("%.0f, %.0f, %.0f, %.0f,\t//x,y,w,h\n"
 			   ,outRect.origin.x
 			   ,outRect.origin.y
 			   ,outRect.size.width
 			   ,outRect.size.height
 			   );
+		
+		//フォント名の出力 -- 空白がデフォルト
+		printf("\"%s\",\t//fontname\n", fontname);
+		//フォントサイズの出力 -- 0でデフォルト
+		printf("%d,\t//fontsize\n", fontsize);
+		//揃え位置の出力 -- 中央がデフォルト
+		printf("%s,\t//fontalign\n", fontalign);
+		//その他スタイルの出力 -- 0がデフォルト
+		printf("%d,\t//style\n",style);
+		//予約 -- 0を入れておく
+		printf("%d\t//future use\n",futureuse);
 		printf("},\n");
 	} while ( viewIte = HIViewGetNextView(viewIte) );
 	

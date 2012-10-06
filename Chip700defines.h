@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "vstgui.h"
+
 #pragma mark ____Chip700 Parameters
 
 // parameters
@@ -155,6 +157,12 @@ enum
 	kNumberOfProperties = kAudioUnitCustomProperty_MaxNoteTrack_16-kAudioUnitCustomProperty_First+1
 };
 
+// control commands
+enum 
+{
+	kControlCommandsFirst = 70000
+};
+
 static const float kMinimumValue_n128 = -128;
 static const float kMinimumValue_0 = 0;
 static const float kMinimumValue_1 = 1;
@@ -263,4 +271,9 @@ typedef struct {
 	int				y;
 	int				w;
 	int				h;
+	char			fontname[256];
+	int				fontsize;
+	CHoriTxtAlign	fontalign;
+	int				style;
+	int				futureuse;
 } ControlInstances;

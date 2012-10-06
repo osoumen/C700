@@ -92,10 +92,25 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				{
 					CMyTextEdit	*textEdit;
 					textEdit = new CMyTextEdit(size, this, desc->id, desc->title);
-					CFontRef	fontDesc = new CFontDesc("Monaco", 10);
-					textEdit->setFont(fontDesc);
 					textEdit->setFontColor(MakeCColor(180, 248, 255, 255));
 					textEdit->setAntialias(true);
+					
+					CFontRef	fontDesc;
+					int			fontsize = 10;
+					if ( desc->fontsize > 0 )
+					{
+						fontsize = desc->fontsize;
+					}
+					if ( desc->fontname[0] != 0 )
+					{
+						fontDesc = new CFontDesc(desc->fontname, fontsize);
+					}
+					else
+					{
+						fontDesc = new CFontDesc("Monaco", fontsize);
+					}
+					textEdit->setFont(fontDesc);
+					textEdit->setHoriAlign(desc->fontalign);
 					fontDesc->forget();
 					cntl = textEdit;
 					break;
@@ -112,6 +127,16 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					break;
 				}
 				case 'bttn':
+				{
+					char		rsrcName[100];
+					snprintf(rsrcName, 99, "%s.png", desc->title);
+					CBitmap		*btnImage = new CBitmap(rsrcName);
+					COnOffButton	*button;
+					button = new COnOffButton(size, this, desc->id, btnImage );
+					btnImage->forget();
+					cntl = button;
+					break;
+				}
 				case 'push':
 				{
 					char		rsrcName[100];
@@ -119,6 +144,17 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					CBitmap		*btnImage = new CBitmap(rsrcName);
 					CKickButton	*button;
 					button = new CKickButton(size, this, desc->id, btnImage );
+					btnImage->forget();
+					cntl = button;
+					break;
+				}
+				case 'vtsw':
+				{
+					char		rsrcName[100];
+					snprintf(rsrcName, 99, "%s.png", desc->title);
+					CBitmap			*btnImage = new CBitmap(rsrcName);
+					CVerticalSwitch	*button;
+					button = new CVerticalSwitch(size, this, desc->id, btnImage );
 					btnImage->forget();
 					cntl = button;
 					break;
@@ -134,11 +170,36 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				case 'stxt':
 				{
 					CTextLabel	*textLabel;
+					size.offset(0, -2);	//ˆÊ’u•â³
 					textLabel = new CTextLabel(size, desc->title, 0, 0);
-					textLabel->setFont(kLabelFont);
 					textLabel->setFontColor(kBlackCColor);
+					textLabel->setHoriAlign(desc->fontalign);
 					textLabel->setTransparency(true);
 					textLabel->setAntialias(true);
+					
+					CFontRef	fontDesc;
+					int			fontsize = 9;
+					if ( desc->fontsize > 0 )
+					{
+						fontsize = desc->fontsize;
+					}
+					if ( desc->fontname[0] != 0 || desc->fontsize != 0)
+					{
+						if ( desc->fontname[0] == 0 )
+						{
+							fontDesc = new CFontDesc(kLabelFont->getName(), fontsize);
+						}
+						else
+						{
+							fontDesc = new CFontDesc(desc->fontname, fontsize);
+						}
+						textLabel->setFont(fontDesc);
+						fontDesc->forget();
+					}
+					else
+					{
+						textLabel->setFont(kLabelFont);
+					}
 					cntl = textLabel;
 					break;
 				}
@@ -174,8 +235,8 @@ makeDummy:
 setupCntl:
 	if ( cntl )
 	{
-		//cntl->setMin(desc->minimum);
-		//cntl->setMax(desc->maximum);
+		cntl->setMin(desc->minimum);
+		cntl->setMax(desc->maximum);
 		cntl->setValue(desc->value);
 		cntl->setAttribute(kCViewTooltipAttribute,strlen(desc->title)+1,desc->title);
 	}
@@ -220,6 +281,8 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	cKnob->setColorHandle( MakeCColor(67, 75, 88, 255) );
 	cKnob->setColorShadowHandle( kTransparentCColor );
 	cKnob->setInsetValue(1);
+	cKnob->setMax(2.0f);
+	cKnob->setMin(-2.0f);
 	addView(cKnob);
 	bgKnob->forget();
 	cKnob->setAttribute(kCViewTooltipAttribute,strlen("CMyKnob")+1,"CMyKnob");
@@ -240,7 +303,9 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	cVerticalSlider = new CMySlider(size, this, 505, handleOffset, 
 										   size.height() - 2 * handleOffset.v, sliderHandleBitmap, 0, point, kBottom);
 #endif
-//	cVerticalSlider->setFreeClick(true);
+	//cVerticalSlider->setFreeClick(false);
+	cVerticalSlider->setMax(2.0f);
+	cVerticalSlider->setMin(-2.f);
 	addView(cVerticalSlider);
 	cVerticalSlider->setAttribute(kCViewTooltipAttribute,strlen("CMySlider")+1,"CMySlider");
 	

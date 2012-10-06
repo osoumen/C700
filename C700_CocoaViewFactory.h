@@ -15,6 +15,8 @@
 #include "aeffguieditor.h"
 #endif
 
+#include "C700Edit.h"
+
 @interface C700_CocoaViewFactory :NSObject <AUCocoaUIBase>
 {
 }
@@ -25,7 +27,7 @@
 
 @interface C700_CocoaView : NSView
 {
-	AEffGUIEditor	*editor;
+	C700Edit		*editor;
 	NSTimer			*timer;
 }
 

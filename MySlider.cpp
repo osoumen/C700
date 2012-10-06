@@ -60,5 +60,9 @@ void CMySlider::draw(CDrawContext* pContext)
 	pContext->setLineWidth(oldLineWidth);
 	pContext->setFrameColor(oldFrameColor);
 	
+	//Å‘å’lÅ¬’l‚Ì•ÏX‚Ö‚Ì‘Î‰
+	float	origVal = value;
+	value = (value - vmin) / (vmax - vmin);
 	CSlider::draw(pContext);
+	value = origVal;
 }
