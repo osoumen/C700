@@ -31,7 +31,7 @@
 	C700Edit		*editor;
 	NSTimer			*timer;
 	AudioUnit 		mAU;
-	AUParameterListenerRef	mParameterListener;
+	AUEventListenerRef	mEventListener;
 }
 
 - (C700_CocoaView *)initWithFrame:(NSRect)frameRect audioUnit:(AudioUnit)inAU;

@@ -32,7 +32,9 @@ public:
 	~C700GUI();
 	
 	CControl*	FindControlByTag( long tag );
-	void		SetParameterListener(AUParameterListenerRef	parameterListener) { mParameterListener = parameterListener; }
+	void		SetEventListener(AUEventListenerRef	eventListener) { mEventListener = eventListener; }
+	void		EfxSetParam( int index, float value );
+	void		EfxSetProperty( int index, float value );
 	
 	// CView‚æ‚è
 	virtual void	valueChanged(CControl* control);
@@ -45,7 +47,7 @@ private:
 	
 	int						mNumCntls;
 	CControl				**mCntl;
-	AUParameterListenerRef	mParameterListener;
+	AUEventListenerRef		mEventListener;
 	
 	//‰Šú‰»‚É‚Ì‚İg—p
 	CBitmap					*sliderHandleBitmap;

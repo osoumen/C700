@@ -1190,9 +1190,9 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'slid',	//kind
 		"slider",	//title
-		32767,	//Value
+		1,	//Value
 		0,	//Minimum
-		32767,	//Maximum
+		1,	//Maximum
 		'user',	//sig
 		64022,	//id
 		0,	//command
@@ -1207,9 +1207,9 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'slid',	//kind
 		"slider",	//title
-		32767,	//Value
+		1,	//Value
 		0,	//Minimum
-		32767,	//Maximum
+		1,	//Maximum
 		'user',	//sig
 		64021,	//id
 		0,	//command
@@ -1224,9 +1224,9 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'slid',	//kind
 		"slider",	//title
-		32767,	//Value
+		1,	//Value
 		0,	//Minimum
-		32767,	//Maximum
+		1,	//Maximum
 		'user',	//sig
 		64020,	//id
 		0,	//command
@@ -1241,9 +1241,9 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'slid',	//kind
 		"slider",	//title
-		32767,	//Value
+		1,	//Value
 		0,	//Minimum
-		32767,	//Maximum
+		1,	//Maximum
 		'user',	//sig
 		64019,	//id
 		0,	//command
@@ -1258,9 +1258,9 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'slid',	//kind
 		"slider",	//title
-		32767,	//Value
+		1,	//Value
 		0,	//Minimum
-		32767,	//Maximum
+		1,	//Maximum
 		'user',	//sig
 		64018,	//id
 		0,	//command
@@ -1881,7 +1881,7 @@ ControlInstances	sCntl[] = {
 		0,	//fontsize
 		kRightText,	//fontalign
 		0,	//style
-		0	//future use
+		1	//future use
 	},
 	{
 		'appl',	//sig

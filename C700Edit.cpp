@@ -39,12 +39,12 @@ C700Edit::~C700Edit()
 }
 
 //-----------------------------------------------------------------------------
-void C700Edit::SetParameterListener(AUParameterListenerRef	parameterListener)
+void C700Edit::SetEventListener(AUEventListenerRef	eventListener)
 {
-	mParameterListener = parameterListener;
+	mEventListener = eventListener;
 	if ( m_pUIView )
 	{
-		m_pUIView->SetParameterListener(parameterListener);
+		m_pUIView->SetEventListener(eventListener);
 	}
 }
 
@@ -133,6 +133,7 @@ void C700Edit::setParameter(long index, float value)
 	while (cntl)
 	{
 		cntl->setValue(value);
+		//printf("tag=%d, value=%f\n",tag,value);
 		
 		tag += 1000;
 		cntl = m_pUIView->FindControlByTag(tag);

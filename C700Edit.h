@@ -27,7 +27,7 @@ public:
 					C700Edit( void *pEffect );
 	virtual			~C700Edit();
 	
-	void			SetParameterListener(AUParameterListenerRef	parameterListener);
+	void			SetEventListener(AUEventListenerRef	parameterListener);
 	void			SetParameterInfo(long index, float minValue, float maxValue, float defaultValue );
 	
 	virtual bool	getRect(ERect **);
@@ -43,5 +43,5 @@ private:
 	C700GUI				*m_pUIView;
 	CTooltipSupport		*m_pTooltipSupport;
 	
-	AUParameterListenerRef	mParameterListener;
+	AUEventListenerRef	mEventListener;
 };

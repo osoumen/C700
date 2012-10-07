@@ -117,6 +117,10 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		{
 			futureuse = 1;
 		}
+		if ( outId.signature == 'user' && outId.id == kAudioUnitCustomProperty_First+2 )
+		{
+			futureuse = 1;
+		}
 		if ( outId.signature == 'user' && outId.id == kAudioUnitCustomProperty_First )
 		{
 			futureuse = 2;

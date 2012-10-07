@@ -762,12 +762,7 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 				CFBundleRef bundle = CFBundleGetBundleWithIdentifier( CFSTR("com.VeMa.audiounit.Chip700") );
 				
 				if (bundle == NULL) return fnfErr;
-				/*
-				 CFURLRef bundleURL = CFBundleCopyResourceURL( bundle, 
-				 CFSTR("VOPM"), 
-				 CFSTR("component"), 
-				 NULL);
-				 */
+
 				CFURLRef bundleURL = CFBundleCopyBundleURL( bundle );
 				
 				if (bundleURL == NULL) return fnfErr;

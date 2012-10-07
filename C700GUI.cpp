@@ -27,6 +27,9 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 	CControl	*cntl = NULL;
 	CRect size(0, 0, desc->w , desc->h);
 	size.offset(desc->x, desc->y);
+	int	value = desc->value;
+	int	minimum = desc->minimum;
+	int	maximum = desc->maximum;
 	
 	switch (desc->kind_sig) {
 		case 'VeMa':
@@ -121,6 +124,12 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					textEdit->setHoriAlign(desc->fontalign);
 					fontDesc->forget();
 					cntl = textEdit;
+					
+					if ( desc->futureuse==1 )
+					{
+						//小数型のとき最大値の制限を外す
+						maximum = 0x7fffffff;
+					}
 					break;
 				}
 				case 'valp':
@@ -243,9 +252,9 @@ makeDummy:
 setupCntl:
 	if ( cntl )
 	{
-		cntl->setMin(desc->minimum);
-		cntl->setMax(desc->maximum);
-		cntl->setValue(desc->value);
+		cntl->setMin(minimum);
+		cntl->setMax(maximum);
+		cntl->setValue(value);
 		cntl->setAttribute(kCViewTooltipAttribute,strlen(desc->title)+1,desc->title);
 	}
 	return cntl;
@@ -256,7 +265,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 : CViewContainer (inSize, frame, pBackground)
 , mNumCntls( 0 )
 , mCntl(NULL)
-, mParameterListener(NULL)
+, mEventListener(NULL)
 {
 	//共通グラフィックの読み込み
 	bgKnob = new CBitmap("knobBack.png");
@@ -393,12 +402,13 @@ void C700GUI::valueChanged(CControl* control)
 	int	tag = control->getTag();
 	float value = control->getValue();
 	
-	AEffGUIEditor	*editor = (AEffGUIEditor *)getEditor();
-	
 	//スライダーで設定出来る値には整数値しかないの少数以下を切り捨てる
 	if ( control->isTypeOf("CMySlider") )
 	{
-		value = (int)value;
+		//エコーフィルタイコライザを除く
+		if ( !(tag >= kAudioUnitCustomProperty_Band1 && tag <= kAudioUnitCustomProperty_Band5) ) {
+			value = (int)value;
+		}
 	}
 	
 	//テキストボックスの場合は数値に変換する
@@ -417,12 +427,151 @@ void C700GUI::valueChanged(CControl* control)
 	{
 	//	value *= 2;
 	}
-	AudioUnit	au = (AudioUnit)editor->getEffect();
+#endif
 	if ( tag < kAudioUnitCustomProperty_First )
 	{
-		AudioUnitParameter parameter = { au, tag%1000, kAudioUnitScope_Global, 0 };
-		AUParameterSet(	mParameterListener, this, &parameter, value, 0);
-		//AUParameterListenerNotify( mParameterListener, this, &parameter );
+		EfxSetParam( tag%1000, value );
+	}
+	else if ( tag < kControlCommandsFirst ) {
+		EfxSetProperty( (tag-kAudioUnitCustomProperty_First)%1000, value );
+	}
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::EfxSetParam( int index, float value )
+{
+	AEffGUIEditor	*editor = (AEffGUIEditor *)getEditor();
+#if AU
+	AudioUnit	au = (AudioUnit)editor->getEffect();
+	AudioUnitParameter parameter = { au, index, kAudioUnitScope_Global, 0 };
+	AUParameterSet(	mEventListener, this, &parameter, value, 0);
+	//AUParameterListenerNotify( mEventListener, this, &parameter );
+#endif
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::EfxSetProperty( int index, float value )
+{
+	AEffGUIEditor	*editor = (AEffGUIEditor *)getEditor();
+#if AU
+	AudioUnit	au = (AudioUnit)editor->getEffect();
+	int			propertyID = index + kAudioUnitCustomProperty_First;
+	
+	double		doubleData = value;
+	float		floatData = value;
+	int			intData = value;
+	bool		boolData = value>0.5f?true:false;
+	void*		outDataPtr = NULL;
+	UInt32		outDataSize = 0;
+	
+	switch (propertyID) {
+		case kAudioUnitCustomProperty_BaseKey:
+		case kAudioUnitCustomProperty_LowKey:
+		case kAudioUnitCustomProperty_HighKey:
+		case kAudioUnitCustomProperty_AR:
+		case kAudioUnitCustomProperty_DR:
+		case kAudioUnitCustomProperty_SL:
+		case kAudioUnitCustomProperty_SR:
+		case kAudioUnitCustomProperty_VolL:
+		case kAudioUnitCustomProperty_VolR:
+		case kAudioUnitCustomProperty_EditingProgram:
+		case kAudioUnitCustomProperty_EditingChannel:
+		case kAudioUnitCustomProperty_LoopPoint:
+		case kAudioUnitCustomProperty_Bank:
+			outDataSize	= sizeof(int);
+			outDataPtr	= (void*)&intData;
+			break;
+			
+		case kAudioUnitCustomProperty_Rate:
+			outDataSize = sizeof(double);
+			outDataPtr = (void*)&doubleData;
+			break;
+			
+		case kAudioUnitCustomProperty_Loop:
+		case kAudioUnitCustomProperty_Echo:
+			outDataSize = sizeof(bool);
+			outDataPtr = (void*)&boolData;
+			break;
+			
+		case kAudioUnitCustomProperty_BRRData:
+			//別関数で処理
+			break;
+			
+		case kAudioUnitCustomProperty_PGDictionary:
+			//別関数で処理
+			break;
+			
+		case kAudioUnitCustomProperty_XIData:
+			//read only
+			break;
+			
+		case kAudioUnitCustomProperty_ProgramName:
+			//別関数で処理
+			break;
+			
+		case kAudioUnitCustomProperty_TotalRAM:
+			//read only
+			break;
+			
+		case kAudioUnitCustomProperty_Band1:
+		case kAudioUnitCustomProperty_Band2:
+		case kAudioUnitCustomProperty_Band3:
+		case kAudioUnitCustomProperty_Band4:
+		case kAudioUnitCustomProperty_Band5:
+			outDataSize = sizeof(Float32);
+			outDataPtr = (void*)&floatData;
+			break;
+			
+		case kAudioUnitCustomProperty_NoteOnTrack_1:
+		case kAudioUnitCustomProperty_NoteOnTrack_2:
+		case kAudioUnitCustomProperty_NoteOnTrack_3:
+		case kAudioUnitCustomProperty_NoteOnTrack_4:
+		case kAudioUnitCustomProperty_NoteOnTrack_5:	
+		case kAudioUnitCustomProperty_NoteOnTrack_6:
+		case kAudioUnitCustomProperty_NoteOnTrack_7:
+		case kAudioUnitCustomProperty_NoteOnTrack_8:
+		case kAudioUnitCustomProperty_NoteOnTrack_9:
+		case kAudioUnitCustomProperty_NoteOnTrack_10:
+		case kAudioUnitCustomProperty_NoteOnTrack_11:
+		case kAudioUnitCustomProperty_NoteOnTrack_12:
+		case kAudioUnitCustomProperty_NoteOnTrack_13:
+		case kAudioUnitCustomProperty_NoteOnTrack_14:
+		case kAudioUnitCustomProperty_NoteOnTrack_15:
+		case kAudioUnitCustomProperty_NoteOnTrack_16:
+		case kAudioUnitCustomProperty_MaxNoteTrack_1:
+		case kAudioUnitCustomProperty_MaxNoteTrack_2:
+		case kAudioUnitCustomProperty_MaxNoteTrack_3:
+		case kAudioUnitCustomProperty_MaxNoteTrack_4:
+		case kAudioUnitCustomProperty_MaxNoteTrack_5:
+		case kAudioUnitCustomProperty_MaxNoteTrack_6:
+		case kAudioUnitCustomProperty_MaxNoteTrack_7:
+		case kAudioUnitCustomProperty_MaxNoteTrack_8:
+		case kAudioUnitCustomProperty_MaxNoteTrack_9:
+		case kAudioUnitCustomProperty_MaxNoteTrack_10:
+		case kAudioUnitCustomProperty_MaxNoteTrack_11:
+		case kAudioUnitCustomProperty_MaxNoteTrack_12:
+		case kAudioUnitCustomProperty_MaxNoteTrack_13:
+		case kAudioUnitCustomProperty_MaxNoteTrack_14:
+		case kAudioUnitCustomProperty_MaxNoteTrack_15:
+		case kAudioUnitCustomProperty_MaxNoteTrack_16:
+			//read only
+			break;
+			
+		case kAudioUnitCustomProperty_SourceFileRef:
+			//別関数で処理
+			break;
+			
+		case kAudioUnitCustomProperty_IsEmaphasized:
+			//別関数で処理
+			break;
+			
+		default:
+			outDataPtr = NULL;
+			outDataSize = 0;
+	}
+	
+	if ( outDataPtr ) {
+		AudioUnitSetProperty(au, propertyID, kAudioUnitScope_Global, 0, outDataPtr, outDataSize);
 	}
 #endif
 }
