@@ -86,12 +86,12 @@ void CWaveView::draw(CDrawContext *pContext)
 		pContext->setFillColor(backColor);
 		pContext->drawRect(getVisibleSize(), kDrawFilledAndStroked);
 		
-		CRect oldClip;
-		pContext->getClipRect(oldClip);
+		//CRect oldClip;
+		//pContext->getClipRect(oldClip);
 		CRect newClip(size);
-		newClip.offset(10, 32);
-		newClip.bound(oldClip);
-		pContext->setClipRect(newClip);
+		newClip.offset(10, 16);
+		//newClip.bound(oldClip);
+		//pContext->setClipRect(newClip);
 		pContext->setFont(&g_MessageFont);
 		pContext->setFontColor(lineColor);
 		
@@ -100,7 +100,7 @@ void CWaveView::draw(CDrawContext *pContext)
 #else
 		pContext->drawString("Converting to ADPCM...", newClip, true, kLeftText);
 #endif
-		pContext->setClipRect(oldClip);
+		//pContext->setClipRect(oldClip);
 	}
 	else
 	{
@@ -122,12 +122,12 @@ void CWaveView::draw(CDrawContext *pContext)
 			pContext->setFillColor(backColor);
 			pContext->drawRect(getVisibleSize(), kDrawFilledAndStroked);
 			
-			CRect oldClip;
-			pContext->getClipRect(oldClip);
+			//CRect oldClip;
+			//pContext->getClipRect(oldClip);
 			CRect newClip(size);
-			newClip.offset(10, 32);
-			newClip.bound(oldClip);
-			pContext->setClipRect(newClip);
+			newClip.offset(10, 16);
+			//newClip.bound(oldClip);
+			//pContext->setClipRect(newClip);
 			pContext->setFont(&g_MessageFont);
 			pContext->setFontColor(lineColor);
 			
@@ -136,7 +136,7 @@ void CWaveView::draw(CDrawContext *pContext)
 #else
 			pContext->drawString("Drop audio file here.", newClip, true, kLeftText);
 #endif
-			pContext->setClipRect(oldClip);
+			//pContext->setClipRect(oldClip);
 		}
 	}
 }

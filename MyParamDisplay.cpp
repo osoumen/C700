@@ -10,9 +10,11 @@
 #include "MyParamDisplay.h"
 
 //------------------------------------------------------------------------
-CMyParamDisplay::CMyParamDisplay(const CRect& size, float valueMultipler, char *unitStr, CBitmap* background, const long style)
+CMyParamDisplay::CMyParamDisplay(const CRect& size, long tag, float valueMultipler, char *unitStr, CBitmap* background, const long style)
 : CParamDisplay(size, background, style)
+, mValueMultipler(valueMultipler)
 {
+	setTag(tag);
 	if ( unitStr && unitStr[0] != '0')
 	{
 		strncpy(mUnitStr, unitStr, UNITSTR_LEN-1);

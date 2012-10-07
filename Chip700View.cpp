@@ -112,6 +112,15 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 				strcpy(fontalign, "kRightText");
 			}
 		}
+		//小数点表示の設定
+		if ( strcmp(title, "7.0000") == 0 || strcmp(title, "1.000") == 0 )
+		{
+			futureuse = 1;
+		}
+		if ( outId.signature == 'user' && outId.id == kAudioUnitCustomProperty_First )
+		{
+			futureuse = 2;
+		}
 		
 		//クラスIDの出力
 		printf("'%c%c%c%c',\t//sig\n'%c%c%c%c',\t//kind\n",

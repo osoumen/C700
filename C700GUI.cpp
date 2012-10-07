@@ -7,8 +7,16 @@
  *
  */
 
+#include <AudioUnit/AUComponent.h>
+#import <AudioToolbox/AudioToolbox.h>
 #include "C700GUI.h"
 #include "ControlInstances.h"
+
+#if AU
+#include "plugguieditor.h"
+#else
+#include "aeffguieditor.h"
+#endif
 
 static CFontDesc g_LabelFont("Helvetica Bold", 9);
 CFontRef kLabelFont = &g_LabelFont;
@@ -80,7 +88,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					}
 					CFontRef	fontDesc = new CFontDesc(fontName, fontSize);
 					CMyParamDisplay	*paramdisp;
-					paramdisp = new CMyParamDisplay(size, valueMultipler, unitStr, 0, 0);
+					paramdisp = new CMyParamDisplay(size, desc->id, valueMultipler, unitStr, 0, 0);
 					paramdisp->setFont(fontDesc);
 					paramdisp->setFontColor(MakeCColor(fontRColour, fontGColour, fontBColour, 255));
 					paramdisp->setAntialias(true);
@@ -91,7 +99,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				case 'eutx':
 				{
 					CMyTextEdit	*textEdit;
-					textEdit = new CMyTextEdit(size, this, desc->id, desc->title);
+					textEdit = new CMyTextEdit(size, this, desc->id, desc->title, desc->futureuse==2?true:false, desc->futureuse==1?true:false);
 					textEdit->setFontColor(MakeCColor(180, 248, 255, 255));
 					textEdit->setAntialias(true);
 					
@@ -246,6 +254,9 @@ setupCntl:
 //-----------------------------------------------------------------------------
 C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 : CViewContainer (inSize, frame, pBackground)
+, mNumCntls( 0 )
+, mCntl(NULL)
+, mParameterListener(NULL)
 {
 	//共通グラフィックの読み込み
 	bgKnob = new CBitmap("knobBack.png");
@@ -253,14 +264,20 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	onOffButton = new CBitmap("bt_check.png");
 	rocker = new CBitmap("rocker_sw.png");
 	
-	int	numCntls = sizeof(sCntl) / sizeof(ControlInstances);
-	for ( int i=0; i<numCntls; i++ )
+	//コントロールの個数
+	mNumCntls = sizeof(sCntl) / sizeof(ControlInstances);
+	
+	//作成したコントロールのインスタンスへのポインタを保持しておく
+	mCntl = new CControl*[mNumCntls];
+	
+	for ( int i=0; i<mNumCntls; i++ )
 	{
 		CControl	*cntl;
 		cntl = makeControlFrom( &sCntl[i], frame );
 		if ( cntl )
 		{
 			addView(cntl);
+			mCntl[i] = cntl;
 		}
 	}
 	
@@ -360,14 +377,54 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 //-----------------------------------------------------------------------------
 C700GUI::~C700GUI()
 {
+	if ( mCntl )
+	{
+		delete [] mCntl;
+	}
 	removeAll();
 }
 
 //-----------------------------------------------------------------------------
 void C700GUI::valueChanged(CControl* control)
 {
+	//コントロールが操作された時に呼ばれる
+	//エフェクター側に変化したパラメータを設定する処理を行う
+	
 	int	tag = control->getTag();
 	float value = control->getValue();
+	
+	AEffGUIEditor	*editor = (AEffGUIEditor *)getEditor();
+	
+	//スライダーで設定出来る値には整数値しかないの少数以下を切り捨てる
+	if ( control->isTypeOf("CMySlider") )
+	{
+		value = (int)value;
+	}
+	
+	//テキストボックスの場合は数値に変換する
+	if ( control->isTypeOf("CMyTextEdit") )
+	{
+		CMyTextEdit		*textedit = static_cast<CMyTextEdit*> (control);
+		sscanf(textedit->getText(), "%f", &value);
+		control->setValue(value);
+		control->bounceValue();		//値を範囲内に丸める
+		value = control->getValue();
+	}
+	
+#if AU
+	//0-2の値域に拡張する
+	if ( tag == kParam_velocity )
+	{
+	//	value *= 2;
+	}
+	AudioUnit	au = (AudioUnit)editor->getEffect();
+	if ( tag < kAudioUnitCustomProperty_First )
+	{
+		AudioUnitParameter parameter = { au, tag%1000, kAudioUnitScope_Global, 0 };
+		AUParameterSet(	mParameterListener, this, &parameter, value, 0);
+		//AUParameterListenerNotify( mParameterListener, this, &parameter );
+	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -386,4 +443,23 @@ bool C700GUI::removed(CView* parent)
 CMessageResult C700GUI::notify(CBaseObject* sender, const char* message)
 {
 	return CViewContainer::notify(sender, message);
+}
+
+//-----------------------------------------------------------------------------
+CControl *C700GUI::FindControlByTag( long tag )
+{
+	CControl	*cntl = NULL;
+	if ( mCntl )
+	{
+		for ( int i=0; i<mNumCntls; i++ )
+		{
+			//単純な線形探索なのでもっと冴えた方法があるかも
+			if ( mCntl[i]->getTag() == tag )
+			{
+				cntl = mCntl[i];
+				break;
+			}
+		}
+	}
+	return cntl;
 }

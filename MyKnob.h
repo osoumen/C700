@@ -24,6 +24,8 @@ public:
 	virtual float getMin () const { return mRealVmin; }
 	virtual void  setMax (float val) { mRealVmax = val; }
 	virtual float getMax () const { return mRealVmax; }
+	virtual void  setDefaultValue (float val) { defaultValue = (val - mRealVmin) / (mRealVmax - mRealVmin); }
+	//virtual	float getDefaultValue (void) const { return (defaultValue * (mRealVmax - mRealVmin) + mRealVmin); }
 
 	CLASS_METHODS(CMyKnob, CKnob)
 protected:

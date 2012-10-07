@@ -63,12 +63,12 @@ void CLabelOnOffButton::draw(CDrawContext* pContext)
 	COnOffButton::draw(pContext);
 	//•¶Žš‚ð•`‰æ
 	
-	CRect oldClip;
-	pContext->getClipRect(oldClip);
+//	CRect oldClip;
+//	pContext->getClipRect(oldClip);
 	CRect newClip(size);
 	newClip.offset( getBackground()->getWidth(), 0 );
-	newClip.bound(oldClip);
-	pContext->setClipRect(newClip);
+//	newClip.bound(oldClip);
+//	pContext->setClipRect(newClip);
 	pContext->setFont(kLabelFont);
 	pContext->setFontColor(kBlackCColor);
 	
@@ -77,5 +77,5 @@ void CLabelOnOffButton::draw(CDrawContext* pContext)
 #else
 	pContext->drawString(text, newClip, true, kLeftText);
 #endif
-	pContext->setClipRect(oldClip);
+//	pContext->setClipRect(oldClip);
 }

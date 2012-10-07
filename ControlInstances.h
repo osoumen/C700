@@ -1932,7 +1932,7 @@ ControlInstances	sCntl[] = {
 		0,	//fontsize
 		kLeftText,	//fontalign
 		0,	//style
-		0	//future use
+		2	//future use
 	},
 	{
 		'airy',	//sig
@@ -2221,7 +2221,7 @@ ControlInstances	sCntl[] = {
 		0,	//fontsize
 		kCenterText,	//fontalign
 		0,	//style
-		0	//future use
+		1	//future use
 	},
 	{
 		'airy',	//sig
@@ -2238,7 +2238,7 @@ ControlInstances	sCntl[] = {
 		0,	//fontsize
 		kCenterText,	//fontalign
 		0,	//style
-		0	//future use
+		1	//future use
 	},
 	{
 		'airy',	//sig

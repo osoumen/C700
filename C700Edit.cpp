@@ -12,9 +12,9 @@
 //-----------------------------------------------------------------------------
 C700Edit::C700Edit( void *pEffect )
 #if AU
-: AEffGUIEditor (effect)
+: AEffGUIEditor(pEffect)
 #else
-: AEffGUIEditor ((AudioEffect*)effect)
+: AEffGUIEditor((AudioEffect*)pEffect)
 #endif
 , m_pBackground( NULL )
 , m_pUIView( NULL )
@@ -39,11 +39,43 @@ C700Edit::~C700Edit()
 }
 
 //-----------------------------------------------------------------------------
+void C700Edit::SetParameterListener(AUParameterListenerRef	parameterListener)
+{
+	mParameterListener = parameterListener;
+	if ( m_pUIView )
+	{
+		m_pUIView->SetParameterListener(parameterListener);
+	}
+}
+
+//-----------------------------------------------------------------------------
+void C700Edit::SetParameterInfo(long index, float minValue, float maxValue, float defaultValue)
+{
+	if (!frame)
+	{
+		return;
+	}
+	
+	CControl	*cntl;
+	int			tag = index;
+	cntl = m_pUIView->FindControlByTag(tag);
+	while (cntl)
+	{
+		cntl->setMin(minValue);
+		cntl->setMax(maxValue);
+		cntl->setDefaultValue(defaultValue);
+		
+		tag += 1000;
+		cntl = m_pUIView->FindControlByTag(tag);
+	}
+}
+
+//-----------------------------------------------------------------------------
 bool C700Edit::getRect(ERect **erect)
 {
 	static struct ERect r={0,0,200,200};
-	*erect =&r;
-	return (true);
+	*erect = &r;
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -87,9 +119,23 @@ void C700Edit::close()
 //-----------------------------------------------------------------------------
 void C700Edit::setParameter(long index, float value)
 {
+	//エフェクタのパラメータが変化したときに呼ばれる
+	//GUI側に変化したパラメータを反映させる処理を行う
+	
 	if (!frame)
 	{
 		return;
+	}
+	
+	CControl	*cntl;
+	int			tag = index;
+	cntl = m_pUIView->FindControlByTag(tag);
+	while (cntl)
+	{
+		cntl->setValue(value);
+		
+		tag += 1000;
+		cntl = m_pUIView->FindControlByTag(tag);
 	}
 }
 

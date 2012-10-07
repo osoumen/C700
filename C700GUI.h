@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <AudioToolbox/AudioToolbox.h>
+
 #include "vstgui.h"
 #include "Chip700defines.h"
 
@@ -29,6 +31,9 @@ public:
 	C700GUI(const CRect &size, CFrame *pParent, CBitmap *pBackground = 0);
 	~C700GUI();
 	
+	CControl*	FindControlByTag( long tag );
+	void		SetParameterListener(AUParameterListenerRef	parameterListener) { mParameterListener = parameterListener; }
+	
 	// CViewÇÊÇË
 	virtual void	valueChanged(CControl* control);
 	bool			attached(CView* view);
@@ -38,11 +43,15 @@ public:
 private:
 	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
 	
+	int						mNumCntls;
+	CControl				**mCntl;
+	AUParameterListenerRef	mParameterListener;
+	
 	//èâä˙âªéûÇ…ÇÃÇ›égóp
-	CBitmap				*sliderHandleBitmap;
-	CBitmap				*onOffButton;
-	CBitmap				*bgKnob;
-	CBitmap				*rocker;
+	CBitmap					*sliderHandleBitmap;
+	CBitmap					*onOffButton;
+	CBitmap					*bgKnob;
+	CBitmap					*rocker;
 	
 	//Testóp
 #if GUITEST

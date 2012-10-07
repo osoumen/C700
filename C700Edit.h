@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <AudioToolbox/AudioToolbox.h>
 #if AU
 #include "plugguieditor.h"
 #else
@@ -26,6 +27,9 @@ public:
 					C700Edit( void *pEffect );
 	virtual			~C700Edit();
 	
+	void			SetParameterListener(AUParameterListenerRef	parameterListener);
+	void			SetParameterInfo(long index, float minValue, float maxValue, float defaultValue );
+	
 	virtual bool	getRect(ERect **);
 	virtual bool	open(void *ptr);
 	virtual void	close();
@@ -38,4 +42,6 @@ private:
 	CBitmap				*m_pBackground;
 	C700GUI				*m_pUIView;
 	CTooltipSupport		*m_pTooltipSupport;
+	
+	AUParameterListenerRef	mParameterListener;
 };

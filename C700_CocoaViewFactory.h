@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <AudioUnit/AUCocoaUIView.h>
+#import <AudioToolbox/AudioToolbox.h>
 
 #if AU
 #include "plugguieditor.h"
@@ -29,9 +30,14 @@
 {
 	C700Edit		*editor;
 	NSTimer			*timer;
+	AudioUnit 		mAU;
+	AUParameterListenerRef	mParameterListener;
 }
 
 - (C700_CocoaView *)initWithFrame:(NSRect)frameRect audioUnit:(AudioUnit)inAU;
 - (void)setEditorFrame;
+- (void)_addListeners;
+- (void)_removeListeners;
+- (void)_synchronizeUIWithParameterValues;
 
 @end

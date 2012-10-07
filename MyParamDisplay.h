@@ -14,7 +14,7 @@
 class CMyParamDisplay : public CParamDisplay
 {
 public:
-	CMyParamDisplay(const CRect& size, float valueMultipler = 1.0f, char *unitStr = 0, CBitmap* background = 0, const long style = 0);
+	CMyParamDisplay(const CRect& size, long tag, float valueMultipler = 1.0f, char *unitStr = 0, CBitmap* background = 0, const long style = 0);
 	virtual ~CMyParamDisplay();
 	
 	CLASS_METHODS(CMyParamDisplay, CParamDisplay)
