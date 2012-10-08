@@ -2,8 +2,8 @@
  *  Chip700defines.h
  *  Chip700
  *
- *  Created by 開発用 on 06/10/12.
- *  Copyright 2006 Vermicelli Magic. All rights reserved.
+ *  Created by osoumen on 06/10/12.
+ *  Copyright 2006 ppse部 All rights reserved.
  *
  */
 

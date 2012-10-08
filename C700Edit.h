@@ -10,6 +10,7 @@
 #pragma once
 
 #include <AudioToolbox/AudioToolbox.h>
+
 #if AU
 #include "plugguieditor.h"
 #else
@@ -20,6 +21,7 @@
 
 #include "vstgui.h"
 #include "C700GUI.h"
+#include "Chip700defines.h"
 
 class C700Edit : public AEffGUIEditor, CControlListener
 {
@@ -29,6 +31,8 @@ public:
 	
 	void			SetEventListener(AUEventListenerRef	parameterListener);
 	void			SetParameterInfo(long index, float minValue, float maxValue, float defaultValue );
+	void			SetProgramName( const char *pgname );
+	void			SetBRRData( const BRRData *brr );
 	
 	virtual bool	getRect(ERect **);
 	virtual bool	open(void *ptr);

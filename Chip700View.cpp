@@ -48,7 +48,8 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		HIViewKind	outKind;
 		HIViewGetKind(viewIte, &outKind);
 		CFStringRef	ctitle = HIViewCopyText(viewIte);
-		const char	*title = CFStringGetCStringPtr( ctitle, kCFStringEncodingMacRoman );
+		char		title[256];
+		CFStringGetCString( ctitle, title, 256, kCFStringEncodingMacRoman );
 		HIViewID	outId;
 		HIViewGetID(viewIte, &outId);
 		UInt32	cmdId;
@@ -69,14 +70,28 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		//IDの変更
 		if ( outId.signature == 'user' )
 		{
-			outId.id += kAudioUnitCustomProperty_First;
+			if ( outKind.kind == 'larr' ) {
+				outId.id = cntlcmdId++;
+			}
+			else {
+				outId.id += kAudioUnitCustomProperty_First;
+			}
 		}
 		if ( outId.signature != 'user' && outId.signature != 'AUid' )
 		{
-			if ( (outKind.kind == 'stxt' && (strcmp(title, "0 bytes")!=0) && (strcmp(title, "0123456abcde")!=0) ) ||
+			if ( outId.signature == 'trac' )
+			{
+				outId.id += kAudioUnitCustomProperty_First;
+			}
+			else if ( (outKind.kind == 'stxt' && (strcmp(title, "0 bytes")!=0) && (strcmp(title, "0123456abcde")!=0) ) ||
 				outKind.kind == 'sepa' )
 			{
 				outId.id = -1;
+			}
+			else if ( strcmp(title, "0 bytes") == 0 ) {
+				outId.id = kAudioUnitCustomProperty_TotalRAM;
+				outKind.signature = 'airy';
+				outKind.kind = 'dtxt';
 			}
 			else
 			{
@@ -91,8 +106,9 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		//Fontの設定
 		if ( strcmp(title, "0 bytes") == 0 )
 		{
-			strcpy(fontname, "Helvetica Bold");
-			fontsize = 11;
+			//strcpy(fontname, "Helvetica Bold");
+			strcpy(title, "Monaco 10 180 248 255 0 2 1 bytes");
+			//fontsize = 11;
 			strcpy(fontalign, "kRightText");
 		}
 		if ( strcmp(title, "0123456abcde") == 0 )
@@ -794,13 +810,13 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_LoopPoint,
 								 kAudioUnitScope_Global,0,&intValue,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_First+1000;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue/9*16);
 			}
 			setLoopoint(intValue);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First+1000;
+			id.id=inPropertyID-kAudioUnitCustomProperty_First;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				CFStringRef	cfstr=CFStringCreateWithFormat(NULL,NULL,CFSTR("%d"),intValue/9*16);
@@ -897,12 +913,12 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 		case kAudioUnitCustomProperty_EditingProgram:
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
-			id.id = inPropertyID-kAudioUnitCustomProperty_First;
+			id.id = inPropertyID-kAudioUnitCustomProperty_First+1000;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue);
 			}
-			id.id=inPropertyID-kAudioUnitCustomProperty_First+1000;
+			id.id=inPropertyID-kAudioUnitCustomProperty_First;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				CFStringRef	cfstr=CFStringCreateWithFormat(NULL,NULL,CFSTR("%d"),intValue);

@@ -854,7 +854,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70004,	//id
+		64041,	//id
 		'traF',	//command
 		360, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -871,7 +871,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70005,	//id
+		64040,	//id
 		'traE',	//command
 		340, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -888,7 +888,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70006,	//id
+		64039,	//id
 		'traD',	//command
 		320, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -905,7 +905,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70007,	//id
+		64038,	//id
 		'traC',	//command
 		300, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -922,7 +922,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70008,	//id
+		64037,	//id
 		'traB',	//command
 		280, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -939,7 +939,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70009,	//id
+		64036,	//id
 		'traA',	//command
 		260, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -956,7 +956,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70010,	//id
+		64035,	//id
 		'tra9',	//command
 		240, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -973,7 +973,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70011,	//id
+		64034,	//id
 		'tra8',	//command
 		220, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -990,7 +990,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70012,	//id
+		64033,	//id
 		'tra7',	//command
 		200, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -1007,7 +1007,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70013,	//id
+		64032,	//id
 		'tra6',	//command
 		180, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -1024,7 +1024,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70014,	//id
+		64031,	//id
 		'tra5',	//command
 		160, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -1041,7 +1041,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70015,	//id
+		64030,	//id
 		'tra4',	//command
 		140, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -1058,7 +1058,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70016,	//id
+		64029,	//id
 		'tra3',	//command
 		120, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -1075,7 +1075,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70017,	//id
+		64028,	//id
 		'tra2',	//command
 		100, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -1092,7 +1092,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70018,	//id
+		64027,	//id
 		'tra1',	//command
 		80, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -1109,7 +1109,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'trac',	//sig
-		70019,	//id
+		64026,	//id
 		'tra0',	//command
 		60, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -1119,18 +1119,18 @@ ControlInstances	sCntl[] = {
 		0	//future use
 	},
 	{
-		'appl',	//sig
-		'stxt',	//kind
-		"0 bytes",	//title
+		'airy',	//sig
+		'dtxt',	//kind
+		"Monaco 10 180 248 255 0 2 1 bytes",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		'text',	//sig
-		70020,	//id
+		64023,	//id
 		0,	//command
-		444, 392, 84, 14,	//x,y,w,h
-		"Helvetica Bold",	//fontname
-		11,	//fontsize
+		452, 392, 84, 14,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
 		kRightText,	//fontalign
 		0,	//style
 		0	//future use
@@ -1160,7 +1160,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		0,	//Maximum
 		'text',	//sig
-		70021,	//id
+		70004,	//id
 		0,	//command
 		132, 390, 159, 11,	//x,y,w,h
 		"Monaco",	//fontname
@@ -1177,7 +1177,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		70022,	//id
+		70005,	//id
 		'copy',	//command
 		298, 389, 33, 14,	//x,y,w,h
 		"",	//fontname
@@ -1636,7 +1636,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		70023,	//id
+		70006,	//id
 		'emph',	//command
 		321, 248, 67, 12,	//x,y,w,h
 		"",	//fontname
@@ -1653,7 +1653,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		70024,	//id
+		70007,	//id
 		'unlo',	//command
 		116, 248, 41, 14,	//x,y,w,h
 		"",	//fontname
@@ -1670,7 +1670,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		70025,	//id
+		70008,	//id
 		'load',	//command
 		273, 248, 40, 14,	//x,y,w,h
 		"",	//fontname
@@ -1687,7 +1687,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		70026,	//id
+		70009,	//id
 		'save',	//command
 		165, 248, 40, 14,	//x,y,w,h
 		"",	//fontname
@@ -1704,7 +1704,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		70027,	//id
+		70010,	//id
 		'sav2',	//command
 		213, 248, 52, 14,	//x,y,w,h
 		"",	//fontname
@@ -1721,7 +1721,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		70028,	//id
+		70011,	//id
 		'drat',	//command
 		81, 224, 29, 14,	//x,y,w,h
 		"",	//fontname
@@ -1738,7 +1738,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		70029,	//id
+		70012,	//id
 		'dkey',	//command
 		81, 153, 29, 14,	//x,y,w,h
 		"",	//fontname
@@ -1806,7 +1806,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		127,	//Maximum
 		'user',	//sig
-		65016,	//id
+		64016,	//id
 		0,	//command
 		114, 90, 23, 14,	//x,y,w,h
 		"",	//fontname
@@ -1823,7 +1823,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'user',	//sig
-		65006,	//id
+		64006,	//id
 		0,	//command
 		12, 186, 46, 14,	//x,y,w,h
 		"",	//fontname
@@ -1891,7 +1891,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		10000000,	//Maximum
 		'user',	//sig
-		64006,	//id
+		70013,	//id
 		0,	//command
 		59, 184, 13, 19,	//x,y,w,h
 		"",	//fontname
@@ -1908,7 +1908,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		127,	//Maximum
 		'user',	//sig
-		64016,	//id
+		70014,	//id
 		0,	//command
 		137, 87, 13, 19,	//x,y,w,h
 		"",	//fontname
@@ -2367,7 +2367,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70030,	//id
+		70015,	//id
 		0,	//command
 		360, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2384,7 +2384,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70031,	//id
+		70016,	//id
 		0,	//command
 		340, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2401,7 +2401,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70032,	//id
+		70017,	//id
 		0,	//command
 		320, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2418,7 +2418,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70033,	//id
+		70018,	//id
 		0,	//command
 		300, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2435,7 +2435,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70034,	//id
+		70019,	//id
 		0,	//command
 		280, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2452,7 +2452,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70035,	//id
+		70020,	//id
 		0,	//command
 		260, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2469,7 +2469,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70036,	//id
+		70021,	//id
 		0,	//command
 		240, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2486,7 +2486,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70037,	//id
+		70022,	//id
 		0,	//command
 		220, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2503,7 +2503,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70038,	//id
+		70023,	//id
 		0,	//command
 		200, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2520,7 +2520,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70039,	//id
+		70024,	//id
 		0,	//command
 		180, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2537,7 +2537,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70040,	//id
+		70025,	//id
 		0,	//command
 		160, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2554,7 +2554,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70041,	//id
+		70026,	//id
 		0,	//command
 		140, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2571,7 +2571,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70042,	//id
+		70027,	//id
 		0,	//command
 		120, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2588,7 +2588,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70043,	//id
+		70028,	//id
 		0,	//command
 		100, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2605,7 +2605,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70044,	//id
+		70029,	//id
 		0,	//command
 		80, 13, 20, 20,	//x,y,w,h
 		"",	//fontname
@@ -2622,7 +2622,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'tsel',	//sig
-		70045,	//id
+		70030,	//id
 		0,	//command
 		60, 13, 20, 20,	//x,y,w,h
 		"",	//fontname

@@ -21,6 +21,8 @@
 static CFontDesc g_LabelFont("Helvetica Bold", 9);
 CFontRef kLabelFont = &g_LabelFont;
 
+static void stringConvertForBytes(float value, char *string);
+
 //-----------------------------------------------------------------------------
 CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame )
 {
@@ -85,16 +87,14 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					char fontName[100], unitStr[100];
 					float fontSize, fontRColour, fontGColour, fontBColour, horizBorder, vertBorder, valueMultipler;
 					sscanf(desc->title, "%s %f %f %f %f %f %f %f %s", fontName, &fontSize, &fontRColour, &fontGColour, &fontBColour, &horizBorder, &vertBorder, &valueMultipler, unitStr);
-					if (valueMultipler == 0)
-					{
-						valueMultipler=1;
-					}
+					
 					CFontRef	fontDesc = new CFontDesc(fontName, fontSize);
 					CMyParamDisplay	*paramdisp;
 					paramdisp = new CMyParamDisplay(size, desc->id, valueMultipler, unitStr, 0, 0);
 					paramdisp->setFont(fontDesc);
 					paramdisp->setFontColor(MakeCColor(fontRColour, fontGColour, fontBColour, 255));
 					paramdisp->setAntialias(true);
+
 					fontDesc->forget();
 					cntl = paramdisp;
 					break;
@@ -225,6 +225,8 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					CRockerSwitch *rockerSwitch;
 					rockerSwitch = new CRockerSwitch(size, this, desc->id, rocker->getHeight() / 3, rocker, CPoint(0, 0), kVertical);
 					cntl = rockerSwitch;
+					minimum = -1;
+					maximum = 1; 
 					break;
 				}
 				case 'sepa':
@@ -255,9 +257,16 @@ setupCntl:
 		cntl->setMin(minimum);
 		cntl->setMax(maximum);
 		cntl->setValue(value);
-		cntl->setAttribute(kCViewTooltipAttribute,strlen(desc->title)+1,desc->title);
+		//cntl->setAttribute(kCViewTooltipAttribute,strlen(desc->title)+1,desc->title);
 	}
 	return cntl;
+}
+
+//-----------------------------------------------------------------------------
+static void stringConvertForBytes(float value, char *string)
+{
+	int intValue = value;
+	sprintf(string, "%d bytes", intValue);
 }
 
 //-----------------------------------------------------------------------------

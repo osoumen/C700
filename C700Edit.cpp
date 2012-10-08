@@ -141,6 +141,16 @@ void C700Edit::setParameter(long index, float value)
 }
 
 //-----------------------------------------------------------------------------
+void C700Edit::SetProgramName( const char *pgname )
+{
+}
+
+//-----------------------------------------------------------------------------
+void C700Edit::SetBRRData( const BRRData *brr )
+{
+}
+
+//-----------------------------------------------------------------------------
 void C700Edit::valueChanged(CControl *pControl)
 {
 }

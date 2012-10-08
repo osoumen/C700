@@ -48,7 +48,7 @@ void *						inObject,
 const AudioUnitEvent *		inEvent,
 UInt64						inEventHostTime,
 AudioUnitParameterValue		inParameterValue
-							)
+)
 {
 	C700Edit *editor = (C700Edit *)inCallbackRefCon;
 	if ( inEvent->mEventType == kAudioUnitEvent_ParameterValueChange ) {
@@ -60,11 +60,8 @@ AudioUnitParameterValue		inParameterValue
 		char		outDataPtr[8];
 		UInt32		outDataSize=8;
 		
-		ComponentResult result = 
 		AudioUnitGetProperty((AudioUnit)editor->getEffect(), propertyId,
 							 kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
-		//NSLog(@"result = %d\n",result);
-		//NSLog(@"outDataSize = %d\n",outDataSize);
 		
 		switch (propertyId) {
 			case kAudioUnitCustomProperty_BaseKey:
@@ -80,7 +77,7 @@ AudioUnitParameterValue		inParameterValue
 			case kAudioUnitCustomProperty_EditingChannel:
 			case kAudioUnitCustomProperty_LoopPoint:
 			case kAudioUnitCustomProperty_Bank:
-//			case kAudioUnitCustomProperty_TotalRAM:
+			case kAudioUnitCustomProperty_TotalRAM:
 				value = *((int*)outDataPtr);
 				break;
 				
@@ -137,10 +134,23 @@ AudioUnitParameterValue		inParameterValue
 				value = *((UInt32*)outDataPtr);
 				break;
 
-//			case kAudioUnitCustomProperty_BRRData:
+			case kAudioUnitCustomProperty_BRRData:
+			{
+				BRRData		*brrdata = (BRRData*)outDataPtr;
+				editor->SetBRRData( brrdata );
+				outDataSize = 0;
+				break;
+			}
+			case kAudioUnitCustomProperty_ProgramName:
+			{
+				CFStringRef		cfpgname = *((CFStringRef*)outDataPtr);
+				const char		*pgname = CFStringGetCStringPtr(cfpgname, kCFStringEncodingUTF8);
+				editor->SetProgramName( pgname );
+				outDataSize = 0;
+				break;
+			}
 //			case kAudioUnitCustomProperty_PGDictionary:
 //			case kAudioUnitCustomProperty_XIData:
-//			case kAudioUnitCustomProperty_ProgramName:
 //			case kAudioUnitCustomProperty_SourceFileRef:
 				
 			default:

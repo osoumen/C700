@@ -15,6 +15,10 @@ CMyParamDisplay::CMyParamDisplay(const CRect& size, long tag, float valueMultipl
 , mValueMultipler(valueMultipler)
 {
 	setTag(tag);
+	if (valueMultipler == 0)
+	{
+		mValueMultipler = 1;
+	}
 	if ( unitStr && unitStr[0] != '0')
 	{
 		strncpy(mUnitStr, unitStr, UNITSTR_LEN-1);
