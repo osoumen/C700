@@ -8,10 +8,10 @@ static CFStringRef kParam_poly_Name = CFSTR("Voices");
 static const float kDefaultValue_poly = 8;
 
 static CFStringRef kParameter_mainvol_L_Name = CFSTR("MainVol(L)");
-static const float kDefaultValue_mainvol_L = 127;
+static const float kDefaultValue_mainvol_L = 64;
 
 static CFStringRef kParameter_mainvol_R_Name = CFSTR("MainVol(R)");
-static const float kDefaultValue_mainvol_R = 127;
+static const float kDefaultValue_mainvol_R = 64;
 
 static CFStringRef kParam_vibdepth_Name = CFSTR("Vibrato Depth");
 static const float kDefaultValue_vibdepth = 0;
