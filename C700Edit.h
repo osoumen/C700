@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include <AudioToolbox/AudioToolbox.h>
-
 #if AU
 #include "plugguieditor.h"
 #else
@@ -22,6 +20,7 @@
 #include "vstgui.h"
 #include "C700GUI.h"
 #include "Chip700defines.h"
+#include "EfxAccess.h"
 
 class C700Edit : public AEffGUIEditor, CControlListener
 {
@@ -29,10 +28,14 @@ public:
 					C700Edit( void *pEffect );
 	virtual			~C700Edit();
 	
-	void			SetEventListener(AUEventListenerRef	parameterListener);
+	void			SetEfxAccess(EfxAccess* efxacc);
 	void			SetParameterInfo(long index, float minValue, float maxValue, float defaultValue );
+	void			SetLoopPoint( int lp );
 	void			SetProgramName( const char *pgname );
 	void			SetBRRData( const BRRData *brr );
+	void			UpdateXMSNESText();
+	void			SetTrackSelectorValue( int track );
+	void			SetBankSelectorValue( int bank );
 	
 	virtual bool	getRect(ERect **);
 	virtual bool	open(void *ptr);
@@ -47,5 +50,5 @@ private:
 	C700GUI				*m_pUIView;
 	CTooltipSupport		*m_pTooltipSupport;
 	
-	AUEventListenerRef	mEventListener;
+	EfxAccess			*efxAcc;
 };

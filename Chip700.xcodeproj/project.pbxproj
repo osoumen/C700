@@ -305,6 +305,8 @@
 		F569AD18161D3277006C91AD /* rocker_sw.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AD17161D3277006C91AD /* rocker_sw.png */; };
 		F569AD36161D3490006C91AD /* WaveView.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AD34161D3490006C91AD /* WaveView.h */; };
 		F569AD37161D3490006C91AD /* WaveView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AD35161D3490006C91AD /* WaveView.cpp */; };
+		F569BEC21622B5F8006C91AD /* EfxAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569BEC01622B5F8006C91AD /* EfxAccess.h */; };
+		F569BEC31622B5F8006C91AD /* EfxAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569BEC11622B5F8006C91AD /* EfxAccess.cpp */; };
 		F56AAB01158DCB6000864DD4 /* bt_velocitysens2.png in Resources */ = {isa = PBXBuildFile; fileRef = F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */; };
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
@@ -670,6 +672,8 @@
 		F569AD17161D3277006C91AD /* rocker_sw.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rocker_sw.png; path = graphics/rocker_sw.png; sourceTree = "<group>"; };
 		F569AD34161D3490006C91AD /* WaveView.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = WaveView.h; sourceTree = "<group>"; };
 		F569AD35161D3490006C91AD /* WaveView.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = WaveView.cpp; sourceTree = "<group>"; };
+		F569BEC01622B5F8006C91AD /* EfxAccess.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = EfxAccess.h; sourceTree = "<group>"; };
+		F569BEC11622B5F8006C91AD /* EfxAccess.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = EfxAccess.cpp; sourceTree = "<group>"; };
 		F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_velocitysens2.png; sourceTree = "<group>"; };
 		F56D351F156A0EA000038960 /* encodetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = encodetest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
@@ -1231,6 +1235,8 @@
 			isa = PBXGroup;
 			children = (
 				F55D6447161D7A94001CF9AB /* ControlInstances.h */,
+				F569BEC01622B5F8006C91AD /* EfxAccess.h */,
+				F569BEC11622B5F8006C91AD /* EfxAccess.cpp */,
 				F569A40316195488006C91AD /* C700Edit.h */,
 				F569A40416195488006C91AD /* C700Edit.cpp */,
 				F569A484161964FD006C91AD /* C700GUI.h */,
@@ -1409,6 +1415,7 @@
 				F55D65BE161EC9D0001CF9AB /* SeparatorLine.h in Headers */,
 				F55D6602161ECFD1001CF9AB /* MyParamDisplay.h in Headers */,
 				F55D6608161ECFE3001CF9AB /* MyTextEdit.h in Headers */,
+				F569BEC21622B5F8006C91AD /* EfxAccess.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1721,6 +1728,7 @@
 				F55D65BF161EC9D0001CF9AB /* SeparatorLine.cpp in Sources */,
 				F55D6603161ECFD1001CF9AB /* MyParamDisplay.cpp in Sources */,
 				F55D6609161ECFE3001CF9AB /* MyTextEdit.cpp in Sources */,
+				F569BEC31622B5F8006C91AD /* EfxAccess.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

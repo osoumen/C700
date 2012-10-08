@@ -142,15 +142,15 @@ void CWaveView::draw(CDrawContext *pContext)
 }
 
 //------------------------------------------------------------------------
-void CWaveView::setWave(float *wavedata, long frames)
+void CWaveView::setWave(short *wavedata, long frames)
 {
 	CRect	r(0, 0, m_pDrawBuffer->getWidth(), m_pDrawBuffer->getHeight());
 	m_pDrawBuffer->setFrameColor(kBlackCColor);
 	m_pDrawBuffer->setFillColor(backColor);
 	m_pDrawBuffer->drawRect(r, kDrawFilledAndStroked);
 	
-	float	*dataptr=wavedata;
-	float	*dataend=wavedata+frames;
+	short	*dataptr=wavedata;
+	short	*dataend=wavedata+frames;
 	float	pixelPerFrame=(float)m_pDrawBuffer->getWidth()/(float)frames;
 	
 	//dataptr++;
@@ -163,14 +163,14 @@ void CWaveView::setWave(float *wavedata, long frames)
 	float	xLoc=1.0f;
 	float	max=.0f,min=.0f;
 	while (dataptr < dataend) {
-		float	temp = *dataptr * center;
-		if (max==.0f) max=temp;
-		if (min==.0f) min=temp;
+		float	temp = (*dataptr / 32768.0f) * center;
+		if (max==.0f) max = temp;
+		if (min==.0f) min = temp;
 		if (temp > max) max = temp;
 		if (temp < min) min = temp;
-		if (xLoc > 1.0f) {
-			double	xadd;
-			xLoc = modf(xLoc, &xadd);
+		if (xLoc >= 1.0f) {
+			float	xadd;
+			xLoc = modff(xLoc, &xadd);
 			y = center - min + 2;	//外枠１ドット分余白のため
 			p.x = x;
 			p.y = y;
@@ -184,7 +184,7 @@ void CWaveView::setWave(float *wavedata, long frames)
 			}
 				
 			if (max != min) {
-				y = center-max;
+				p.y = center-max + 2;
 				m_pDrawBuffer->lineTo(p);
 			}
 			max=0.0f;
@@ -203,9 +203,14 @@ void CWaveView::setWave(float *wavedata, long frames)
 			m_pDrawBuffer->lineTo(p);
 		}
 	}
-	isWaveLoaded = true;
 	converting = false;
 	datanum = frames;
+	if ( frames > 0 ) {
+		isWaveLoaded = true;
+	}
+	else {
+		isWaveLoaded = false;
+	}
 	
 	setDirty();
 }

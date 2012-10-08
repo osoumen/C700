@@ -7,8 +7,6 @@
  *
  */
 
-#include <AudioUnit/AUComponent.h>
-#import <AudioToolbox/AudioToolbox.h>
 #include "C700GUI.h"
 #include "ControlInstances.h"
 
@@ -191,6 +189,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					textLabel->setHoriAlign(desc->fontalign);
 					textLabel->setTransparency(true);
 					textLabel->setAntialias(true);
+					textLabel->setTag(desc->id);
 					
 					CFontRef	fontDesc;
 					int			fontsize = 9;
@@ -265,7 +264,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 : CViewContainer (inSize, frame, pBackground)
 , mNumCntls( 0 )
 , mCntl(NULL)
-, mEventListener(NULL)
+, efxAcc(NULL)
 {
 	//共通グラフィックの読み込み
 	bgKnob = new CBitmap("knobBack.png");
@@ -363,12 +362,14 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	size.offset(64, 128);
 	cWaveView = new CWaveView(size, frame, this, 606);
 	{
-		float	testWave[128];
-		for ( int i=0; i<128; i++ )
+		short	testWave[1024];
+		float	freq = 1.0f;
+		for ( int i=0; i<1024; i++ )
 		{
-			testWave[i] = sin( 3.14*2*4 * i / 128 );
-			cWaveView->setWave(testWave, 128);
+			testWave[i] = sin( 3.14*2*freq * i / 1024 )*32767;
+			cWaveView->setWave(testWave, 1024);
 			cWaveView->setLooppoint(96);
+			freq += 0.03f;
 		}
 	}
 	addView(cWaveView);
@@ -425,155 +426,48 @@ void C700GUI::valueChanged(CControl* control)
 	//0-2の値域に拡張する
 	if ( tag == kParam_velocity )
 	{
-	//	value *= 2;
+		value *= 2;
 	}
 #endif
 	if ( tag < kAudioUnitCustomProperty_First )
 	{
-		EfxSetParam( tag%1000, value );
+		efxAcc->SetParam( this, tag%1000, value );
 	}
 	else if ( tag < kControlCommandsFirst ) {
-		EfxSetProperty( (tag-kAudioUnitCustomProperty_First)%1000, value );
+		efxAcc->SetProperty( ((tag-kAudioUnitCustomProperty_First)%1000)+kAudioUnitCustomProperty_First, value );
 	}
-}
-
-//-----------------------------------------------------------------------------
-void C700GUI::EfxSetParam( int index, float value )
-{
-	AEffGUIEditor	*editor = (AEffGUIEditor *)getEditor();
-#if AU
-	AudioUnit	au = (AudioUnit)editor->getEffect();
-	AudioUnitParameter parameter = { au, index, kAudioUnitScope_Global, 0 };
-	AUParameterSet(	mEventListener, this, &parameter, value, 0);
-	//AUParameterListenerNotify( mEventListener, this, &parameter );
-#endif
-}
-
-//-----------------------------------------------------------------------------
-void C700GUI::EfxSetProperty( int index, float value )
-{
-	AEffGUIEditor	*editor = (AEffGUIEditor *)getEditor();
-#if AU
-	AudioUnit	au = (AudioUnit)editor->getEffect();
-	int			propertyID = index + kAudioUnitCustomProperty_First;
-	
-	double		doubleData = value;
-	float		floatData = value;
-	int			intData = value;
-	bool		boolData = value>0.5f?true:false;
-	void*		outDataPtr = NULL;
-	UInt32		outDataSize = 0;
-	
-	switch (propertyID) {
-		case kAudioUnitCustomProperty_BaseKey:
-		case kAudioUnitCustomProperty_LowKey:
-		case kAudioUnitCustomProperty_HighKey:
-		case kAudioUnitCustomProperty_AR:
-		case kAudioUnitCustomProperty_DR:
-		case kAudioUnitCustomProperty_SL:
-		case kAudioUnitCustomProperty_SR:
-		case kAudioUnitCustomProperty_VolL:
-		case kAudioUnitCustomProperty_VolR:
-		case kAudioUnitCustomProperty_EditingProgram:
-		case kAudioUnitCustomProperty_EditingChannel:
-		case kAudioUnitCustomProperty_LoopPoint:
-		case kAudioUnitCustomProperty_Bank:
-			outDataSize	= sizeof(int);
-			outDataPtr	= (void*)&intData;
-			break;
-			
-		case kAudioUnitCustomProperty_Rate:
-			outDataSize = sizeof(double);
-			outDataPtr = (void*)&doubleData;
-			break;
-			
-		case kAudioUnitCustomProperty_Loop:
-		case kAudioUnitCustomProperty_Echo:
-			outDataSize = sizeof(bool);
-			outDataPtr = (void*)&boolData;
-			break;
-			
-		case kAudioUnitCustomProperty_BRRData:
-			//別関数で処理
-			break;
-			
-		case kAudioUnitCustomProperty_PGDictionary:
-			//別関数で処理
-			break;
-			
-		case kAudioUnitCustomProperty_XIData:
-			//read only
-			break;
-			
-		case kAudioUnitCustomProperty_ProgramName:
-			//別関数で処理
-			break;
-			
-		case kAudioUnitCustomProperty_TotalRAM:
-			//read only
-			break;
-			
-		case kAudioUnitCustomProperty_Band1:
-		case kAudioUnitCustomProperty_Band2:
-		case kAudioUnitCustomProperty_Band3:
-		case kAudioUnitCustomProperty_Band4:
-		case kAudioUnitCustomProperty_Band5:
-			outDataSize = sizeof(Float32);
-			outDataPtr = (void*)&floatData;
-			break;
-			
-		case kAudioUnitCustomProperty_NoteOnTrack_1:
-		case kAudioUnitCustomProperty_NoteOnTrack_2:
-		case kAudioUnitCustomProperty_NoteOnTrack_3:
-		case kAudioUnitCustomProperty_NoteOnTrack_4:
-		case kAudioUnitCustomProperty_NoteOnTrack_5:	
-		case kAudioUnitCustomProperty_NoteOnTrack_6:
-		case kAudioUnitCustomProperty_NoteOnTrack_7:
-		case kAudioUnitCustomProperty_NoteOnTrack_8:
-		case kAudioUnitCustomProperty_NoteOnTrack_9:
-		case kAudioUnitCustomProperty_NoteOnTrack_10:
-		case kAudioUnitCustomProperty_NoteOnTrack_11:
-		case kAudioUnitCustomProperty_NoteOnTrack_12:
-		case kAudioUnitCustomProperty_NoteOnTrack_13:
-		case kAudioUnitCustomProperty_NoteOnTrack_14:
-		case kAudioUnitCustomProperty_NoteOnTrack_15:
-		case kAudioUnitCustomProperty_NoteOnTrack_16:
-		case kAudioUnitCustomProperty_MaxNoteTrack_1:
-		case kAudioUnitCustomProperty_MaxNoteTrack_2:
-		case kAudioUnitCustomProperty_MaxNoteTrack_3:
-		case kAudioUnitCustomProperty_MaxNoteTrack_4:
-		case kAudioUnitCustomProperty_MaxNoteTrack_5:
-		case kAudioUnitCustomProperty_MaxNoteTrack_6:
-		case kAudioUnitCustomProperty_MaxNoteTrack_7:
-		case kAudioUnitCustomProperty_MaxNoteTrack_8:
-		case kAudioUnitCustomProperty_MaxNoteTrack_9:
-		case kAudioUnitCustomProperty_MaxNoteTrack_10:
-		case kAudioUnitCustomProperty_MaxNoteTrack_11:
-		case kAudioUnitCustomProperty_MaxNoteTrack_12:
-		case kAudioUnitCustomProperty_MaxNoteTrack_13:
-		case kAudioUnitCustomProperty_MaxNoteTrack_14:
-		case kAudioUnitCustomProperty_MaxNoteTrack_15:
-		case kAudioUnitCustomProperty_MaxNoteTrack_16:
-			//read only
-			break;
-			
-		case kAudioUnitCustomProperty_SourceFileRef:
-			//別関数で処理
-			break;
-			
-		case kAudioUnitCustomProperty_IsEmaphasized:
-			//別関数で処理
-			break;
-			
-		default:
-			outDataPtr = NULL;
-			outDataSize = 0;
+	else {
+		switch (tag) {
+			case kControlSelectTrack16:
+			case kControlSelectTrack15:
+			case kControlSelectTrack14:
+			case kControlSelectTrack13:
+			case kControlSelectTrack12:
+			case kControlSelectTrack11:
+			case kControlSelectTrack10:
+			case kControlSelectTrack9:
+			case kControlSelectTrack8:
+			case kControlSelectTrack7:
+			case kControlSelectTrack6:
+			case kControlSelectTrack5:
+			case kControlSelectTrack4:
+			case kControlSelectTrack3:
+			case kControlSelectTrack2:
+			case kControlSelectTrack1:
+				efxAcc->SetProperty( kAudioUnitCustomProperty_EditingChannel, 15-(tag-kControlSelectTrack16) );
+				break;
+				
+			case kControlBankDBtn:
+			case kControlBankCBtn:
+			case kControlBankBBtn:
+			case kControlBankABtn:
+				efxAcc->SetProperty( kAudioUnitCustomProperty_Bank, 3-(tag-kControlBankDBtn) );
+				break;
+				
+			default:
+				break;
+		}
 	}
-	
-	if ( outDataPtr ) {
-		AudioUnitSetProperty(au, propertyID, kAudioUnitScope_Global, 0, outDataPtr, outDataSize);
-	}
-#endif
 }
 
 //-----------------------------------------------------------------------------

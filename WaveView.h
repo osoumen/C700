@@ -23,7 +23,7 @@ public:
 	virtual void onDragMove (CDragContainer* drag, const CPoint& where);
 	
 	void draw(CDrawContext *pContext);
-	void setWave(float *wavedata, long frames);
+	void setWave(short *wavedata, long frames);
 	void setBackColor(CColor color);
 	void setLineColor(CColor color);
 	bool isActive(void) {return isWaveLoaded;}

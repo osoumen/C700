@@ -160,7 +160,31 @@ enum
 // control commands
 enum 
 {
-	kControlCommandsFirst = 70000
+	kControlCommandsFirst = 70000,
+	
+	kControlBankDBtn = 70000,
+	kControlBankCBtn,
+	kControlBankBBtn,
+	kControlBankABtn,
+	
+	kControlXMSNESText = 70004,
+	
+	kControlSelectTrack16 = 70015,
+	kControlSelectTrack15,
+	kControlSelectTrack14,
+	kControlSelectTrack13,
+	kControlSelectTrack12,
+	kControlSelectTrack11,
+	kControlSelectTrack10,
+	kControlSelectTrack9,
+	kControlSelectTrack8,
+	kControlSelectTrack7,
+	kControlSelectTrack6,
+	kControlSelectTrack5,
+	kControlSelectTrack4,
+	kControlSelectTrack3,
+	kControlSelectTrack2,
+	kControlSelectTrack1
 };
 
 static const float kMinimumValue_n128 = -128;

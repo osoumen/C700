@@ -17,6 +17,7 @@
 #endif
 
 #include "C700Edit.h"
+#include "EfxAccess.h"
 
 @interface C700_CocoaViewFactory :NSObject <AUCocoaUIBase>
 {
@@ -32,6 +33,8 @@
 	NSTimer			*timer;
 	AudioUnit 		mAU;
 	AUEventListenerRef	mEventListener;
+	
+	EfxAccess		*efxAcc;
 }
 
 - (C700_CocoaView *)initWithFrame:(NSRect)frameRect audioUnit:(AudioUnit)inAU;

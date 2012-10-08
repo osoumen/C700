@@ -80,9 +80,6 @@ AudioUnitParameterValue		inParameterValue
 			case kAudioUnitCustomProperty_VolL:
 			case kAudioUnitCustomProperty_VolR:
 			case kAudioUnitCustomProperty_EditingProgram:
-			case kAudioUnitCustomProperty_EditingChannel:
-			case kAudioUnitCustomProperty_LoopPoint:
-			case kAudioUnitCustomProperty_Bank:
 			case kAudioUnitCustomProperty_TotalRAM:
 				value = *((int*)outDataPtr);
 				break;
@@ -103,6 +100,9 @@ AudioUnitParameterValue		inParameterValue
 			case kAudioUnitCustomProperty_Band4:
 			case kAudioUnitCustomProperty_Band5:
 				value = *((Float32*)outDataPtr);
+				editor->setParameter( propertyId, value );
+				editor->UpdateXMSNESText();
+				outDataSize = 0;
 				break;
 				
 			case kAudioUnitCustomProperty_NoteOnTrack_1:
@@ -140,10 +140,32 @@ AudioUnitParameterValue		inParameterValue
 				value = *((UInt32*)outDataPtr);
 				break;
 
+			case kAudioUnitCustomProperty_EditingChannel:
+			{
+				value = *((int*)outDataPtr);
+				editor->SetTrackSelectorValue(value);
+				outDataSize = 0;
+				break;
+			}
+			case kAudioUnitCustomProperty_Bank:
+			{
+				value = *((int*)outDataPtr);
+				editor->SetBankSelectorValue(value);
+				outDataSize = 0;
+				break;
+			}
 			case kAudioUnitCustomProperty_BRRData:
 			{
 				BRRData		*brrdata = (BRRData*)outDataPtr;
 				editor->SetBRRData( brrdata );
+				outDataSize = 0;
+				break;
+			}
+			case kAudioUnitCustomProperty_LoopPoint:
+			{
+				value = *((int*)outDataPtr);
+				editor->setParameter( propertyId, value );
+				editor->SetLoopPoint( value );
 				outDataSize = 0;
 				break;
 			}
@@ -200,7 +222,6 @@ AudioUnitParameterValue		inParameterValue
 	
 	//パラメーターリスナーの登録
 	[self _addListeners];
-	editor->SetEventListener(mEventListener);
 	
 	//設定値の反映
 	[self _synchronizeUIWithParameterValues];
@@ -224,6 +245,11 @@ AudioUnitParameterValue		inParameterValue
 				  @"[CocoaView _addListeners] AUListenerAddParameter()");
     }
 	
+	//エフェクターアクセッサの作成
+	efxAcc = new EfxAccess( mAU );
+	efxAcc->SetEventListener(mEventListener);
+	editor->SetEfxAccess(efxAcc);
+	
 	//プロパティリスナーの登録
 	for (int i=0; i<kNumberOfProperties; ++i) {
 		AudioUnitProperty property = { mAU, kAudioUnitCustomProperty_First+i, kAudioUnitScope_Global, 0 };
@@ -234,8 +260,8 @@ AudioUnitParameterValue		inParameterValue
 				  @"[CocoaView _addListeners] AUListenerAddParameter()");
 		
 		//初期値を反映させる
-		EventListenerDispatcher(editor, editor, &event, 0, 0);
 		//AUEventListenerNotify(mEventListener, editor, &event);
+		EventListenerDispatcher(editor, editor, &event, 0, 0);
     }
 }
 
@@ -303,6 +329,8 @@ AudioUnitParameterValue		inParameterValue
 
 - (void)dealloc
 {
+	delete efxAcc;
+	
 	//パラメータリスナーの削除
 	[self _removeListeners];
 	

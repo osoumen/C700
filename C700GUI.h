@@ -9,10 +9,9 @@
 
 #pragma once
 
-#include <AudioToolbox/AudioToolbox.h>
-
 #include "vstgui.h"
 #include "Chip700defines.h"
+#include "EfxAccess.h"
 
 #include "DummyCntl.h"
 #include "MyKnob.h"
@@ -32,9 +31,7 @@ public:
 	~C700GUI();
 	
 	CControl*	FindControlByTag( long tag );
-	void		SetEventListener(AUEventListenerRef	eventListener) { mEventListener = eventListener; }
-	void		EfxSetParam( int index, float value );
-	void		EfxSetProperty( int index, float value );
+	void		SetEfxAccess(EfxAccess* efxacc) { efxAcc = efxacc; }
 	
 	// CViewÇÊÇË
 	virtual void	valueChanged(CControl* control);
@@ -47,7 +44,8 @@ private:
 	
 	int						mNumCntls;
 	CControl				**mCntl;
-	AUEventListenerRef		mEventListener;
+	
+	EfxAccess				*efxAcc;
 	
 	//èâä˙âªéûÇ…ÇÃÇ›égóp
 	CBitmap					*sliderHandleBitmap;
