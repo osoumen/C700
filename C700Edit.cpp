@@ -8,6 +8,7 @@
  */
 
 #include "C700Edit.h"
+#include "brrcodec.h"
 
 //-----------------------------------------------------------------------------
 C700Edit::C700Edit( void *pEffect )
@@ -143,11 +144,68 @@ void C700Edit::setParameter(long index, float value)
 //-----------------------------------------------------------------------------
 void C700Edit::SetProgramName( const char *pgname )
 {
+	CControl	*cntl;
+	cntl = m_pUIView->FindControlByTag(kAudioUnitCustomProperty_ProgramName);
+	if ( cntl ) {
+		if ( cntl->isTypeOf("CMyTextEdit") ) {
+			CMyTextEdit	*textbox = reinterpret_cast<CMyTextEdit*> (cntl);
+			textbox->setText(pgname);
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
 void C700Edit::SetBRRData( const BRRData *brr )
 {
+//	CRect	bounds;
+	long	start;
+	long	viewlength;
+	
+	short	*wavedata;
+	long	numSamples;
+	
+	CWaveView	*overView=NULL;
+	CWaveView	*tailView=NULL;
+	CWaveView	*headView=NULL;
+	CControl	*cntl;
+	cntl = m_pUIView->FindControlByTag(kAudioUnitCustomProperty_BRRData);
+	if ( cntl ) {
+		overView = reinterpret_cast<CWaveView*> (cntl);
+	}
+	cntl = m_pUIView->FindControlByTag(kAudioUnitCustomProperty_BRRData+1000);
+	if ( cntl ) {
+		tailView = reinterpret_cast<CWaveView*> (cntl);
+	}
+	cntl = m_pUIView->FindControlByTag(kAudioUnitCustomProperty_BRRData+2000);
+	if ( cntl ) {
+		headView = reinterpret_cast<CWaveView*> (cntl);
+	}
+	
+	if (brr->data) {
+		numSamples = brr->size/9 * 16;
+		wavedata = new short[numSamples];
+		brrdecode(brr->data, wavedata,0,0);
+		
+		//SetControlData(hiOverView,0,kWaveDataTag,numSamples,wavedata);
+		
+		//HIViewGetBounds(hiTailView,&bounds);
+		start = (numSamples < tailView->getWidth())?0:(numSamples-tailView->getWidth());
+		viewlength = (numSamples < tailView->getWidth())?numSamples:tailView->getWidth();
+		//SetControlData(hiTailView,0,kWaveDataTag,viewlength,wavedata+start);
+		
+		delete[] wavedata;
+		
+		//ループポイントの最大値を設定
+		CControl	*cntl = m_pUIView->FindControlByTag(kAudioUnitCustomProperty_LoopPoint);
+		if ( cntl ) {
+			cntl->setMin(numSamples);
+		}		
+	}
+	else {
+		//SetControlData(hiOverView,0,kWaveDataTag,0,NULL);
+		//SetControlData(hiTailView,0,kWaveDataTag,0,NULL);
+		//SetControlData(hiHeadView,0,kWaveDataTag,0,NULL);
+	}
 }
 
 //-----------------------------------------------------------------------------

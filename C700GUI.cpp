@@ -21,8 +21,6 @@
 static CFontDesc g_LabelFont("Helvetica Bold", 9);
 CFontRef kLabelFont = &g_LabelFont;
 
-static void stringConvertForBytes(float value, char *string);
-
 //-----------------------------------------------------------------------------
 CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame )
 {
@@ -260,13 +258,6 @@ setupCntl:
 		//cntl->setAttribute(kCViewTooltipAttribute,strlen(desc->title)+1,desc->title);
 	}
 	return cntl;
-}
-
-//-----------------------------------------------------------------------------
-static void stringConvertForBytes(float value, char *string)
-{
-	int intValue = value;
-	sprintf(string, "%d bytes", intValue);
 }
 
 //-----------------------------------------------------------------------------

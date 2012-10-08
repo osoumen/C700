@@ -60,8 +60,14 @@ AudioUnitParameterValue		inParameterValue
 		char		outDataPtr[8];
 		UInt32		outDataSize=8;
 		
-		AudioUnitGetProperty((AudioUnit)editor->getEffect(), propertyId,
-							 kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
+		if ( 
+			propertyId != kAudioUnitCustomProperty_PGDictionary &&
+			propertyId != kAudioUnitCustomProperty_XIData &&
+			propertyId != kAudioUnitCustomProperty_SourceFileRef )
+		{
+			AudioUnitGetProperty((AudioUnit)editor->getEffect(), propertyId,
+								 kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
+		}
 		
 		switch (propertyId) {
 			case kAudioUnitCustomProperty_BaseKey:
@@ -144,8 +150,14 @@ AudioUnitParameterValue		inParameterValue
 			case kAudioUnitCustomProperty_ProgramName:
 			{
 				CFStringRef		cfpgname = *((CFStringRef*)outDataPtr);
-				const char		*pgname = CFStringGetCStringPtr(cfpgname, kCFStringEncodingUTF8);
-				editor->SetProgramName( pgname );
+				if ( cfpgname == NULL )
+				{
+					editor->SetProgramName( "" );
+				}
+				else {
+					const char	*pgname = CFStringGetCStringPtr(cfpgname, kCFStringEncodingUTF8);
+					editor->SetProgramName( pgname );
+				}
 				outDataSize = 0;
 				break;
 			}
