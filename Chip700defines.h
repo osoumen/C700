@@ -169,6 +169,15 @@ enum
 	kControlXMSNESText = 70004,
 	
 	kControlButtonCopy = 70005,
+	kControlButtonPreemphasis = 70006,
+	kControlButtonUnload = 70007,
+	kControlButtonLoad = 70008,
+	kControlButtonSave = 70009,
+	kControlButtonSaveXI = 70010,
+	kControlButtonAutoSampleRate = 70011,
+	kControlButtonAutoKey = 70012,
+	kControlButtonChangeLoopPoint = 70013,
+	kControlButtonChangeProgram = 70014,
 	
 	kControlSelectTrack16 = 70015,
 	kControlSelectTrack15,
