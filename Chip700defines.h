@@ -167,7 +167,7 @@ enum
 	kControlBankBBtn,
 	kControlBankABtn,
 	
-	kControlXMSNESText = 70004,
+	kControlXMSNESText			= 70004,
 	
 	kControlButtonCopy			= 70005,
 	kControlButtonPreemphasis	= 70006,

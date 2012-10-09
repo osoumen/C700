@@ -446,21 +446,50 @@ void C700GUI::valueChanged(CControl* control)
 	else {
 		switch (tag) {
 			case kControlButtonCopy:
+				if ( value > 0 ) {
+					copyFIRParamToClipBoard();
+				}
+				break;
+				
 			case kControlButtonPreemphasis:
 				break;
 				
 			case kControlButtonUnload:
-			{
-				BRRData		brr;
-				brr.data=NULL;
-				efxAcc->SetBRRData( &brr );
+				if ( value > 0 ) {
+					BRRData		brr;
+					brr.data=NULL;
+					efxAcc->SetBRRData( &brr );
+				}
 				break;
-			}
+			
 			case kControlButtonLoad:
+				if ( value > 0 ) {
+					loadToCurrentProgram();
+				}
+				break;
+				
 			case kControlButtonSave:
+				if ( value > 0 ) {
+					saveFromCurrentProgram();
+				}
+				break;
+				
 			case kControlButtonSaveXI:
+				if ( value > 0 ) {
+					saveFromCurrentProgramToXI();
+				}
+				break;
+				
 			case kControlButtonAutoSampleRate:
+				if ( value > 0 ) {
+					autocalcCurrentProgramSampleRate();
+				}
+				break;
+				
 			case kControlButtonAutoKey:
+				if ( value > 0 ) {
+					autocalcCurrentProgramBaseKey();
+				}
 				break;
 				
 			case kControlButtonChangeLoopPoint:
@@ -546,4 +575,50 @@ CControl *C700GUI::FindControlByTag( long tag )
 		}
 	}
 	return cntl;
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::copyFIRParamToClipBoard()
+{
+	// FIRパラメータをクリップボードにコピー
+	CTextLabel	*textView = reinterpret_cast<CTextLabel*> (FindControlByTag(kControlXMSNESText));
+	if ( textView == NULL ) return;
+	
+	const char	*text = textView->getText();
+	
+	OSStatus err = noErr;
+	PasteboardRef theClipboard;
+	err = PasteboardCreate( kPasteboardClipboard, &theClipboard );
+	err = PasteboardClear( theClipboard );
+	
+	CFDataRef   data = CFDataCreate( kCFAllocatorDefault, (UInt8*)text, (strlen(text)) * sizeof(char) );
+	err = PasteboardPutItemFlavor( theClipboard, (PasteboardItemID)1, kUTTypeUTF8PlainText, data, 0 );
+	
+	CFRelease(theClipboard);
+	CFRelease( data );
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::loadToCurrentProgram()
+{
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::saveFromCurrentProgram()
+{
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::saveFromCurrentProgramToXI()
+{
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::autocalcCurrentProgramSampleRate()
+{
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::autocalcCurrentProgramBaseKey()
+{
 }

@@ -41,6 +41,12 @@ public:
 	
 private:
 	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
+	void			copyFIRParamToClipBoard();
+	void			loadToCurrentProgram();
+	void			saveFromCurrentProgram();
+	void			saveFromCurrentProgramToXI();
+	void			autocalcCurrentProgramSampleRate();
+	void			autocalcCurrentProgramBaseKey();
 	
 	int						mNumCntls;
 	CControl				**mCntl;
