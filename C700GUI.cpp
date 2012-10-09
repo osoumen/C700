@@ -9,6 +9,8 @@
 
 #include "C700GUI.h"
 #include "ControlInstances.h"
+#include "czt.h"
+#include "brrcodec.h"
 
 #if AU
 #include "plugguieditor.h"
@@ -616,9 +618,68 @@ void C700GUI::saveFromCurrentProgramToXI()
 //-----------------------------------------------------------------------------
 void C700GUI::autocalcCurrentProgramSampleRate()
 {
+	// 波形のサンプリングレートを検出
+	int		looppoint;
+	int		key;
+	double	samplerate;
+	BRRData	brr;
+	short	*buffer;
+	int		pitch, length;
+	
+	int		size = sizeof(BRRData);
+	efxAcc->GetBRRData( &brr, &size );
+	
+	if (brr.data == NULL) return;
+	
+	looppoint = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_LoopPoint);
+	if (looppoint == brr.size) {
+		looppoint = 0;
+	}
+	
+	key = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_BaseKey);
+	
+	buffer = new short[brr.size/9*16];
+	brrdecode(brr.data, buffer, 0, 0);
+	length = (brr.size-looppoint)/9*16;
+	pitch = estimatebasefreq(buffer+looppoint/9*16, length);
+	if (pitch > 0) {
+		samplerate = length/(double)pitch * 440.0*pow(2.0,(key-69.0)/12);
+		efxAcc->SetProperty(kAudioUnitCustomProperty_Rate, samplerate);
+	}
+	delete[] buffer;
 }
 
 //-----------------------------------------------------------------------------
 void C700GUI::autocalcCurrentProgramBaseKey()
 {
+	// 波形の基本ノートを検出
+	int		looppoint;
+	int		key;
+	double	samplerate, freq;
+	BRRData	brr;
+	short	*buffer;
+	int		pitch, length;
+	
+	int		size = sizeof(BRRData);
+	efxAcc->GetBRRData( &brr, &size );
+	
+	if (brr.data == NULL) return;
+	
+	looppoint = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_LoopPoint);
+	if (looppoint == brr.size) {
+		looppoint = 0;
+	}	
+	
+	samplerate = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_Rate);
+	
+	buffer = new short[brr.size/9*16];
+	brrdecode(brr.data, buffer, 0, 0);
+	length = (brr.size-looppoint)/9*16;
+	pitch = estimatebasefreq(buffer+looppoint/9*16, length);
+	if (pitch > 0) {
+		freq = samplerate / (length/(double)pitch);
+		key = log(freq)*17.312-35.874;
+		efxAcc->SetProperty(kAudioUnitCustomProperty_BaseKey, key);
+	}
+	delete[] buffer;
 }
