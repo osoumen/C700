@@ -129,6 +129,11 @@ void C700Edit::setParameter(long index, float value)
 		return;
 	}
 	
+	//brr換算のループポイントを実サンプル単位に変換する
+	if ( index == kAudioUnitCustomProperty_LoopPoint ) {
+		value = (int)value/9*16;
+	}
+	
 	CControl	*cntl;
 	int			tag = index;
 	cntl = m_pUIView->FindControlByTag(tag);

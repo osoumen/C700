@@ -417,9 +417,16 @@ void C700GUI::valueChanged(CControl* control)
 	{
 		CMyTextEdit		*textedit = static_cast<CMyTextEdit*> (control);
 		sscanf(textedit->getText(), "%f", &value);
+		if ( tag == kAudioUnitCustomProperty_LoopPoint ) {
+			value = ((int)value / 16) * 16;
+		}
 		control->setValue(value);
 		control->bounceValue();		//’l‚ð”ÍˆÍ“à‚ÉŠÛ‚ß‚é
 		value = control->getValue();
+		if ( tag == kAudioUnitCustomProperty_LoopPoint ) {
+			value = ((int)value / 16) * 9;
+		}
+		
 	}
 	
 #if AU
@@ -438,6 +445,40 @@ void C700GUI::valueChanged(CControl* control)
 	}
 	else {
 		switch (tag) {
+			case kControlButtonCopy:
+			case kControlButtonPreemphasis:
+				break;
+				
+			case kControlButtonUnload:
+			{
+				BRRData		brr;
+				brr.data=NULL;
+				efxAcc->SetBRRData( &brr );
+				break;
+			}
+			case kControlButtonLoad:
+			case kControlButtonSave:
+			case kControlButtonSaveXI:
+			case kControlButtonAutoSampleRate:
+			case kControlButtonAutoKey:
+				break;
+				
+			case kControlButtonChangeLoopPoint:
+			{
+				int	loopPoint = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_LoopPoint);
+				loopPoint -= value * 9;
+				efxAcc->SetProperty(kAudioUnitCustomProperty_LoopPoint, loopPoint);
+				break;
+			}
+				
+			case kControlButtonChangeProgram:
+			{
+				int	programNo = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+				programNo -= value;
+				efxAcc->SetProperty(kAudioUnitCustomProperty_EditingProgram, programNo);
+				break;
+			}
+			
 			case kControlSelectTrack16:
 			case kControlSelectTrack15:
 			case kControlSelectTrack14:

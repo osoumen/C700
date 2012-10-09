@@ -26,6 +26,7 @@ public:
 #endif
 	
 	bool	GetBRRData( BRRData *data, int *size );
+	bool	SetBRRData( const BRRData *data );
 	float	GetPropertyValue( int propertyId );
 	float	GetParameter( int parameterId );
 	

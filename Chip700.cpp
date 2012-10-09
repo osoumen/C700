@@ -984,8 +984,12 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 				
 			case kAudioUnitCustomProperty_LoopPoint:
 				mVPset[mEditProg].lp = *((int*)inData);
-				if (mVPset[mEditProg].lp > mVPset[mEditProg].brr.size)
+				if (mVPset[mEditProg].lp > mVPset[mEditProg].brr.size) {
 					mVPset[mEditProg].lp = mVPset[mEditProg].brr.size;
+				}
+				if ( mVPset[mEditProg].lp < 0 ) {
+					mVPset[mEditProg].lp = 0;
+				}
 				return noErr;
 				
 			case kAudioUnitCustomProperty_Loop:

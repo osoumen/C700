@@ -43,6 +43,23 @@ bool EfxAccess::GetBRRData( BRRData *data, int *size )
 }
 
 //-----------------------------------------------------------------------------
+bool EfxAccess::SetBRRData( const BRRData *data )
+{
+#if AU
+	UInt32		inSize = sizeof(BRRData);
+	
+	if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, data, inSize)
+		== noErr ) {
+		return true;
+	}
+	return false;
+#else
+	//VSTéûÇÃèàóù
+#endif
+}
+
+//-----------------------------------------------------------------------------
 float EfxAccess::GetPropertyValue( int propertyId )
 {
 	float		value = .0f;
