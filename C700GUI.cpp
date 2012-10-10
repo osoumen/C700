@@ -11,6 +11,7 @@
 #include "ControlInstances.h"
 #include "czt.h"
 #include "brrcodec.h"
+#include "cfileselector.h"
 
 #if AU
 #include "plugguieditor.h"
@@ -297,7 +298,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	rocker->forget();
 	
 	//以下テストコード
-#if GUITEST
+#if 0
 	//--CMyKnob--------------------------------------
 	CBitmap *bgKnob = new CBitmap("knobBack.png");
 	
@@ -402,8 +403,9 @@ void C700GUI::valueChanged(CControl* control)
 	//コントロールが操作された時に呼ばれる
 	//エフェクター側に変化したパラメータを設定する処理を行う
 	
-	int	tag = control->getTag();
-	float value = control->getValue();
+	int		tag = control->getTag();
+	float	value = control->getValue();
+	const char	*text = NULL;
 	
 	//スライダーで設定出来る値には整数値しかないの少数以下を切り捨てる
 	if ( control->isTypeOf("CMySlider") )
@@ -418,7 +420,8 @@ void C700GUI::valueChanged(CControl* control)
 	if ( control->isTypeOf("CMyTextEdit") )
 	{
 		CMyTextEdit		*textedit = static_cast<CMyTextEdit*> (control);
-		sscanf(textedit->getText(), "%f", &value);
+		text = textedit->getText();
+		sscanf(text, "%f", &value);
 		if ( tag == kAudioUnitCustomProperty_LoopPoint ) {
 			value = ((int)value / 16) * 16;
 		}
@@ -428,7 +431,6 @@ void C700GUI::valueChanged(CControl* control)
 		if ( tag == kAudioUnitCustomProperty_LoopPoint ) {
 			value = ((int)value / 16) * 9;
 		}
-		
 	}
 	
 #if AU
@@ -443,7 +445,17 @@ void C700GUI::valueChanged(CControl* control)
 		efxAcc->SetParam( this, tag%1000, value );
 	}
 	else if ( tag < kControlCommandsFirst ) {
-		efxAcc->SetProperty( ((tag-kAudioUnitCustomProperty_First)%1000)+kAudioUnitCustomProperty_First, value );
+		int	propertyId = ((tag-kAudioUnitCustomProperty_First)%1000)+kAudioUnitCustomProperty_First;
+		switch (propertyId) {
+			case kAudioUnitCustomProperty_ProgramName:
+				if ( text ) {
+					efxAcc->SetSourceFilePath( text );
+				}
+				break;
+			default:
+				efxAcc->SetProperty( propertyId, value );
+				break;
+		}
 	}
 	else {
 		switch (tag) {
@@ -466,7 +478,12 @@ void C700GUI::valueChanged(CControl* control)
 			
 			case kControlButtonLoad:
 				if ( value > 0 ) {
-					loadToCurrentProgram();
+					char	path[1024];
+					bool	isSelected;
+					isSelected = getLoadFile(path, 1024, "");
+					if ( isSelected ) {
+						loadToCurrentProgram(path);
+					}
 				}
 				break;
 				
@@ -601,8 +618,212 @@ void C700GUI::copyFIRParamToClipBoard()
 }
 
 //-----------------------------------------------------------------------------
-void C700GUI::loadToCurrentProgram()
+void C700GUI::loadToCurrentProgram( const char *path )
 {
+	BRRFile		brrfile(path,false);
+	AudioFile	audiofile(path,false);
+	SPCFile		spcfile(path,false);
+	
+	brrfile.Load();
+	if ( brrfile.IsLoaded() ) {
+		loadToCurrentProgramFromBRR( &brrfile );
+		goto _ret;
+	}
+	
+	audiofile.Load();
+	if ( audiofile.IsLoaded() ) {
+		loadToCurrentProgramFromAudioFile( &audiofile );
+		goto _ret;
+	}
+	
+	spcfile.Load();
+	if ( spcfile.IsLoaded() ) {
+		loadToCurrentProgramFromSPC( &spcfile );
+		goto _ret;
+	}
+	
+_ret:
+	return;
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::loadToCurrentProgramFromBRR( BRRFile *file )
+{
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::loadToCurrentProgramFromAudioFile( AudioFile *file )
+{
+	InstData	inst;
+	short		*wavedata;
+	long		numSamples;
+	BRRData		brr;
+	int			looppoint;
+	bool		loop;
+	int			pad;
+	
+	//波形ファイルの情報を取得
+	wavedata	= file->GetAudioData();
+	numSamples	= file->GetLoadedSamples();
+	file->GetInstData( &inst );
+	
+	if ( IsPreemphasisOn() ) {
+		emphasis(wavedata, numSamples);
+	}
+	
+	brr.data = new unsigned char[numSamples/16*9+18];
+	if (inst.loop) {
+		numSamples = inst.lp_end;
+	}
+	looppoint = (inst.lp + 15)/16*9;
+	loop = inst.loop ? true:false;
+	pad = 16-(numSamples % 16);
+	brr.size = brrencode(wavedata, brr.data, numSamples, loop, (looppoint/9)*16, pad);
+	looppoint += pad/16 * 9;
+	
+	//波形データを設定
+	efxAcc->SetBRRData(&brr);
+	efxAcc->SetProperty(kAudioUnitCustomProperty_Rate,		inst.srcSamplerate);
+	efxAcc->SetProperty(kAudioUnitCustomProperty_BaseKey,	inst.basekey);
+	efxAcc->SetProperty(kAudioUnitCustomProperty_LowKey,	inst.lowkey);
+	efxAcc->SetProperty(kAudioUnitCustomProperty_HighKey,	inst.highkey);
+	efxAcc->SetProperty(kAudioUnitCustomProperty_LoopPoint,	looppoint);
+	efxAcc->SetProperty(kAudioUnitCustomProperty_Loop,		loop ? 1.0f:.0f);
+	
+	//元波形データの情報をセットする
+	efxAcc->SetSourceFilePath( file->GetFilePath() );
+	efxAcc->SetProperty(kAudioUnitCustomProperty_IsEmaphasized,	IsPreemphasisOn() ? 1.0f:.0f);
+	
+	//TODO : 拡張子を除いたファイル名をプログラム名に設定する
+	efxAcc->SetProgramName( file->GetFilePath() );
+	
+	delete[] brr.data;	
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
+{
+	BRRData	brr;
+	double	samplerate;
+	int		looppoint;
+	bool	loop;
+	int		pitch, length;
+	short	*buffer;
+	int		cEditNum=0;
+	
+	for (int i=0; i<128; i++) {
+		brr.data = file->GetSampleIndex(i, &brr.size);
+		if ( brr.data == NULL ) continue;
+		
+		looppoint = file->GetLoopSizeIndex( i );
+		loop = looppoint >= 0 ? true:false;
+		
+		samplerate = 32000;
+		if (loop) {
+			buffer = new short[(brr.size*2)/9*16];
+			brrdecode(brr.data, buffer, looppoint, 2);
+			length = ((brr.size-looppoint)*2)/9*16;
+			pitch = estimatebasefreq(buffer+looppoint/9*16, length);
+			if (pitch > 0) {
+				samplerate = length/(double)pitch * 440.0*pow(2.0,-9.0/12);
+			}
+			delete[] buffer;
+		}
+		
+		efxAcc->SetProperty(kAudioUnitCustomProperty_EditingProgram, cEditNum);
+		efxAcc->SetBRRData(&brr);
+		efxAcc->SetProperty(kAudioUnitCustomProperty_Rate, samplerate);
+		efxAcc->SetProperty(kAudioUnitCustomProperty_BaseKey, 60);
+		efxAcc->SetProperty(kAudioUnitCustomProperty_LowKey, 0);
+		efxAcc->SetProperty(kAudioUnitCustomProperty_HighKey, 127);
+		efxAcc->SetProperty(kAudioUnitCustomProperty_LoopPoint, looppoint);
+		efxAcc->SetProperty(kAudioUnitCustomProperty_Loop, loop?1.0f:.0f);
+		
+		//TODO : ファイルネームの処理
+		efxAcc->SetProgramName(file->GetFilePath());
+		/*
+		CFURLRef	extlesspath=CFURLCreateCopyDeletingPathExtension(NULL,path);
+		CFStringRef	filename = CFURLCopyLastPathComponent(extlesspath);
+		CFStringRef	dataname = CFStringCreateWithFormat(NULL,NULL,CFSTR("%@#%02x"),filename,i);
+		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,kAudioUnitScope_Global,0,&dataname,sizeof(CFStringRef));
+		CFRelease(dataname);
+		CFRelease(filename);
+		CFRelease(extlesspath);
+		*/
+		cEditNum++;
+	}
+	efxAcc->SetParam(this, kParam_clipnoise, 1);
+}
+
+//-----------------------------------------------------------------------------
+bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
+{
+#ifdef WIN32
+	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
+	VstFileSelect Filedata;
+	memset(&Filedata, 0, sizeof(VstFileSelect));
+	Filedata.command=kVstFileLoad;
+	Filedata.type= kVstFileType;
+	strncpy(Filedata.title, title, 1023 );
+	//Filedata.nbFileTypes=1;
+	//Filedata.fileTypes=&waveType;
+	Filedata.returnPath= path;
+	Filedata.initialPath = 0;
+	Filedata.future[0] = 1;
+	if (OpenFile.run(&Filedata) > 0) {
+		return true;
+	}
+#else
+	CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectFile);
+	if (selector)
+	{
+		if ( title ) selector->setTitle(title);
+		selector->runModal();
+		if ( selector->getNumSelectedFiles() > 0 ) {
+			const char *url = selector->getSelectedFile(0);
+			strncpy(path, url, maxLen-1);
+		}
+		selector->forget();
+		return true;
+	}
+#endif
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, const char *title )
+{
+#ifdef WIN32
+	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
+	VstFileSelect Filedata;
+	memset(&Filedata, 0, sizeof(VstFileSelect));
+	Filedata.command=kVstFileSave;
+	Filedata.type= kVstFileType;
+	strncpy(Filedata.title, title, 1023 );
+	//Filedata.nbFileTypes=1;
+	//Filedata.fileTypes=&waveType;
+	Filedata.returnPath= path;
+	Filedata.initialPath = 0;
+	Filedata.future[0] = 1;
+	if (OpenFile.run(&Filedata) > 0) {
+		return true;
+	}
+#else
+	CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectSaveFile);
+	if (selector)
+	{
+		if ( defaultName ) selector->setDefaultSaveName(defaultName);
+		if ( title ) selector->setTitle(title);
+		selector->runModal();
+		if ( selector->getNumSelectedFiles() > 0 ) {
+			const char *url = selector->getSelectedFile(0);
+			strncpy(path, url, maxLen-1);
+		}
+		selector->forget();
+		return true;
+	}
+#endif
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -682,4 +903,11 @@ void C700GUI::autocalcCurrentProgramBaseKey()
 		efxAcc->SetProperty(kAudioUnitCustomProperty_BaseKey, key);
 	}
 	delete[] buffer;
+}
+
+//-----------------------------------------------------------------------------
+bool C700GUI::IsPreemphasisOn()
+{
+	CControl	*cntl = FindControlByTag(kControlButtonPreemphasis);
+	return cntl->getValue()>0.5f ? true:false;
 }

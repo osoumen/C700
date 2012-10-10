@@ -347,27 +347,6 @@ void C700Edit::SetTrackSelectorValue( int track )
 			}
 		}
 	}
-#if 0
-	static const int BEGIN_TRACKSELECTOR_ID = 3000;
-	static const int NUM_TRACKSELECTOR = 16;
-	
-	OSStatus	result;
-	HIViewID	id = {'tsel', BEGIN_TRACKSELECTOR_ID};
-	HIViewRef	control;
-	SInt32		maximum,minimum,cval;
-	
-	for ( int i=0; i<NUM_TRACKSELECTOR; i++ ) {
-		id.id = BEGIN_TRACKSELECTOR_ID + i;
-		
-		result = HIViewFindByID(mRootUserPane, id, &control);
-		if (result == noErr) {
-			maximum = GetControl32BitMaximum(control);
-			minimum = GetControl32BitMinimum(control);
-			cval = (i==track)?maximum:minimum;
-			HIViewSetValue(control, cval);
-		}
-	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -385,26 +364,6 @@ void C700Edit::SetBankSelectorValue( int bank )
 			}
 		}
 	}
-#if 0
-	static const int BEGIN_BANKSELECTOR_ID = 0;
-	
-	OSStatus	result;
-	HIViewID	id = {'bank', BEGIN_BANKSELECTOR_ID};
-	HIViewRef	control;
-	SInt32		maximum,minimum,cval;
-	
-	for ( int i=0; i<NUM_BANKS; i++ ) {
-		id.id = BEGIN_BANKSELECTOR_ID + i;
-		
-		result = HIViewFindByID(mRootUserPane, id, &control);
-		if (result == noErr) {
-			maximum = GetControl32BitMaximum(control);
-			minimum = GetControl32BitMinimum(control);
-			cval = (i==bank)?maximum:minimum;
-			HIViewSetValue(control, cval);
-		}
-	}
-#endif
 }
 
 //-----------------------------------------------------------------------------

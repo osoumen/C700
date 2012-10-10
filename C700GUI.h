@@ -22,7 +22,10 @@
 #include "MyParamDisplay.h"
 #include "MyTextEdit.h"
 
-#define GUITEST 0
+#include "SPCFile.h"
+#include "BRRFile.h"
+#include "AudioFile.h"
+#include "XIFile.h"
 
 class C700GUI : public CViewContainer, public CControlListener
 {
@@ -39,14 +42,20 @@ public:
 	bool			removed(CView* parent);
 	CMessageResult	notify(CBaseObject* sender, const char* message);
 	
+	void			loadToCurrentProgram( const char *path );
 private:
 	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
 	void			copyFIRParamToClipBoard();
-	void			loadToCurrentProgram();
+	void			loadToCurrentProgramFromBRR( BRRFile *file );
+	void			loadToCurrentProgramFromAudioFile( AudioFile *file );
+	void			loadToCurrentProgramFromSPC( SPCFile *file );
+	bool			getLoadFile( char *path, int maxLen, const char *title );
+	bool			getSaveFile( char *path, int maxLen, const char *defaultName, const char *title );
 	void			saveFromCurrentProgram();
 	void			saveFromCurrentProgramToXI();
 	void			autocalcCurrentProgramSampleRate();
 	void			autocalcCurrentProgramBaseKey();
+	bool			IsPreemphasisOn();
 	
 	int						mNumCntls;
 	CControl				**mCntl;
@@ -60,7 +69,7 @@ private:
 	CBitmap					*rocker;
 	
 	//Test—p
-#if GUITEST
+#if 0
 	CMyKnob				*cKnob;
 	CMySlider			*cVerticalSlider;
 	CLabelOnOffButton	*cCheckBox;

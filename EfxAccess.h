@@ -25,6 +25,8 @@ public:
 	void	SetEventListener( AUEventListenerRef listener ) { mEventListener = listener; }
 #endif
 	
+	bool	SetSourceFilePath( const char *path );
+	bool	SetProgramName( const char *pgname );
 	bool	GetBRRData( BRRData *data, int *size );
 	bool	SetBRRData( const BRRData *data );
 	float	GetPropertyValue( int propertyId );

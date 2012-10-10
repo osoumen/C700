@@ -323,6 +323,16 @@
 		F569C20F162424FB006C91AD /* bt_velocitysens0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FC0B2AA99100ED85CB /* bt_velocitysens0.png */; };
 		F569C210162424FB006C91AD /* bt_velocitysens1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FD0B2AA99100ED85CB /* bt_velocitysens1.png */; };
 		F569C211162424FB006C91AD /* bt_velocitysens2.png in Resources */ = {isa = PBXBuildFile; fileRef = F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */; };
+		F569C38A162515ED006C91AD /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C388162515ED006C91AD /* FileAccess.h */; };
+		F569C38B162515ED006C91AD /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C389162515ED006C91AD /* FileAccess.cpp */; };
+		F569C3AD162518B9006C91AD /* AudioFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AB162518B9006C91AD /* AudioFile.h */; };
+		F569C3AE162518B9006C91AD /* AudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3AC162518B9006C91AD /* AudioFile.cpp */; };
+		F569C3B1162518BF006C91AD /* SPCFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AF162518BF006C91AD /* SPCFile.h */; };
+		F569C3B2162518BF006C91AD /* SPCFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B0162518BF006C91AD /* SPCFile.cpp */; };
+		F569C3B5162518C6006C91AD /* BRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3B3162518C6006C91AD /* BRRFile.h */; };
+		F569C3B6162518C6006C91AD /* BRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B4162518C6006C91AD /* BRRFile.cpp */; };
+		F569C40B16254B6E006C91AD /* XIFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C40916254B6E006C91AD /* XIFile.h */; };
+		F569C40C16254B6E006C91AD /* XIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C40A16254B6E006C91AD /* XIFile.cpp */; };
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
@@ -677,6 +687,16 @@
 		F569AD35161D3490006C91AD /* WaveView.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = WaveView.cpp; sourceTree = "<group>"; };
 		F569BEC01622B5F8006C91AD /* EfxAccess.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = EfxAccess.h; sourceTree = "<group>"; };
 		F569BEC11622B5F8006C91AD /* EfxAccess.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = EfxAccess.cpp; sourceTree = "<group>"; };
+		F569C388162515ED006C91AD /* FileAccess.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = FileAccess.h; sourceTree = "<group>"; };
+		F569C389162515ED006C91AD /* FileAccess.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = FileAccess.cpp; sourceTree = "<group>"; };
+		F569C3AB162518B9006C91AD /* AudioFile.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = AudioFile.h; sourceTree = "<group>"; };
+		F569C3AC162518B9006C91AD /* AudioFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = AudioFile.cpp; sourceTree = "<group>"; };
+		F569C3AF162518BF006C91AD /* SPCFile.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = SPCFile.h; sourceTree = "<group>"; };
+		F569C3B0162518BF006C91AD /* SPCFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = SPCFile.cpp; sourceTree = "<group>"; };
+		F569C3B3162518C6006C91AD /* BRRFile.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = BRRFile.h; sourceTree = "<group>"; };
+		F569C3B4162518C6006C91AD /* BRRFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = BRRFile.cpp; sourceTree = "<group>"; };
+		F569C40916254B6E006C91AD /* XIFile.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = XIFile.h; sourceTree = "<group>"; };
+		F569C40A16254B6E006C91AD /* XIFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = XIFile.cpp; sourceTree = "<group>"; };
 		F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_velocitysens2.png; sourceTree = "<group>"; };
 		F56D351F156A0EA000038960 /* encodetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = encodetest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
@@ -1238,6 +1258,16 @@
 			isa = PBXGroup;
 			children = (
 				F55D6447161D7A94001CF9AB /* ControlInstances.h */,
+				F569C388162515ED006C91AD /* FileAccess.h */,
+				F569C389162515ED006C91AD /* FileAccess.cpp */,
+				F569C3AF162518BF006C91AD /* SPCFile.h */,
+				F569C3B0162518BF006C91AD /* SPCFile.cpp */,
+				F569C3B3162518C6006C91AD /* BRRFile.h */,
+				F569C3B4162518C6006C91AD /* BRRFile.cpp */,
+				F569C3AB162518B9006C91AD /* AudioFile.h */,
+				F569C3AC162518B9006C91AD /* AudioFile.cpp */,
+				F569C40916254B6E006C91AD /* XIFile.h */,
+				F569C40A16254B6E006C91AD /* XIFile.cpp */,
 				F569BEC01622B5F8006C91AD /* EfxAccess.h */,
 				F569BEC11622B5F8006C91AD /* EfxAccess.cpp */,
 				F569A40316195488006C91AD /* C700Edit.h */,
@@ -1419,6 +1449,11 @@
 				F55D6602161ECFD1001CF9AB /* MyParamDisplay.h in Headers */,
 				F55D6608161ECFE3001CF9AB /* MyTextEdit.h in Headers */,
 				F569BEC21622B5F8006C91AD /* EfxAccess.h in Headers */,
+				F569C38A162515ED006C91AD /* FileAccess.h in Headers */,
+				F569C3AD162518B9006C91AD /* AudioFile.h in Headers */,
+				F569C3B1162518BF006C91AD /* SPCFile.h in Headers */,
+				F569C3B5162518C6006C91AD /* BRRFile.h in Headers */,
+				F569C40B16254B6E006C91AD /* XIFile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1735,6 +1770,11 @@
 				F55D6603161ECFD1001CF9AB /* MyParamDisplay.cpp in Sources */,
 				F55D6609161ECFE3001CF9AB /* MyTextEdit.cpp in Sources */,
 				F569BEC31622B5F8006C91AD /* EfxAccess.cpp in Sources */,
+				F569C38B162515ED006C91AD /* FileAccess.cpp in Sources */,
+				F569C3AE162518B9006C91AD /* AudioFile.cpp in Sources */,
+				F569C3B2162518BF006C91AD /* SPCFile.cpp in Sources */,
+				F569C3B6162518C6006C91AD /* BRRFile.cpp in Sources */,
+				F569C40C16254B6E006C91AD /* XIFile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

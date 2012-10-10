@@ -1980,10 +1980,6 @@ int Chip700View::loadSPCFile(CFURLRef path)
 		
 		cEditNum++;
 	}
-//別に０に戻す必要は無いよね
-//	cEditNum = 0;
-//	AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_EditingProgram,kAudioUnitScope_Global,0,&cEditNum,sizeof(int));
-
 	AudioUnitParameter	param={mEditAudioUnit,kParam_clipnoise,kAudioUnitScope_Global,0};
 	AUParameterSet(mParameterListener, this, &param, 1, 0);
 	

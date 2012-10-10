@@ -26,6 +26,47 @@ EfxAccess::~EfxAccess()
 }
 
 //-----------------------------------------------------------------------------
+bool EfxAccess::SetSourceFilePath( const char *path )
+{
+#if AU
+	
+	UInt32		inSize = sizeof(CFStringRef);
+	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+
+	if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SourceFileRef, kAudioUnitScope_Global, 0, &url, inSize)
+		== noErr ) {
+		CFRelease( url );
+		return true;
+	}
+	CFRelease( url );
+	return false;
+#else
+	//VSTéûÇÃèàóù
+#endif
+}
+//-----------------------------------------------------------------------------
+bool EfxAccess::SetProgramName( const char *pgname )
+{
+#if AU
+	
+	UInt32		inSize = sizeof(CFStringRef);
+	CFStringRef	pgnameRef = CFStringCreateWithCString(NULL, pgname, kCFStringEncodingUTF8);
+	
+	if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0, &pgnameRef, inSize)
+		== noErr ) {
+		CFRelease( pgnameRef );
+		return true;
+	}
+	CFRelease( pgnameRef );
+	return false;
+#else
+	//VSTéûÇÃèàóù
+#endif
+}
+
+//-----------------------------------------------------------------------------
 bool EfxAccess::GetBRRData( BRRData *data, int *size )
 {
 #if AU
