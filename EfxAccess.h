@@ -17,7 +17,7 @@
 #endif
 
 #include "SPCFile.h"
-#include "CFBRRFile.h"
+#include "PlistBRRFile.h"
 #include "BRRFile.h"
 #include "AudioFile.h"
 #include "XIFile.h"
@@ -31,11 +31,11 @@ public:
 	void	SetEventListener( AUEventListenerRef listener ) { mEventListener = listener; }
 #endif
 	
-	bool	GetBRRFileData( BRRFile **data );
+	bool	GetBRRFileData( BRRFile **outData );
 	bool	SetBRRFileData( const BRRFile *data );
-	bool	GetXIFileData( XIFile **data );
-	bool	GetCFBRRFileData( CFBRRFile **data );
-	bool	SetCFBRRFileData( const CFBRRFile *data );
+	bool	GetXIFileData( XIFile **outData );
+	bool	GetPlistBRRFileData( PlistBRRFile **outData );
+	bool	SetPlistBRRFileData( const PlistBRRFile *data );
 	
 	bool	SetSourceFilePath( const char *path );
 	bool	SetProgramName( const char *pgname );

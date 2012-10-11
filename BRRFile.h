@@ -13,6 +13,6 @@
 
 class BRRFile : public FileAccess {
 public:
-	BRRFile( const char *path, bool isWriteable );
+	BRRFile( const char *path, bool isWriteable=true );
 	virtual ~BRRFile();
 };

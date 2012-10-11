@@ -26,7 +26,7 @@ EfxAccess::~EfxAccess()
 }
 
 //-----------------------------------------------------------------------------
-bool	EfxAccess::GetBRRFileData( BRRFile **data )
+bool	EfxAccess::GetBRRFileData( BRRFile **outData )
 {
 	return false;
 }
@@ -38,24 +38,47 @@ bool	EfxAccess::SetBRRFileData( const BRRFile *data )
 }
 
 //-----------------------------------------------------------------------------
-bool	EfxAccess::GetXIFileData( XIFile **data )
+bool	EfxAccess::GetXIFileData( XIFile **outData )
 {
+#if AU
+	XIFile	*file = new XIFile(NULL, true);
+	*outData = file;
+	
+	//データを取得する
+	CFDataRef	cfdata;
+	UInt32 size = sizeof(CFDataRef);
+	if (
+		AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_XIData,
+							 kAudioUnitScope_Global, 0, &cfdata,&size)
+		== noErr )
+	{
+		file->SetCFData( cfdata );
+		CFRelease(cfdata);
+		return true;
+	}
+	CFRelease(cfdata);
+	return true;
+#else
 	return false;
+#endif
 }
 
 //-----------------------------------------------------------------------------
-bool	EfxAccess::GetCFBRRFileData( CFBRRFile **data )
+bool	EfxAccess::GetPlistBRRFileData( PlistBRRFile **outData )
 {
 #if AU
-	CFBRRFile	*file = new CFBRRFile(NULL, true);
+	PlistBRRFile	*file = new PlistBRRFile(NULL, true);
+	*outData = file;
 	
 	//Dictionaryデータを取得する
-	CFDictionaryRef	propertydata;
-	UInt32 size = sizeof(CFDictionaryRef);
+	CFPropertyListRef	propertydata;
+	UInt32 size = sizeof(CFPropertyListRef);
 	if (
-	AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_PGDictionary,kAudioUnitScope_Global,0,&propertydata,&size)
-		== noErr ) {
-		file->SetDictionaryData( propertydata );
+	AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_PGDictionary,
+						 kAudioUnitScope_Global, 0, &propertydata,&size)
+		== noErr )
+	{
+		file->SetPlistData( propertydata );
 		CFRelease(propertydata);
 		return true;
 	}
@@ -67,9 +90,22 @@ bool	EfxAccess::GetCFBRRFileData( CFBRRFile **data )
 }
 
 //-----------------------------------------------------------------------------
-bool	EfxAccess::SetCFBRRFileData( const CFBRRFile *data )
+bool	EfxAccess::SetPlistBRRFileData( const PlistBRRFile *data )
 {
 #if AU
+	CFPropertyListRef	propertydata = data->GetPlistData();
+	if ( propertydata == NULL ) return false;
+	
+	UInt32	inSize = sizeof(CFPropertyListRef);
+	if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_PGDictionary, 
+							 kAudioUnitScope_Global, 0, &propertydata, inSize)
+		== noErr )
+	{
+		return true;
+	}
+	
+	return false;	
 #else
 	return false;
 #endif
@@ -79,7 +115,6 @@ bool	EfxAccess::SetCFBRRFileData( const CFBRRFile *data )
 bool EfxAccess::SetSourceFilePath( const char *path )
 {
 #if AU
-	
 	UInt32		inSize = sizeof(CFStringRef);
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
 

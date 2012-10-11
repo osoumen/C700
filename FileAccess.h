@@ -18,7 +18,7 @@ public:
 	void			SetFilePath( const char *path );
 	virtual bool	Load() { return false; };
 	virtual bool	Write() { return false; }
-	virtual bool	IsLoaded() { return mIsLoaded; }
+	virtual bool	IsLoaded() const { return mIsLoaded; }
 	
 protected:
 	char		mPath[1024];

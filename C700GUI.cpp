@@ -449,7 +449,7 @@ void C700GUI::valueChanged(CControl* control)
 		switch (propertyId) {
 			case kAudioUnitCustomProperty_ProgramName:
 				if ( text ) {
-					efxAcc->SetSourceFilePath( text );
+					efxAcc->SetProgramName( text );
 				}
 				break;
 			default:
@@ -489,13 +489,23 @@ void C700GUI::valueChanged(CControl* control)
 				
 			case kControlButtonSave:
 				if ( value > 0 ) {
-					saveFromCurrentProgram();
+					char	path[1024];
+					bool	isSelected;
+					isSelected = getSaveFile(path, 1024, "defaultname.brr", "Save Program To...");
+					if ( isSelected ) {
+						saveFromCurrentProgram(path);
+					}
 				}
 				break;
 				
 			case kControlButtonSaveXI:
 				if ( value > 0 ) {
-					saveFromCurrentProgramToXI();
+					char	path[1024];
+					bool	isSelected;
+					isSelected = getSaveFile(path, 1024, "defaultname.xi", "Export Program To...");
+					if ( isSelected ) {
+						saveFromCurrentProgramToXI(path);
+					}
 				}
 				break;
 				
@@ -620,10 +630,10 @@ void C700GUI::copyFIRParamToClipBoard()
 //-----------------------------------------------------------------------------
 void C700GUI::loadToCurrentProgram( const char *path )
 {
-	BRRFile		brrfile(path,false);
-	CFBRRFile	cfbrrfile(path,false);
-	AudioFile	audiofile(path,false);
-	SPCFile		spcfile(path,false);
+	BRRFile			brrfile(path,false);
+	PlistBRRFile	plbrrfile(path,false);
+	AudioFile		audiofile(path,false);
+	SPCFile			spcfile(path,false);
 	
 	brrfile.Load();
 	if ( brrfile.IsLoaded() ) {
@@ -631,9 +641,9 @@ void C700GUI::loadToCurrentProgram( const char *path )
 		goto _ret;
 	}
 	
-	cfbrrfile.Load();
-	if ( cfbrrfile.IsLoaded() ) {
-		loadToCurrentProgramFromCFBRR( &cfbrrfile );
+	plbrrfile.Load();
+	if ( plbrrfile.IsLoaded() ) {
+		loadToCurrentProgramFromPlistBRR( &plbrrfile );
 		goto _ret;
 	}
 	
@@ -656,11 +666,13 @@ _ret:
 //-----------------------------------------------------------------------------
 void C700GUI::loadToCurrentProgramFromBRR( BRRFile *file )
 {
+	efxAcc->SetBRRFileData(file);
 }
 
 //-----------------------------------------------------------------------------
-void C700GUI::loadToCurrentProgramFromCFBRR( CFBRRFile *file )
+void C700GUI::loadToCurrentProgramFromPlistBRR( PlistBRRFile *file )
 {
+	efxAcc->SetPlistBRRFileData(file);
 }
 
 //-----------------------------------------------------------------------------
@@ -839,13 +851,29 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 }
 
 //-----------------------------------------------------------------------------
-void C700GUI::saveFromCurrentProgram()
+void C700GUI::saveFromCurrentProgram(const char *path)
 {
+#if AU
+	PlistBRRFile	*file;
+	
+	if ( efxAcc->GetPlistBRRFileData(&file) ) {
+		file->SetFilePath( path );
+		file->Write();
+		delete file;
+	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
-void C700GUI::saveFromCurrentProgramToXI()
+void C700GUI::saveFromCurrentProgramToXI(const char *path)
 {
+	XIFile	*file;
+	
+	if ( efxAcc->GetXIFileData(&file) ) {
+		file->SetFilePath( path );
+		file->Write();
+		delete file;
+	}
 }
 
 //-----------------------------------------------------------------------------

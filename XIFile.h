@@ -15,4 +15,16 @@ class XIFile : public FileAccess {
 public:
 	XIFile( const char *path, bool isWriteable );
 	virtual ~XIFile();
+	
+	virtual bool	Write();
+	
+#if AU
+	void			SetCFData( CFDataRef propertydata );
+	CFDataRef		GetCFData() const;
+#endif
+	
+private:
+#if AU
+	CFDataRef	mCFData;
+#endif
 };
