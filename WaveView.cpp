@@ -7,6 +7,7 @@
  *
  */
 
+#include "C700GUI.h"
 #include "WaveView.h"
 
 static CFontDesc g_MessageFont("Courier", 18);
@@ -34,26 +35,19 @@ CWaveView::~CWaveView()
 //-----------------------------------------------------------------------------
 bool CWaveView::onDrop(CDragContainer* drag, const CPoint& where)
 {
-	/*
+	C700GUI	*guiview = reinterpret_cast<C700GUI*> (getParentView());
+	if ( !guiview->isTypeOf("C700GUI") ) {
+		return false;
+	}
+	
 	long size, type;
-	void* ptr = drag->first (size, type);
-	if (ptr)
-	{
-		if (type == CDragContainer::kText || type == CDragContainer::kFile || type == CDragContainer::kUnicodeText)
-			setText ((char*)ptr);
-		if (type == CDragContainer::kUnicodeText)
-		{
-#if DEVELOPMENT
-			for (long i = 0; i < size; i++)
-			{
-				DebugPrint ("%x", ((char*)ptr)[i]);
-			}
-			DebugPrint ("\n");
-#endif
+	void* ptr = drag->first(size, type);
+	if ( ptr ) {
+		if ( type == CDragContainer::kFile ) {
+			return guiview->loadToCurrentProgram((char *)ptr);
 		}
 	}
-	 */
-	return true;
+	return false;
 }
 
 //------------------------------------------------------------------------

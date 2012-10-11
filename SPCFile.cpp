@@ -48,7 +48,10 @@ bool SPCFile::Load()
 #else
 #endif
 	
-	//TODO : ファイルチェック
+	//ファイルチェック
+	if ( strncmp((char*)m_pFileData, "SNES-SPC700 Sound File Data v0.30", 33) != 0 ) {
+		return false;
+	}
 	
 	mSrcTableAddr = (int)m_pRamData[0x1005d] << 8;
 	for (int i=0; i<128; i++ ) {

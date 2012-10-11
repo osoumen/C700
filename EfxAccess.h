@@ -31,15 +31,17 @@ public:
 	void	SetEventListener( AUEventListenerRef listener ) { mEventListener = listener; }
 #endif
 	
-	bool	GetBRRFileData( BRRFile **outData );
+	bool	CreateBRRFileData( BRRFile **outData );
 	bool	SetBRRFileData( const BRRFile *data );
-	bool	GetXIFileData( XIFile **outData );
-	bool	GetPlistBRRFileData( PlistBRRFile **outData );
+	bool	CreateXIFileData( XIFile **outData );
+	bool	CreatePlistBRRFileData( PlistBRRFile **outData );
 	bool	SetPlistBRRFileData( const PlistBRRFile *data );
 	
 	bool	SetSourceFilePath( const char *path );
+	bool	GetSourceFilePath( char *path, int maxLen );
 	bool	SetProgramName( const char *pgname );
-	bool	GetBRRData( BRRData *data, int *size );
+	bool	GetProgramName( char *pgname, int maxLen );
+	bool	GetBRRData( BRRData *data );
 	bool	SetBRRData( const BRRData *data );
 	float	GetPropertyValue( int propertyId );
 	float	GetParameter( int parameterId );

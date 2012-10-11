@@ -43,14 +43,16 @@ public:
 	bool			removed(CView* parent);
 	CMessageResult	notify(CBaseObject* sender, const char* message);
 	
-	void			loadToCurrentProgram( const char *path );
+	bool			loadToCurrentProgram( const char *path );
+	
+	CLASS_METHODS(C700GUI, CViewContainer)
 private:
 	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
 	void			copyFIRParamToClipBoard();
-	void			loadToCurrentProgramFromBRR( BRRFile *file );
-	void			loadToCurrentProgramFromPlistBRR( PlistBRRFile *file );
-	void			loadToCurrentProgramFromAudioFile( AudioFile *file );
-	void			loadToCurrentProgramFromSPC( SPCFile *file );
+	bool			loadToCurrentProgramFromBRR( BRRFile *file );
+	bool			loadToCurrentProgramFromPlistBRR( PlistBRRFile *file );
+	bool			loadToCurrentProgramFromAudioFile( AudioFile *file );
+	bool			loadToCurrentProgramFromSPC( SPCFile *file );
 	bool			getLoadFile( char *path, int maxLen, const char *title );
 	bool			getSaveFile( char *path, int maxLen, const char *defaultName, const char *title );
 	void			saveFromCurrentProgram(const char *path);

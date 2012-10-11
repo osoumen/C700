@@ -26,7 +26,7 @@ EfxAccess::~EfxAccess()
 }
 
 //-----------------------------------------------------------------------------
-bool	EfxAccess::GetBRRFileData( BRRFile **outData )
+bool	EfxAccess::CreateBRRFileData( BRRFile **outData )
 {
 	return false;
 }
@@ -38,7 +38,7 @@ bool	EfxAccess::SetBRRFileData( const BRRFile *data )
 }
 
 //-----------------------------------------------------------------------------
-bool	EfxAccess::GetXIFileData( XIFile **outData )
+bool	EfxAccess::CreateXIFileData( XIFile **outData )
 {
 #if AU
 	XIFile	*file = new XIFile(NULL, true);
@@ -64,7 +64,7 @@ bool	EfxAccess::GetXIFileData( XIFile **outData )
 }
 
 //-----------------------------------------------------------------------------
-bool	EfxAccess::GetPlistBRRFileData( PlistBRRFile **outData )
+bool	EfxAccess::CreatePlistBRRFileData( PlistBRRFile **outData )
 {
 #if AU
 	PlistBRRFile	*file = new PlistBRRFile(NULL, true);
@@ -119,7 +119,8 @@ bool EfxAccess::SetSourceFilePath( const char *path )
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
 
 	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SourceFileRef, kAudioUnitScope_Global, 0, &url, inSize)
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SourceFileRef,
+							 kAudioUnitScope_Global, 0, &url, inSize)
 		== noErr ) {
 		CFRelease( url );
 		return true;
@@ -128,8 +129,39 @@ bool EfxAccess::SetSourceFilePath( const char *path )
 	return false;
 #else
 	//VSTéûÇÃèàóù
+	return false;
 #endif
 }
+
+//-----------------------------------------------------------------------------
+bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
+{
+#if AU
+	CFURLRef	url;
+	UInt32		outSize = sizeof(CFURLRef);
+	
+	//ÉfÅ[É^ÇéÊìæÇ∑ÇÈ
+	if (
+		AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_SourceFileRef,
+							 kAudioUnitScope_Global, 0, &url, &outSize)
+		== noErr )
+	{
+		if ( url ) {
+			CFStringRef pathStr = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
+			CFStringGetCString(pathStr, path, maxLen-1, kCFStringEncodingUTF8);
+			CFRelease(pathStr);
+			return true;
+		}
+		else {
+			path[0] = 0;
+		}
+	}
+	return false;
+#else
+	return false;
+#endif
+}
+
 //-----------------------------------------------------------------------------
 bool EfxAccess::SetProgramName( const char *pgname )
 {
@@ -152,11 +184,35 @@ bool EfxAccess::SetProgramName( const char *pgname )
 }
 
 //-----------------------------------------------------------------------------
-bool EfxAccess::GetBRRData( BRRData *data, int *size )
+bool EfxAccess::GetProgramName( char *pgname, int maxLen )
 {
 #if AU
-	UInt32		outSize = *size;
 	
+	UInt32		outSize = sizeof(CFStringRef);
+	CFStringRef	pgnameRef;
+	
+	if (
+		AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0, &pgnameRef, &outSize)
+		== noErr ) {
+		if ( pgnameRef ) {
+			CFStringGetCString(pgnameRef, pgname, maxLen-1, kCFStringEncodingUTF8);
+			return true;
+		}
+		else {
+			pgname[0] = 0;
+		}
+	}
+	return false;
+#else
+	//VSTéûÇÃèàóù
+#endif
+}
+
+//-----------------------------------------------------------------------------
+bool EfxAccess::GetBRRData( BRRData *data )
+{
+#if AU
+	UInt32		outSize = sizeof(BRRData*);
 	if (
 	AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, data, &outSize)
 		== noErr ) {

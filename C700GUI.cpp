@@ -23,6 +23,23 @@ static CFontDesc g_LabelFont("Helvetica Bold", 9);
 CFontRef kLabelFont = &g_LabelFont;
 
 //-----------------------------------------------------------------------------
+void getFileNameDeletingPathExt( const char *path, char *out, int maxLen )
+{
+#if MAC
+	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+	CFURLRef	extlesspath=CFURLCreateCopyDeletingPathExtension(NULL, url);
+	CFStringRef	filename = CFURLCopyLastPathComponent(extlesspath);
+	CFStringGetCString(filename, out, maxLen-1, kCFStringEncodingUTF8);
+	CFRelease(filename);
+	CFRelease(extlesspath);
+	CFRelease(url);
+#else
+	//TODO : Windowsでの拡張子、パス除去処理
+	strncpy(out, path, maxLen-1);
+#endif
+}
+
+//-----------------------------------------------------------------------------
 CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame )
 {
 	CControl	*cntl = NULL;
@@ -90,6 +107,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					CFontRef	fontDesc = new CFontDesc(fontName, fontSize);
 					CMyParamDisplay	*paramdisp;
 					paramdisp = new CMyParamDisplay(size, desc->id, valueMultipler, unitStr, 0, 0);
+					paramdisp->setListener(this);
 					paramdisp->setFont(fontDesc);
 					paramdisp->setFontColor(MakeCColor(fontRColour, fontGColour, fontBColour, 255));
 					paramdisp->setAntialias(true);
@@ -489,9 +507,27 @@ void C700GUI::valueChanged(CControl* control)
 				
 			case kControlButtonSave:
 				if ( value > 0 ) {
+					//サンプルデータの存在確認
+					BRRData		brr;
+					efxAcc->GetBRRData(&brr);
+					//データが無ければ終了する
+					if (brr.data == NULL) break;
+					
+					//デフォルトファイル名の作成
+					char	pgname[256];
+					char	defaultName[256];
+					efxAcc->GetProgramName(pgname, 256);
+					if ( pgname[0] == 0 || strlen(pgname) == 0 ) {
+						snprintf(defaultName, 255, "program_%03d.brr", 
+								 (int)efxAcc->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram) );
+					}
+					else {
+						snprintf(defaultName, 255, "%s.brr", pgname);
+					}
+					//保存ファイルダイアログを表示
 					char	path[1024];
 					bool	isSelected;
-					isSelected = getSaveFile(path, 1024, "defaultname.brr", "Save Program To...");
+					isSelected = getSaveFile(path, 1024, defaultName, "Save Program To...");
 					if ( isSelected ) {
 						saveFromCurrentProgram(path);
 					}
@@ -500,11 +536,46 @@ void C700GUI::valueChanged(CControl* control)
 				
 			case kControlButtonSaveXI:
 				if ( value > 0 ) {
-					char	path[1024];
+					//サンプルデータの存在確認
+					BRRData		brr;
+					efxAcc->GetBRRData(&brr);
+					//データが無ければ終了する
+					if (brr.data == NULL) break;
+					
+					//ソースファイル情報が無ければ選択ダイアログを出す
+					bool	existSrcFile = false;
+					char	srcPath[1024];
+					efxAcc->GetSourceFilePath(srcPath, 1024);
+					if ( strlen(srcPath) > 0 ) {
+						//オーディオファイルであるか確認する
+						AudioFile	srcFile(srcPath,false);
+						if (srcFile.IsVarid()) {
+							existSrcFile = true;
+						}
+					}
+					if ( existSrcFile == false ) {
+						if ( getLoadFile(srcPath, 1024, "Select Source File") ) {
+							efxAcc->SetSourceFilePath(srcPath);
+						}
+					}
+					
+					//デフォルトファイル名の作成
+					char	pgname[256];
+					char	defaultName[256];
+					efxAcc->GetProgramName(pgname, 256);
+					if ( pgname[0] == 0 || strlen(pgname) == 0 ) {
+						snprintf(defaultName, 255, "program_%03d.xi", 
+								 (int)efxAcc->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram) );
+					}
+					else {
+						snprintf(defaultName, 255, "%s.xi", pgname);
+					}
+					//保存ファイルダイアログを表示
+					char	savePath[1024];
 					bool	isSelected;
-					isSelected = getSaveFile(path, 1024, "defaultname.xi", "Export Program To...");
+					isSelected = getSaveFile(savePath, 1024, defaultName, "Export Program To...");
 					if ( isSelected ) {
-						saveFromCurrentProgramToXI(path);
+						saveFromCurrentProgramToXI(savePath);
 					}
 				}
 				break;
@@ -628,7 +699,7 @@ void C700GUI::copyFIRParamToClipBoard()
 }
 
 //-----------------------------------------------------------------------------
-void C700GUI::loadToCurrentProgram( const char *path )
+bool C700GUI::loadToCurrentProgram( const char *path )
 {
 	BRRFile			brrfile(path,false);
 	PlistBRRFile	plbrrfile(path,false);
@@ -637,46 +708,41 @@ void C700GUI::loadToCurrentProgram( const char *path )
 	
 	brrfile.Load();
 	if ( brrfile.IsLoaded() ) {
-		loadToCurrentProgramFromBRR( &brrfile );
-		goto _ret;
+		return loadToCurrentProgramFromBRR( &brrfile );
 	}
 	
 	plbrrfile.Load();
 	if ( plbrrfile.IsLoaded() ) {
-		loadToCurrentProgramFromPlistBRR( &plbrrfile );
-		goto _ret;
+		return loadToCurrentProgramFromPlistBRR( &plbrrfile );
 	}
 	
 	audiofile.Load();
 	if ( audiofile.IsLoaded() ) {
-		loadToCurrentProgramFromAudioFile( &audiofile );
-		goto _ret;
+		return loadToCurrentProgramFromAudioFile( &audiofile );
 	}
 	
 	spcfile.Load();
 	if ( spcfile.IsLoaded() ) {
-		loadToCurrentProgramFromSPC( &spcfile );
-		goto _ret;
+		return loadToCurrentProgramFromSPC( &spcfile );
 	}
 	
-_ret:
-	return;
+	return false;
 }
 
 //-----------------------------------------------------------------------------
-void C700GUI::loadToCurrentProgramFromBRR( BRRFile *file )
+bool C700GUI::loadToCurrentProgramFromBRR( BRRFile *file )
 {
-	efxAcc->SetBRRFileData(file);
+	return efxAcc->SetBRRFileData(file);
 }
 
 //-----------------------------------------------------------------------------
-void C700GUI::loadToCurrentProgramFromPlistBRR( PlistBRRFile *file )
+bool C700GUI::loadToCurrentProgramFromPlistBRR( PlistBRRFile *file )
 {
-	efxAcc->SetPlistBRRFileData(file);
+	return efxAcc->SetPlistBRRFileData(file);
 }
 
 //-----------------------------------------------------------------------------
-void C700GUI::loadToCurrentProgramFromAudioFile( AudioFile *file )
+bool C700GUI::loadToCurrentProgramFromAudioFile( AudioFile *file )
 {
 	InstData	inst;
 	short		*wavedata;
@@ -718,14 +784,18 @@ void C700GUI::loadToCurrentProgramFromAudioFile( AudioFile *file )
 	efxAcc->SetSourceFilePath( file->GetFilePath() );
 	efxAcc->SetProperty(kAudioUnitCustomProperty_IsEmaphasized,	IsPreemphasisOn() ? 1.0f:.0f);
 	
-	//TODO : 拡張子を除いたファイル名をプログラム名に設定する
-	efxAcc->SetProgramName( file->GetFilePath() );
+	//拡張子を除いたファイル名をプログラム名に設定する
+	char	pgname[256];
+	getFileNameDeletingPathExt(file->GetFilePath(), pgname, 256);
+	efxAcc->SetProgramName( pgname );
 	
-	delete[] brr.data;	
+	delete[] brr.data;
+	
+	return true;
 }
 
 //-----------------------------------------------------------------------------
-void C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
+bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 {
 	BRRData	brr;
 	double	samplerate;
@@ -763,20 +833,18 @@ void C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 		efxAcc->SetProperty(kAudioUnitCustomProperty_LoopPoint, looppoint);
 		efxAcc->SetProperty(kAudioUnitCustomProperty_Loop, loop?1.0f:.0f);
 		
-		//TODO : ファイルネームの処理
-		efxAcc->SetProgramName(file->GetFilePath());
-		/*
-		CFURLRef	extlesspath=CFURLCreateCopyDeletingPathExtension(NULL,path);
-		CFStringRef	filename = CFURLCopyLastPathComponent(extlesspath);
-		CFStringRef	dataname = CFStringCreateWithFormat(NULL,NULL,CFSTR("%@#%02x"),filename,i);
-		AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,kAudioUnitScope_Global,0,&dataname,sizeof(CFStringRef));
-		CFRelease(dataname);
-		CFRelease(filename);
-		CFRelease(extlesspath);
-		*/
+		//ファイルネームの処理
+		char	pgname[256];
+		char	filename[256];
+		getFileNameDeletingPathExt(file->GetFilePath(), filename, 256);
+		snprintf(pgname, 255, "%s#%02x", filename, i);
+		efxAcc->SetProgramName(pgname);
+
 		cEditNum++;
 	}
 	efxAcc->SetParam(this, kParam_clipnoise, 1);
+	
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -806,9 +874,11 @@ bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 		if ( selector->getNumSelectedFiles() > 0 ) {
 			const char *url = selector->getSelectedFile(0);
 			strncpy(path, url, maxLen-1);
+			selector->forget();
+			return true;
 		}
 		selector->forget();
-		return true;
+		return false;
 	}
 #endif
 	return false;
@@ -842,9 +912,11 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 		if ( selector->getNumSelectedFiles() > 0 ) {
 			const char *url = selector->getSelectedFile(0);
 			strncpy(path, url, maxLen-1);
+			selector->forget();
+			return true;
 		}
 		selector->forget();
-		return true;
+		return false;
 	}
 #endif
 	return false;
@@ -856,7 +928,7 @@ void C700GUI::saveFromCurrentProgram(const char *path)
 #if AU
 	PlistBRRFile	*file;
 	
-	if ( efxAcc->GetPlistBRRFileData(&file) ) {
+	if ( efxAcc->CreatePlistBRRFileData(&file) ) {
 		file->SetFilePath( path );
 		file->Write();
 		delete file;
@@ -869,7 +941,7 @@ void C700GUI::saveFromCurrentProgramToXI(const char *path)
 {
 	XIFile	*file;
 	
-	if ( efxAcc->GetXIFileData(&file) ) {
+	if ( efxAcc->CreateXIFileData(&file) ) {
 		file->SetFilePath( path );
 		file->Write();
 		delete file;
@@ -887,8 +959,7 @@ void C700GUI::autocalcCurrentProgramSampleRate()
 	short	*buffer;
 	int		pitch, length;
 	
-	int		size = sizeof(BRRData);
-	efxAcc->GetBRRData( &brr, &size );
+	efxAcc->GetBRRData( &brr );
 	
 	if (brr.data == NULL) return;
 	
@@ -921,8 +992,7 @@ void C700GUI::autocalcCurrentProgramBaseKey()
 	short	*buffer;
 	int		pitch, length;
 	
-	int		size = sizeof(BRRData);
-	efxAcc->GetBRRData( &brr, &size );
+	efxAcc->GetBRRData( &brr );
 	
 	if (brr.data == NULL) return;
 	
@@ -951,3 +1021,4 @@ bool C700GUI::IsPreemphasisOn()
 	CControl	*cntl = FindControlByTag(kControlButtonPreemphasis);
 	return cntl->getValue()>0.5f ? true:false;
 }
+

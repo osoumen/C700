@@ -134,6 +134,11 @@ void C700Edit::setParameter(long index, float value)
 		value = (int)value/9*16;
 	}
 	
+	//brr換算のループポイントを実サンプル単位に変換する
+	if ( index == kParam_velocity ) {
+		value = value/2.0f;
+	}	
+	
 	CControl	*cntl;
 	int			tag = index;
 	cntl = m_pUIView->FindControlByTag(tag);
@@ -168,10 +173,8 @@ void C700Edit::SetLoopPoint( int lp )
 	long	numSamples;
 
 	BRRData	brr;
-	int		size = sizeof(BRRData);
-	efxAcc->GetBRRData( &brr, &size );
+	efxAcc->GetBRRData( &brr );
 	
-	if ( size != sizeof(BRRData) ) return;
 	if ( brr.data == NULL ) return;
 	
 	CRect	bounds;
@@ -231,7 +234,7 @@ void C700Edit::SetBRRData( const BRRData *brr )
 	}
 	else return;
 	
-	if (brr->data) {
+	if (brr->data && brr->size > 0) {
 		numSamples = brr->size/9 * 16;
 		wavedata = new short[numSamples];
 		brrdecode(brr->data, wavedata,0,0);

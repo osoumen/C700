@@ -31,6 +31,21 @@ AudioFile::~AudioFile()
 }
 
 //-----------------------------------------------------------------------------
+bool AudioFile::IsVarid()
+{
+	AudioFileID mAudioFileID;
+	FSRef	ref;
+	Boolean	isDirectory=false;
+	FSPathMakeRef((const UInt8*)GetFilePath(), &ref, &isDirectory);
+	OSStatus err = AudioFileOpen(&ref, fsRdPerm, 0, &mAudioFileID);
+	if (err == noErr) {
+		AudioFileClose(mAudioFileID);
+		return true;
+	}
+	return false;
+}
+
+//-----------------------------------------------------------------------------
 bool AudioFile::Load()
 {
 #if MAC

@@ -42,3 +42,47 @@ void CMyParamDisplay::stringConvert(float value, char *string, void *userData)
 	int intValue = value * This->mValueMultipler;
 	sprintf(string, "%d%s", intValue, This->mUnitStr);
 }
+
+//------------------------------------------------------------------------
+CMouseEventResult CMyParamDisplay::onMouseDown (CPoint& where, const long& buttons)
+{
+	if (!(buttons & kLButton))
+		return kMouseEventNotHandled;
+		
+	mInitialPos = where;
+	mInitialValue = value;
+	
+	beginEdit ();
+	if (checkDefaultValue (buttons))
+	{
+		endEdit ();
+		return kMouseDownEventHandledButDontNeedMovedOrUpEvents;
+	}
+	if (buttons & kShift)
+		return kMouseEventHandled;
+	return onMouseMoved (where, buttons);
+}
+
+//------------------------------------------------------------------------
+CMouseEventResult CMyParamDisplay::onMouseUp (CPoint& where, const long& buttons)
+{
+	endEdit ();
+	return kMouseEventHandled;
+}
+
+//------------------------------------------------------------------------
+CMouseEventResult CMyParamDisplay::onMouseMoved (CPoint& where, const long& buttons)
+{
+	if (buttons & kLButton)
+	{		
+		value = (int)(mInitialValue - (float)(where.v - mInitialPos.v)/3);
+		
+		bounceValue ();
+		
+		if (isDirty () && listener)
+			listener->valueChanged (this);
+		if (isDirty ())
+			invalid ();
+	}
+	return kMouseEventHandled;
+}

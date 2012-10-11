@@ -1,7 +1,10 @@
 #include "AUInstrumentBase.h"
-#include "AUCarbonViewBase.h"
 #include "Chip700Version.h"
 #include "Chip700Generator.h"
+
+#ifdef USE_CARBON_UI
+#include "AUCarbonViewBase.h"
+#endif
 
 #if AU_DEBUG_DISPATCHER
 	#include "AUDebugDispatcher.h"
@@ -100,6 +103,7 @@ public:
 	/*! @method Version */
 	virtual OSStatus	Version() { return kChip700Version; }
 	
+#ifdef USE_CARBON_UI
 	int		GetNumCustomUIComponents () { return 1; }
 	
 	void	GetUIComponentDescs (ComponentDescription* inDescArray) {
@@ -109,6 +113,7 @@ public:
         inDescArray[0].componentFlags = 0;
         inDescArray[0].componentFlagsMask = 0;
 	}
+#endif
 
 private:
 	int					mEditProg;		// ï“èWíÜÇÃÉvÉçÉOÉâÉÄNo.

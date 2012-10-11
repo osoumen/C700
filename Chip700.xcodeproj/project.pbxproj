@@ -12,8 +12,6 @@
 		3E0BECFD0898391C00E1F0F7 /* CAVectorUnitTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E0BECFA0898391C00E1F0F7 /* CAVectorUnitTypes.h */; };
 		8A10AB560AE2855600271511 /* samplebrr.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A10AB550AE2855600271511 /* samplebrr.h */; };
 		8A21340B0B199D8500DC9811 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2134090B199D8500DC9811 /* Accelerate.framework */; };
-		8A3E62FC0B22D6E30091886F /* TWaveView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A3E62FA0B22D6E30091886F /* TWaveView.cpp */; };
-		8A3E62FD0B22D6E30091886F /* TWaveView.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A3E62FB0B22D6E30091886F /* TWaveView.h */; };
 		8A3E63210B22DD9C0091886F /* czt.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AEECD2E0B020BC6002C9BB7 /* czt.h */; };
 		8A3E63230B22DD9E0091886F /* brrcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AD362300AFE59F900FC48D2 /* brrcodec.h */; };
 		8A3E64080B2302D80091886F /* czt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AEECD2D0B020BC6002C9BB7 /* czt.cpp */; };
@@ -37,101 +35,9 @@
 		8AA4CF670AAE7D7A00AA021C /* SynthNote.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5D0AAE7D7A00AA021C /* SynthNote.h */; };
 		8AA4CF680AAE7D7A00AA021C /* SynthNoteList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF5E0AAE7D7A00AA021C /* SynthNoteList.cpp */; };
 		8AA4CF690AAE7D7A00AA021C /* SynthNoteList.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5F0AAE7D7A00AA021C /* SynthNoteList.h */; };
-		8AC141560B27094500F6A9C9 /* TImageCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BAF0B2144CA00EC1825 /* TImageCache.cpp */; };
-		8AC141570B27094600F6A9C9 /* TImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BB00B2144CA00EC1825 /* TImageCache.h */; };
-		8ACF4B980B2144AF00EC1825 /* AUCarbonViewEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B8C0B2144AF00EC1825 /* AUCarbonViewEditor.cpp */; };
-		8ACF4B990B2144AF00EC1825 /* AUCarbonViewEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B8D0B2144AF00EC1825 /* AUCarbonViewEditor.h */; };
-		8ACF4B9A0B2144AF00EC1825 /* AUCarbonViewEnhancedControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B8E0B2144AF00EC1825 /* AUCarbonViewEnhancedControl.cpp */; };
-		8ACF4B9B0B2144AF00EC1825 /* AUCarbonViewEnhancedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B8F0B2144AF00EC1825 /* AUCarbonViewEnhancedControl.h */; };
-		8ACF4B9D0B2144AF00EC1825 /* AUCarbonViewNib.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B910B2144AF00EC1825 /* AUCarbonViewNib.h */; };
-		8ACF4B9E0B2144AF00EC1825 /* AUOid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B920B2144AF00EC1825 /* AUOid.cpp */; };
-		8ACF4B9F0B2144AF00EC1825 /* AUOid.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B930B2144AF00EC1825 /* AUOid.h */; };
-		8ACF4BA00B2144AF00EC1825 /* AUProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B940B2144AF00EC1825 /* AUProperty.cpp */; };
-		8ACF4BA10B2144AF00EC1825 /* AUProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B950B2144AF00EC1825 /* AUProperty.h */; };
-		8ACF4BA20B2144AF00EC1825 /* ColorSwatch.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B960B2144AF00EC1825 /* ColorSwatch.cp */; };
-		8ACF4BA30B2144AF00EC1825 /* ColorSwatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B970B2144AF00EC1825 /* ColorSwatch.h */; };
-		8ACF4BDD0B2144CA00EC1825 /* AUGUIUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BA70B2144C900EC1825 /* AUGUIUtilities.cpp */; };
-		8ACF4BDE0B2144CA00EC1825 /* AUGUIUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BA80B2144C900EC1825 /* AUGUIUtilities.h */; };
-		8ACF4BE10B2144CA00EC1825 /* TDragTextControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BAB0B2144CA00EC1825 /* TDragTextControl.cpp */; };
-		8ACF4BE20B2144CA00EC1825 /* TDragTextControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BAC0B2144CA00EC1825 /* TDragTextControl.h */; };
-		8ACF4BEB0B2144CA00EC1825 /* TKnobControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BB50B2144CA00EC1825 /* TKnobControl.cpp */; };
-		8ACF4BEC0B2144CA00EC1825 /* TKnobControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BB60B2144CA00EC1825 /* TKnobControl.h */; };
-		8ACF4BFB0B2144CA00EC1825 /* TPushButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BC50B2144CA00EC1825 /* TPushButton.cpp */; };
-		8ACF4BFC0B2144CA00EC1825 /* TPushButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BC60B2144CA00EC1825 /* TPushButton.h */; };
-		8ACF4BFD0B2144CA00EC1825 /* TSliderControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BC70B2144CA00EC1825 /* TSliderControl.cpp */; };
-		8ACF4BFE0B2144CA00EC1825 /* TSliderControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BC80B2144CA00EC1825 /* TSliderControl.h */; };
-		8ACF4C050B2144CA00EC1825 /* TTransparentEditText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BCF0B2144CA00EC1825 /* TTransparentEditText.cpp */; };
-		8ACF4C060B2144CA00EC1825 /* TTransparentEditText.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD00B2144CA00EC1825 /* TTransparentEditText.h */; };
-		8ACF4C080B2144CA00EC1825 /* TUnicodeTextStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD20B2144CA00EC1825 /* TUnicodeTextStorage.h */; };
-		8ACF4C090B2144CA00EC1825 /* TValuePictButtonControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD30B2144CA00EC1825 /* TValuePictButtonControl.cpp */; };
-		8ACF4C0A0B2144CA00EC1825 /* TValuePictButtonControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD40B2144CA00EC1825 /* TValuePictButtonControl.h */; };
-		8ACF4C0F0B2144CA00EC1825 /* TViewNoCompositingCompatible.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD90B2144CA00EC1825 /* TViewNoCompositingCompatible.cpp */; };
-		8ACF4C100B2144CA00EC1825 /* TViewNoCompositingCompatible.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BDA0B2144CA00EC1825 /* TViewNoCompositingCompatible.h */; };
 		8ACF4C420B2144FD00EC1825 /* AUBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C260B2144FD00EC1825 /* AUBackground.png */; };
-		8ACF4C440B2144FD00EC1825 /* editor.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C280B2144FD00EC1825 /* editor.nib */; };
-		8ACF4C450B2144FD00EC1825 /* knob.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C290B2144FD00EC1825 /* knob.png */; };
 		8ACF4C4B0B2144FD00EC1825 /* knobBack.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C2F0B2144FD00EC1825 /* knobBack.png */; };
-		8ACF4C590B2144FD00EC1825 /* slider.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3D0B2144FD00EC1825 /* slider.png */; };
 		8ACF4C5A0B2144FD00EC1825 /* sliderThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */; };
-		8ACF4C5B0B2144FD00EC1825 /* window.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3F0B2144FD00EC1825 /* window.nib */; };
-		8ACF4C940B21457200EC1825 /* TArray.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C600B21457100EC1825 /* TArray.cp */; };
-		8ACF4C950B21457200EC1825 /* TArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C610B21457100EC1825 /* TArray.h */; };
-		8ACF4C960B21457200EC1825 /* TBag.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C620B21457100EC1825 /* TBag.cp */; };
-		8ACF4C970B21457200EC1825 /* TBag.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C630B21457100EC1825 /* TBag.h */; };
-		8ACF4C980B21457200EC1825 /* TBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C640B21457100EC1825 /* TBase.h */; };
-		8ACF4C990B21457200EC1825 /* TCFType.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C650B21457100EC1825 /* TCFType.cp */; };
-		8ACF4C9A0B21457200EC1825 /* TCFType.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C660B21457200EC1825 /* TCFType.h */; };
-		8ACF4C9B0B21457200EC1825 /* TData.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C670B21457200EC1825 /* TData.cp */; };
-		8ACF4C9C0B21457200EC1825 /* TData.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C680B21457200EC1825 /* TData.h */; };
-		8ACF4C9D0B21457200EC1825 /* TDictionary.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C690B21457200EC1825 /* TDictionary.cp */; };
-		8ACF4C9E0B21457200EC1825 /* TDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C6A0B21457200EC1825 /* TDictionary.h */; };
-		8ACF4C9F0B21457200EC1825 /* TNumber.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C6B0B21457200EC1825 /* TNumber.cp */; };
-		8ACF4CA00B21457200EC1825 /* TNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C6C0B21457200EC1825 /* TNumber.h */; };
-		8ACF4CA10B21457200EC1825 /* TSet.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C6D0B21457200EC1825 /* TSet.cp */; };
-		8ACF4CA20B21457200EC1825 /* TSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C6E0B21457200EC1825 /* TSet.h */; };
-		8ACF4CA30B21457200EC1825 /* TStream.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C6F0B21457200EC1825 /* TStream.cp */; };
-		8ACF4CA40B21457200EC1825 /* TStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C700B21457200EC1825 /* TStream.h */; };
-		8ACF4CA50B21457200EC1825 /* TString.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C710B21457200EC1825 /* TString.cp */; };
-		8ACF4CA60B21457200EC1825 /* TString.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C720B21457200EC1825 /* TString.h */; };
-		8ACF4CA70B21457200EC1825 /* TType.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C730B21457200EC1825 /* TType.cp */; };
-		8ACF4CA80B21457200EC1825 /* TType.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C740B21457200EC1825 /* TType.h */; };
-		8ACF4CA90B21457200EC1825 /* TURL.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C750B21457200EC1825 /* TURL.cp */; };
-		8ACF4CAA0B21457200EC1825 /* TURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C760B21457200EC1825 /* TURL.h */; };
-		8ACF4CAB0B21457200EC1825 /* HIFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C770B21457200EC1825 /* HIFramework.h */; };
-		8ACF4CAC0B21457200EC1825 /* CFArrayMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C790B21457200EC1825 /* CFArrayMethods.h */; };
-		8ACF4CAD0B21457200EC1825 /* CFBagMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7A0B21457200EC1825 /* CFBagMethods.h */; };
-		8ACF4CAE0B21457200EC1825 /* CFDataMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7B0B21457200EC1825 /* CFDataMethods.h */; };
-		8ACF4CAF0B21457200EC1825 /* CFDictionaryMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7C0B21457200EC1825 /* CFDictionaryMethods.h */; };
-		8ACF4CB00B21457200EC1825 /* CFMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7D0B21457200EC1825 /* CFMethods.h */; };
-		8ACF4CB10B21457200EC1825 /* CFNumberMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7E0B21457200EC1825 /* CFNumberMethods.h */; };
-		8ACF4CB20B21457200EC1825 /* CFSetMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7F0B21457200EC1825 /* CFSetMethods.h */; };
-		8ACF4CB30B21457200EC1825 /* CFStringMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C800B21457200EC1825 /* CFStringMethods.h */; };
-		8ACF4CB40B21457200EC1825 /* CFTypeMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C810B21457200EC1825 /* CFTypeMethods.h */; };
-		8ACF4CB50B21457200EC1825 /* CFURLMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C820B21457200EC1825 /* CFURLMethods.h */; };
-		8ACF4CB60B21457200EC1825 /* ControlMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C830B21457200EC1825 /* ControlMethods.h */; };
-		8ACF4CB70B21457200EC1825 /* HIObjectMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C840B21457200EC1825 /* HIObjectMethods.h */; };
-		8ACF4CB80B21457200EC1825 /* HIViewMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C850B21457200EC1825 /* HIViewMethods.h */; };
-		8ACF4CB90B21457200EC1825 /* TApplication.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C860B21457200EC1825 /* TApplication.cp */; };
-		8ACF4CBA0B21457200EC1825 /* TApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C870B21457200EC1825 /* TApplication.h */; };
-		8ACF4CBB0B21457200EC1825 /* TCarbonEvent.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C880B21457200EC1825 /* TCarbonEvent.cp */; };
-		8ACF4CBC0B21457200EC1825 /* TCarbonEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C890B21457200EC1825 /* TCarbonEvent.h */; };
-		8ACF4CBD0B21457200EC1825 /* TEventHandler.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C8A0B21457200EC1825 /* TEventHandler.cp */; };
-		8ACF4CBE0B21457200EC1825 /* TEventHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C8B0B21457200EC1825 /* TEventHandler.h */; };
-		8ACF4CBF0B21457200EC1825 /* TNib.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C8C0B21457200EC1825 /* TNib.cp */; };
-		8ACF4CC00B21457200EC1825 /* TNib.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C8D0B21457200EC1825 /* TNib.h */; };
-		8ACF4CC10B21457200EC1825 /* TObject.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C8E0B21457200EC1825 /* TObject.cp */; };
-		8ACF4CC20B21457200EC1825 /* TObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C8F0B21457200EC1825 /* TObject.h */; };
-		8ACF4CC30B21457200EC1825 /* TRect.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C900B21457200EC1825 /* TRect.cp */; };
-		8ACF4CC40B21457200EC1825 /* TRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C910B21457200EC1825 /* TRect.h */; };
-		8ACF4CC50B21457200EC1825 /* TView.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C920B21457200EC1825 /* TView.cp */; };
-		8ACF4CC60B21457200EC1825 /* TView.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C930B21457200EC1825 /* TView.h */; };
-		8ACF4CD10B2145CB00EC1825 /* AUCarbonViewBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CC80B2145CB00EC1825 /* AUCarbonViewBase.cpp */; };
-		8ACF4CD20B2145CB00EC1825 /* AUCarbonViewBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CC90B2145CB00EC1825 /* AUCarbonViewBase.h */; };
-		8ACF4CD30B2145CB00EC1825 /* AUCarbonViewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CCA0B2145CB00EC1825 /* AUCarbonViewControl.cpp */; };
-		8ACF4CD40B2145CB00EC1825 /* AUCarbonViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CCB0B2145CB00EC1825 /* AUCarbonViewControl.h */; };
-		8ACF4CD50B2145CB00EC1825 /* AUCarbonViewDispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CCC0B2145CB00EC1825 /* AUCarbonViewDispatch.cpp */; };
-		8ACF4CD60B2145CB00EC1825 /* AUControlGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CCD0B2145CB00EC1825 /* AUControlGroup.cpp */; };
-		8ACF4CD70B2145CB00EC1825 /* AUControlGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CCE0B2145CB00EC1825 /* AUControlGroup.h */; };
 		8ACF4CD80B2145CB00EC1825 /* CarbonEventHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CCF0B2145CB00EC1825 /* CarbonEventHandler.cpp */; };
 		8ACF4CD90B2145CB00EC1825 /* CarbonEventHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CD00B2145CB00EC1825 /* CarbonEventHandler.h */; };
 		8ACF4CDC0B2145E800EC1825 /* AUViewLocalizedStringKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CDB0B2145E800EC1825 /* AUViewLocalizedStringKeys.h */; };
@@ -140,16 +46,6 @@
 		8ACF4CEB0B2148CF00EC1825 /* CACFDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE70B2148CF00EC1825 /* CACFDictionary.cpp */; };
 		8ACF4CEC0B2148CF00EC1825 /* CACFNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE80B2148CF00EC1825 /* CACFNumber.cpp */; };
 		8ACF4CED0B2148CF00EC1825 /* CACFString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE90B2148CF00EC1825 /* CACFString.cpp */; };
-		8ACF4D060B214D2F00EC1825 /* Chip700View.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */; };
-		8ACF4D070B214D2F00EC1825 /* Chip700View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4D050B214D2F00EC1825 /* Chip700View.cpp */; };
-		8AD671490B2709AA002CB536 /* TValuePictControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD60B2144CA00EC1825 /* TValuePictControl.h */; };
-		8AD6714A0B2709AA002CB536 /* TValuePictControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD50B2144CA00EC1825 /* TValuePictControl.cpp */; };
-		8AD6714B0B2709B9002CB536 /* TMultiPane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BBF0B2144CA00EC1825 /* TMultiPane.cpp */; };
-		8AD6714C0B2709BA002CB536 /* TMultiPane.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BC00B2144CA00EC1825 /* TMultiPane.h */; };
-		8AD6714D0B2709C2002CB536 /* TPngPictControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BC30B2144CA00EC1825 /* TPngPictControl.cpp */; };
-		8AD6714E0B2709C3002CB536 /* TPngPictControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BC40B2144CA00EC1825 /* TPngPictControl.h */; };
-		8ADB2D020B27046300476B1E /* TUnicodeTextStorage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD10B2144CA00EC1825 /* TUnicodeTextStorage.cpp */; };
-		8ADB2D3F0B27075E00476B1E /* AUCarbonViewNib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B900B2144AF00EC1825 /* AUCarbonViewNib.cpp */; };
 		8AF717D00AE3DD5900C79293 /* gauss.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF717CF0AE3DD5900C79293 /* gauss.h */; };
 		8B41193E0749636600361ABE /* Chip700.r in Rez */ = {isa = PBXBuildFile; fileRef = 8BA05A680720730100365D66 /* Chip700.r */; };
 		8BA05A6B0720730100365D66 /* Chip700.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A660720730100365D66 /* Chip700.cpp */; };
@@ -189,8 +85,6 @@
 		8D01CCCA0486CAD60068D4B7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		F543D0AC147D285F00DC53A3 /* Chip700Generator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */; };
 		F543D0AD147D285F00DC53A3 /* Chip700Generator.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* Chip700Generator.h */; };
-		F557B4A11555BB8F009B4165 /* TValueTextControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD80B2144CA00EC1825 /* TValueTextControl.h */; };
-		F557B4A21555BB90009B4165 /* TValueTextControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD70B2144CA00EC1825 /* TValueTextControl.cpp */; };
 		F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
 		F55D63DB161D6FFE001CF9AB /* DummyCntl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */; };
 		F55D6448161D7A94001CF9AB /* ControlInstances.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6447161D7A94001CF9AB /* ControlInstances.h */; };
@@ -228,6 +122,7 @@
 		F55D6603161ECFD1001CF9AB /* MyParamDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */; };
 		F55D6608161ECFE3001CF9AB /* MyTextEdit.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6606161ECFE3001CF9AB /* MyTextEdit.h */; };
 		F55D6609161ECFE3001CF9AB /* MyTextEdit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */; };
+		F56028001626D59700369C23 /* Chip700_carbon.r in Rez */ = {isa = PBXBuildFile; fileRef = F56027FF1626D59700369C23 /* Chip700_carbon.r */; };
 		F569A3F61619527F006C91AD /* C700_CocoaViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */; };
 		F569A3F71619527F006C91AD /* C700_CocoaViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */; };
 		F569A40516195488006C91AD /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
@@ -248,81 +143,6 @@
 		F569AD37161D3490006C91AD /* WaveView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AD35161D3490006C91AD /* WaveView.cpp */; };
 		F569BEC21622B5F8006C91AD /* EfxAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569BEC01622B5F8006C91AD /* EfxAccess.h */; };
 		F569BEC31622B5F8006C91AD /* EfxAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569BEC11622B5F8006C91AD /* EfxAccess.cpp */; };
-		F569C1C7162424FB006C91AD /* track01_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDE9155E57AD002D6E59 /* track01_0.png */; };
-		F569C1C8162424FB006C91AD /* track01_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDEA155E57AD002D6E59 /* track01_1.png */; };
-		F569C1C9162424FB006C91AD /* track02_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDEB155E57AD002D6E59 /* track02_0.png */; };
-		F569C1CA162424FB006C91AD /* track02_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDEC155E57AD002D6E59 /* track02_1.png */; };
-		F569C1CB162424FB006C91AD /* track03_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDFE155E6950002D6E59 /* track03_0.png */; };
-		F569C1CC162424FB006C91AD /* track03_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDFF155E6950002D6E59 /* track03_1.png */; };
-		F569C1CD162424FB006C91AD /* track04_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE00155E6950002D6E59 /* track04_0.png */; };
-		F569C1CE162424FB006C91AD /* track04_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE01155E6950002D6E59 /* track04_1.png */; };
-		F569C1CF162424FB006C91AD /* track05_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE02155E6950002D6E59 /* track05_0.png */; };
-		F569C1D0162424FB006C91AD /* track05_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE03155E6950002D6E59 /* track05_1.png */; };
-		F569C1D1162424FB006C91AD /* track06_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE04155E6950002D6E59 /* track06_0.png */; };
-		F569C1D2162424FB006C91AD /* track06_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE05155E6950002D6E59 /* track06_1.png */; };
-		F569C1D3162424FB006C91AD /* track07_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE06155E6950002D6E59 /* track07_0.png */; };
-		F569C1D4162424FB006C91AD /* track07_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE07155E6950002D6E59 /* track07_1.png */; };
-		F569C1D5162424FB006C91AD /* track08_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE08155E6950002D6E59 /* track08_0.png */; };
-		F569C1D6162424FB006C91AD /* track08_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE09155E6950002D6E59 /* track08_1.png */; };
-		F569C1D7162424FB006C91AD /* track09_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0A155E6950002D6E59 /* track09_0.png */; };
-		F569C1D8162424FB006C91AD /* track09_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0B155E6950002D6E59 /* track09_1.png */; };
-		F569C1D9162424FB006C91AD /* track10_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0C155E6950002D6E59 /* track10_0.png */; };
-		F569C1DA162424FB006C91AD /* track10_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0D155E6950002D6E59 /* track10_1.png */; };
-		F569C1DB162424FB006C91AD /* track11_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0E155E6950002D6E59 /* track11_0.png */; };
-		F569C1DC162424FB006C91AD /* track11_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0F155E6950002D6E59 /* track11_1.png */; };
-		F569C1DD162424FB006C91AD /* track12_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE10155E6950002D6E59 /* track12_0.png */; };
-		F569C1DE162424FB006C91AD /* track12_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE11155E6950002D6E59 /* track12_1.png */; };
-		F569C1DF162424FB006C91AD /* track13_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE12155E6950002D6E59 /* track13_0.png */; };
-		F569C1E0162424FB006C91AD /* track13_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE13155E6950002D6E59 /* track13_1.png */; };
-		F569C1E1162424FB006C91AD /* track14_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE14155E6950002D6E59 /* track14_0.png */; };
-		F569C1E2162424FB006C91AD /* track14_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE15155E6950002D6E59 /* track14_1.png */; };
-		F569C1E3162424FB006C91AD /* track15_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE16155E6950002D6E59 /* track15_0.png */; };
-		F569C1E4162424FB006C91AD /* track15_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE17155E6950002D6E59 /* track15_1.png */; };
-		F569C1E5162424FB006C91AD /* track16_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE18155E6950002D6E59 /* track16_0.png */; };
-		F569C1E6162424FB006C91AD /* track16_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE19155E6950002D6E59 /* track16_1.png */; };
-		F569C1E7162424FB006C91AD /* bank_a0.png in Resources */ = {isa = PBXBuildFile; fileRef = F51685471555476100D1F408 /* bank_a0.png */; };
-		F569C1E8162424FB006C91AD /* bank_a1.png in Resources */ = {isa = PBXBuildFile; fileRef = F51685481555476100D1F408 /* bank_a1.png */; };
-		F569C1E9162424FB006C91AD /* bank_b0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854D1555476100D1F408 /* bank_b0.png */; };
-		F569C1EA162424FB006C91AD /* bank_b1.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854A1555476100D1F408 /* bank_b1.png */; };
-		F569C1EB162424FB006C91AD /* bank_c0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854E1555476100D1F408 /* bank_c0.png */; };
-		F569C1EC162424FB006C91AD /* bank_c1.png in Resources */ = {isa = PBXBuildFile; fileRef = F51685491555476100D1F408 /* bank_c1.png */; };
-		F569C1ED162424FB006C91AD /* bank_d0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854C1555476100D1F408 /* bank_d0.png */; };
-		F569C1EE162424FB006C91AD /* bank_d1.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854B1555476100D1F408 /* bank_d1.png */; };
-		F569C1EF162424FB006C91AD /* ind_track1.png in Resources */ = {isa = PBXBuildFile; fileRef = F516853D15553AB700D1F408 /* ind_track1.png */; };
-		F569C1F0162424FB006C91AD /* ind_track0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516853E15553AB700D1F408 /* ind_track0.png */; };
-		F569C1F1162424FB006C91AD /* bt_echo0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D871478FD9300D87CF2 /* bt_echo0.png */; };
-		F569C1F2162424FB006C91AD /* bt_echo1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D881478FD9300D87CF2 /* bt_echo1.png */; };
-		F569C1F3162424FB006C91AD /* bt_copy0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D271478E8F800D87CF2 /* bt_copy0.png */; };
-		F569C1F4162424FB006C91AD /* bt_copy1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D281478E8F800D87CF2 /* bt_copy1.png */; };
-		F569C1F5162424FB006C91AD /* bt_calc0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EEC70B2ADF27008D2265 /* bt_calc0.png */; };
-		F569C1F6162424FB006C91AD /* bt_calc1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACBD6F30B2B006500A73622 /* bt_calc1.png */; };
-		F569C1F7162424FB006C91AD /* bt_load1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACBD6F40B2B006500A73622 /* bt_load1.png */; };
-		F569C1F8162424FB006C91AD /* bt_save1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACBD6F50B2B006500A73622 /* bt_save1.png */; };
-		F569C1F9162424FB006C91AD /* bt_unload1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACBD6F60B2B006500A73622 /* bt_unload1.png */; };
-		F569C1FA162424FB006C91AD /* bt_multi_bank_a0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB749155E851500BC9F4A /* bt_multi_bank_a0.png */; };
-		F569C1FB162424FB006C91AD /* bt_multi_bank_a1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74A155E851500BC9F4A /* bt_multi_bank_a1.png */; };
-		F569C1FC162424FB006C91AD /* bt_multi_bank_b0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74B155E851500BC9F4A /* bt_multi_bank_b0.png */; };
-		F569C1FD162424FB006C91AD /* bt_multi_bank_b1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74C155E851500BC9F4A /* bt_multi_bank_b1.png */; };
-		F569C1FE162424FB006C91AD /* bt_multi_bank_c0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74D155E851500BC9F4A /* bt_multi_bank_c0.png */; };
-		F569C1FF162424FB006C91AD /* bt_multi_bank_c1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74E155E851500BC9F4A /* bt_multi_bank_c1.png */; };
-		F569C200162424FB006C91AD /* bt_multi_bank_d0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74F155E851500BC9F4A /* bt_multi_bank_d0.png */; };
-		F569C201162424FB006C91AD /* bt_multi_bank_d1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB750155E851500BC9F4A /* bt_multi_bank_d1.png */; };
-		F569C202162424FB006C91AD /* bt_preemphasis0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EED40B2ADFB2008D2265 /* bt_preemphasis0.png */; };
-		F569C203162424FB006C91AD /* bt_preemphasis1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EED50B2ADFB2008D2265 /* bt_preemphasis1.png */; };
-		F569C204162424FB006C91AD /* bt_load0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EEC80B2ADF27008D2265 /* bt_load0.png */; };
-		F569C205162424FB006C91AD /* bt_loop0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EEC90B2ADF27008D2265 /* bt_loop0.png */; };
-		F569C206162424FB006C91AD /* bt_loop1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EECA0B2ADF27008D2265 /* bt_loop1.png */; };
-		F569C207162424FB006C91AD /* bt_save0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EECB0B2ADF27008D2265 /* bt_save0.png */; };
-		F569C208162424FB006C91AD /* bt_unload0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EECC0B2ADF27008D2265 /* bt_unload0.png */; };
-		F569C209162424FB006C91AD /* bt_save_xi0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE50155E7A7A002D6E59 /* bt_save_xi0.png */; };
-		F569C20A162424FB006C91AD /* bt_save_xi1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */; };
-		F569C20B162424FB006C91AD /* bt_generatenoise0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4F60B2AA99100ED85CB /* bt_generatenoise0.png */; };
-		F569C20C162424FB006C91AD /* bt_generatenoise1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4F70B2AA99100ED85CB /* bt_generatenoise1.png */; };
-		F569C20D162424FB006C91AD /* bt_properlydecode0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FA0B2AA99100ED85CB /* bt_properlydecode0.png */; };
-		F569C20E162424FB006C91AD /* bt_properlydecode1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FB0B2AA99100ED85CB /* bt_properlydecode1.png */; };
-		F569C20F162424FB006C91AD /* bt_velocitysens0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FC0B2AA99100ED85CB /* bt_velocitysens0.png */; };
-		F569C210162424FB006C91AD /* bt_velocitysens1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FD0B2AA99100ED85CB /* bt_velocitysens1.png */; };
-		F569C211162424FB006C91AD /* bt_velocitysens2.png in Resources */ = {isa = PBXBuildFile; fileRef = F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */; };
 		F569C38A162515ED006C91AD /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C388162515ED006C91AD /* FileAccess.h */; };
 		F569C38B162515ED006C91AD /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C389162515ED006C91AD /* FileAccess.cpp */; };
 		F569C3AD162518B9006C91AD /* AudioFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AB162518B9006C91AD /* AudioFile.h */; };
@@ -335,6 +155,346 @@
 		F569C40C16254B6E006C91AD /* XIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C40A16254B6E006C91AD /* XIFile.cpp */; };
 		F569C6DF162644AE006C91AD /* PlistBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C6DD162644AE006C91AD /* PlistBRRFile.h */; };
 		F569C6E0162644AE006C91AD /* PlistBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */; };
+		F569C9041626D130006C91AD /* Chip700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */; };
+		F569C9051626D130006C91AD /* Chip700Version.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A690720730100365D66 /* Chip700Version.h */; };
+		F569C9061626D130006C91AD /* AUBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A80072073D200365D66 /* AUBase.h */; };
+		F569C9071626D130006C91AD /* AUDispatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A82072073D200365D66 /* AUDispatch.h */; };
+		F569C9081626D130006C91AD /* AUInputElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A84072073D200365D66 /* AUInputElement.h */; };
+		F569C9091626D130006C91AD /* AUOutputElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A86072073D200365D66 /* AUOutputElement.h */; };
+		F569C90A1626D130006C91AD /* AUScopeElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A89072073D200365D66 /* AUScopeElement.h */; };
+		F569C90B1626D130006C91AD /* ComponentBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A8B072073D200365D66 /* ComponentBase.h */; };
+		F569C90C1626D130006C91AD /* AUBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AA8072073D200365D66 /* AUBuffer.h */; };
+		F569C90D1626D130006C91AD /* AUDebugDispatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AAA072073D200365D66 /* AUDebugDispatcher.h */; };
+		F569C90E1626D130006C91AD /* AUInputFormatConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AAB072073D200365D66 /* AUInputFormatConverter.h */; };
+		F569C90F1626D130006C91AD /* AUSilentTimeout.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AAC072073D200365D66 /* AUSilentTimeout.h */; };
+		F569C9101626D130006C91AD /* AUTimestampGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AAD072073D200365D66 /* AUTimestampGenerator.h */; };
+		F569C9111626D130006C91AD /* CAAudioChannelLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AE00720742100365D66 /* CAAudioChannelLayout.h */; };
+		F569C9121626D130006C91AD /* CAMutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AE20720742100365D66 /* CAMutex.h */; };
+		F569C9131626D130006C91AD /* CAStreamBasicDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AE40720742100365D66 /* CAStreamBasicDescription.h */; };
+		F569C9141626D130006C91AD /* CAAUParameter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05B060720754400365D66 /* CAAUParameter.h */; };
+		F569C9151626D130006C91AD /* Chip700.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC6025B073B072D006C4272 /* Chip700.h */; };
+		F569C9161626D130006C91AD /* CAVectorUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E0BECF90898391C00E1F0F7 /* CAVectorUnit.h */; };
+		F569C9171626D130006C91AD /* CAVectorUnitTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E0BECFA0898391C00E1F0F7 /* CAVectorUnitTypes.h */; };
+		F569C9181626D130006C91AD /* CAAUMIDIMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF3B0AAE7C4000AA021C /* CAAUMIDIMap.h */; };
+		F569C9191626D130006C91AD /* CAAUMIDIMapManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF3D0AAE7C4000AA021C /* CAAUMIDIMapManager.h */; };
+		F569C91A1626D130006C91AD /* AUMIDIBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF4C0AAE7CFC00AA021C /* AUMIDIBase.h */; };
+		F569C91B1626D130006C91AD /* MusicDeviceBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF4E0AAE7CFC00AA021C /* MusicDeviceBase.h */; };
+		F569C91C1626D130006C91AD /* AUInstrumentBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF570AAE7D7A00AA021C /* AUInstrumentBase.h */; };
+		F569C91D1626D130006C91AD /* LockFreeFIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF580AAE7D7A00AA021C /* LockFreeFIFO.h */; };
+		F569C91E1626D130006C91AD /* SynthElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5A0AAE7D7A00AA021C /* SynthElement.h */; };
+		F569C91F1626D130006C91AD /* SynthEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5B0AAE7D7A00AA021C /* SynthEvent.h */; };
+		F569C9201626D130006C91AD /* SynthNote.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5D0AAE7D7A00AA021C /* SynthNote.h */; };
+		F569C9211626D130006C91AD /* SynthNoteList.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5F0AAE7D7A00AA021C /* SynthNoteList.h */; };
+		F569C9221626D130006C91AD /* Chip700defines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A77F1030ADE785100F2B2BE /* Chip700defines.h */; };
+		F569C9231626D130006C91AD /* samplebrr.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A10AB550AE2855600271511 /* samplebrr.h */; };
+		F569C9241626D130006C91AD /* gauss.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF717CF0AE3DD5900C79293 /* gauss.h */; };
+		F569C9251626D130006C91AD /* AUCarbonViewEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B8D0B2144AF00EC1825 /* AUCarbonViewEditor.h */; };
+		F569C9261626D130006C91AD /* AUCarbonViewEnhancedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B8F0B2144AF00EC1825 /* AUCarbonViewEnhancedControl.h */; };
+		F569C9271626D130006C91AD /* AUCarbonViewNib.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B910B2144AF00EC1825 /* AUCarbonViewNib.h */; };
+		F569C9281626D130006C91AD /* AUOid.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B930B2144AF00EC1825 /* AUOid.h */; };
+		F569C9291626D130006C91AD /* AUProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B950B2144AF00EC1825 /* AUProperty.h */; };
+		F569C92A1626D130006C91AD /* ColorSwatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4B970B2144AF00EC1825 /* ColorSwatch.h */; };
+		F569C92B1626D130006C91AD /* AUGUIUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BA80B2144C900EC1825 /* AUGUIUtilities.h */; };
+		F569C92C1626D130006C91AD /* TDragTextControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BAC0B2144CA00EC1825 /* TDragTextControl.h */; };
+		F569C92D1626D130006C91AD /* TKnobControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BB60B2144CA00EC1825 /* TKnobControl.h */; };
+		F569C92E1626D130006C91AD /* TPushButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BC60B2144CA00EC1825 /* TPushButton.h */; };
+		F569C92F1626D130006C91AD /* TSliderControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BC80B2144CA00EC1825 /* TSliderControl.h */; };
+		F569C9301626D130006C91AD /* TTransparentEditText.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD00B2144CA00EC1825 /* TTransparentEditText.h */; };
+		F569C9311626D130006C91AD /* TUnicodeTextStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD20B2144CA00EC1825 /* TUnicodeTextStorage.h */; };
+		F569C9321626D130006C91AD /* TValuePictButtonControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD40B2144CA00EC1825 /* TValuePictButtonControl.h */; };
+		F569C9331626D130006C91AD /* TViewNoCompositingCompatible.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BDA0B2144CA00EC1825 /* TViewNoCompositingCompatible.h */; };
+		F569C9341626D130006C91AD /* TArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C610B21457100EC1825 /* TArray.h */; };
+		F569C9351626D130006C91AD /* TBag.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C630B21457100EC1825 /* TBag.h */; };
+		F569C9361626D130006C91AD /* TBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C640B21457100EC1825 /* TBase.h */; };
+		F569C9371626D130006C91AD /* TCFType.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C660B21457200EC1825 /* TCFType.h */; };
+		F569C9381626D130006C91AD /* TData.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C680B21457200EC1825 /* TData.h */; };
+		F569C9391626D130006C91AD /* TDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C6A0B21457200EC1825 /* TDictionary.h */; };
+		F569C93A1626D130006C91AD /* TNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C6C0B21457200EC1825 /* TNumber.h */; };
+		F569C93B1626D130006C91AD /* TSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C6E0B21457200EC1825 /* TSet.h */; };
+		F569C93C1626D130006C91AD /* TStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C700B21457200EC1825 /* TStream.h */; };
+		F569C93D1626D130006C91AD /* TString.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C720B21457200EC1825 /* TString.h */; };
+		F569C93E1626D130006C91AD /* TType.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C740B21457200EC1825 /* TType.h */; };
+		F569C93F1626D130006C91AD /* TURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C760B21457200EC1825 /* TURL.h */; };
+		F569C9401626D130006C91AD /* HIFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C770B21457200EC1825 /* HIFramework.h */; };
+		F569C9411626D130006C91AD /* CFArrayMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C790B21457200EC1825 /* CFArrayMethods.h */; };
+		F569C9421626D130006C91AD /* CFBagMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7A0B21457200EC1825 /* CFBagMethods.h */; };
+		F569C9431626D130006C91AD /* CFDataMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7B0B21457200EC1825 /* CFDataMethods.h */; };
+		F569C9441626D130006C91AD /* CFDictionaryMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7C0B21457200EC1825 /* CFDictionaryMethods.h */; };
+		F569C9451626D130006C91AD /* CFMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7D0B21457200EC1825 /* CFMethods.h */; };
+		F569C9461626D130006C91AD /* CFNumberMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7E0B21457200EC1825 /* CFNumberMethods.h */; };
+		F569C9471626D130006C91AD /* CFSetMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C7F0B21457200EC1825 /* CFSetMethods.h */; };
+		F569C9481626D130006C91AD /* CFStringMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C800B21457200EC1825 /* CFStringMethods.h */; };
+		F569C9491626D130006C91AD /* CFTypeMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C810B21457200EC1825 /* CFTypeMethods.h */; };
+		F569C94A1626D130006C91AD /* CFURLMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C820B21457200EC1825 /* CFURLMethods.h */; };
+		F569C94B1626D130006C91AD /* ControlMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C830B21457200EC1825 /* ControlMethods.h */; };
+		F569C94C1626D130006C91AD /* HIObjectMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C840B21457200EC1825 /* HIObjectMethods.h */; };
+		F569C94D1626D130006C91AD /* HIViewMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C850B21457200EC1825 /* HIViewMethods.h */; };
+		F569C94E1626D130006C91AD /* TApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C870B21457200EC1825 /* TApplication.h */; };
+		F569C94F1626D130006C91AD /* TCarbonEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C890B21457200EC1825 /* TCarbonEvent.h */; };
+		F569C9501626D130006C91AD /* TEventHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C8B0B21457200EC1825 /* TEventHandler.h */; };
+		F569C9511626D130006C91AD /* TNib.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C8D0B21457200EC1825 /* TNib.h */; };
+		F569C9521626D130006C91AD /* TObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C8F0B21457200EC1825 /* TObject.h */; };
+		F569C9531626D130006C91AD /* TRect.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C910B21457200EC1825 /* TRect.h */; };
+		F569C9541626D130006C91AD /* TView.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4C930B21457200EC1825 /* TView.h */; };
+		F569C9551626D130006C91AD /* AUCarbonViewBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CC90B2145CB00EC1825 /* AUCarbonViewBase.h */; };
+		F569C9561626D130006C91AD /* AUCarbonViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CCB0B2145CB00EC1825 /* AUCarbonViewControl.h */; };
+		F569C9571626D130006C91AD /* AUControlGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CCE0B2145CB00EC1825 /* AUControlGroup.h */; };
+		F569C9581626D130006C91AD /* CarbonEventHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CD00B2145CB00EC1825 /* CarbonEventHandler.h */; };
+		F569C9591626D130006C91AD /* AUViewLocalizedStringKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CDB0B2145E800EC1825 /* AUViewLocalizedStringKeys.h */; };
+		F569C95A1626D130006C91AD /* Chip700View.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4D040B214D2F00EC1825 /* Chip700View.h */; };
+		F569C95B1626D130006C91AD /* TWaveView.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A3E62FB0B22D6E30091886F /* TWaveView.h */; };
+		F569C95C1626D130006C91AD /* czt.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AEECD2E0B020BC6002C9BB7 /* czt.h */; };
+		F569C95D1626D130006C91AD /* brrcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AD362300AFE59F900FC48D2 /* brrcodec.h */; };
+		F569C95E1626D130006C91AD /* TImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BB00B2144CA00EC1825 /* TImageCache.h */; };
+		F569C95F1626D130006C91AD /* TValuePictControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD60B2144CA00EC1825 /* TValuePictControl.h */; };
+		F569C9601626D130006C91AD /* TMultiPane.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BC00B2144CA00EC1825 /* TMultiPane.h */; };
+		F569C9611626D130006C91AD /* TPngPictControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BC40B2144CA00EC1825 /* TPngPictControl.h */; };
+		F569C9621626D130006C91AD /* Chip700Generator.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* Chip700Generator.h */; };
+		F569C9631626D130006C91AD /* TValueTextControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4BD80B2144CA00EC1825 /* TValueTextControl.h */; };
+		F569C9641626D130006C91AD /* getpluginbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD29160B67860003E710 /* getpluginbundle.h */; };
+		F569C9651626D130006C91AD /* vstkeycode.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2B160B67860003E710 /* vstkeycode.h */; };
+		F569C9661626D130006C91AD /* cocoasupport.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2C160B67860003E710 /* cocoasupport.h */; };
+		F569C9671626D130006C91AD /* cfileselector.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD31160B67860003E710 /* cfileselector.h */; };
+		F569C9681626D130006C91AD /* plugguieditor.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD32160B67860003E710 /* plugguieditor.h */; };
+		F569C9691626D130006C91AD /* vstgui.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD35160B67860003E710 /* vstgui.h */; };
+		F569C96A1626D130006C91AD /* C700_CocoaViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */; };
+		F569C96B1626D130006C91AD /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
+		F569C96C1626D130006C91AD /* C700GUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A484161964FD006C91AD /* C700GUI.h */; };
+		F569C96D1626D130006C91AD /* ctooltipsupport.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A8021619DEA6006C91AD /* ctooltipsupport.h */; };
+		F569C96E1626D130006C91AD /* MyKnob.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A94D161AB0F1006C91AD /* MyKnob.h */; };
+		F569C96F1626D130006C91AD /* MySlider.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AA24161AD9F4006C91AD /* MySlider.h */; };
+		F569C9701626D130006C91AD /* LabelOnOffButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AAA2161C0114006C91AD /* LabelOnOffButton.h */; };
+		F569C9711626D130006C91AD /* WaveView.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AD34161D3490006C91AD /* WaveView.h */; };
+		F569C9721626D130006C91AD /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
+		F569C9731626D130006C91AD /* ControlInstances.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6447161D7A94001CF9AB /* ControlInstances.h */; };
+		F569C9741626D130006C91AD /* SeparatorLine.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D65BC161EC9D0001CF9AB /* SeparatorLine.h */; };
+		F569C9751626D130006C91AD /* MyParamDisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6600161ECFD1001CF9AB /* MyParamDisplay.h */; };
+		F569C9761626D130006C91AD /* MyTextEdit.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6606161ECFE3001CF9AB /* MyTextEdit.h */; };
+		F569C9771626D130006C91AD /* EfxAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569BEC01622B5F8006C91AD /* EfxAccess.h */; };
+		F569C9781626D130006C91AD /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C388162515ED006C91AD /* FileAccess.h */; };
+		F569C9791626D130006C91AD /* AudioFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AB162518B9006C91AD /* AudioFile.h */; };
+		F569C97A1626D130006C91AD /* SPCFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AF162518BF006C91AD /* SPCFile.h */; };
+		F569C97B1626D130006C91AD /* BRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3B3162518C6006C91AD /* BRRFile.h */; };
+		F569C97C1626D130006C91AD /* XIFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C40916254B6E006C91AD /* XIFile.h */; };
+		F569C97D1626D130006C91AD /* PlistBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C6DD162644AE006C91AD /* PlistBRRFile.h */; };
+		F569C97F1626D130006C91AD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		F569C9801626D130006C91AD /* AUBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C260B2144FD00EC1825 /* AUBackground.png */; };
+		F569C9811626D130006C91AD /* editor.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C280B2144FD00EC1825 /* editor.nib */; };
+		F569C9821626D130006C91AD /* knob.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C290B2144FD00EC1825 /* knob.png */; };
+		F569C9831626D130006C91AD /* knobBack.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C2F0B2144FD00EC1825 /* knobBack.png */; };
+		F569C9841626D130006C91AD /* slider.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3D0B2144FD00EC1825 /* slider.png */; };
+		F569C9851626D130006C91AD /* sliderThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */; };
+		F569C9861626D130006C91AD /* window.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3F0B2144FD00EC1825 /* window.nib */; };
+		F569C9871626D130006C91AD /* bt_check.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AA85161BFFA8006C91AD /* bt_check.png */; };
+		F569C9881626D130006C91AD /* rocker_sw.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AD17161D3277006C91AD /* rocker_sw.png */; };
+		F569C9891626D130006C91AD /* bt_copy.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FB161EB76D001CF9AB /* bt_copy.png */; };
+		F569C98A1626D130006C91AD /* bt_calc.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FD161EB7CD001CF9AB /* bt_calc.png */; };
+		F569C98B1626D130006C91AD /* bt_load.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FF161EB8CE001CF9AB /* bt_load.png */; };
+		F569C98C1626D130006C91AD /* bt_save.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6501161EB957001CF9AB /* bt_save.png */; };
+		F569C98D1626D130006C91AD /* bt_unload.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6503161EB9B6001CF9AB /* bt_unload.png */; };
+		F569C98E1626D130006C91AD /* bt_save_xi.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6505161EBA24001CF9AB /* bt_save_xi.png */; };
+		F569C98F1626D130006C91AD /* bt_velocitysens.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6507161EBB09001CF9AB /* bt_velocitysens.png */; };
+		F569C9901626D130006C91AD /* bank_a.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6544161EBBE9001CF9AB /* bank_a.png */; };
+		F569C9911626D130006C91AD /* bank_b.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6545161EBBE9001CF9AB /* bank_b.png */; };
+		F569C9921626D130006C91AD /* bank_c.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6546161EBBE9001CF9AB /* bank_c.png */; };
+		F569C9931626D130006C91AD /* bank_d.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6547161EBBE9001CF9AB /* bank_d.png */; };
+		F569C9941626D130006C91AD /* track01_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654C161EBF1B001CF9AB /* track01_.png */; };
+		F569C9951626D130006C91AD /* track02_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654D161EBF1B001CF9AB /* track02_.png */; };
+		F569C9961626D130006C91AD /* track03_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654E161EBF1B001CF9AB /* track03_.png */; };
+		F569C9971626D130006C91AD /* track04_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654F161EBF1B001CF9AB /* track04_.png */; };
+		F569C9981626D130006C91AD /* track05_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6550161EBF1B001CF9AB /* track05_.png */; };
+		F569C9991626D130006C91AD /* track06_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6551161EBF1B001CF9AB /* track06_.png */; };
+		F569C99A1626D130006C91AD /* track07_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6552161EBF1B001CF9AB /* track07_.png */; };
+		F569C99B1626D130006C91AD /* track08_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6553161EBF1B001CF9AB /* track08_.png */; };
+		F569C99C1626D130006C91AD /* track09_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6554161EBF1B001CF9AB /* track09_.png */; };
+		F569C99D1626D130006C91AD /* track10_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6555161EBF1B001CF9AB /* track10_.png */; };
+		F569C99E1626D130006C91AD /* track11_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6556161EBF1B001CF9AB /* track11_.png */; };
+		F569C99F1626D130006C91AD /* track12_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6557161EBF1B001CF9AB /* track12_.png */; };
+		F569C9A01626D130006C91AD /* track13_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6558161EBF1B001CF9AB /* track13_.png */; };
+		F569C9A11626D130006C91AD /* track14_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6559161EBF1B001CF9AB /* track14_.png */; };
+		F569C9A21626D130006C91AD /* track15_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D655A161EBF1B001CF9AB /* track15_.png */; };
+		F569C9A31626D130006C91AD /* track16_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D655B161EBF1B001CF9AB /* track16_.png */; };
+		F569C9A41626D130006C91AD /* ind_track.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6572161EC0F6001CF9AB /* ind_track.png */; };
+		F569C9A51626D130006C91AD /* track01_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDE9155E57AD002D6E59 /* track01_0.png */; };
+		F569C9A61626D130006C91AD /* track01_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDEA155E57AD002D6E59 /* track01_1.png */; };
+		F569C9A71626D130006C91AD /* track02_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDEB155E57AD002D6E59 /* track02_0.png */; };
+		F569C9A81626D130006C91AD /* track02_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDEC155E57AD002D6E59 /* track02_1.png */; };
+		F569C9A91626D130006C91AD /* track03_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDFE155E6950002D6E59 /* track03_0.png */; };
+		F569C9AA1626D130006C91AD /* track03_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EDFF155E6950002D6E59 /* track03_1.png */; };
+		F569C9AB1626D130006C91AD /* track04_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE00155E6950002D6E59 /* track04_0.png */; };
+		F569C9AC1626D130006C91AD /* track04_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE01155E6950002D6E59 /* track04_1.png */; };
+		F569C9AD1626D130006C91AD /* track05_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE02155E6950002D6E59 /* track05_0.png */; };
+		F569C9AE1626D130006C91AD /* track05_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE03155E6950002D6E59 /* track05_1.png */; };
+		F569C9AF1626D130006C91AD /* track06_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE04155E6950002D6E59 /* track06_0.png */; };
+		F569C9B01626D130006C91AD /* track06_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE05155E6950002D6E59 /* track06_1.png */; };
+		F569C9B11626D130006C91AD /* track07_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE06155E6950002D6E59 /* track07_0.png */; };
+		F569C9B21626D130006C91AD /* track07_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE07155E6950002D6E59 /* track07_1.png */; };
+		F569C9B31626D130006C91AD /* track08_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE08155E6950002D6E59 /* track08_0.png */; };
+		F569C9B41626D130006C91AD /* track08_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE09155E6950002D6E59 /* track08_1.png */; };
+		F569C9B51626D130006C91AD /* track09_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0A155E6950002D6E59 /* track09_0.png */; };
+		F569C9B61626D130006C91AD /* track09_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0B155E6950002D6E59 /* track09_1.png */; };
+		F569C9B71626D130006C91AD /* track10_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0C155E6950002D6E59 /* track10_0.png */; };
+		F569C9B81626D130006C91AD /* track10_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0D155E6950002D6E59 /* track10_1.png */; };
+		F569C9B91626D130006C91AD /* track11_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0E155E6950002D6E59 /* track11_0.png */; };
+		F569C9BA1626D130006C91AD /* track11_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE0F155E6950002D6E59 /* track11_1.png */; };
+		F569C9BB1626D130006C91AD /* track12_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE10155E6950002D6E59 /* track12_0.png */; };
+		F569C9BC1626D130006C91AD /* track12_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE11155E6950002D6E59 /* track12_1.png */; };
+		F569C9BD1626D130006C91AD /* track13_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE12155E6950002D6E59 /* track13_0.png */; };
+		F569C9BE1626D130006C91AD /* track13_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE13155E6950002D6E59 /* track13_1.png */; };
+		F569C9BF1626D130006C91AD /* track14_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE14155E6950002D6E59 /* track14_0.png */; };
+		F569C9C01626D130006C91AD /* track14_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE15155E6950002D6E59 /* track14_1.png */; };
+		F569C9C11626D130006C91AD /* track15_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE16155E6950002D6E59 /* track15_0.png */; };
+		F569C9C21626D130006C91AD /* track15_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE17155E6950002D6E59 /* track15_1.png */; };
+		F569C9C31626D130006C91AD /* track16_0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE18155E6950002D6E59 /* track16_0.png */; };
+		F569C9C41626D130006C91AD /* track16_1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE19155E6950002D6E59 /* track16_1.png */; };
+		F569C9C51626D130006C91AD /* bank_a0.png in Resources */ = {isa = PBXBuildFile; fileRef = F51685471555476100D1F408 /* bank_a0.png */; };
+		F569C9C61626D130006C91AD /* bank_a1.png in Resources */ = {isa = PBXBuildFile; fileRef = F51685481555476100D1F408 /* bank_a1.png */; };
+		F569C9C71626D130006C91AD /* bank_b0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854D1555476100D1F408 /* bank_b0.png */; };
+		F569C9C81626D130006C91AD /* bank_b1.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854A1555476100D1F408 /* bank_b1.png */; };
+		F569C9C91626D130006C91AD /* bank_c0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854E1555476100D1F408 /* bank_c0.png */; };
+		F569C9CA1626D130006C91AD /* bank_c1.png in Resources */ = {isa = PBXBuildFile; fileRef = F51685491555476100D1F408 /* bank_c1.png */; };
+		F569C9CB1626D130006C91AD /* bank_d0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854C1555476100D1F408 /* bank_d0.png */; };
+		F569C9CC1626D130006C91AD /* bank_d1.png in Resources */ = {isa = PBXBuildFile; fileRef = F516854B1555476100D1F408 /* bank_d1.png */; };
+		F569C9CD1626D130006C91AD /* ind_track1.png in Resources */ = {isa = PBXBuildFile; fileRef = F516853D15553AB700D1F408 /* ind_track1.png */; };
+		F569C9CE1626D130006C91AD /* ind_track0.png in Resources */ = {isa = PBXBuildFile; fileRef = F516853E15553AB700D1F408 /* ind_track0.png */; };
+		F569C9CF1626D130006C91AD /* bt_echo0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D871478FD9300D87CF2 /* bt_echo0.png */; };
+		F569C9D01626D130006C91AD /* bt_echo1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D881478FD9300D87CF2 /* bt_echo1.png */; };
+		F569C9D11626D130006C91AD /* bt_copy0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D271478E8F800D87CF2 /* bt_copy0.png */; };
+		F569C9D21626D130006C91AD /* bt_copy1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5855D281478E8F800D87CF2 /* bt_copy1.png */; };
+		F569C9D31626D130006C91AD /* bt_calc0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EEC70B2ADF27008D2265 /* bt_calc0.png */; };
+		F569C9D41626D130006C91AD /* bt_calc1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACBD6F30B2B006500A73622 /* bt_calc1.png */; };
+		F569C9D51626D130006C91AD /* bt_load1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACBD6F40B2B006500A73622 /* bt_load1.png */; };
+		F569C9D61626D130006C91AD /* bt_save1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACBD6F50B2B006500A73622 /* bt_save1.png */; };
+		F569C9D71626D130006C91AD /* bt_unload1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACBD6F60B2B006500A73622 /* bt_unload1.png */; };
+		F569C9D81626D130006C91AD /* bt_multi_bank_a0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB749155E851500BC9F4A /* bt_multi_bank_a0.png */; };
+		F569C9D91626D130006C91AD /* bt_multi_bank_a1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74A155E851500BC9F4A /* bt_multi_bank_a1.png */; };
+		F569C9DA1626D130006C91AD /* bt_multi_bank_b0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74B155E851500BC9F4A /* bt_multi_bank_b0.png */; };
+		F569C9DB1626D130006C91AD /* bt_multi_bank_b1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74C155E851500BC9F4A /* bt_multi_bank_b1.png */; };
+		F569C9DC1626D130006C91AD /* bt_multi_bank_c0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74D155E851500BC9F4A /* bt_multi_bank_c0.png */; };
+		F569C9DD1626D130006C91AD /* bt_multi_bank_c1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74E155E851500BC9F4A /* bt_multi_bank_c1.png */; };
+		F569C9DE1626D130006C91AD /* bt_multi_bank_d0.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB74F155E851500BC9F4A /* bt_multi_bank_d0.png */; };
+		F569C9DF1626D130006C91AD /* bt_multi_bank_d1.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DFB750155E851500BC9F4A /* bt_multi_bank_d1.png */; };
+		F569C9E01626D130006C91AD /* bt_preemphasis0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EED40B2ADFB2008D2265 /* bt_preemphasis0.png */; };
+		F569C9E11626D130006C91AD /* bt_preemphasis1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EED50B2ADFB2008D2265 /* bt_preemphasis1.png */; };
+		F569C9E21626D130006C91AD /* bt_load0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EEC80B2ADF27008D2265 /* bt_load0.png */; };
+		F569C9E31626D130006C91AD /* bt_loop0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EEC90B2ADF27008D2265 /* bt_loop0.png */; };
+		F569C9E41626D130006C91AD /* bt_loop1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EECA0B2ADF27008D2265 /* bt_loop1.png */; };
+		F569C9E51626D130006C91AD /* bt_save0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EECB0B2ADF27008D2265 /* bt_save0.png */; };
+		F569C9E61626D130006C91AD /* bt_unload0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AC8EECC0B2ADF27008D2265 /* bt_unload0.png */; };
+		F569C9E71626D130006C91AD /* bt_save_xi0.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE50155E7A7A002D6E59 /* bt_save_xi0.png */; };
+		F569C9E81626D130006C91AD /* bt_save_xi1.png in Resources */ = {isa = PBXBuildFile; fileRef = F546EE51155E7A7A002D6E59 /* bt_save_xi1.png */; };
+		F569C9E91626D130006C91AD /* bt_generatenoise0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4F60B2AA99100ED85CB /* bt_generatenoise0.png */; };
+		F569C9EA1626D130006C91AD /* bt_generatenoise1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4F70B2AA99100ED85CB /* bt_generatenoise1.png */; };
+		F569C9EB1626D130006C91AD /* bt_properlydecode0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FA0B2AA99100ED85CB /* bt_properlydecode0.png */; };
+		F569C9EC1626D130006C91AD /* bt_properlydecode1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FB0B2AA99100ED85CB /* bt_properlydecode1.png */; };
+		F569C9ED1626D130006C91AD /* bt_velocitysens0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FC0B2AA99100ED85CB /* bt_velocitysens0.png */; };
+		F569C9EE1626D130006C91AD /* bt_velocitysens1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8AD2C4FD0B2AA99100ED85CB /* bt_velocitysens1.png */; };
+		F569C9EF1626D130006C91AD /* bt_velocitysens2.png in Resources */ = {isa = PBXBuildFile; fileRef = F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */; };
+		F569C9F11626D130006C91AD /* Chip700.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A660720730100365D66 /* Chip700.cpp */; };
+		F569C9F21626D130006C91AD /* AUBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A7F072073D200365D66 /* AUBase.cpp */; };
+		F569C9F31626D130006C91AD /* AUDispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A81072073D200365D66 /* AUDispatch.cpp */; };
+		F569C9F41626D130006C91AD /* AUInputElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A83072073D200365D66 /* AUInputElement.cpp */; };
+		F569C9F51626D130006C91AD /* AUOutputElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A85072073D200365D66 /* AUOutputElement.cpp */; };
+		F569C9F61626D130006C91AD /* AUScopeElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A88072073D200365D66 /* AUScopeElement.cpp */; };
+		F569C9F71626D130006C91AD /* ComponentBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A8A072073D200365D66 /* ComponentBase.cpp */; };
+		F569C9F81626D130006C91AD /* AUBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05AA7072073D200365D66 /* AUBuffer.cpp */; };
+		F569C9F91626D130006C91AD /* AUDebugDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05AA9072073D200365D66 /* AUDebugDispatcher.cpp */; };
+		F569C9FA1626D130006C91AD /* CAAudioChannelLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05ADF0720742100365D66 /* CAAudioChannelLayout.cpp */; };
+		F569C9FB1626D130006C91AD /* CAMutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05AE10720742100365D66 /* CAMutex.cpp */; };
+		F569C9FC1626D130006C91AD /* CAStreamBasicDescription.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05AE30720742100365D66 /* CAStreamBasicDescription.cpp */; };
+		F569C9FD1626D130006C91AD /* CAAUParameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05B050720754400365D66 /* CAAUParameter.cpp */; };
+		F569C9FE1626D130006C91AD /* CAVectorUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E0BECF80898391C00E1F0F7 /* CAVectorUnit.cpp */; };
+		F569C9FF1626D130006C91AD /* CAAUMIDIMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF3A0AAE7C4000AA021C /* CAAUMIDIMap.cpp */; };
+		F569CA001626D130006C91AD /* CAAUMIDIMapManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF3C0AAE7C4000AA021C /* CAAUMIDIMapManager.cpp */; };
+		F569CA011626D130006C91AD /* AUMIDIBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF4B0AAE7CFC00AA021C /* AUMIDIBase.cpp */; };
+		F569CA021626D130006C91AD /* MusicDeviceBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF4D0AAE7CFC00AA021C /* MusicDeviceBase.cpp */; };
+		F569CA031626D130006C91AD /* AUInstrumentBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF560AAE7D7A00AA021C /* AUInstrumentBase.cpp */; };
+		F569CA041626D130006C91AD /* SynthElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF590AAE7D7A00AA021C /* SynthElement.cpp */; };
+		F569CA051626D130006C91AD /* SynthNote.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF5C0AAE7D7A00AA021C /* SynthNote.cpp */; };
+		F569CA061626D130006C91AD /* SynthNoteList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF5E0AAE7D7A00AA021C /* SynthNoteList.cpp */; };
+		F569CA071626D130006C91AD /* AUCarbonViewEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B8C0B2144AF00EC1825 /* AUCarbonViewEditor.cpp */; };
+		F569CA081626D130006C91AD /* AUCarbonViewEnhancedControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B8E0B2144AF00EC1825 /* AUCarbonViewEnhancedControl.cpp */; };
+		F569CA091626D130006C91AD /* AUOid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B920B2144AF00EC1825 /* AUOid.cpp */; };
+		F569CA0A1626D130006C91AD /* AUProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B940B2144AF00EC1825 /* AUProperty.cpp */; };
+		F569CA0B1626D130006C91AD /* ColorSwatch.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B960B2144AF00EC1825 /* ColorSwatch.cp */; };
+		F569CA0C1626D130006C91AD /* AUGUIUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BA70B2144C900EC1825 /* AUGUIUtilities.cpp */; };
+		F569CA0D1626D130006C91AD /* TDragTextControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BAB0B2144CA00EC1825 /* TDragTextControl.cpp */; };
+		F569CA0E1626D130006C91AD /* TKnobControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BB50B2144CA00EC1825 /* TKnobControl.cpp */; };
+		F569CA0F1626D130006C91AD /* TPushButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BC50B2144CA00EC1825 /* TPushButton.cpp */; };
+		F569CA101626D130006C91AD /* TSliderControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BC70B2144CA00EC1825 /* TSliderControl.cpp */; };
+		F569CA111626D130006C91AD /* TTransparentEditText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BCF0B2144CA00EC1825 /* TTransparentEditText.cpp */; };
+		F569CA121626D130006C91AD /* TValuePictButtonControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD30B2144CA00EC1825 /* TValuePictButtonControl.cpp */; };
+		F569CA131626D130006C91AD /* TViewNoCompositingCompatible.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD90B2144CA00EC1825 /* TViewNoCompositingCompatible.cpp */; };
+		F569CA141626D130006C91AD /* TArray.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C600B21457100EC1825 /* TArray.cp */; };
+		F569CA151626D130006C91AD /* TBag.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C620B21457100EC1825 /* TBag.cp */; };
+		F569CA161626D130006C91AD /* TCFType.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C650B21457100EC1825 /* TCFType.cp */; };
+		F569CA171626D130006C91AD /* TData.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C670B21457200EC1825 /* TData.cp */; };
+		F569CA181626D130006C91AD /* TDictionary.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C690B21457200EC1825 /* TDictionary.cp */; };
+		F569CA191626D130006C91AD /* TNumber.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C6B0B21457200EC1825 /* TNumber.cp */; };
+		F569CA1A1626D130006C91AD /* TSet.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C6D0B21457200EC1825 /* TSet.cp */; };
+		F569CA1B1626D130006C91AD /* TStream.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C6F0B21457200EC1825 /* TStream.cp */; };
+		F569CA1C1626D130006C91AD /* TString.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C710B21457200EC1825 /* TString.cp */; };
+		F569CA1D1626D130006C91AD /* TType.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C730B21457200EC1825 /* TType.cp */; };
+		F569CA1E1626D130006C91AD /* TURL.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C750B21457200EC1825 /* TURL.cp */; };
+		F569CA1F1626D130006C91AD /* TApplication.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C860B21457200EC1825 /* TApplication.cp */; };
+		F569CA201626D130006C91AD /* TCarbonEvent.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C880B21457200EC1825 /* TCarbonEvent.cp */; };
+		F569CA211626D130006C91AD /* TEventHandler.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C8A0B21457200EC1825 /* TEventHandler.cp */; };
+		F569CA221626D130006C91AD /* TNib.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C8C0B21457200EC1825 /* TNib.cp */; };
+		F569CA231626D130006C91AD /* TObject.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C8E0B21457200EC1825 /* TObject.cp */; };
+		F569CA241626D130006C91AD /* TRect.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C900B21457200EC1825 /* TRect.cp */; };
+		F569CA251626D130006C91AD /* TView.cp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4C920B21457200EC1825 /* TView.cp */; };
+		F569CA261626D130006C91AD /* AUCarbonViewBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CC80B2145CB00EC1825 /* AUCarbonViewBase.cpp */; };
+		F569CA271626D130006C91AD /* AUCarbonViewControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CCA0B2145CB00EC1825 /* AUCarbonViewControl.cpp */; };
+		F569CA281626D130006C91AD /* AUCarbonViewDispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CCC0B2145CB00EC1825 /* AUCarbonViewDispatch.cpp */; };
+		F569CA291626D130006C91AD /* AUControlGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CCD0B2145CB00EC1825 /* AUControlGroup.cpp */; };
+		F569CA2A1626D130006C91AD /* CarbonEventHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CCF0B2145CB00EC1825 /* CarbonEventHandler.cpp */; };
+		F569CA2B1626D130006C91AD /* CACFArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE60B2148CF00EC1825 /* CACFArray.cpp */; };
+		F569CA2C1626D130006C91AD /* CACFDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE70B2148CF00EC1825 /* CACFDictionary.cpp */; };
+		F569CA2D1626D130006C91AD /* CACFNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE80B2148CF00EC1825 /* CACFNumber.cpp */; };
+		F569CA2E1626D130006C91AD /* CACFString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE90B2148CF00EC1825 /* CACFString.cpp */; };
+		F569CA2F1626D130006C91AD /* Chip700View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4D050B214D2F00EC1825 /* Chip700View.cpp */; };
+		F569CA301626D130006C91AD /* TWaveView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A3E62FA0B22D6E30091886F /* TWaveView.cpp */; };
+		F569CA311626D130006C91AD /* czt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AEECD2D0B020BC6002C9BB7 /* czt.cpp */; };
+		F569CA321626D130006C91AD /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
+		F569CA331626D130006C91AD /* TUnicodeTextStorage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD10B2144CA00EC1825 /* TUnicodeTextStorage.cpp */; };
+		F569CA341626D130006C91AD /* AUCarbonViewNib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4B900B2144AF00EC1825 /* AUCarbonViewNib.cpp */; };
+		F569CA351626D130006C91AD /* TImageCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BAF0B2144CA00EC1825 /* TImageCache.cpp */; };
+		F569CA361626D130006C91AD /* TValuePictControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD50B2144CA00EC1825 /* TValuePictControl.cpp */; };
+		F569CA371626D130006C91AD /* TMultiPane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BBF0B2144CA00EC1825 /* TMultiPane.cpp */; };
+		F569CA381626D130006C91AD /* TPngPictControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BC30B2144CA00EC1825 /* TPngPictControl.cpp */; };
+		F569CA391626D130006C91AD /* Chip700Generator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */; };
+		F569CA3A1626D130006C91AD /* TValueTextControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4BD70B2144CA00EC1825 /* TValueTextControl.cpp */; };
+		F569CA3B1626D130006C91AD /* cocoasupport.mm in Sources */ = {isa = PBXBuildFile; fileRef = F597AD28160B67860003E710 /* cocoasupport.mm */; };
+		F569CA3C1626D130006C91AD /* plugguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2A160B67860003E710 /* plugguieditor.cpp */; };
+		F569CA3D1626D130006C91AD /* cvstguitimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2D160B67860003E710 /* cvstguitimer.cpp */; };
+		F569CA3E1626D130006C91AD /* cfileselector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD30160B67860003E710 /* cfileselector.cpp */; };
+		F569CA3F1626D130006C91AD /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD33160B67860003E710 /* vstcontrols.cpp */; };
+		F569CA401626D130006C91AD /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD34160B67860003E710 /* vstgui.cpp */; };
+		F569CA411626D130006C91AD /* C700_CocoaViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */; };
+		F569CA421626D130006C91AD /* C700Edit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A40416195488006C91AD /* C700Edit.cpp */; };
+		F569CA431626D130006C91AD /* C700GUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A485161964FD006C91AD /* C700GUI.cpp */; };
+		F569CA441626D130006C91AD /* ctooltipsupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A8011619DEA6006C91AD /* ctooltipsupport.cpp */; };
+		F569CA451626D130006C91AD /* MyKnob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A94E161AB0F1006C91AD /* MyKnob.cpp */; };
+		F569CA461626D130006C91AD /* MySlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AA25161AD9F4006C91AD /* MySlider.cpp */; };
+		F569CA471626D130006C91AD /* LabelOnOffButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */; };
+		F569CA481626D130006C91AD /* WaveView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AD35161D3490006C91AD /* WaveView.cpp */; };
+		F569CA491626D130006C91AD /* DummyCntl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */; };
+		F569CA4A1626D130006C91AD /* SeparatorLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D65BD161EC9D0001CF9AB /* SeparatorLine.cpp */; };
+		F569CA4B1626D130006C91AD /* MyParamDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */; };
+		F569CA4C1626D130006C91AD /* MyTextEdit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */; };
+		F569CA4D1626D130006C91AD /* EfxAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569BEC11622B5F8006C91AD /* EfxAccess.cpp */; };
+		F569CA4E1626D130006C91AD /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C389162515ED006C91AD /* FileAccess.cpp */; };
+		F569CA4F1626D130006C91AD /* AudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3AC162518B9006C91AD /* AudioFile.cpp */; };
+		F569CA501626D130006C91AD /* SPCFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B0162518BF006C91AD /* SPCFile.cpp */; };
+		F569CA511626D130006C91AD /* BRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B4162518C6006C91AD /* BRRFile.cpp */; };
+		F569CA521626D130006C91AD /* XIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C40A16254B6E006C91AD /* XIFile.cpp */; };
+		F569CA531626D130006C91AD /* PlistBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */; };
+		F569CA551626D130006C91AD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05AF9072074E100365D66 /* AudioToolbox.framework */; };
+		F569CA561626D130006C91AD /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05AFA072074E100365D66 /* AudioUnit.framework */; };
+		F569CA571626D130006C91AD /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05B01072074F900365D66 /* CoreServices.framework */; };
+		F569CA581626D130006C91AD /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2134090B199D8500DC9811 /* Accelerate.framework */; };
+		F569CA591626D130006C91AD /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ACF4CE40B21489800EC1825 /* Carbon.framework */; };
+		F569CA5A1626D130006C91AD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F597AD57160B68950003E710 /* Cocoa.framework */; };
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
@@ -669,6 +829,7 @@
 		F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = MyParamDisplay.cpp; sourceTree = "<group>"; };
 		F55D6606161ECFE3001CF9AB /* MyTextEdit.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = MyTextEdit.h; sourceTree = "<group>"; };
 		F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = MyTextEdit.cpp; sourceTree = "<group>"; };
+		F56027FF1626D59700369C23 /* Chip700_carbon.r */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.rez; path = Chip700_carbon.r; sourceTree = "<group>"; };
 		F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700_CocoaViewFactory.h; sourceTree = "<group>"; };
 		F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.objcpp; path = C700_CocoaViewFactory.mm; sourceTree = "<group>"; };
 		F569A40316195488006C91AD /* C700Edit.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Edit.h; sourceTree = "<group>"; };
@@ -701,6 +862,9 @@
 		F569C40A16254B6E006C91AD /* XIFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = XIFile.cpp; sourceTree = "<group>"; };
 		F569C6DD162644AE006C91AD /* PlistBRRFile.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = PlistBRRFile.h; sourceTree = "<group>"; };
 		F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = PlistBRRFile.cpp; sourceTree = "<group>"; };
+		F569CA611626D130006C91AD /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
+		F569CA621626D130006C91AD /* Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy.plist"; sourceTree = "<group>"; };
+		F569CA951626D281006C91AD /* Chip700_carbon.exp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.exports; path = Chip700_carbon.exp; sourceTree = "<group>"; };
 		F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_velocitysens2.png; sourceTree = "<group>"; };
 		F56D351F156A0EA000038960 /* encodetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = encodetest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
@@ -746,6 +910,19 @@
 				8A21340B0B199D8500DC9811 /* Accelerate.framework in Frameworks */,
 				8ACF4CE50B21489800EC1825 /* Carbon.framework in Frameworks */,
 				F597AD58160B68950003E710 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F569CA541626D130006C91AD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F569CA551626D130006C91AD /* AudioToolbox.framework in Frameworks */,
+				F569CA561626D130006C91AD /* AudioUnit.framework in Frameworks */,
+				F569CA571626D130006C91AD /* CoreServices.framework in Frameworks */,
+				F569CA581626D130006C91AD /* Accelerate.framework in Frameworks */,
+				F569CA591626D130006C91AD /* Carbon.framework in Frameworks */,
+				F569CA5A1626D130006C91AD /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -825,6 +1002,7 @@
 				F55D655B161EBF1B001CF9AB /* track16_.png */,
 				8D01CCD10486CAD60068D4B7 /* Info.plist */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
+				F569CA621626D130006C91AD /* Info copy.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -853,6 +1031,7 @@
 			children = (
 				8D01CCD20486CAD60068D4B7 /* C700.component */,
 				F56D351F156A0EA000038960 /* encodetest */,
+				F569CA611626D130006C91AD /* C700.component */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1153,7 +1332,9 @@
 			isa = PBXGroup;
 			children = (
 				8BA05A680720730100365D66 /* Chip700.r */,
+				F56027FF1626D59700369C23 /* Chip700_carbon.r */,
 				8BA05A670720730100365D66 /* Chip700.exp */,
+				F569CA951626D281006C91AD /* Chip700_carbon.exp */,
 				8A77F1030ADE785100F2B2BE /* Chip700defines.h */,
 				8A10AB550AE2855600271511 /* samplebrr.h */,
 				8BA05A690720730100365D66 /* Chip700Version.h */,
@@ -1372,69 +1553,11 @@
 				8A77F1040ADE785100F2B2BE /* Chip700defines.h in Headers */,
 				8A10AB560AE2855600271511 /* samplebrr.h in Headers */,
 				8AF717D00AE3DD5900C79293 /* gauss.h in Headers */,
-				8ACF4B990B2144AF00EC1825 /* AUCarbonViewEditor.h in Headers */,
-				8ACF4B9B0B2144AF00EC1825 /* AUCarbonViewEnhancedControl.h in Headers */,
-				8ACF4B9D0B2144AF00EC1825 /* AUCarbonViewNib.h in Headers */,
-				8ACF4B9F0B2144AF00EC1825 /* AUOid.h in Headers */,
-				8ACF4BA10B2144AF00EC1825 /* AUProperty.h in Headers */,
-				8ACF4BA30B2144AF00EC1825 /* ColorSwatch.h in Headers */,
-				8ACF4BDE0B2144CA00EC1825 /* AUGUIUtilities.h in Headers */,
-				8ACF4BE20B2144CA00EC1825 /* TDragTextControl.h in Headers */,
-				8ACF4BEC0B2144CA00EC1825 /* TKnobControl.h in Headers */,
-				8ACF4BFC0B2144CA00EC1825 /* TPushButton.h in Headers */,
-				8ACF4BFE0B2144CA00EC1825 /* TSliderControl.h in Headers */,
-				8ACF4C060B2144CA00EC1825 /* TTransparentEditText.h in Headers */,
-				8ACF4C080B2144CA00EC1825 /* TUnicodeTextStorage.h in Headers */,
-				8ACF4C0A0B2144CA00EC1825 /* TValuePictButtonControl.h in Headers */,
-				8ACF4C100B2144CA00EC1825 /* TViewNoCompositingCompatible.h in Headers */,
-				8ACF4C950B21457200EC1825 /* TArray.h in Headers */,
-				8ACF4C970B21457200EC1825 /* TBag.h in Headers */,
-				8ACF4C980B21457200EC1825 /* TBase.h in Headers */,
-				8ACF4C9A0B21457200EC1825 /* TCFType.h in Headers */,
-				8ACF4C9C0B21457200EC1825 /* TData.h in Headers */,
-				8ACF4C9E0B21457200EC1825 /* TDictionary.h in Headers */,
-				8ACF4CA00B21457200EC1825 /* TNumber.h in Headers */,
-				8ACF4CA20B21457200EC1825 /* TSet.h in Headers */,
-				8ACF4CA40B21457200EC1825 /* TStream.h in Headers */,
-				8ACF4CA60B21457200EC1825 /* TString.h in Headers */,
-				8ACF4CA80B21457200EC1825 /* TType.h in Headers */,
-				8ACF4CAA0B21457200EC1825 /* TURL.h in Headers */,
-				8ACF4CAB0B21457200EC1825 /* HIFramework.h in Headers */,
-				8ACF4CAC0B21457200EC1825 /* CFArrayMethods.h in Headers */,
-				8ACF4CAD0B21457200EC1825 /* CFBagMethods.h in Headers */,
-				8ACF4CAE0B21457200EC1825 /* CFDataMethods.h in Headers */,
-				8ACF4CAF0B21457200EC1825 /* CFDictionaryMethods.h in Headers */,
-				8ACF4CB00B21457200EC1825 /* CFMethods.h in Headers */,
-				8ACF4CB10B21457200EC1825 /* CFNumberMethods.h in Headers */,
-				8ACF4CB20B21457200EC1825 /* CFSetMethods.h in Headers */,
-				8ACF4CB30B21457200EC1825 /* CFStringMethods.h in Headers */,
-				8ACF4CB40B21457200EC1825 /* CFTypeMethods.h in Headers */,
-				8ACF4CB50B21457200EC1825 /* CFURLMethods.h in Headers */,
-				8ACF4CB60B21457200EC1825 /* ControlMethods.h in Headers */,
-				8ACF4CB70B21457200EC1825 /* HIObjectMethods.h in Headers */,
-				8ACF4CB80B21457200EC1825 /* HIViewMethods.h in Headers */,
-				8ACF4CBA0B21457200EC1825 /* TApplication.h in Headers */,
-				8ACF4CBC0B21457200EC1825 /* TCarbonEvent.h in Headers */,
-				8ACF4CBE0B21457200EC1825 /* TEventHandler.h in Headers */,
-				8ACF4CC00B21457200EC1825 /* TNib.h in Headers */,
-				8ACF4CC20B21457200EC1825 /* TObject.h in Headers */,
-				8ACF4CC40B21457200EC1825 /* TRect.h in Headers */,
-				8ACF4CC60B21457200EC1825 /* TView.h in Headers */,
-				8ACF4CD20B2145CB00EC1825 /* AUCarbonViewBase.h in Headers */,
-				8ACF4CD40B2145CB00EC1825 /* AUCarbonViewControl.h in Headers */,
-				8ACF4CD70B2145CB00EC1825 /* AUControlGroup.h in Headers */,
 				8ACF4CD90B2145CB00EC1825 /* CarbonEventHandler.h in Headers */,
 				8ACF4CDC0B2145E800EC1825 /* AUViewLocalizedStringKeys.h in Headers */,
-				8ACF4D060B214D2F00EC1825 /* Chip700View.h in Headers */,
-				8A3E62FD0B22D6E30091886F /* TWaveView.h in Headers */,
 				8A3E63210B22DD9C0091886F /* czt.h in Headers */,
 				8A3E63230B22DD9E0091886F /* brrcodec.h in Headers */,
-				8AC141570B27094600F6A9C9 /* TImageCache.h in Headers */,
-				8AD671490B2709AA002CB536 /* TValuePictControl.h in Headers */,
-				8AD6714C0B2709BA002CB536 /* TMultiPane.h in Headers */,
-				8AD6714E0B2709C3002CB536 /* TPngPictControl.h in Headers */,
 				F543D0AD147D285F00DC53A3 /* Chip700Generator.h in Headers */,
-				F557B4A11555BB8F009B4165 /* TValueTextControl.h in Headers */,
 				F597AD37160B67860003E710 /* getpluginbundle.h in Headers */,
 				F597AD39160B67860003E710 /* vstkeycode.h in Headers */,
 				F597AD3A160B67860003E710 /* cocoasupport.h in Headers */,
@@ -1464,6 +1587,135 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F569C9031626D130006C91AD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F569C9041626D130006C91AD /* Chip700_Prefix.pch in Headers */,
+				F569C9051626D130006C91AD /* Chip700Version.h in Headers */,
+				F569C9061626D130006C91AD /* AUBase.h in Headers */,
+				F569C9071626D130006C91AD /* AUDispatch.h in Headers */,
+				F569C9081626D130006C91AD /* AUInputElement.h in Headers */,
+				F569C9091626D130006C91AD /* AUOutputElement.h in Headers */,
+				F569C90A1626D130006C91AD /* AUScopeElement.h in Headers */,
+				F569C90B1626D130006C91AD /* ComponentBase.h in Headers */,
+				F569C90C1626D130006C91AD /* AUBuffer.h in Headers */,
+				F569C90D1626D130006C91AD /* AUDebugDispatcher.h in Headers */,
+				F569C90E1626D130006C91AD /* AUInputFormatConverter.h in Headers */,
+				F569C90F1626D130006C91AD /* AUSilentTimeout.h in Headers */,
+				F569C9101626D130006C91AD /* AUTimestampGenerator.h in Headers */,
+				F569C9111626D130006C91AD /* CAAudioChannelLayout.h in Headers */,
+				F569C9121626D130006C91AD /* CAMutex.h in Headers */,
+				F569C9131626D130006C91AD /* CAStreamBasicDescription.h in Headers */,
+				F569C9141626D130006C91AD /* CAAUParameter.h in Headers */,
+				F569C9151626D130006C91AD /* Chip700.h in Headers */,
+				F569C9161626D130006C91AD /* CAVectorUnit.h in Headers */,
+				F569C9171626D130006C91AD /* CAVectorUnitTypes.h in Headers */,
+				F569C9181626D130006C91AD /* CAAUMIDIMap.h in Headers */,
+				F569C9191626D130006C91AD /* CAAUMIDIMapManager.h in Headers */,
+				F569C91A1626D130006C91AD /* AUMIDIBase.h in Headers */,
+				F569C91B1626D130006C91AD /* MusicDeviceBase.h in Headers */,
+				F569C91C1626D130006C91AD /* AUInstrumentBase.h in Headers */,
+				F569C91D1626D130006C91AD /* LockFreeFIFO.h in Headers */,
+				F569C91E1626D130006C91AD /* SynthElement.h in Headers */,
+				F569C91F1626D130006C91AD /* SynthEvent.h in Headers */,
+				F569C9201626D130006C91AD /* SynthNote.h in Headers */,
+				F569C9211626D130006C91AD /* SynthNoteList.h in Headers */,
+				F569C9221626D130006C91AD /* Chip700defines.h in Headers */,
+				F569C9231626D130006C91AD /* samplebrr.h in Headers */,
+				F569C9241626D130006C91AD /* gauss.h in Headers */,
+				F569C9251626D130006C91AD /* AUCarbonViewEditor.h in Headers */,
+				F569C9261626D130006C91AD /* AUCarbonViewEnhancedControl.h in Headers */,
+				F569C9271626D130006C91AD /* AUCarbonViewNib.h in Headers */,
+				F569C9281626D130006C91AD /* AUOid.h in Headers */,
+				F569C9291626D130006C91AD /* AUProperty.h in Headers */,
+				F569C92A1626D130006C91AD /* ColorSwatch.h in Headers */,
+				F569C92B1626D130006C91AD /* AUGUIUtilities.h in Headers */,
+				F569C92C1626D130006C91AD /* TDragTextControl.h in Headers */,
+				F569C92D1626D130006C91AD /* TKnobControl.h in Headers */,
+				F569C92E1626D130006C91AD /* TPushButton.h in Headers */,
+				F569C92F1626D130006C91AD /* TSliderControl.h in Headers */,
+				F569C9301626D130006C91AD /* TTransparentEditText.h in Headers */,
+				F569C9311626D130006C91AD /* TUnicodeTextStorage.h in Headers */,
+				F569C9321626D130006C91AD /* TValuePictButtonControl.h in Headers */,
+				F569C9331626D130006C91AD /* TViewNoCompositingCompatible.h in Headers */,
+				F569C9341626D130006C91AD /* TArray.h in Headers */,
+				F569C9351626D130006C91AD /* TBag.h in Headers */,
+				F569C9361626D130006C91AD /* TBase.h in Headers */,
+				F569C9371626D130006C91AD /* TCFType.h in Headers */,
+				F569C9381626D130006C91AD /* TData.h in Headers */,
+				F569C9391626D130006C91AD /* TDictionary.h in Headers */,
+				F569C93A1626D130006C91AD /* TNumber.h in Headers */,
+				F569C93B1626D130006C91AD /* TSet.h in Headers */,
+				F569C93C1626D130006C91AD /* TStream.h in Headers */,
+				F569C93D1626D130006C91AD /* TString.h in Headers */,
+				F569C93E1626D130006C91AD /* TType.h in Headers */,
+				F569C93F1626D130006C91AD /* TURL.h in Headers */,
+				F569C9401626D130006C91AD /* HIFramework.h in Headers */,
+				F569C9411626D130006C91AD /* CFArrayMethods.h in Headers */,
+				F569C9421626D130006C91AD /* CFBagMethods.h in Headers */,
+				F569C9431626D130006C91AD /* CFDataMethods.h in Headers */,
+				F569C9441626D130006C91AD /* CFDictionaryMethods.h in Headers */,
+				F569C9451626D130006C91AD /* CFMethods.h in Headers */,
+				F569C9461626D130006C91AD /* CFNumberMethods.h in Headers */,
+				F569C9471626D130006C91AD /* CFSetMethods.h in Headers */,
+				F569C9481626D130006C91AD /* CFStringMethods.h in Headers */,
+				F569C9491626D130006C91AD /* CFTypeMethods.h in Headers */,
+				F569C94A1626D130006C91AD /* CFURLMethods.h in Headers */,
+				F569C94B1626D130006C91AD /* ControlMethods.h in Headers */,
+				F569C94C1626D130006C91AD /* HIObjectMethods.h in Headers */,
+				F569C94D1626D130006C91AD /* HIViewMethods.h in Headers */,
+				F569C94E1626D130006C91AD /* TApplication.h in Headers */,
+				F569C94F1626D130006C91AD /* TCarbonEvent.h in Headers */,
+				F569C9501626D130006C91AD /* TEventHandler.h in Headers */,
+				F569C9511626D130006C91AD /* TNib.h in Headers */,
+				F569C9521626D130006C91AD /* TObject.h in Headers */,
+				F569C9531626D130006C91AD /* TRect.h in Headers */,
+				F569C9541626D130006C91AD /* TView.h in Headers */,
+				F569C9551626D130006C91AD /* AUCarbonViewBase.h in Headers */,
+				F569C9561626D130006C91AD /* AUCarbonViewControl.h in Headers */,
+				F569C9571626D130006C91AD /* AUControlGroup.h in Headers */,
+				F569C9581626D130006C91AD /* CarbonEventHandler.h in Headers */,
+				F569C9591626D130006C91AD /* AUViewLocalizedStringKeys.h in Headers */,
+				F569C95A1626D130006C91AD /* Chip700View.h in Headers */,
+				F569C95B1626D130006C91AD /* TWaveView.h in Headers */,
+				F569C95C1626D130006C91AD /* czt.h in Headers */,
+				F569C95D1626D130006C91AD /* brrcodec.h in Headers */,
+				F569C95E1626D130006C91AD /* TImageCache.h in Headers */,
+				F569C95F1626D130006C91AD /* TValuePictControl.h in Headers */,
+				F569C9601626D130006C91AD /* TMultiPane.h in Headers */,
+				F569C9611626D130006C91AD /* TPngPictControl.h in Headers */,
+				F569C9621626D130006C91AD /* Chip700Generator.h in Headers */,
+				F569C9631626D130006C91AD /* TValueTextControl.h in Headers */,
+				F569C9641626D130006C91AD /* getpluginbundle.h in Headers */,
+				F569C9651626D130006C91AD /* vstkeycode.h in Headers */,
+				F569C9661626D130006C91AD /* cocoasupport.h in Headers */,
+				F569C9671626D130006C91AD /* cfileselector.h in Headers */,
+				F569C9681626D130006C91AD /* plugguieditor.h in Headers */,
+				F569C9691626D130006C91AD /* vstgui.h in Headers */,
+				F569C96A1626D130006C91AD /* C700_CocoaViewFactory.h in Headers */,
+				F569C96B1626D130006C91AD /* C700Edit.h in Headers */,
+				F569C96C1626D130006C91AD /* C700GUI.h in Headers */,
+				F569C96D1626D130006C91AD /* ctooltipsupport.h in Headers */,
+				F569C96E1626D130006C91AD /* MyKnob.h in Headers */,
+				F569C96F1626D130006C91AD /* MySlider.h in Headers */,
+				F569C9701626D130006C91AD /* LabelOnOffButton.h in Headers */,
+				F569C9711626D130006C91AD /* WaveView.h in Headers */,
+				F569C9721626D130006C91AD /* DummyCntl.h in Headers */,
+				F569C9731626D130006C91AD /* ControlInstances.h in Headers */,
+				F569C9741626D130006C91AD /* SeparatorLine.h in Headers */,
+				F569C9751626D130006C91AD /* MyParamDisplay.h in Headers */,
+				F569C9761626D130006C91AD /* MyTextEdit.h in Headers */,
+				F569C9771626D130006C91AD /* EfxAccess.h in Headers */,
+				F569C9781626D130006C91AD /* FileAccess.h in Headers */,
+				F569C9791626D130006C91AD /* AudioFile.h in Headers */,
+				F569C97A1626D130006C91AD /* SPCFile.h in Headers */,
+				F569C97B1626D130006C91AD /* BRRFile.h in Headers */,
+				F569C97C1626D130006C91AD /* XIFile.h in Headers */,
+				F569C97D1626D130006C91AD /* PlistBRRFile.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -1486,6 +1738,27 @@
 			productInstallPath = "$(HOME)/Library/Bundles";
 			productName = Chip700;
 			productReference = 8D01CCD20486CAD60068D4B7 /* C700.component */;
+			productType = "com.apple.product-type.bundle";
+		};
+		F569C9021626D130006C91AD /* C700 CarbonUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F569CA5E1626D130006C91AD /* Build configuration list for PBXNativeTarget "C700 CarbonUI" */;
+			buildPhases = (
+				F569C9031626D130006C91AD /* Headers */,
+				F569C97E1626D130006C91AD /* Resources */,
+				F569C9F01626D130006C91AD /* Sources */,
+				F569CA541626D130006C91AD /* Frameworks */,
+				F569CA5B1626D130006C91AD /* Rez */,
+				F569CA5D1626D130006C91AD /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "C700 CarbonUI";
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = Chip700;
+			productReference = F569CA611626D130006C91AD /* C700.component */;
 			productType = "com.apple.product-type.bundle";
 		};
 		F56D351E156A0EA000038960 /* encodetest */ = {
@@ -1523,6 +1796,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				F569C9021626D130006C91AD /* C700 CarbonUI */,
 				8D01CCC60486CAD60068D4B7 /* C700 */,
 				F56D351E156A0EA000038960 /* encodetest */,
 			);
@@ -1536,12 +1810,8 @@
 			files = (
 				8D01CCCA0486CAD60068D4B7 /* InfoPlist.strings in Resources */,
 				8ACF4C420B2144FD00EC1825 /* AUBackground.png in Resources */,
-				8ACF4C440B2144FD00EC1825 /* editor.nib in Resources */,
-				8ACF4C450B2144FD00EC1825 /* knob.png in Resources */,
 				8ACF4C4B0B2144FD00EC1825 /* knobBack.png in Resources */,
-				8ACF4C590B2144FD00EC1825 /* slider.png in Resources */,
 				8ACF4C5A0B2144FD00EC1825 /* sliderThumb.png in Resources */,
-				8ACF4C5B0B2144FD00EC1825 /* window.nib in Resources */,
 				F569AA86161BFFA8006C91AD /* bt_check.png in Resources */,
 				F569AD18161D3277006C91AD /* rocker_sw.png in Resources */,
 				F55D64FC161EB76D001CF9AB /* bt_copy.png in Resources */,
@@ -1572,81 +1842,126 @@
 				F55D656A161EBF1C001CF9AB /* track15_.png in Resources */,
 				F55D656B161EBF1C001CF9AB /* track16_.png in Resources */,
 				F55D6573161EC0F6001CF9AB /* ind_track.png in Resources */,
-				F569C1C7162424FB006C91AD /* track01_0.png in Resources */,
-				F569C1C8162424FB006C91AD /* track01_1.png in Resources */,
-				F569C1C9162424FB006C91AD /* track02_0.png in Resources */,
-				F569C1CA162424FB006C91AD /* track02_1.png in Resources */,
-				F569C1CB162424FB006C91AD /* track03_0.png in Resources */,
-				F569C1CC162424FB006C91AD /* track03_1.png in Resources */,
-				F569C1CD162424FB006C91AD /* track04_0.png in Resources */,
-				F569C1CE162424FB006C91AD /* track04_1.png in Resources */,
-				F569C1CF162424FB006C91AD /* track05_0.png in Resources */,
-				F569C1D0162424FB006C91AD /* track05_1.png in Resources */,
-				F569C1D1162424FB006C91AD /* track06_0.png in Resources */,
-				F569C1D2162424FB006C91AD /* track06_1.png in Resources */,
-				F569C1D3162424FB006C91AD /* track07_0.png in Resources */,
-				F569C1D4162424FB006C91AD /* track07_1.png in Resources */,
-				F569C1D5162424FB006C91AD /* track08_0.png in Resources */,
-				F569C1D6162424FB006C91AD /* track08_1.png in Resources */,
-				F569C1D7162424FB006C91AD /* track09_0.png in Resources */,
-				F569C1D8162424FB006C91AD /* track09_1.png in Resources */,
-				F569C1D9162424FB006C91AD /* track10_0.png in Resources */,
-				F569C1DA162424FB006C91AD /* track10_1.png in Resources */,
-				F569C1DB162424FB006C91AD /* track11_0.png in Resources */,
-				F569C1DC162424FB006C91AD /* track11_1.png in Resources */,
-				F569C1DD162424FB006C91AD /* track12_0.png in Resources */,
-				F569C1DE162424FB006C91AD /* track12_1.png in Resources */,
-				F569C1DF162424FB006C91AD /* track13_0.png in Resources */,
-				F569C1E0162424FB006C91AD /* track13_1.png in Resources */,
-				F569C1E1162424FB006C91AD /* track14_0.png in Resources */,
-				F569C1E2162424FB006C91AD /* track14_1.png in Resources */,
-				F569C1E3162424FB006C91AD /* track15_0.png in Resources */,
-				F569C1E4162424FB006C91AD /* track15_1.png in Resources */,
-				F569C1E5162424FB006C91AD /* track16_0.png in Resources */,
-				F569C1E6162424FB006C91AD /* track16_1.png in Resources */,
-				F569C1E7162424FB006C91AD /* bank_a0.png in Resources */,
-				F569C1E8162424FB006C91AD /* bank_a1.png in Resources */,
-				F569C1E9162424FB006C91AD /* bank_b0.png in Resources */,
-				F569C1EA162424FB006C91AD /* bank_b1.png in Resources */,
-				F569C1EB162424FB006C91AD /* bank_c0.png in Resources */,
-				F569C1EC162424FB006C91AD /* bank_c1.png in Resources */,
-				F569C1ED162424FB006C91AD /* bank_d0.png in Resources */,
-				F569C1EE162424FB006C91AD /* bank_d1.png in Resources */,
-				F569C1EF162424FB006C91AD /* ind_track1.png in Resources */,
-				F569C1F0162424FB006C91AD /* ind_track0.png in Resources */,
-				F569C1F1162424FB006C91AD /* bt_echo0.png in Resources */,
-				F569C1F2162424FB006C91AD /* bt_echo1.png in Resources */,
-				F569C1F3162424FB006C91AD /* bt_copy0.png in Resources */,
-				F569C1F4162424FB006C91AD /* bt_copy1.png in Resources */,
-				F569C1F5162424FB006C91AD /* bt_calc0.png in Resources */,
-				F569C1F6162424FB006C91AD /* bt_calc1.png in Resources */,
-				F569C1F7162424FB006C91AD /* bt_load1.png in Resources */,
-				F569C1F8162424FB006C91AD /* bt_save1.png in Resources */,
-				F569C1F9162424FB006C91AD /* bt_unload1.png in Resources */,
-				F569C1FA162424FB006C91AD /* bt_multi_bank_a0.png in Resources */,
-				F569C1FB162424FB006C91AD /* bt_multi_bank_a1.png in Resources */,
-				F569C1FC162424FB006C91AD /* bt_multi_bank_b0.png in Resources */,
-				F569C1FD162424FB006C91AD /* bt_multi_bank_b1.png in Resources */,
-				F569C1FE162424FB006C91AD /* bt_multi_bank_c0.png in Resources */,
-				F569C1FF162424FB006C91AD /* bt_multi_bank_c1.png in Resources */,
-				F569C200162424FB006C91AD /* bt_multi_bank_d0.png in Resources */,
-				F569C201162424FB006C91AD /* bt_multi_bank_d1.png in Resources */,
-				F569C202162424FB006C91AD /* bt_preemphasis0.png in Resources */,
-				F569C203162424FB006C91AD /* bt_preemphasis1.png in Resources */,
-				F569C204162424FB006C91AD /* bt_load0.png in Resources */,
-				F569C205162424FB006C91AD /* bt_loop0.png in Resources */,
-				F569C206162424FB006C91AD /* bt_loop1.png in Resources */,
-				F569C207162424FB006C91AD /* bt_save0.png in Resources */,
-				F569C208162424FB006C91AD /* bt_unload0.png in Resources */,
-				F569C209162424FB006C91AD /* bt_save_xi0.png in Resources */,
-				F569C20A162424FB006C91AD /* bt_save_xi1.png in Resources */,
-				F569C20B162424FB006C91AD /* bt_generatenoise0.png in Resources */,
-				F569C20C162424FB006C91AD /* bt_generatenoise1.png in Resources */,
-				F569C20D162424FB006C91AD /* bt_properlydecode0.png in Resources */,
-				F569C20E162424FB006C91AD /* bt_properlydecode1.png in Resources */,
-				F569C20F162424FB006C91AD /* bt_velocitysens0.png in Resources */,
-				F569C210162424FB006C91AD /* bt_velocitysens1.png in Resources */,
-				F569C211162424FB006C91AD /* bt_velocitysens2.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F569C97E1626D130006C91AD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F569C97F1626D130006C91AD /* InfoPlist.strings in Resources */,
+				F569C9801626D130006C91AD /* AUBackground.png in Resources */,
+				F569C9811626D130006C91AD /* editor.nib in Resources */,
+				F569C9821626D130006C91AD /* knob.png in Resources */,
+				F569C9831626D130006C91AD /* knobBack.png in Resources */,
+				F569C9841626D130006C91AD /* slider.png in Resources */,
+				F569C9851626D130006C91AD /* sliderThumb.png in Resources */,
+				F569C9861626D130006C91AD /* window.nib in Resources */,
+				F569C9871626D130006C91AD /* bt_check.png in Resources */,
+				F569C9881626D130006C91AD /* rocker_sw.png in Resources */,
+				F569C9891626D130006C91AD /* bt_copy.png in Resources */,
+				F569C98A1626D130006C91AD /* bt_calc.png in Resources */,
+				F569C98B1626D130006C91AD /* bt_load.png in Resources */,
+				F569C98C1626D130006C91AD /* bt_save.png in Resources */,
+				F569C98D1626D130006C91AD /* bt_unload.png in Resources */,
+				F569C98E1626D130006C91AD /* bt_save_xi.png in Resources */,
+				F569C98F1626D130006C91AD /* bt_velocitysens.png in Resources */,
+				F569C9901626D130006C91AD /* bank_a.png in Resources */,
+				F569C9911626D130006C91AD /* bank_b.png in Resources */,
+				F569C9921626D130006C91AD /* bank_c.png in Resources */,
+				F569C9931626D130006C91AD /* bank_d.png in Resources */,
+				F569C9941626D130006C91AD /* track01_.png in Resources */,
+				F569C9951626D130006C91AD /* track02_.png in Resources */,
+				F569C9961626D130006C91AD /* track03_.png in Resources */,
+				F569C9971626D130006C91AD /* track04_.png in Resources */,
+				F569C9981626D130006C91AD /* track05_.png in Resources */,
+				F569C9991626D130006C91AD /* track06_.png in Resources */,
+				F569C99A1626D130006C91AD /* track07_.png in Resources */,
+				F569C99B1626D130006C91AD /* track08_.png in Resources */,
+				F569C99C1626D130006C91AD /* track09_.png in Resources */,
+				F569C99D1626D130006C91AD /* track10_.png in Resources */,
+				F569C99E1626D130006C91AD /* track11_.png in Resources */,
+				F569C99F1626D130006C91AD /* track12_.png in Resources */,
+				F569C9A01626D130006C91AD /* track13_.png in Resources */,
+				F569C9A11626D130006C91AD /* track14_.png in Resources */,
+				F569C9A21626D130006C91AD /* track15_.png in Resources */,
+				F569C9A31626D130006C91AD /* track16_.png in Resources */,
+				F569C9A41626D130006C91AD /* ind_track.png in Resources */,
+				F569C9A51626D130006C91AD /* track01_0.png in Resources */,
+				F569C9A61626D130006C91AD /* track01_1.png in Resources */,
+				F569C9A71626D130006C91AD /* track02_0.png in Resources */,
+				F569C9A81626D130006C91AD /* track02_1.png in Resources */,
+				F569C9A91626D130006C91AD /* track03_0.png in Resources */,
+				F569C9AA1626D130006C91AD /* track03_1.png in Resources */,
+				F569C9AB1626D130006C91AD /* track04_0.png in Resources */,
+				F569C9AC1626D130006C91AD /* track04_1.png in Resources */,
+				F569C9AD1626D130006C91AD /* track05_0.png in Resources */,
+				F569C9AE1626D130006C91AD /* track05_1.png in Resources */,
+				F569C9AF1626D130006C91AD /* track06_0.png in Resources */,
+				F569C9B01626D130006C91AD /* track06_1.png in Resources */,
+				F569C9B11626D130006C91AD /* track07_0.png in Resources */,
+				F569C9B21626D130006C91AD /* track07_1.png in Resources */,
+				F569C9B31626D130006C91AD /* track08_0.png in Resources */,
+				F569C9B41626D130006C91AD /* track08_1.png in Resources */,
+				F569C9B51626D130006C91AD /* track09_0.png in Resources */,
+				F569C9B61626D130006C91AD /* track09_1.png in Resources */,
+				F569C9B71626D130006C91AD /* track10_0.png in Resources */,
+				F569C9B81626D130006C91AD /* track10_1.png in Resources */,
+				F569C9B91626D130006C91AD /* track11_0.png in Resources */,
+				F569C9BA1626D130006C91AD /* track11_1.png in Resources */,
+				F569C9BB1626D130006C91AD /* track12_0.png in Resources */,
+				F569C9BC1626D130006C91AD /* track12_1.png in Resources */,
+				F569C9BD1626D130006C91AD /* track13_0.png in Resources */,
+				F569C9BE1626D130006C91AD /* track13_1.png in Resources */,
+				F569C9BF1626D130006C91AD /* track14_0.png in Resources */,
+				F569C9C01626D130006C91AD /* track14_1.png in Resources */,
+				F569C9C11626D130006C91AD /* track15_0.png in Resources */,
+				F569C9C21626D130006C91AD /* track15_1.png in Resources */,
+				F569C9C31626D130006C91AD /* track16_0.png in Resources */,
+				F569C9C41626D130006C91AD /* track16_1.png in Resources */,
+				F569C9C51626D130006C91AD /* bank_a0.png in Resources */,
+				F569C9C61626D130006C91AD /* bank_a1.png in Resources */,
+				F569C9C71626D130006C91AD /* bank_b0.png in Resources */,
+				F569C9C81626D130006C91AD /* bank_b1.png in Resources */,
+				F569C9C91626D130006C91AD /* bank_c0.png in Resources */,
+				F569C9CA1626D130006C91AD /* bank_c1.png in Resources */,
+				F569C9CB1626D130006C91AD /* bank_d0.png in Resources */,
+				F569C9CC1626D130006C91AD /* bank_d1.png in Resources */,
+				F569C9CD1626D130006C91AD /* ind_track1.png in Resources */,
+				F569C9CE1626D130006C91AD /* ind_track0.png in Resources */,
+				F569C9CF1626D130006C91AD /* bt_echo0.png in Resources */,
+				F569C9D01626D130006C91AD /* bt_echo1.png in Resources */,
+				F569C9D11626D130006C91AD /* bt_copy0.png in Resources */,
+				F569C9D21626D130006C91AD /* bt_copy1.png in Resources */,
+				F569C9D31626D130006C91AD /* bt_calc0.png in Resources */,
+				F569C9D41626D130006C91AD /* bt_calc1.png in Resources */,
+				F569C9D51626D130006C91AD /* bt_load1.png in Resources */,
+				F569C9D61626D130006C91AD /* bt_save1.png in Resources */,
+				F569C9D71626D130006C91AD /* bt_unload1.png in Resources */,
+				F569C9D81626D130006C91AD /* bt_multi_bank_a0.png in Resources */,
+				F569C9D91626D130006C91AD /* bt_multi_bank_a1.png in Resources */,
+				F569C9DA1626D130006C91AD /* bt_multi_bank_b0.png in Resources */,
+				F569C9DB1626D130006C91AD /* bt_multi_bank_b1.png in Resources */,
+				F569C9DC1626D130006C91AD /* bt_multi_bank_c0.png in Resources */,
+				F569C9DD1626D130006C91AD /* bt_multi_bank_c1.png in Resources */,
+				F569C9DE1626D130006C91AD /* bt_multi_bank_d0.png in Resources */,
+				F569C9DF1626D130006C91AD /* bt_multi_bank_d1.png in Resources */,
+				F569C9E01626D130006C91AD /* bt_preemphasis0.png in Resources */,
+				F569C9E11626D130006C91AD /* bt_preemphasis1.png in Resources */,
+				F569C9E21626D130006C91AD /* bt_load0.png in Resources */,
+				F569C9E31626D130006C91AD /* bt_loop0.png in Resources */,
+				F569C9E41626D130006C91AD /* bt_loop1.png in Resources */,
+				F569C9E51626D130006C91AD /* bt_save0.png in Resources */,
+				F569C9E61626D130006C91AD /* bt_unload0.png in Resources */,
+				F569C9E71626D130006C91AD /* bt_save_xi0.png in Resources */,
+				F569C9E81626D130006C91AD /* bt_save_xi1.png in Resources */,
+				F569C9E91626D130006C91AD /* bt_generatenoise0.png in Resources */,
+				F569C9EA1626D130006C91AD /* bt_generatenoise1.png in Resources */,
+				F569C9EB1626D130006C91AD /* bt_properlydecode0.png in Resources */,
+				F569C9EC1626D130006C91AD /* bt_properlydecode1.png in Resources */,
+				F569C9ED1626D130006C91AD /* bt_velocitysens0.png in Resources */,
+				F569C9EE1626D130006C91AD /* bt_velocitysens1.png in Resources */,
+				F569C9EF1626D130006C91AD /* bt_velocitysens2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1661,10 +1976,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F569CA5B1626D130006C91AD /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F56028001626D59700369C23 /* Chip700_carbon.r in Rez */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		F55B68CB15863F4600FDA7C2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$HOME/Library/Audio/Plug-Ins/Components/\" \n";
+		};
+		F569CA5D1626D130006C91AD /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1706,58 +2042,14 @@
 				8AA4CF630AAE7D7A00AA021C /* SynthElement.cpp in Sources */,
 				8AA4CF660AAE7D7A00AA021C /* SynthNote.cpp in Sources */,
 				8AA4CF680AAE7D7A00AA021C /* SynthNoteList.cpp in Sources */,
-				8ACF4B980B2144AF00EC1825 /* AUCarbonViewEditor.cpp in Sources */,
-				8ACF4B9A0B2144AF00EC1825 /* AUCarbonViewEnhancedControl.cpp in Sources */,
-				8ACF4B9E0B2144AF00EC1825 /* AUOid.cpp in Sources */,
-				8ACF4BA00B2144AF00EC1825 /* AUProperty.cpp in Sources */,
-				8ACF4BA20B2144AF00EC1825 /* ColorSwatch.cp in Sources */,
-				8ACF4BDD0B2144CA00EC1825 /* AUGUIUtilities.cpp in Sources */,
-				8ACF4BE10B2144CA00EC1825 /* TDragTextControl.cpp in Sources */,
-				8ACF4BEB0B2144CA00EC1825 /* TKnobControl.cpp in Sources */,
-				8ACF4BFB0B2144CA00EC1825 /* TPushButton.cpp in Sources */,
-				8ACF4BFD0B2144CA00EC1825 /* TSliderControl.cpp in Sources */,
-				8ACF4C050B2144CA00EC1825 /* TTransparentEditText.cpp in Sources */,
-				8ACF4C090B2144CA00EC1825 /* TValuePictButtonControl.cpp in Sources */,
-				8ACF4C0F0B2144CA00EC1825 /* TViewNoCompositingCompatible.cpp in Sources */,
-				8ACF4C940B21457200EC1825 /* TArray.cp in Sources */,
-				8ACF4C960B21457200EC1825 /* TBag.cp in Sources */,
-				8ACF4C990B21457200EC1825 /* TCFType.cp in Sources */,
-				8ACF4C9B0B21457200EC1825 /* TData.cp in Sources */,
-				8ACF4C9D0B21457200EC1825 /* TDictionary.cp in Sources */,
-				8ACF4C9F0B21457200EC1825 /* TNumber.cp in Sources */,
-				8ACF4CA10B21457200EC1825 /* TSet.cp in Sources */,
-				8ACF4CA30B21457200EC1825 /* TStream.cp in Sources */,
-				8ACF4CA50B21457200EC1825 /* TString.cp in Sources */,
-				8ACF4CA70B21457200EC1825 /* TType.cp in Sources */,
-				8ACF4CA90B21457200EC1825 /* TURL.cp in Sources */,
-				8ACF4CB90B21457200EC1825 /* TApplication.cp in Sources */,
-				8ACF4CBB0B21457200EC1825 /* TCarbonEvent.cp in Sources */,
-				8ACF4CBD0B21457200EC1825 /* TEventHandler.cp in Sources */,
-				8ACF4CBF0B21457200EC1825 /* TNib.cp in Sources */,
-				8ACF4CC10B21457200EC1825 /* TObject.cp in Sources */,
-				8ACF4CC30B21457200EC1825 /* TRect.cp in Sources */,
-				8ACF4CC50B21457200EC1825 /* TView.cp in Sources */,
-				8ACF4CD10B2145CB00EC1825 /* AUCarbonViewBase.cpp in Sources */,
-				8ACF4CD30B2145CB00EC1825 /* AUCarbonViewControl.cpp in Sources */,
-				8ACF4CD50B2145CB00EC1825 /* AUCarbonViewDispatch.cpp in Sources */,
-				8ACF4CD60B2145CB00EC1825 /* AUControlGroup.cpp in Sources */,
 				8ACF4CD80B2145CB00EC1825 /* CarbonEventHandler.cpp in Sources */,
 				8ACF4CEA0B2148CF00EC1825 /* CACFArray.cpp in Sources */,
 				8ACF4CEB0B2148CF00EC1825 /* CACFDictionary.cpp in Sources */,
 				8ACF4CEC0B2148CF00EC1825 /* CACFNumber.cpp in Sources */,
 				8ACF4CED0B2148CF00EC1825 /* CACFString.cpp in Sources */,
-				8ACF4D070B214D2F00EC1825 /* Chip700View.cpp in Sources */,
-				8A3E62FC0B22D6E30091886F /* TWaveView.cpp in Sources */,
 				8A3E64080B2302D80091886F /* czt.cpp in Sources */,
 				8A3E64090B2302DC0091886F /* brrcodec.cpp in Sources */,
-				8ADB2D020B27046300476B1E /* TUnicodeTextStorage.cpp in Sources */,
-				8ADB2D3F0B27075E00476B1E /* AUCarbonViewNib.cpp in Sources */,
-				8AC141560B27094500F6A9C9 /* TImageCache.cpp in Sources */,
-				8AD6714A0B2709AA002CB536 /* TValuePictControl.cpp in Sources */,
-				8AD6714B0B2709B9002CB536 /* TMultiPane.cpp in Sources */,
-				8AD6714D0B2709C2002CB536 /* TPngPictControl.cpp in Sources */,
 				F543D0AC147D285F00DC53A3 /* Chip700Generator.cpp in Sources */,
-				F557B4A21555BB90009B4165 /* TValueTextControl.cpp in Sources */,
 				F597AD36160B67860003E710 /* cocoasupport.mm in Sources */,
 				F597AD38160B67860003E710 /* plugguieditor.cpp in Sources */,
 				F597AD3B160B67860003E710 /* cvstguitimer.cpp in Sources */,
@@ -1783,6 +2075,112 @@
 				F569C3B6162518C6006C91AD /* BRRFile.cpp in Sources */,
 				F569C40C16254B6E006C91AD /* XIFile.cpp in Sources */,
 				F569C6E0162644AE006C91AD /* PlistBRRFile.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F569C9F01626D130006C91AD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F569C9F11626D130006C91AD /* Chip700.cpp in Sources */,
+				F569C9F21626D130006C91AD /* AUBase.cpp in Sources */,
+				F569C9F31626D130006C91AD /* AUDispatch.cpp in Sources */,
+				F569C9F41626D130006C91AD /* AUInputElement.cpp in Sources */,
+				F569C9F51626D130006C91AD /* AUOutputElement.cpp in Sources */,
+				F569C9F61626D130006C91AD /* AUScopeElement.cpp in Sources */,
+				F569C9F71626D130006C91AD /* ComponentBase.cpp in Sources */,
+				F569C9F81626D130006C91AD /* AUBuffer.cpp in Sources */,
+				F569C9F91626D130006C91AD /* AUDebugDispatcher.cpp in Sources */,
+				F569C9FA1626D130006C91AD /* CAAudioChannelLayout.cpp in Sources */,
+				F569C9FB1626D130006C91AD /* CAMutex.cpp in Sources */,
+				F569C9FC1626D130006C91AD /* CAStreamBasicDescription.cpp in Sources */,
+				F569C9FD1626D130006C91AD /* CAAUParameter.cpp in Sources */,
+				F569C9FE1626D130006C91AD /* CAVectorUnit.cpp in Sources */,
+				F569C9FF1626D130006C91AD /* CAAUMIDIMap.cpp in Sources */,
+				F569CA001626D130006C91AD /* CAAUMIDIMapManager.cpp in Sources */,
+				F569CA011626D130006C91AD /* AUMIDIBase.cpp in Sources */,
+				F569CA021626D130006C91AD /* MusicDeviceBase.cpp in Sources */,
+				F569CA031626D130006C91AD /* AUInstrumentBase.cpp in Sources */,
+				F569CA041626D130006C91AD /* SynthElement.cpp in Sources */,
+				F569CA051626D130006C91AD /* SynthNote.cpp in Sources */,
+				F569CA061626D130006C91AD /* SynthNoteList.cpp in Sources */,
+				F569CA071626D130006C91AD /* AUCarbonViewEditor.cpp in Sources */,
+				F569CA081626D130006C91AD /* AUCarbonViewEnhancedControl.cpp in Sources */,
+				F569CA091626D130006C91AD /* AUOid.cpp in Sources */,
+				F569CA0A1626D130006C91AD /* AUProperty.cpp in Sources */,
+				F569CA0B1626D130006C91AD /* ColorSwatch.cp in Sources */,
+				F569CA0C1626D130006C91AD /* AUGUIUtilities.cpp in Sources */,
+				F569CA0D1626D130006C91AD /* TDragTextControl.cpp in Sources */,
+				F569CA0E1626D130006C91AD /* TKnobControl.cpp in Sources */,
+				F569CA0F1626D130006C91AD /* TPushButton.cpp in Sources */,
+				F569CA101626D130006C91AD /* TSliderControl.cpp in Sources */,
+				F569CA111626D130006C91AD /* TTransparentEditText.cpp in Sources */,
+				F569CA121626D130006C91AD /* TValuePictButtonControl.cpp in Sources */,
+				F569CA131626D130006C91AD /* TViewNoCompositingCompatible.cpp in Sources */,
+				F569CA141626D130006C91AD /* TArray.cp in Sources */,
+				F569CA151626D130006C91AD /* TBag.cp in Sources */,
+				F569CA161626D130006C91AD /* TCFType.cp in Sources */,
+				F569CA171626D130006C91AD /* TData.cp in Sources */,
+				F569CA181626D130006C91AD /* TDictionary.cp in Sources */,
+				F569CA191626D130006C91AD /* TNumber.cp in Sources */,
+				F569CA1A1626D130006C91AD /* TSet.cp in Sources */,
+				F569CA1B1626D130006C91AD /* TStream.cp in Sources */,
+				F569CA1C1626D130006C91AD /* TString.cp in Sources */,
+				F569CA1D1626D130006C91AD /* TType.cp in Sources */,
+				F569CA1E1626D130006C91AD /* TURL.cp in Sources */,
+				F569CA1F1626D130006C91AD /* TApplication.cp in Sources */,
+				F569CA201626D130006C91AD /* TCarbonEvent.cp in Sources */,
+				F569CA211626D130006C91AD /* TEventHandler.cp in Sources */,
+				F569CA221626D130006C91AD /* TNib.cp in Sources */,
+				F569CA231626D130006C91AD /* TObject.cp in Sources */,
+				F569CA241626D130006C91AD /* TRect.cp in Sources */,
+				F569CA251626D130006C91AD /* TView.cp in Sources */,
+				F569CA261626D130006C91AD /* AUCarbonViewBase.cpp in Sources */,
+				F569CA271626D130006C91AD /* AUCarbonViewControl.cpp in Sources */,
+				F569CA281626D130006C91AD /* AUCarbonViewDispatch.cpp in Sources */,
+				F569CA291626D130006C91AD /* AUControlGroup.cpp in Sources */,
+				F569CA2A1626D130006C91AD /* CarbonEventHandler.cpp in Sources */,
+				F569CA2B1626D130006C91AD /* CACFArray.cpp in Sources */,
+				F569CA2C1626D130006C91AD /* CACFDictionary.cpp in Sources */,
+				F569CA2D1626D130006C91AD /* CACFNumber.cpp in Sources */,
+				F569CA2E1626D130006C91AD /* CACFString.cpp in Sources */,
+				F569CA2F1626D130006C91AD /* Chip700View.cpp in Sources */,
+				F569CA301626D130006C91AD /* TWaveView.cpp in Sources */,
+				F569CA311626D130006C91AD /* czt.cpp in Sources */,
+				F569CA321626D130006C91AD /* brrcodec.cpp in Sources */,
+				F569CA331626D130006C91AD /* TUnicodeTextStorage.cpp in Sources */,
+				F569CA341626D130006C91AD /* AUCarbonViewNib.cpp in Sources */,
+				F569CA351626D130006C91AD /* TImageCache.cpp in Sources */,
+				F569CA361626D130006C91AD /* TValuePictControl.cpp in Sources */,
+				F569CA371626D130006C91AD /* TMultiPane.cpp in Sources */,
+				F569CA381626D130006C91AD /* TPngPictControl.cpp in Sources */,
+				F569CA391626D130006C91AD /* Chip700Generator.cpp in Sources */,
+				F569CA3A1626D130006C91AD /* TValueTextControl.cpp in Sources */,
+				F569CA3B1626D130006C91AD /* cocoasupport.mm in Sources */,
+				F569CA3C1626D130006C91AD /* plugguieditor.cpp in Sources */,
+				F569CA3D1626D130006C91AD /* cvstguitimer.cpp in Sources */,
+				F569CA3E1626D130006C91AD /* cfileselector.cpp in Sources */,
+				F569CA3F1626D130006C91AD /* vstcontrols.cpp in Sources */,
+				F569CA401626D130006C91AD /* vstgui.cpp in Sources */,
+				F569CA411626D130006C91AD /* C700_CocoaViewFactory.mm in Sources */,
+				F569CA421626D130006C91AD /* C700Edit.cpp in Sources */,
+				F569CA431626D130006C91AD /* C700GUI.cpp in Sources */,
+				F569CA441626D130006C91AD /* ctooltipsupport.cpp in Sources */,
+				F569CA451626D130006C91AD /* MyKnob.cpp in Sources */,
+				F569CA461626D130006C91AD /* MySlider.cpp in Sources */,
+				F569CA471626D130006C91AD /* LabelOnOffButton.cpp in Sources */,
+				F569CA481626D130006C91AD /* WaveView.cpp in Sources */,
+				F569CA491626D130006C91AD /* DummyCntl.cpp in Sources */,
+				F569CA4A1626D130006C91AD /* SeparatorLine.cpp in Sources */,
+				F569CA4B1626D130006C91AD /* MyParamDisplay.cpp in Sources */,
+				F569CA4C1626D130006C91AD /* MyTextEdit.cpp in Sources */,
+				F569CA4D1626D130006C91AD /* EfxAccess.cpp in Sources */,
+				F569CA4E1626D130006C91AD /* FileAccess.cpp in Sources */,
+				F569CA4F1626D130006C91AD /* AudioFile.cpp in Sources */,
+				F569CA501626D130006C91AD /* SPCFile.cpp in Sources */,
+				F569CA511626D130006C91AD /* BRRFile.cpp in Sources */,
+				F569CA521626D130006C91AD /* XIFile.cpp in Sources */,
+				F569CA531626D130006C91AD /* PlistBRRFile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1863,7 +2261,7 @@
 			buildSettings = {
 				ARCHS = (
 					ppc,
-					"$(ARCHS_STANDARD_32_BIT)",
+					"$(ARCHS_STANDARD_32_64_BIT)",
 				);
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
 				COPY_PHASE_STRIP = YES;
@@ -1892,7 +2290,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bundle";
-				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
+				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
 				PRODUCT_NAME = C700;
 				REZ_SEARCH_PATHS = (
 					/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers,
@@ -1938,6 +2336,110 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
 				SDKROOT = macosx10.5;
+			};
+			name = Deployment;
+		};
+		F569CA5F1626D130006C91AD /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				DEPLOYMENT_LOCATION = NO;
+				EXPORTED_SYMBOLS_FILE = Chip700_carbon.exp;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Chip700_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = USE_CARBON_UI;
+				GCC_VERSION = 4.2;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "Info copy.plist";
+				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = Bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "-bundle";
+				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
+				PRODUCT_NAME = C700;
+				REZ_SEARCH_PATHS = (
+					/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers,
+					/Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase,
+				);
+				SDKROOT = macosx10.5;
+				SECTORDER_FLAGS = "";
+				VERSIONING_SYSTEM = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = component;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		F569CA601626D130006C91AD /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					"$(ARCHS_STANDARD_32_BIT)",
+				);
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
+				EXPORTED_SYMBOLS_FILE = Chip700_carbon.exp;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_AUTO_VECTORIZATION = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Chip700_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = USE_CARBON_UI;
+				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = 4.2;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "Info copy.plist";
+				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = Bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "-bundle";
+				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
+				PRODUCT_NAME = C700;
+				REZ_SEARCH_PATHS = (
+					/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers,
+					/Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase,
+				);
+				SDKROOT = macosx10.5;
+				SECTORDER_FLAGS = "";
+				VERSIONING_SYSTEM = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = component;
+				ZERO_LINK = NO;
 			};
 			name = Deployment;
 		};
@@ -1996,6 +2498,15 @@
 			buildConfigurations = (
 				3E0BED070898391C00E1F0F7 /* Development */,
 				3E0BED080898391C00E1F0F7 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		F569CA5E1626D130006C91AD /* Build configuration list for PBXNativeTarget "C700 CarbonUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F569CA5F1626D130006C91AD /* Development */,
+				F569CA601626D130006C91AD /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;

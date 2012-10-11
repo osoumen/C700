@@ -22,6 +22,7 @@ public:
 	short	*GetAudioData();
 	int		GetLoadedSamples();
 	bool	GetInstData( InstData *instData );
+	bool	IsVarid();	//ƒ[ƒh‚ª‰Â”\‚Å‚ ‚é‚È‚çtrue
 	
 private:
 	static const unsigned int EXPAND_BUFFER = 4096;

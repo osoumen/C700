@@ -2,6 +2,7 @@
 #include "Chip700.h"
 #include "samplebrr.h"
 #include "brrcodec.h"
+#include "AudioFile.h"
 #include <algorithm>
 
 static CFStringRef kParam_poly_Name = CFSTR("Voices");
@@ -123,8 +124,6 @@ int RenumberKeyMap( unsigned char *snum, int size );
 int GetARTicks( int ar, Float64 tempo );
 int GetDRTicks( int dr, Float64 tempo );
 int GetSRTicks( int sr, Float64 tempo );
-
-short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -612,10 +611,12 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 {
 	if (inScope == kAudioUnitScope_Global) {
 		switch (inID) {
+#ifndef USE_CARBON_UI
 			case kAudioUnitProperty_CocoaUI:
 				outWritable = false;
 				outDataSize = sizeof (AudioUnitCocoaViewInfo);
 				return noErr;
+#endif
 			
 			case kAudioUnitCustomProperty_BaseKey:
 			case kAudioUnitCustomProperty_LowKey:
@@ -756,6 +757,7 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 {
 	if (inScope == kAudioUnitScope_Global) {
 		switch (inID) {
+#ifndef USE_CARBON_UI
 			case kAudioUnitProperty_CocoaUI:
 			{
 				// Look for a resource in the main bundle by name and type.
@@ -775,6 +777,7 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 				
 				return noErr;
 			}
+#endif
 			
 			case kAudioUnitCustomProperty_BRRData:
 				*((BRRData *)outData) = mVPset[mEditProg].brr;
@@ -1580,17 +1583,22 @@ int Chip700::CreateXIData( CFDataRef *data )
 			bool	existSrcFile = false;
 			if ( mVPset[ismp].sourceFile ) {
 				InstData	inst;
-				FSRef		ref;
 				long		numSamples;
-				CFURLGetFSRef(mVPset[ismp].sourceFile , &ref);
-				short	*wavedata = loadPCMFile(&ref, &numSamples, &inst);
-				if ( wavedata ) {
+				
+				CFStringRef pathStr = CFURLCopyFileSystemPath(mVPset[ismp].sourceFile, kCFURLPOSIXPathStyle);
+				const char	*path = CFStringGetCStringPtr(pathStr, kCFStringEncodingUTF8);
+				AudioFile	origFile(path,false);
+				origFile.Load();
+				
+				if ( origFile.IsLoaded() ) {
+					numSamples = origFile.GetLoadedSamples();
+					origFile.GetInstData(&inst);
 					xsh.samplen = EndianU32_NtoL( numSamples * 2 );
 					xsh.loopstart = EndianU32_NtoL( inst.lp * 2 );
 					xsh.looplen = EndianU32_NtoL( (inst.lp_end - inst.lp) * 2 );
 					existSrcFile = true;
-					free(wavedata);
 				}
+				CFRelease(pathStr);
 			}
 			if ( existSrcFile == false ) {
 				xsh.samplen = EndianU32_NtoL( mVPset[ismp].brr.size/9*32 );
@@ -1628,12 +1636,16 @@ int Chip700::CreateXIData( CFDataRef *data )
 			
 			if ( mVPset[ismp].sourceFile ) {
 				//元ファイルから波形を読み込む
-				InstData	inst;
-				FSRef		ref;
-				CFURLGetFSRef(mVPset[ismp].sourceFile , &ref);
-				wavedata = loadPCMFile(&ref, &numSamples, &inst);
+				CFStringRef pathStr = CFURLCopyFileSystemPath(mVPset[ismp].sourceFile, kCFURLPOSIXPathStyle);
+				const char	*path = CFStringGetCStringPtr(pathStr, kCFStringEncodingUTF8);
+				AudioFile	origFile(path,false);
+				origFile.Load();
 				
-				if ( wavedata ) {
+				if ( origFile.IsLoaded() ) {
+					numSamples = origFile.GetLoadedSamples();
+					wavedata = (short *)malloc(numSamples * sizeof(short));
+					memcpy(wavedata, origFile.GetAudioData(), numSamples * sizeof(short));
+					
 					if ( mVPset[ismp].isEmphasized ) {
 						emphasis(wavedata, numSamples);
 					}
@@ -1641,6 +1653,7 @@ int Chip700::CreateXIData( CFDataRef *data )
 					
 					existSrcFile = true;
 				}
+				CFRelease(pathStr);
 			}
 			
 			//ソースファイルが無い場合はbrrデータをデコードして使用する
