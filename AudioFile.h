@@ -24,7 +24,7 @@ public:
 	bool	GetInstData( InstData *instData );
 	
 private:
-	static const int EXPAND_BUFFER = 4096;
+	static const unsigned int EXPAND_BUFFER = 4096;
 	
 	short		*m_pAudioData;
 	int			mLoadedSamples;

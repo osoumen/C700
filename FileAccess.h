@@ -15,6 +15,7 @@ public:
 	virtual ~FileAccess();
 	
 	const char*		GetFilePath() { return mPath; }
+	void			SetFilePath( const char *path );
 	virtual bool	Load() { return false; };
 	virtual bool	Write() { return false; }
 	virtual bool	IsLoaded() { return mIsLoaded; }

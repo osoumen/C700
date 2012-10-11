@@ -14,10 +14,18 @@ FileAccess::FileAccess( const char *path, bool isWriteable )
 : mIsWriteable( isWriteable )
 , mIsLoaded( false )
 {
-	strncpy(mPath, path, 1023);
+	SetFilePath( path );
 }
 
 //-----------------------------------------------------------------------------
 FileAccess::~FileAccess()
 {
+}
+
+//-----------------------------------------------------------------------------
+void FileAccess::SetFilePath( const char *path )
+{
+	if ( path ) {
+		strncpy(mPath, path, 1023);
+	}
 }

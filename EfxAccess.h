@@ -9,12 +9,18 @@
 
 #pragma once
 
+#include "Chip700defines.h"
+
 #if AU
 #include <AudioUnit/AUComponent.h>
 #include <AudioToolbox/AudioToolbox.h>
 #endif
 
-#include "Chip700defines.h"
+#include "SPCFile.h"
+#include "CFBRRFile.h"
+#include "BRRFile.h"
+#include "AudioFile.h"
+#include "XIFile.h"
 
 class EfxAccess
 {
@@ -24,6 +30,12 @@ public:
 #if AU
 	void	SetEventListener( AUEventListenerRef listener ) { mEventListener = listener; }
 #endif
+	
+	bool	GetBRRFileData( BRRFile **data );
+	bool	SetBRRFileData( const BRRFile *data );
+	bool	GetXIFileData( XIFile **data );
+	bool	GetCFBRRFileData( CFBRRFile **data );
+	bool	SetCFBRRFileData( const CFBRRFile *data );
 	
 	bool	SetSourceFilePath( const char *path );
 	bool	SetProgramName( const char *pgname );

@@ -621,12 +621,19 @@ void C700GUI::copyFIRParamToClipBoard()
 void C700GUI::loadToCurrentProgram( const char *path )
 {
 	BRRFile		brrfile(path,false);
+	CFBRRFile	cfbrrfile(path,false);
 	AudioFile	audiofile(path,false);
 	SPCFile		spcfile(path,false);
 	
 	brrfile.Load();
 	if ( brrfile.IsLoaded() ) {
 		loadToCurrentProgramFromBRR( &brrfile );
+		goto _ret;
+	}
+	
+	cfbrrfile.Load();
+	if ( cfbrrfile.IsLoaded() ) {
+		loadToCurrentProgramFromCFBRR( &cfbrrfile );
 		goto _ret;
 	}
 	
@@ -648,6 +655,11 @@ _ret:
 
 //-----------------------------------------------------------------------------
 void C700GUI::loadToCurrentProgramFromBRR( BRRFile *file )
+{
+}
+
+//-----------------------------------------------------------------------------
+void C700GUI::loadToCurrentProgramFromCFBRR( CFBRRFile *file )
 {
 }
 

@@ -23,6 +23,7 @@
 #include "MyTextEdit.h"
 
 #include "SPCFile.h"
+#include "CFBRRFile.h"
 #include "BRRFile.h"
 #include "AudioFile.h"
 #include "XIFile.h"
@@ -47,6 +48,7 @@ private:
 	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
 	void			copyFIRParamToClipBoard();
 	void			loadToCurrentProgramFromBRR( BRRFile *file );
+	void			loadToCurrentProgramFromCFBRR( CFBRRFile *file );
 	void			loadToCurrentProgramFromAudioFile( AudioFile *file );
 	void			loadToCurrentProgramFromSPC( SPCFile *file );
 	bool			getLoadFile( char *path, int maxLen, const char *title );

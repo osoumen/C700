@@ -26,6 +26,56 @@ EfxAccess::~EfxAccess()
 }
 
 //-----------------------------------------------------------------------------
+bool	EfxAccess::GetBRRFileData( BRRFile **data )
+{
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+bool	EfxAccess::SetBRRFileData( const BRRFile *data )
+{
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+bool	EfxAccess::GetXIFileData( XIFile **data )
+{
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+bool	EfxAccess::GetCFBRRFileData( CFBRRFile **data )
+{
+#if AU
+	CFBRRFile	*file = new CFBRRFile(NULL, true);
+	
+	//Dictionaryƒf[ƒ^‚ðŽæ“¾‚·‚é
+	CFDictionaryRef	propertydata;
+	UInt32 size = sizeof(CFDictionaryRef);
+	if (
+	AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_PGDictionary,kAudioUnitScope_Global,0,&propertydata,&size)
+		== noErr ) {
+		file->SetDictionaryData( propertydata );
+		CFRelease(propertydata);
+		return true;
+	}
+	CFRelease(propertydata);
+	return true;
+#else
+	return false;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+bool	EfxAccess::SetCFBRRFileData( const CFBRRFile *data )
+{
+#if AU
+#else
+	return false;
+#endif
+}
+
+//-----------------------------------------------------------------------------
 bool EfxAccess::SetSourceFilePath( const char *path )
 {
 #if AU
