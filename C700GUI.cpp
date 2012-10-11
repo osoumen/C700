@@ -509,7 +509,7 @@ void C700GUI::valueChanged(CControl* control)
 				if ( value > 0 ) {
 					//サンプルデータの存在確認
 					BRRData		brr;
-					efxAcc->GetBRRData(&brr);
+					if (efxAcc->GetBRRData(&brr) == false) break;
 					//データが無ければ終了する
 					if (brr.data == NULL) break;
 					
@@ -538,7 +538,7 @@ void C700GUI::valueChanged(CControl* control)
 				if ( value > 0 ) {
 					//サンプルデータの存在確認
 					BRRData		brr;
-					efxAcc->GetBRRData(&brr);
+					if ( efxAcc->GetBRRData(&brr) == false ) break;
 					//データが無ければ終了する
 					if (brr.data == NULL) break;
 					
@@ -959,7 +959,7 @@ void C700GUI::autocalcCurrentProgramSampleRate()
 	short	*buffer;
 	int		pitch, length;
 	
-	efxAcc->GetBRRData( &brr );
+	if ( efxAcc->GetBRRData( &brr ) == false ) return;
 	
 	if (brr.data == NULL) return;
 	
@@ -992,7 +992,7 @@ void C700GUI::autocalcCurrentProgramBaseKey()
 	short	*buffer;
 	int		pitch, length;
 	
-	efxAcc->GetBRRData( &brr );
+	if (efxAcc->GetBRRData( &brr ) == false) return;
 	
 	if (brr.data == NULL) return;
 	

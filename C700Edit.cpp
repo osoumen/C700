@@ -173,7 +173,7 @@ void C700Edit::SetLoopPoint( int lp )
 	long	numSamples;
 
 	BRRData	brr;
-	efxAcc->GetBRRData( &brr );
+	if ( efxAcc->GetBRRData( &brr ) == false ) return;
 	
 	if ( brr.data == NULL ) return;
 	

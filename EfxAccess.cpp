@@ -212,7 +212,7 @@ bool EfxAccess::GetProgramName( char *pgname, int maxLen )
 bool EfxAccess::GetBRRData( BRRData *data )
 {
 #if AU
-	UInt32		outSize = sizeof(BRRData*);
+	UInt32		outSize = sizeof(BRRData);
 	if (
 	AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, data, &outSize)
 		== noErr ) {
