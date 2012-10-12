@@ -41,7 +41,7 @@ bool	EfxAccess::SetBRRFileData( const BRRFile *data )
 bool	EfxAccess::CreateXIFileData( XIFile **outData )
 {
 #if AU
-	XIFile	*file = new XIFile(NULL, true);
+	XIFile	*file = new XIFile(NULL, 0);
 	*outData = file;
 	
 	//ÉfÅ[É^ÇéÊìæÇ∑ÇÈ
@@ -49,16 +49,23 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 	UInt32 size = sizeof(CFDataRef);
 	if (
 		AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_XIData,
-							 kAudioUnitScope_Global, 0, &cfdata,&size)
+							 kAudioUnitScope_Global, 0, &cfdata, &size)
 		== noErr )
 	{
-		file->SetCFData( cfdata );
-		CFRelease(cfdata);
-		return true;
+		if ( cfdata ) {
+			file->SetCFData( cfdata );
+			CFRelease(cfdata);
+			return true;
+		}
+		else {
+			CFRelease(cfdata);
+			return false;
+		}
 	}
 	CFRelease(cfdata);
 	return true;
 #else
+	//TODO : VSTéûÇÃèàóù
 	return false;
 #endif
 }
@@ -150,6 +157,7 @@ bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
 			CFStringRef pathStr = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
 			CFStringGetCString(pathStr, path, maxLen-1, kCFStringEncodingUTF8);
 			CFRelease(pathStr);
+			CFRelease(url);
 			return true;
 		}
 		else {
@@ -158,6 +166,7 @@ bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
 	}
 	return false;
 #else
+	//VSTéûÇÃèàóù
 	return false;
 #endif
 }
@@ -196,6 +205,7 @@ bool EfxAccess::GetProgramName( char *pgname, int maxLen )
 		== noErr ) {
 		if ( pgnameRef ) {
 			CFStringGetCString(pgnameRef, pgname, maxLen-1, kCFStringEncodingUTF8);
+			CFRelease(pgnameRef);
 			return true;
 		}
 		else {
@@ -244,9 +254,10 @@ bool EfxAccess::SetBRRData( const BRRData *data )
 //-----------------------------------------------------------------------------
 float EfxAccess::GetPropertyValue( int propertyId )
 {
+#if AU
 	float		value = .0f;
-	char		outDataPtr[8];
-	UInt32		outDataSize=8;
+	char		outDataPtr[16];
+	UInt32		outDataSize=16;
 	
 	if ( 
 		propertyId != kAudioUnitCustomProperty_PGDictionary &&
@@ -335,6 +346,9 @@ float EfxAccess::GetPropertyValue( int propertyId )
 			value = .0f;
 	}
 	return value;
+#else
+	//VSTéûÇÃèàóù
+#endif
 }
 
 //-----------------------------------------------------------------------------

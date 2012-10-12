@@ -57,8 +57,8 @@ AudioUnitParameterValue		inParameterValue
 	if ( inEvent->mEventType == kAudioUnitEvent_PropertyChange ) {
 		AudioUnitPropertyID	propertyId = inEvent->mArgument.mProperty.mPropertyID;
 		float		value;
-		char		outDataPtr[8];
-		UInt32		outDataSize=8;
+		char		outDataPtr[16];
+		UInt32		outDataSize=16;
 		
 		if ( 
 			propertyId != kAudioUnitCustomProperty_PGDictionary &&
@@ -177,9 +177,11 @@ AudioUnitParameterValue		inParameterValue
 					editor->SetProgramName( "" );
 				}
 				else {
-					const char	*pgname = CFStringGetCStringPtr(cfpgname, kCFStringEncodingUTF8);
+					char	pgname[PROGRAMNAME_MAX_LEN];
+					CFStringGetCString(cfpgname, pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
 					editor->SetProgramName( pgname );
 				}
+				CFRelease(cfpgname);
 				outDataSize = 0;
 				break;
 			}

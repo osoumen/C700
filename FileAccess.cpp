@@ -26,6 +26,6 @@ FileAccess::~FileAccess()
 void FileAccess::SetFilePath( const char *path )
 {
 	if ( path ) {
-		strncpy(mPath, path, 1023);
+		strncpy(mPath, path, PATH_LEN_MAX-1);
 	}
 }

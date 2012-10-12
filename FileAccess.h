@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "Chip700defines.h"
+
 class FileAccess {
 public:
 	FileAccess( const char *path, bool isWriteable );
@@ -21,7 +23,7 @@ public:
 	virtual bool	IsLoaded() const { return mIsLoaded; }
 	
 protected:
-	char		mPath[1024];
+	char		mPath[PATH_LEN_MAX];
 	bool		mIsWriteable;
 	bool		mIsLoaded;
 };

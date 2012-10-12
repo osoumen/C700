@@ -11,6 +11,7 @@
 
 #include "vstgui.h"
 #include "Chip700defines.h"
+#include "ControlInstances.h"
 #include "EfxAccess.h"
 
 #include "DummyCntl.h"

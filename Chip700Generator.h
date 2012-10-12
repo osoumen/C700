@@ -7,13 +7,13 @@
  *
  */
 
-#ifndef __Chip700Generator_h__
-#define __Chip700Generator_h__
+#pragma once
 
 #include "Chip700defines.h"
-#include <AUBuffer.h>
+#include "EchoKernel.h"
 #include <list>
 
+//-----------------------------------------------------------------------------
 typedef enum
 {
     ATTACK,
@@ -23,6 +23,7 @@ typedef enum
 	FASTRELEASE
 } env_state_t32;
 
+//-----------------------------------------------------------------------------
 typedef enum
 {
     kVelocityMode_Constant,
@@ -30,103 +31,52 @@ typedef enum
     kVelocityMode_Linear
 } velocity_mode;
 
-class EchoKernel
-{
-private:
-	static const int DELAY_UNIT = 512;
-	static const int ECHO_BUFFER_SIZE = 7680;
-	static const int FIR_LENGTH = 8;
-	static const int FILTER_STLIDE = 1;
-	
-public:
-	EchoKernel()
-	{
-		mEchoBuffer.AllocateClear(ECHO_BUFFER_SIZE);
-		mFIRbuf.AllocateClear(FIR_LENGTH);
-		mEchoIndex=0;
-		mFIRIndex=0;
-		
-		m_echo_vol=0;
-		m_input = 0;
-	};
-	
-	void 	Input(int samp);
-	int		GetFxOut();
-	void	Reset();
-	void	SetEchoVol( int val )
-	{
-		m_echo_vol = val;
-	}
-	void	SetFBLevel( int val )
-	{
-		m_fb_lev = val;
-	}
-	void	SetFIRTap( int index, int val )
-	{
-		m_fir_taps[index] = val;
-	}
-	void	SetDelayTime( int val )
-	{
-		m_delay_samples = val * DELAY_UNIT;
-	}
-	
-private:
-	TAUBuffer<int>	mEchoBuffer;
-	TAUBuffer<int>	mFIRbuf;
-	int			mEchoIndex;
-	int			mFIRIndex;
-	
-	int			m_echo_vol;
-	int			m_fb_lev;
-	int			m_fir_taps[8];
-	int			m_delay_samples;
-	
-	int			m_input;
-};
-
+//-----------------------------------------------------------------------------
 class Chip700Generator
 {
 public:
 	Chip700Generator();
 	virtual				~Chip700Generator() {}
+	
 	virtual void		Reset();
 
-	void KeyOn( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame );
-	void KeyOff( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame );
-	void AllNotesOff();
-	void AllSoundOff();
-	void ResetAllControllers();
+	void		KeyOn( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame );
+	void		KeyOff( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame );
+	void		AllNotesOff();
+	void		AllSoundOff();
+	void		ResetAllControllers();
 	
-	void ProgramChange( int ch, int pgnum, int inFrame );
-	void PitchBend( int ch, int value, int inFrame );
-	void ModWheel( int ch, int value, int inFrame );
-	void Damper( int ch, int value, int inFrame );
+	void		ProgramChange( int ch, int pgnum, int inFrame );
+	void		PitchBend( int ch, int value, int inFrame );
+	void		ModWheel( int ch, int value, int inFrame );
+	void		Damper( int ch, int value, int inFrame );
 	
-	void SetVoiceLimit( int value );
-	void SetPBRange( float value );
-	void SetClipper( bool value );
-	void SetMultiMode( int bank, bool value );
-	void SetVelocityMode( velocity_mode value );
-	void SetVibFreq( float value );
-	void SetVibDepth( float value );
+	void		SetVoiceLimit( int value );
+	void		SetPBRange( float value );
+	void		SetClipper( bool value );
+	void		SetMultiMode( int bank, bool value );
+	bool		GetMultiMode( int bank ) const;
+	void		SetVelocityMode( velocity_mode value );
+	void		SetVibFreq( float value );
+	void		SetVibDepth( float value );
 	
-	void SetMainVol_L( int value );
-	void SetMainVol_R( int value );
-	void SetEchoVol_L( int value );
-	void SetEchoVol_R( int value );
-	void SetFeedBackLevel( int value );
-	void SetDelayTime( int value );
-	void SetFIRTap( int tap, int value );
+	void		SetMainVol_L( int value );
+	void		SetMainVol_R( int value );
+	void		SetEchoVol_L( int value );
+	void		SetEchoVol_R( int value );
+	void		SetFeedBackLevel( int value );
+	void		SetDelayTime( int value );
+	void		SetFIRTap( int tap, int value );
 	
-	void SetSampleRate( double samplerate ) { mSampleRate = samplerate; }
+	void		SetSampleRate( double samplerate ) { mSampleRate = samplerate; }
 	
-	void Process( unsigned int frames, float *output[2] );
-	int GetKeyMap( int bank, int key ) { return mKeyMap[bank][key]; }
-	VoiceParams getVP(int pg) {return mVPset[pg];};
-	VoiceParams getMappedVP(int bank, int key) {return mVPset[mKeyMap[bank][key]];};
-	void SetVPSet( VoiceParams *vp ) { mVPset = vp; }
+	void		Process( unsigned int frames, float *output[2] );
+	int			GetKeyMap( int bank, int key ) const { return mKeyMap[bank][key]; }
+	VoiceParams	*getVP(int pg) const { return &mVPset[pg]; }
+	VoiceParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
+	void		SetVPSet( VoiceParams *vp ) { mVPset = vp; }
 	
-	void RefreshKeyMap(void);
+	void		RefreshKeyMap(void);
 	
 private:
 	static const int INTERNAL_CLOCK = 32000;
@@ -210,12 +160,9 @@ private:
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
 	VoiceParams		*mVPset;
 	
-	int FindFreeVoice( const NoteEvt *evt );
-	int StopPlayingVoice( const NoteEvt *evt );
-	void DoKeyOn(NoteEvt *evt);
-	float VibratoWave(float phase);
-	int CalcPBValue(float pitchBend, int basePitch);
+	int		FindFreeVoice( const NoteEvt *evt );
+	int		StopPlayingVoice( const NoteEvt *evt );
+	void	DoKeyOn(NoteEvt *evt);
+	float	VibratoWave(float phase);
+	int		CalcPBValue(float pitchBend, int basePitch);
 };
-
-
-#endif

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "vstgui.h"
-
 #pragma mark ____Chip700 Parameters
 
 // parameters
@@ -212,103 +210,26 @@ static const int kMaximumVoices = 16;
 
 static const int NUM_BANKS = 4;
 
+static const int PROGRAMNAME_MAX_LEN = 256;
+static const int PATH_LEN_MAX = 1024;
+
 typedef struct {
 	int				size;
 	unsigned char	*data;
 } BRRData;
 
-
 typedef struct {
-	int		basekey,lowkey,highkey,loop,lp,lp_end;
-	double	srcSamplerate;
-} InstData;
-
-typedef struct {
-	CFStringRef			pgname;
-	int					ar,dr,sl,sr;
-	int					volL,volR;
-	double				rate;
-	int					basekey,lowkey,highkey;
-	int					lp;
-	bool				loop;
-	bool				echo;
-	int					bank;			// 追加 12.04.16
-	BRRData				brr;
-	CFURLRef			sourceFile;
-	bool				isEmphasized;
+	char		pgname[PROGRAMNAME_MAX_LEN];
+	int			ar,dr,sl,sr;
+	int			volL,volR;
+	double		rate;
+	int			basekey,lowkey,highkey;
+	int			lp;
+	bool		loop;
+	bool		echo;
+	int			bank;			// 追加 12.04.16
+	BRRData		brr;
+	char		sourceFile[PATH_LEN_MAX];
+	bool		isEmphasized;
 } VoiceParams;
 
-typedef struct {
-	char extxi[21];		// Extended Instrument:
-	char name[23];		// Name, 1Ah
-	char trkname[20];	// FastTracker v2.00
-	unsigned short shsize;		// 0x0102
-} XIFILEHEADER;
-
-typedef struct {
-	unsigned char snum[96];
-	unsigned short venv[24];
-	unsigned short penv[24];
-	unsigned char vnum, pnum;
-	unsigned char vsustain, vloops, vloope, psustain, ploops, ploope;
-	unsigned char vtype, ptype;
-	unsigned char vibtype, vibsweep, vibdepth, vibrate;
-	unsigned short volfade;
-	unsigned short res;
-	unsigned char reserved1[20];
-	unsigned short reserved2;		//nsamples?
-} XIINSTRUMENTHEADER;
-
-typedef struct {
-	unsigned long samplen;
-	unsigned long loopstart;
-	unsigned long looplen;
-	unsigned char vol;
-	signed char finetune;
-	unsigned char type;
-	unsigned char pan;
-	signed char relnote;
-	unsigned char res;
-	char name[22];
-} XISAMPLEHEADER;
-
-typedef struct {
-	unsigned long manufacturer;
-	unsigned long product;
-	unsigned long sample_period;
-	unsigned long note;
-	unsigned long pitch_fraction;
-	unsigned long smpte_format;
-	unsigned long smpte_offset;
-	unsigned long loops;
-	unsigned long sampler_data;
-	
-	unsigned long cue_id;
-	unsigned long type;
-	unsigned long start;
-	unsigned long end;
-	unsigned long fraction;
-	unsigned long play_count;
-} WAV_smpl;
-
-
-typedef struct {
-	unsigned int	kind_sig;
-	unsigned int	kind;
-	char			title[256];
-	int				value;
-	int				minimum;
-	int				maximum;
-	unsigned int	sig;
-	int				id;
-	unsigned int	command;
-	int				x;
-	int				y;
-	int				w;
-	int				h;
-	char			fontname[256];
-	int				fontsize;
-	CHoriTxtAlign	fontalign;
-	int				style;
-	int				futureuse;
-} ControlInstances;

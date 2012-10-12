@@ -7,7 +7,6 @@
  *
  */
 
-#include "Chip700defines.h"
 #include "PlistBRRFile.h"
 
 #if MAC

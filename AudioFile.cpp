@@ -8,6 +8,7 @@
  */
 
 #include "AudioFile.h"
+#include "vstgui.h"
 
 #if MAC
 #include <AudioToolbox/AudioFile.h>
@@ -279,6 +280,7 @@ bool AudioFile::Load()
 	
 	return true;
 #else
+	//TODO : Windowsのオーディオファイル読み込み処理
 	return false;
 #endif
 }

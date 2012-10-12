@@ -14,6 +14,30 @@
 
 class AudioFile : public FileAccess {
 public:
+	typedef struct {
+		int		basekey,lowkey,highkey,loop,lp,lp_end;
+		double	srcSamplerate;
+	} InstData;
+	
+	typedef struct {
+		unsigned long manufacturer;
+		unsigned long product;
+		unsigned long sample_period;
+		unsigned long note;
+		unsigned long pitch_fraction;
+		unsigned long smpte_format;
+		unsigned long smpte_offset;
+		unsigned long loops;
+		unsigned long sampler_data;
+		
+		unsigned long cue_id;
+		unsigned long type;
+		unsigned long start;
+		unsigned long end;
+		unsigned long fraction;
+		unsigned long play_count;
+	} WAV_smpl;
+	
 	AudioFile( const char *path, bool isWriteable );
 	virtual ~AudioFile();
 	

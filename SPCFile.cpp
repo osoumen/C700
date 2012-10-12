@@ -9,7 +9,6 @@
 
 #include "SPCFile.h"
 #include "brrcodec.h"
-#include "Chip700defines.h"
 
 //-----------------------------------------------------------------------------
 SPCFile::SPCFile( const char *path, bool isWriteable )

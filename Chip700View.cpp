@@ -37,6 +37,25 @@ void Chip700View::InitWindow(CFBundleRef sBundle)
 	TViewNoCompositingCompatible::RegisterClassForBundleID<TWaveView>(GetBundleID());
 }
 
+typedef struct {
+	unsigned long manufacturer;
+	unsigned long product;
+	unsigned long sample_period;
+	unsigned long note;
+	unsigned long pitch_fraction;
+	unsigned long smpte_format;
+	unsigned long smpte_offset;
+	unsigned long loops;
+	unsigned long sampler_data;
+	
+	unsigned long cue_id;
+	unsigned long type;
+	unsigned long start;
+	unsigned long end;
+	unsigned long fraction;
+	unsigned long play_count;
+} WAV_smpl;
+
 // ウィンドウの初回生成後
 void Chip700View::FinishWindow(CFBundleRef sBundle)
 {
@@ -773,6 +792,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 				else
 					HIViewSetText(control, CFSTR(""));
 			}
+			CFRelease(pgstr);
 			break;
 		}
 			
@@ -1302,6 +1322,7 @@ void Chip700View::saveSelected(void)
 		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("%@.brr"),pgname);
 	CFURLRef	savefile=getSaveFile(defaultname);
 	CFRelease(defaultname);
+	CFRelease(pgname);
 	if (savefile == NULL)
 		return;
 	
@@ -1363,6 +1384,7 @@ void Chip700View::saveSelectedXI(void)
 		defaultname = CFStringCreateWithFormat(NULL,NULL,CFSTR("%@.xi"),pgname);
 	CFURLRef	savefile=getSaveFile(defaultname);
 	CFRelease(defaultname);
+	CFRelease(pgname);
 	if (savefile == NULL)
 		return;
 	
@@ -2176,7 +2198,6 @@ static OSErr MyDragSendDataFunction(FlavorType theType, void *dragSendRefCon,
 	fs=(FSRef*)*(dropLocFS.dataHandle);
 	
 	CFStringRef	pgstr;
-	bool		pgstr_allocated=false;
 	size = sizeof(CFStringRef);
 	AudioUnitGetProperty(This->mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,kAudioUnitScope_Global,0,&pgstr,(UInt32*)&size);
 	if (pgstr == NULL) {
@@ -2185,7 +2206,6 @@ static OSErr MyDragSendDataFunction(FlavorType theType, void *dragSendRefCon,
 		size = sizeof(int);
 		AudioUnitGetProperty(This->mEditAudioUnit,kAudioUnitCustomProperty_EditingProgram,kAudioUnitScope_Global,0,&intValue,(UInt32*)&size);
 		pgstr = CFStringCreateWithFormat(NULL,NULL,CFSTR("program_%03d"),intValue);
-		pgstr_allocated = true;
 	}
 	
 	CFURLRef	dropfileFoldURL=CFURLCreateFromFSRef(NULL,fs);
@@ -2212,8 +2232,7 @@ static OSErr MyDragSendDataFunction(FlavorType theType, void *dragSendRefCon,
 	} while(fileexists);
 	CFRelease(suffix);
 	CFRelease(dropfileFoldURL);
-	if (pgstr_allocated)
-		CFRelease(pgstr);
+	CFRelease(pgstr);
 	
 	This->saveToFile(dropfilefullURL);
 	

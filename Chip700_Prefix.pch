@@ -2,7 +2,7 @@
 // Prefix header for all source files of the 'C700' target in the 'C700' project.
 //
 
-#include <Carbon/Carbon.h>
+//#include <Carbon/Carbon.h>
 
 #define PLUGGUI 1
 #define AU 1
@@ -13,3 +13,5 @@
 #define USE_NAMESPACE 0
 
 //#define	DEBUG_PRINT	1
+
+#include "vstgui.h"

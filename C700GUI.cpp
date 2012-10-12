@@ -8,7 +8,7 @@
  */
 
 #include "C700GUI.h"
-#include "ControlInstances.h"
+#include "ControlInstacnesDefs.h"
 #include "czt.h"
 #include "brrcodec.h"
 #include "cfileselector.h"
@@ -496,9 +496,9 @@ void C700GUI::valueChanged(CControl* control)
 			
 			case kControlButtonLoad:
 				if ( value > 0 ) {
-					char	path[1024];
+					char	path[PATH_LEN_MAX];
 					bool	isSelected;
-					isSelected = getLoadFile(path, 1024, "");
+					isSelected = getLoadFile(path, PATH_LEN_MAX, "");
 					if ( isSelected ) {
 						loadToCurrentProgram(path);
 					}
@@ -514,20 +514,20 @@ void C700GUI::valueChanged(CControl* control)
 					if (brr.data == NULL) break;
 					
 					//デフォルトファイル名の作成
-					char	pgname[256];
-					char	defaultName[256];
-					efxAcc->GetProgramName(pgname, 256);
+					char	pgname[PROGRAMNAME_MAX_LEN];
+					char	defaultName[PROGRAMNAME_MAX_LEN];
+					efxAcc->GetProgramName(pgname, PROGRAMNAME_MAX_LEN);
 					if ( pgname[0] == 0 || strlen(pgname) == 0 ) {
-						snprintf(defaultName, 255, "program_%03d.brr", 
+						snprintf(defaultName, PROGRAMNAME_MAX_LEN-1, "program_%03d.brr", 
 								 (int)efxAcc->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram) );
 					}
 					else {
-						snprintf(defaultName, 255, "%s.brr", pgname);
+						snprintf(defaultName, PROGRAMNAME_MAX_LEN-1, "%s.brr", pgname);
 					}
 					//保存ファイルダイアログを表示
-					char	path[1024];
+					char	path[PATH_LEN_MAX];
 					bool	isSelected;
-					isSelected = getSaveFile(path, 1024, defaultName, "Save Program To...");
+					isSelected = getSaveFile(path, PATH_LEN_MAX, defaultName, "Save Program To...");
 					if ( isSelected ) {
 						saveFromCurrentProgram(path);
 					}
@@ -544,8 +544,8 @@ void C700GUI::valueChanged(CControl* control)
 					
 					//ソースファイル情報が無ければ選択ダイアログを出す
 					bool	existSrcFile = false;
-					char	srcPath[1024];
-					efxAcc->GetSourceFilePath(srcPath, 1024);
+					char	srcPath[PATH_LEN_MAX];
+					efxAcc->GetSourceFilePath(srcPath, PATH_LEN_MAX);
 					if ( strlen(srcPath) > 0 ) {
 						//オーディオファイルであるか確認する
 						AudioFile	srcFile(srcPath,false);
@@ -554,26 +554,26 @@ void C700GUI::valueChanged(CControl* control)
 						}
 					}
 					if ( existSrcFile == false ) {
-						if ( getLoadFile(srcPath, 1024, "Select Source File") ) {
+						if ( getLoadFile(srcPath, PATH_LEN_MAX, "Select Source File") ) {
 							efxAcc->SetSourceFilePath(srcPath);
 						}
 					}
 					
 					//デフォルトファイル名の作成
-					char	pgname[256];
-					char	defaultName[256];
-					efxAcc->GetProgramName(pgname, 256);
+					char	pgname[PROGRAMNAME_MAX_LEN];
+					char	defaultName[PROGRAMNAME_MAX_LEN];
+					efxAcc->GetProgramName(pgname, PROGRAMNAME_MAX_LEN);
 					if ( pgname[0] == 0 || strlen(pgname) == 0 ) {
-						snprintf(defaultName, 255, "program_%03d.xi", 
+						snprintf(defaultName, PROGRAMNAME_MAX_LEN-1, "program_%03d.xi", 
 								 (int)efxAcc->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram) );
 					}
 					else {
-						snprintf(defaultName, 255, "%s.xi", pgname);
+						snprintf(defaultName, PROGRAMNAME_MAX_LEN-1, "%s.xi", pgname);
 					}
 					//保存ファイルダイアログを表示
-					char	savePath[1024];
+					char	savePath[PATH_LEN_MAX];
 					bool	isSelected;
-					isSelected = getSaveFile(savePath, 1024, defaultName, "Export Program To...");
+					isSelected = getSaveFile(savePath, PATH_LEN_MAX, defaultName, "Export Program To...");
 					if ( isSelected ) {
 						saveFromCurrentProgramToXI(savePath);
 					}
@@ -744,7 +744,7 @@ bool C700GUI::loadToCurrentProgramFromPlistBRR( PlistBRRFile *file )
 //-----------------------------------------------------------------------------
 bool C700GUI::loadToCurrentProgramFromAudioFile( AudioFile *file )
 {
-	InstData	inst;
+	AudioFile::InstData	inst;
 	short		*wavedata;
 	long		numSamples;
 	BRRData		brr;
@@ -856,7 +856,7 @@ bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 	memset(&Filedata, 0, sizeof(VstFileSelect));
 	Filedata.command=kVstFileLoad;
 	Filedata.type= kVstFileType;
-	strncpy(Filedata.title, title, 1023 );
+	strncpy(Filedata.title, title, maxLen-1 );
 	//Filedata.nbFileTypes=1;
 	//Filedata.fileTypes=&waveType;
 	Filedata.returnPath= path;
@@ -893,7 +893,7 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 	memset(&Filedata, 0, sizeof(VstFileSelect));
 	Filedata.command=kVstFileSave;
 	Filedata.type= kVstFileType;
-	strncpy(Filedata.title, title, 1023 );
+	strncpy(Filedata.title, title, maxLen-1 );
 	//Filedata.nbFileTypes=1;
 	//Filedata.fileTypes=&waveType;
 	Filedata.returnPath= path;
