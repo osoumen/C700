@@ -471,11 +471,9 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			if ( parameterSetFunc ) {
 				if ( mEditChannel == 0 ) {
 					mEditProg = GetParameter(kParam_program);
-					//parameterSetFunc(kParam_program, mEditProg, paramSetUserData );
 				}
 				else {
 					mEditProg = GetParameter(kParam_program_2 + mEditChannel - 1);
-					//parameterSetFunc(kParam_program_2 + mEditChannel - 1, mEditProg, paramSetUserData );
 				}
 			}
 			

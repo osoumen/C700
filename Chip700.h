@@ -120,20 +120,7 @@ private:
 	
 	C700Kernel			*mEfx;
 	AUPreset			*mPresets;
-	/*
-	int					mEditProg;		// 編集中のプログラムNo.
-	int					mEditChannel;	// 編集中のチャンネル
-	// MIDIチャンネルノート別発音数
-	int					mOnNotes[16];
-	int					mMaxNote[16];
 	
-	VoiceParams			mVPset[128];
-	// エコー
-	float				mFilterBand[5];
-	
-	Chip700Generator	mGenerator;
-	*/
 	int			CreatePGDataDic(CFDictionaryRef *data, int pgnum);
 	void		RestorePGDataDic(CFPropertyListRef data, int pgnum);
-	//UInt32		GetTotalRAM();
 };

@@ -75,7 +75,7 @@ void C700Edit::SetParameterInfo(long index, float minValue, float maxValue, floa
 //-----------------------------------------------------------------------------
 bool C700Edit::getRect(ERect **erect)
 {
-	static struct ERect r={0,0,200,200};
+	static struct ERect r={0,0,m_pBackground->getHeight(),m_pBackground->getWidth()};
 	*erect = &r;
 	return true;
 }

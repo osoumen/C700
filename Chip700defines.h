@@ -199,6 +199,7 @@ enum
 static const int kMaximumVoices = 16;
 static const int NUM_BANKS = 4;
 static const int NUM_PRESETS = 2;
+static const int NUM_OUTPUTS = 2;
 
 static const int PROGRAMNAME_MAX_LEN = 256;
 static const int PATH_LEN_MAX = 1024;

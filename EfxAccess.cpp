@@ -8,6 +8,7 @@
  */
 
 #include "EfxAccess.h"
+#include "C700VST.h"
 
 //-----------------------------------------------------------------------------
 EfxAccess::EfxAccess( void *efx )
@@ -15,7 +16,7 @@ EfxAccess::EfxAccess( void *efx )
 : mAU((AudioUnit)efx)
 , mEventListener(NULL)
 #else
-: mEfx((AudioEffect*)efx)
+: mEfx((C700VST*)efx)
 #endif
 {
 }

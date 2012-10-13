@@ -68,6 +68,7 @@ Chip700::~Chip700()
 		CFRelease(mPresets[i].presetName);
 	}
 	delete [] mPresets;
+	delete mEfx;
 	
 #if AU_DEBUG_DISPATCHER
 	delete mDebugDispatcher;
@@ -849,24 +850,21 @@ ComponentResult	Chip700::RestoreState(CFPropertyListRef plist)
 			CFRelease(pgnum);
 		}
 		
-		if (CFDictionaryContainsKey(dict, kSaveKey_EditProg)) {
-			int	editProg;
-			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_EditProg));
-			CFNumberGetValue(cfnum, kCFNumberIntType, &editProg);
-			
-			//Globals()->SetParameter(kParam_program, editProg);
-			//変更の通知
-			//PropertyChanged(kAudioUnitCustomProperty_EditingProgram, kAudioUnitScope_Global, 0);
-			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
-		}
 		if (CFDictionaryContainsKey(dict, kSaveKey_EditChan)) {
 			int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
 			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_EditChan));
 			CFNumberGetValue(cfnum, kCFNumberIntType, &editChan);
 			
 			//変更の通知
-			//PropertyChanged(kAudioUnitCustomProperty_EditingChannel, kAudioUnitScope_Global, 0);
 			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingChannel, editChan);
+		}
+		if (CFDictionaryContainsKey(dict, kSaveKey_EditProg)) {
+			int	editProg;
+			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_EditProg));
+			CFNumberGetValue(cfnum, kCFNumberIntType, &editProg);
+			
+			//変更の通知
+			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
 		}
 	}
 	return result;
@@ -944,18 +942,13 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	brr.data = const_cast<unsigned char*>(dataptr);
 	brr.size = size;
 	mEfx->SetBRRData(&brr);
-//	mVPset[pgnum].brr.data = new unsigned char[size];
-//	memmove(mVPset[pgnum].brr.data,dataptr,size);
-//	mVPset[pgnum].brr.size = size;
 	mEfx->SetPropertyValue(kAudioUnitCustomProperty_Loop, 
 						   brr.data[brr.size-9]&2?true:false);
-//	mVPset[pgnum].loop = brr.data[brr.size-9]&2?true:false;
 	
 	int	value;
 	if (CFDictionaryContainsKey(dict, kSaveKey_looppoint)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_looppoint));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].lp = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, value);
 	}
 	
@@ -963,109 +956,90 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	if (CFDictionaryContainsKey(dict, kSaveKey_samplerate)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_samplerate));
 		CFNumberGetValue(cfnum, kCFNumberDoubleType, &dvalue);
-		//mVPset[pgnum].rate = dvalue;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Rate, dvalue);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_basekey)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_basekey));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].basekey = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_BaseKey, value);
 	}
 	else {
-		//mVPset[pgnum].basekey = 60;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_BaseKey, 60);
 	}
 	if (CFDictionaryContainsKey(dict, kSaveKey_lowkey)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_lowkey));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].lowkey = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LowKey, value);
 	}
 	else {
-		//mVPset[pgnum].lowkey = 0;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LowKey, 0);
 	}
 	if (CFDictionaryContainsKey(dict, kSaveKey_highkey)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_highkey));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].highkey = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_HighKey,value );
 	}
 	else {
-		//mVPset[pgnum].highkey = 127;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_HighKey,127 );
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_ar)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_ar));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].ar = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_AR, value);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_dr)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_dr));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].dr = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_DR, value);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_sl)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_sl));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].sl = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SL, value);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_sr)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_sr));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].sr = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SR, value);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_volL)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volL));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].volL = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolL, value);
 	}
 	else {
-		//mVPset[pgnum].volL = 100;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolL, 100);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_volR)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volR));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].volR = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolR, value);
 	}
 	else {
-		//mVPset[pgnum].volR = 100;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolR, 100);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_echo)) {
 		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_echo));
-		//mVPset[pgnum].echo = CFBooleanGetValue(cfbool) ? true:false;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Echo,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
 	}
 	else {
-		//mVPset[pgnum].echo = false;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Echo, .0f);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_bank)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_bank));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		//mVPset[pgnum].bank = value;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Bank, value );
 	}
 	else {
-		//mVPset[pgnum].bank = 0;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Bank, 0 );
 	}
 	
@@ -1076,7 +1050,6 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		mEfx->SetProgramName(pgname);
 	}
 	else {
-		//mVPset[pgnum].pgname[0] = 0;
 		mEfx->SetProgramName("");
 	}
 	
@@ -1093,21 +1066,15 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		CFRelease(url);
 		
 		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_IsEmphasized));
-		//mVPset[pgnum].isEmphasized = CFBooleanGetValue(cfbool) ? true:false;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, CFBooleanGetValue(cfbool) ? 1.0f:.0f);
 	}
 	else {
-		//mVPset[pgnum].sourceFile[0] = 0;
 		mEfx->SetSourceFilePath("");
-		//mVPset[pgnum].isEmphasized = true;
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, .0f);
 	}
 	
 	//UIに変更を反映
 	if (pgnum == editProg) {
-		//for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Bank; i++) {
-		//	PropertyChanged(i, kAudioUnitScope_Global, 0);
-		//}
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
 	}
 	

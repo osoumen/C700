@@ -14,6 +14,7 @@
 #include "TDragTextControl.h"
 #include "TWaveView.h"
 #include "TImageCache.h"
+#include "AudioFile.h"
 
 static Boolean MyFileSelectFilterProc(AEDesc *theItem, void *info, void *callBackUD, 
 					 NavFilterModes filterMode);
@@ -25,7 +26,7 @@ static OSErr MyReceiveHandler(WindowRef win, void *handlerRefCon,
 
 bool DragItemsAreAcceptable(DragReference theDrag);
 
-short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst);
+//short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst);
 
 COMPONENT_ENTRY(Chip700View)
 
@@ -1651,16 +1652,26 @@ void Chip700View::loadFile(FSRef *ref)
 	}
 	else {
 		//その他のオーディオファイルの読み込み
-		InstData	inst;
+		AudioFile::InstData	inst;
 		short	*wavedata;
 		long	numSamples;
 		BRRData	brr;
 		int		looppoint;
 		bool	loop;
 		int		pad;
+		char	cpath[PATH_LEN_MAX];
 		
-		wavedata = loadPCMFile(ref,&numSamples,&inst);
-		if (wavedata == NULL) return;
+		CFStringRef pathStr = CFURLCopyFileSystemPath(path, kCFURLPOSIXPathStyle);
+		CFStringGetCString(pathStr, cpath, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
+		CFRelease(pathStr);
+		
+		AudioFile	audioFile(cpath,false);
+		audioFile.Load();
+		
+		if ( audioFile.IsLoaded() == false ) return;
+		wavedata = audioFile.GetAudioData();
+		numSamples = audioFile.GetLoadedSamples();
+		audioFile.GetInstData(&inst);
 		
 		if (preemphasis) {
 			emphasis(wavedata,numSamples);
@@ -1695,7 +1706,6 @@ void Chip700View::loadFile(FSRef *ref)
 		CFRelease(dataname);
 		CFRelease(noextpath);
 		
-		free(wavedata);
 		delete[] brr.data;
 	}
 	CFRelease(ext);
@@ -1703,6 +1713,7 @@ void Chip700View::loadFile(FSRef *ref)
 }
 
 //--------------------------------------------------------------------------------------------------
+#if 0
 short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 {
 #define	EXPAND_BUFFER	4096
@@ -1929,6 +1940,7 @@ short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 	
 	return wavedata;
 }
+#endif
 
 int Chip700View::loadSPCFile(CFURLRef path)
 {

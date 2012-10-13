@@ -81,7 +81,6 @@
 		8BA05B070720754400365D66 /* CAAUParameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05B050720754400365D66 /* CAAUParameter.cpp */; };
 		8BA05B080720754400365D66 /* CAAUParameter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05B060720754400365D66 /* CAAUParameter.h */; };
 		8BC6025C073B072D006C4272 /* Chip700.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC6025B073B072D006C4272 /* Chip700.h */; };
-		8D01CCC80486CAD60068D4B7 /* Chip700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */; };
 		8D01CCCA0486CAD60068D4B7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		F5432C261627AE4200863A0B /* EchoKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432C241627AE4200863A0B /* EchoKernel.h */; };
 		F5432C271627AE4200863A0B /* EchoKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432C251627AE4200863A0B /* EchoKernel.cpp */; };
@@ -97,6 +96,121 @@
 		F5432FF2162915F900863A0B /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
 		F5432FF3162915F900863A0B /* C700Parameters.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432FEF162915F900863A0B /* C700Parameters.h */; };
 		F5432FF4162915F900863A0B /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
+		F543317916296E0200863A0B /* Chip700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */; };
+		F543319716296E0200863A0B /* Chip700defines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A77F1030ADE785100F2B2BE /* Chip700defines.h */; };
+		F543319816296E0200863A0B /* samplebrr.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A10AB550AE2855600271511 /* samplebrr.h */; };
+		F543319916296E0200863A0B /* gauss.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF717CF0AE3DD5900C79293 /* gauss.h */; };
+		F543319C16296E0200863A0B /* czt.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AEECD2E0B020BC6002C9BB7 /* czt.h */; };
+		F543319D16296E0200863A0B /* brrcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AD362300AFE59F900FC48D2 /* brrcodec.h */; };
+		F543319E16296E0200863A0B /* Chip700Generator.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* Chip700Generator.h */; };
+		F543319F16296E0200863A0B /* getpluginbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD29160B67860003E710 /* getpluginbundle.h */; };
+		F54331A016296E0200863A0B /* vstkeycode.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2B160B67860003E710 /* vstkeycode.h */; };
+		F54331A116296E0200863A0B /* cocoasupport.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2C160B67860003E710 /* cocoasupport.h */; };
+		F54331A216296E0200863A0B /* cfileselector.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD31160B67860003E710 /* cfileselector.h */; };
+		F54331A416296E0200863A0B /* vstgui.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD35160B67860003E710 /* vstgui.h */; };
+		F54331A616296E0200863A0B /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
+		F54331A716296E0200863A0B /* C700GUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A484161964FD006C91AD /* C700GUI.h */; };
+		F54331A816296E0200863A0B /* ctooltipsupport.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A8021619DEA6006C91AD /* ctooltipsupport.h */; };
+		F54331A916296E0200863A0B /* MyKnob.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A94D161AB0F1006C91AD /* MyKnob.h */; };
+		F54331AA16296E0200863A0B /* MySlider.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AA24161AD9F4006C91AD /* MySlider.h */; };
+		F54331AB16296E0200863A0B /* LabelOnOffButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AAA2161C0114006C91AD /* LabelOnOffButton.h */; };
+		F54331AC16296E0200863A0B /* WaveView.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AD34161D3490006C91AD /* WaveView.h */; };
+		F54331AD16296E0200863A0B /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
+		F54331AE16296E0200863A0B /* ControlInstances.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6447161D7A94001CF9AB /* ControlInstances.h */; };
+		F54331AF16296E0200863A0B /* SeparatorLine.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D65BC161EC9D0001CF9AB /* SeparatorLine.h */; };
+		F54331B016296E0200863A0B /* MyParamDisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6600161ECFD1001CF9AB /* MyParamDisplay.h */; };
+		F54331B116296E0200863A0B /* MyTextEdit.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6606161ECFE3001CF9AB /* MyTextEdit.h */; };
+		F54331B216296E0200863A0B /* EfxAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569BEC01622B5F8006C91AD /* EfxAccess.h */; };
+		F54331B316296E0200863A0B /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C388162515ED006C91AD /* FileAccess.h */; };
+		F54331B416296E0200863A0B /* AudioFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AB162518B9006C91AD /* AudioFile.h */; };
+		F54331B516296E0200863A0B /* SPCFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AF162518BF006C91AD /* SPCFile.h */; };
+		F54331B616296E0200863A0B /* BRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3B3162518C6006C91AD /* BRRFile.h */; };
+		F54331B716296E0200863A0B /* XIFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C40916254B6E006C91AD /* XIFile.h */; };
+		F54331B816296E0200863A0B /* PlistBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C6DD162644AE006C91AD /* PlistBRRFile.h */; };
+		F54331B916296E0200863A0B /* EchoKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432C241627AE4200863A0B /* EchoKernel.h */; };
+		F54331BA16296E0200863A0B /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432E3F1627FC2900863A0B /* ControlInstacnesDefs.h */; };
+		F54331BB16296E0200863A0B /* C700Kernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432F2D1628117D00863A0B /* C700Kernel.h */; };
+		F54331BC16296E0200863A0B /* C700Parameters.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432FEF162915F900863A0B /* C700Parameters.h */; };
+		F54331BE16296E0200863A0B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		F54331BF16296E0200863A0B /* AUBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C260B2144FD00EC1825 /* AUBackground.png */; };
+		F54331C016296E0200863A0B /* knobBack.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C2F0B2144FD00EC1825 /* knobBack.png */; };
+		F54331C116296E0200863A0B /* sliderThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */; };
+		F54331C216296E0200863A0B /* bt_check.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AA85161BFFA8006C91AD /* bt_check.png */; };
+		F54331C316296E0200863A0B /* rocker_sw.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AD17161D3277006C91AD /* rocker_sw.png */; };
+		F54331C416296E0200863A0B /* bt_copy.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FB161EB76D001CF9AB /* bt_copy.png */; };
+		F54331C516296E0200863A0B /* bt_calc.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FD161EB7CD001CF9AB /* bt_calc.png */; };
+		F54331C616296E0200863A0B /* bt_load.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FF161EB8CE001CF9AB /* bt_load.png */; };
+		F54331C716296E0200863A0B /* bt_save.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6501161EB957001CF9AB /* bt_save.png */; };
+		F54331C816296E0200863A0B /* bt_unload.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6503161EB9B6001CF9AB /* bt_unload.png */; };
+		F54331C916296E0200863A0B /* bt_save_xi.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6505161EBA24001CF9AB /* bt_save_xi.png */; };
+		F54331CA16296E0200863A0B /* bt_velocitysens.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6507161EBB09001CF9AB /* bt_velocitysens.png */; };
+		F54331CB16296E0200863A0B /* bank_a.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6544161EBBE9001CF9AB /* bank_a.png */; };
+		F54331CC16296E0200863A0B /* bank_b.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6545161EBBE9001CF9AB /* bank_b.png */; };
+		F54331CD16296E0200863A0B /* bank_c.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6546161EBBE9001CF9AB /* bank_c.png */; };
+		F54331CE16296E0200863A0B /* bank_d.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6547161EBBE9001CF9AB /* bank_d.png */; };
+		F54331CF16296E0200863A0B /* track01_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654C161EBF1B001CF9AB /* track01_.png */; };
+		F54331D016296E0200863A0B /* track02_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654D161EBF1B001CF9AB /* track02_.png */; };
+		F54331D116296E0200863A0B /* track03_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654E161EBF1B001CF9AB /* track03_.png */; };
+		F54331D216296E0200863A0B /* track04_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654F161EBF1B001CF9AB /* track04_.png */; };
+		F54331D316296E0200863A0B /* track05_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6550161EBF1B001CF9AB /* track05_.png */; };
+		F54331D416296E0200863A0B /* track06_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6551161EBF1B001CF9AB /* track06_.png */; };
+		F54331D516296E0200863A0B /* track07_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6552161EBF1B001CF9AB /* track07_.png */; };
+		F54331D616296E0200863A0B /* track08_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6553161EBF1B001CF9AB /* track08_.png */; };
+		F54331D716296E0200863A0B /* track09_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6554161EBF1B001CF9AB /* track09_.png */; };
+		F54331D816296E0200863A0B /* track10_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6555161EBF1B001CF9AB /* track10_.png */; };
+		F54331D916296E0200863A0B /* track11_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6556161EBF1B001CF9AB /* track11_.png */; };
+		F54331DA16296E0200863A0B /* track12_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6557161EBF1B001CF9AB /* track12_.png */; };
+		F54331DB16296E0200863A0B /* track13_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6558161EBF1B001CF9AB /* track13_.png */; };
+		F54331DC16296E0200863A0B /* track14_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6559161EBF1B001CF9AB /* track14_.png */; };
+		F54331DD16296E0200863A0B /* track15_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D655A161EBF1B001CF9AB /* track15_.png */; };
+		F54331DE16296E0200863A0B /* track16_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D655B161EBF1B001CF9AB /* track16_.png */; };
+		F54331DF16296E0200863A0B /* ind_track.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6572161EC0F6001CF9AB /* ind_track.png */; };
+		F54331FC16296E0200863A0B /* czt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AEECD2D0B020BC6002C9BB7 /* czt.cpp */; };
+		F54331FD16296E0200863A0B /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
+		F54331FE16296E0200863A0B /* Chip700Generator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */; };
+		F54331FF16296E0200863A0B /* cocoasupport.mm in Sources */ = {isa = PBXBuildFile; fileRef = F597AD28160B67860003E710 /* cocoasupport.mm */; };
+		F543320116296E0200863A0B /* cvstguitimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2D160B67860003E710 /* cvstguitimer.cpp */; };
+		F543320216296E0200863A0B /* cfileselector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD30160B67860003E710 /* cfileselector.cpp */; };
+		F543320316296E0200863A0B /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD33160B67860003E710 /* vstcontrols.cpp */; };
+		F543320416296E0200863A0B /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD34160B67860003E710 /* vstgui.cpp */; };
+		F543320616296E0200863A0B /* C700Edit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A40416195488006C91AD /* C700Edit.cpp */; };
+		F543320716296E0200863A0B /* C700GUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A485161964FD006C91AD /* C700GUI.cpp */; };
+		F543320816296E0200863A0B /* ctooltipsupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A8011619DEA6006C91AD /* ctooltipsupport.cpp */; };
+		F543320916296E0200863A0B /* MyKnob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A94E161AB0F1006C91AD /* MyKnob.cpp */; };
+		F543320A16296E0200863A0B /* MySlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AA25161AD9F4006C91AD /* MySlider.cpp */; };
+		F543320B16296E0200863A0B /* LabelOnOffButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */; };
+		F543320C16296E0200863A0B /* WaveView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AD35161D3490006C91AD /* WaveView.cpp */; };
+		F543320D16296E0200863A0B /* DummyCntl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */; };
+		F543320E16296E0200863A0B /* SeparatorLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D65BD161EC9D0001CF9AB /* SeparatorLine.cpp */; };
+		F543320F16296E0200863A0B /* MyParamDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */; };
+		F543321016296E0200863A0B /* MyTextEdit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */; };
+		F543321116296E0200863A0B /* EfxAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569BEC11622B5F8006C91AD /* EfxAccess.cpp */; };
+		F543321216296E0200863A0B /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C389162515ED006C91AD /* FileAccess.cpp */; };
+		F543321316296E0200863A0B /* AudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3AC162518B9006C91AD /* AudioFile.cpp */; };
+		F543321416296E0200863A0B /* SPCFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B0162518BF006C91AD /* SPCFile.cpp */; };
+		F543321516296E0200863A0B /* BRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B4162518C6006C91AD /* BRRFile.cpp */; };
+		F543321616296E0200863A0B /* XIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C40A16254B6E006C91AD /* XIFile.cpp */; };
+		F543321716296E0200863A0B /* PlistBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */; };
+		F543321816296E0200863A0B /* EchoKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432C251627AE4200863A0B /* EchoKernel.cpp */; };
+		F543321916296E0200863A0B /* C700Kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432F2E1628117D00863A0B /* C700Kernel.cpp */; };
+		F543321A16296E0200863A0B /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
+		F543321F16296E0200863A0B /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2134090B199D8500DC9811 /* Accelerate.framework */; };
+		F543322016296E0200863A0B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ACF4CE40B21489800EC1825 /* Carbon.framework */; };
+		F543322116296E0200863A0B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F597AD57160B68950003E710 /* Cocoa.framework */; };
+		F543389E162973D900863A0B /* aeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F543389B162973D900863A0B /* aeffect.h */; };
+		F543389F162973D900863A0B /* aeffectx.h in Headers */ = {isa = PBXBuildFile; fileRef = F543389C162973D900863A0B /* aeffectx.h */; };
+		F54338A0162973D900863A0B /* vstfxstore.h in Headers */ = {isa = PBXBuildFile; fileRef = F543389D162973D900863A0B /* vstfxstore.h */; };
+		F54338A7162973E600863A0B /* aeffeditor.h in Headers */ = {isa = PBXBuildFile; fileRef = F54338A1162973E600863A0B /* aeffeditor.h */; };
+		F54338A8162973E600863A0B /* audioeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338A2162973E600863A0B /* audioeffect.cpp */; };
+		F54338A9162973E600863A0B /* audioeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F54338A3162973E600863A0B /* audioeffect.h */; };
+		F54338AA162973E600863A0B /* audioeffectx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338A4162973E600863A0B /* audioeffectx.cpp */; };
+		F54338AB162973E600863A0B /* audioeffectx.h in Headers */ = {isa = PBXBuildFile; fileRef = F54338A5162973E600863A0B /* audioeffectx.h */; };
+		F54338AC162973E600863A0B /* vstplugmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338A6162973E600863A0B /* vstplugmain.cpp */; };
+		F54338BE1629748300863A0B /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05AF9072074E100365D66 /* AudioToolbox.framework */; };
+		F54338C31629749600863A0B /* aeffguieditor.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2F160B67860003E710 /* aeffguieditor.h */; };
+		F54338C41629749600863A0B /* aeffguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2E160B67860003E710 /* aeffguieditor.cpp */; };
+		F54338DA1629759600863A0B /* C700VST.h in Headers */ = {isa = PBXBuildFile; fileRef = F54338D81629759600863A0B /* C700VST.h */; };
+		F54338DB1629759600863A0B /* C700VST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338D91629759600863A0B /* C700VST.cpp */; };
 		F543D0AC147D285F00DC53A3 /* Chip700Generator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */; };
 		F543D0AD147D285F00DC53A3 /* Chip700Generator.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* Chip700Generator.h */; };
 		F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
@@ -777,6 +891,20 @@
 		F5432F2E1628117D00863A0B /* C700Kernel.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Kernel.cpp; sourceTree = "<group>"; };
 		F5432FEF162915F900863A0B /* C700Parameters.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Parameters.h; sourceTree = "<group>"; };
 		F5432FF0162915F900863A0B /* C700Parameters.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Parameters.cpp; sourceTree = "<group>"; };
+		F543322816296E0200863A0B /* C700.vst */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.vst; sourceTree = BUILT_PRODUCTS_DIR; };
+		F543322916296E0200863A0B /* Info_vst.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info_vst.plist; sourceTree = "<group>"; };
+		F543325E16296FB600863A0B /* Chip700_Prefix_VST.pch */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = Chip700_Prefix_VST.pch; sourceTree = "<group>"; };
+		F543389B162973D900863A0B /* aeffect.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = aeffect.h; path = Extras/vstsdk2.4/pluginterfaces/vst2.x/aeffect.h; sourceTree = DEVELOPER_DIR; };
+		F543389C162973D900863A0B /* aeffectx.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = aeffectx.h; path = Extras/vstsdk2.4/pluginterfaces/vst2.x/aeffectx.h; sourceTree = DEVELOPER_DIR; };
+		F543389D162973D900863A0B /* vstfxstore.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = vstfxstore.h; path = Extras/vstsdk2.4/pluginterfaces/vst2.x/vstfxstore.h; sourceTree = DEVELOPER_DIR; };
+		F54338A1162973E600863A0B /* aeffeditor.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = aeffeditor.h; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/aeffeditor.h; sourceTree = DEVELOPER_DIR; };
+		F54338A2162973E600863A0B /* audioeffect.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = audioeffect.cpp; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/audioeffect.cpp; sourceTree = DEVELOPER_DIR; };
+		F54338A3162973E600863A0B /* audioeffect.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = audioeffect.h; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/audioeffect.h; sourceTree = DEVELOPER_DIR; };
+		F54338A4162973E600863A0B /* audioeffectx.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = audioeffectx.cpp; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/audioeffectx.cpp; sourceTree = DEVELOPER_DIR; };
+		F54338A5162973E600863A0B /* audioeffectx.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = audioeffectx.h; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/audioeffectx.h; sourceTree = DEVELOPER_DIR; };
+		F54338A6162973E600863A0B /* vstplugmain.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = vstplugmain.cpp; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/vstplugmain.cpp; sourceTree = DEVELOPER_DIR; };
+		F54338D81629759600863A0B /* C700VST.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700VST.h; sourceTree = "<group>"; };
+		F54338D91629759600863A0B /* C700VST.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700VST.cpp; sourceTree = "<group>"; };
 		F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chip700Generator.cpp; sourceTree = "<group>"; };
 		F543D0AB147D285F00DC53A3 /* Chip700Generator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chip700Generator.h; sourceTree = "<group>"; };
 		F546EDE9155E57AD002D6E59 /* track01_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = track01_0.png; sourceTree = "<group>"; };
@@ -883,7 +1011,7 @@
 		F569C40A16254B6E006C91AD /* XIFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = XIFile.cpp; sourceTree = "<group>"; };
 		F569C6DD162644AE006C91AD /* PlistBRRFile.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = PlistBRRFile.h; sourceTree = "<group>"; };
 		F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = PlistBRRFile.cpp; sourceTree = "<group>"; };
-		F569CA611626D130006C91AD /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
+		F569CA611626D130006C91AD /* C700 Carbon.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "C700 Carbon.component"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F569CA621626D130006C91AD /* Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy.plist"; sourceTree = "<group>"; };
 		F569CA951626D281006C91AD /* Chip700_carbon.exp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.exports; path = Chip700_carbon.exp; sourceTree = "<group>"; };
 		F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_velocitysens2.png; sourceTree = "<group>"; };
@@ -931,6 +1059,17 @@
 				8A21340B0B199D8500DC9811 /* Accelerate.framework in Frameworks */,
 				8ACF4CE50B21489800EC1825 /* Carbon.framework in Frameworks */,
 				F597AD58160B68950003E710 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F543321B16296E0200863A0B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F543321F16296E0200863A0B /* Accelerate.framework in Frameworks */,
+				F543322016296E0200863A0B /* Carbon.framework in Frameworks */,
+				F543322116296E0200863A0B /* Cocoa.framework in Frameworks */,
+				F54338BE1629748300863A0B /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1024,6 +1163,7 @@
 				8D01CCD10486CAD60068D4B7 /* Info.plist */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 				F569CA621626D130006C91AD /* Info copy.plist */,
+				F543322916296E0200863A0B /* Info_vst.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1032,16 +1172,20 @@
 			isa = PBXGroup;
 			children = (
 				32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */,
+				F543325E16296FB600863A0B /* Chip700_Prefix_VST.pch */,
 				8ACF4D010B214B0400EC1825 /* CarbonUI */,
 				8ACF4B8B0B2144AF00EC1825 /* AU View */,
 				8ACF4BA60B2144C900EC1825 /* Controls */,
 				8ACF4C250B2144FD00EC1825 /* graphics */,
 				8ACF4C5E0B21457100EC1825 /* HIFramework */,
+				F54331441629649D00863A0B /* Common Source */,
+				F54338CE1629750100863A0B /* VST Source */,
 				8BA05A56072072A900365D66 /* AU Source */,
 				F569A40E161954C9006C91AD /* UI */,
 				F56D353D156A114300038960 /* encodetest */,
 				8BA05AEB0720742700365D66 /* PublicUtility */,
 				8BA05A7D072073D200365D66 /* AUPublic */,
+				F54332741629730F00863A0B /* vstsdk2.4 */,
 				F597AD27160B67860003E710 /* vstgui */,
 			);
 			name = Source;
@@ -1052,7 +1196,8 @@
 			children = (
 				8D01CCD20486CAD60068D4B7 /* C700.component */,
 				F56D351F156A0EA000038960 /* encodetest */,
-				F569CA611626D130006C91AD /* C700.component */,
+				F569CA611626D130006C91AD /* C700 Carbon.component */,
+				F543322816296E0200863A0B /* C700.vst */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1352,30 +1497,15 @@
 		8BA05A56072072A900365D66 /* AU Source */ = {
 			isa = PBXGroup;
 			children = (
-				8BA05A680720730100365D66 /* Chip700.r */,
-				F56027FF1626D59700369C23 /* Chip700_carbon.r */,
-				8BA05A690720730100365D66 /* Chip700Version.h */,
-				8BA05A670720730100365D66 /* Chip700.exp */,
-				F569CA951626D281006C91AD /* Chip700_carbon.exp */,
-				8A77F1030ADE785100F2B2BE /* Chip700defines.h */,
-				8AF717CF0AE3DD5900C79293 /* gauss.h */,
-				8A10AB550AE2855600271511 /* samplebrr.h */,
 				8BC6025B073B072D006C4272 /* Chip700.h */,
 				8BA05A660720730100365D66 /* Chip700.cpp */,
-				F5432F2D1628117D00863A0B /* C700Kernel.h */,
-				F5432F2E1628117D00863A0B /* C700Kernel.cpp */,
-				F5432FEF162915F900863A0B /* C700Parameters.h */,
-				F5432FF0162915F900863A0B /* C700Parameters.cpp */,
-				F5432C241627AE4200863A0B /* EchoKernel.h */,
-				F5432C251627AE4200863A0B /* EchoKernel.cpp */,
-				F543D0AB147D285F00DC53A3 /* Chip700Generator.h */,
-				F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */,
-				8AD362300AFE59F900FC48D2 /* brrcodec.h */,
-				8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */,
-				8AEECD2D0B020BC6002C9BB7 /* czt.cpp */,
-				8AEECD2E0B020BC6002C9BB7 /* czt.h */,
 				F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */,
 				F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */,
+				8BA05A690720730100365D66 /* Chip700Version.h */,
+				8BA05A680720730100365D66 /* Chip700.r */,
+				F56027FF1626D59700369C23 /* Chip700_carbon.r */,
+				8BA05A670720730100365D66 /* Chip700.exp */,
+				F569CA951626D281006C91AD /* Chip700_carbon.exp */,
 			);
 			name = "AU Source";
 			sourceTree = "<group>";
@@ -1466,6 +1596,53 @@
 			path = Extras/CoreAudio/PublicUtility;
 			sourceTree = DEVELOPER_DIR;
 		};
+		F54331441629649D00863A0B /* Common Source */ = {
+			isa = PBXGroup;
+			children = (
+				8A77F1030ADE785100F2B2BE /* Chip700defines.h */,
+				8AF717CF0AE3DD5900C79293 /* gauss.h */,
+				8A10AB550AE2855600271511 /* samplebrr.h */,
+				F5432F2D1628117D00863A0B /* C700Kernel.h */,
+				F5432F2E1628117D00863A0B /* C700Kernel.cpp */,
+				F5432FEF162915F900863A0B /* C700Parameters.h */,
+				F5432FF0162915F900863A0B /* C700Parameters.cpp */,
+				F5432C241627AE4200863A0B /* EchoKernel.h */,
+				F5432C251627AE4200863A0B /* EchoKernel.cpp */,
+				F543D0AB147D285F00DC53A3 /* Chip700Generator.h */,
+				F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */,
+				8AD362300AFE59F900FC48D2 /* brrcodec.h */,
+				8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */,
+				8AEECD2D0B020BC6002C9BB7 /* czt.cpp */,
+				8AEECD2E0B020BC6002C9BB7 /* czt.h */,
+			);
+			name = "Common Source";
+			sourceTree = "<group>";
+		};
+		F54332741629730F00863A0B /* vstsdk2.4 */ = {
+			isa = PBXGroup;
+			children = (
+				F543389B162973D900863A0B /* aeffect.h */,
+				F543389C162973D900863A0B /* aeffectx.h */,
+				F543389D162973D900863A0B /* vstfxstore.h */,
+				F54338A1162973E600863A0B /* aeffeditor.h */,
+				F54338A2162973E600863A0B /* audioeffect.cpp */,
+				F54338A3162973E600863A0B /* audioeffect.h */,
+				F54338A4162973E600863A0B /* audioeffectx.cpp */,
+				F54338A5162973E600863A0B /* audioeffectx.h */,
+				F54338A6162973E600863A0B /* vstplugmain.cpp */,
+			);
+			path = vstsdk2.4;
+			sourceTree = SOURCE_ROOT;
+		};
+		F54338CE1629750100863A0B /* VST Source */ = {
+			isa = PBXGroup;
+			children = (
+				F54338D81629759600863A0B /* C700VST.h */,
+				F54338D91629759600863A0B /* C700VST.cpp */,
+			);
+			name = "VST Source";
+			sourceTree = "<group>";
+		};
 		F569A40E161954C9006C91AD /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -1548,7 +1725,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D01CCC80486CAD60068D4B7 /* Chip700_Prefix.pch in Headers */,
 				8BA05A6E0720730100365D66 /* Chip700Version.h in Headers */,
 				8BA05AAF072073D300365D66 /* AUBase.h in Headers */,
 				8BA05AB1072073D300365D66 /* AUDispatch.h in Headers */,
@@ -1616,6 +1792,56 @@
 				F5432E411627FC2900863A0B /* ControlInstacnesDefs.h in Headers */,
 				F5432F311628117D00863A0B /* C700Kernel.h in Headers */,
 				F5432FF3162915F900863A0B /* C700Parameters.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F543317816296E0200863A0B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F543317916296E0200863A0B /* Chip700_Prefix.pch in Headers */,
+				F543319716296E0200863A0B /* Chip700defines.h in Headers */,
+				F543319816296E0200863A0B /* samplebrr.h in Headers */,
+				F543319916296E0200863A0B /* gauss.h in Headers */,
+				F543319C16296E0200863A0B /* czt.h in Headers */,
+				F543319D16296E0200863A0B /* brrcodec.h in Headers */,
+				F543319E16296E0200863A0B /* Chip700Generator.h in Headers */,
+				F543319F16296E0200863A0B /* getpluginbundle.h in Headers */,
+				F54331A016296E0200863A0B /* vstkeycode.h in Headers */,
+				F54331A116296E0200863A0B /* cocoasupport.h in Headers */,
+				F54331A216296E0200863A0B /* cfileselector.h in Headers */,
+				F54331A416296E0200863A0B /* vstgui.h in Headers */,
+				F54331A616296E0200863A0B /* C700Edit.h in Headers */,
+				F54331A716296E0200863A0B /* C700GUI.h in Headers */,
+				F54331A816296E0200863A0B /* ctooltipsupport.h in Headers */,
+				F54331A916296E0200863A0B /* MyKnob.h in Headers */,
+				F54331AA16296E0200863A0B /* MySlider.h in Headers */,
+				F54331AB16296E0200863A0B /* LabelOnOffButton.h in Headers */,
+				F54331AC16296E0200863A0B /* WaveView.h in Headers */,
+				F54331AD16296E0200863A0B /* DummyCntl.h in Headers */,
+				F54331AE16296E0200863A0B /* ControlInstances.h in Headers */,
+				F54331AF16296E0200863A0B /* SeparatorLine.h in Headers */,
+				F54331B016296E0200863A0B /* MyParamDisplay.h in Headers */,
+				F54331B116296E0200863A0B /* MyTextEdit.h in Headers */,
+				F54331B216296E0200863A0B /* EfxAccess.h in Headers */,
+				F54331B316296E0200863A0B /* FileAccess.h in Headers */,
+				F54331B416296E0200863A0B /* AudioFile.h in Headers */,
+				F54331B516296E0200863A0B /* SPCFile.h in Headers */,
+				F54331B616296E0200863A0B /* BRRFile.h in Headers */,
+				F54331B716296E0200863A0B /* XIFile.h in Headers */,
+				F54331B816296E0200863A0B /* PlistBRRFile.h in Headers */,
+				F54331B916296E0200863A0B /* EchoKernel.h in Headers */,
+				F54331BA16296E0200863A0B /* ControlInstacnesDefs.h in Headers */,
+				F54331BB16296E0200863A0B /* C700Kernel.h in Headers */,
+				F54331BC16296E0200863A0B /* C700Parameters.h in Headers */,
+				F543389E162973D900863A0B /* aeffect.h in Headers */,
+				F543389F162973D900863A0B /* aeffectx.h in Headers */,
+				F54338A0162973D900863A0B /* vstfxstore.h in Headers */,
+				F54338A7162973E600863A0B /* aeffeditor.h in Headers */,
+				F54338A9162973E600863A0B /* audioeffect.h in Headers */,
+				F54338AB162973E600863A0B /* audioeffectx.h in Headers */,
+				F54338C31629749600863A0B /* aeffguieditor.h in Headers */,
+				F54338DA1629759600863A0B /* C700VST.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1755,9 +1981,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		8D01CCC60486CAD60068D4B7 /* C700 */ = {
+		8D01CCC60486CAD60068D4B7 /* C700 AU */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3E0BED020898391C00E1F0F7 /* Build configuration list for PBXNativeTarget "C700" */;
+			buildConfigurationList = 3E0BED020898391C00E1F0F7 /* Build configuration list for PBXNativeTarget "C700 AU" */;
 			buildPhases = (
 				8D01CCC70486CAD60068D4B7 /* Headers */,
 				8D01CCC90486CAD60068D4B7 /* Resources */,
@@ -1770,10 +1996,31 @@
 			);
 			dependencies = (
 			);
-			name = C700;
+			name = "C700 AU";
 			productInstallPath = "$(HOME)/Library/Bundles";
 			productName = Chip700;
 			productReference = 8D01CCD20486CAD60068D4B7 /* C700.component */;
+			productType = "com.apple.product-type.bundle";
+		};
+		F543317716296E0200863A0B /* C700 VST */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F543322516296E0200863A0B /* Build configuration list for PBXNativeTarget "C700 VST" */;
+			buildPhases = (
+				F543317816296E0200863A0B /* Headers */,
+				F54331BD16296E0200863A0B /* Resources */,
+				F54331E016296E0200863A0B /* Sources */,
+				F543321B16296E0200863A0B /* Frameworks */,
+				F543322216296E0200863A0B /* Rez */,
+				F543322416296E0200863A0B /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "C700 VST";
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = Chip700;
+			productReference = F543322816296E0200863A0B /* C700.vst */;
 			productType = "com.apple.product-type.bundle";
 		};
 		F569C9021626D130006C91AD /* C700 CarbonUI */ = {
@@ -1794,7 +2041,7 @@
 			name = "C700 CarbonUI";
 			productInstallPath = "$(HOME)/Library/Bundles";
 			productName = Chip700;
-			productReference = F569CA611626D130006C91AD /* C700.component */;
+			productReference = F569CA611626D130006C91AD /* C700 Carbon.component */;
 			productType = "com.apple.product-type.bundle";
 		};
 		F56D351E156A0EA000038960 /* encodetest */ = {
@@ -1833,8 +2080,9 @@
 			projectRoot = "";
 			targets = (
 				F569C9021626D130006C91AD /* C700 CarbonUI */,
-				8D01CCC60486CAD60068D4B7 /* C700 */,
+				8D01CCC60486CAD60068D4B7 /* C700 AU */,
 				F56D351E156A0EA000038960 /* encodetest */,
+				F543317716296E0200863A0B /* C700 VST */,
 			);
 		};
 /* End PBXProject section */
@@ -1878,6 +2126,47 @@
 				F55D656A161EBF1C001CF9AB /* track15_.png in Resources */,
 				F55D656B161EBF1C001CF9AB /* track16_.png in Resources */,
 				F55D6573161EC0F6001CF9AB /* ind_track.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F54331BD16296E0200863A0B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F54331BE16296E0200863A0B /* InfoPlist.strings in Resources */,
+				F54331BF16296E0200863A0B /* AUBackground.png in Resources */,
+				F54331C016296E0200863A0B /* knobBack.png in Resources */,
+				F54331C116296E0200863A0B /* sliderThumb.png in Resources */,
+				F54331C216296E0200863A0B /* bt_check.png in Resources */,
+				F54331C316296E0200863A0B /* rocker_sw.png in Resources */,
+				F54331C416296E0200863A0B /* bt_copy.png in Resources */,
+				F54331C516296E0200863A0B /* bt_calc.png in Resources */,
+				F54331C616296E0200863A0B /* bt_load.png in Resources */,
+				F54331C716296E0200863A0B /* bt_save.png in Resources */,
+				F54331C816296E0200863A0B /* bt_unload.png in Resources */,
+				F54331C916296E0200863A0B /* bt_save_xi.png in Resources */,
+				F54331CA16296E0200863A0B /* bt_velocitysens.png in Resources */,
+				F54331CB16296E0200863A0B /* bank_a.png in Resources */,
+				F54331CC16296E0200863A0B /* bank_b.png in Resources */,
+				F54331CD16296E0200863A0B /* bank_c.png in Resources */,
+				F54331CE16296E0200863A0B /* bank_d.png in Resources */,
+				F54331CF16296E0200863A0B /* track01_.png in Resources */,
+				F54331D016296E0200863A0B /* track02_.png in Resources */,
+				F54331D116296E0200863A0B /* track03_.png in Resources */,
+				F54331D216296E0200863A0B /* track04_.png in Resources */,
+				F54331D316296E0200863A0B /* track05_.png in Resources */,
+				F54331D416296E0200863A0B /* track06_.png in Resources */,
+				F54331D516296E0200863A0B /* track07_.png in Resources */,
+				F54331D616296E0200863A0B /* track08_.png in Resources */,
+				F54331D716296E0200863A0B /* track09_.png in Resources */,
+				F54331D816296E0200863A0B /* track10_.png in Resources */,
+				F54331D916296E0200863A0B /* track11_.png in Resources */,
+				F54331DA16296E0200863A0B /* track12_.png in Resources */,
+				F54331DB16296E0200863A0B /* track13_.png in Resources */,
+				F54331DC16296E0200863A0B /* track14_.png in Resources */,
+				F54331DD16296E0200863A0B /* track15_.png in Resources */,
+				F54331DE16296E0200863A0B /* track16_.png in Resources */,
+				F54331DF16296E0200863A0B /* ind_track.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2012,6 +2301,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F543322216296E0200863A0B /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F569CA5B1626D130006C91AD /* Rez */ = {
 			isa = PBXRezBuildPhase;
 			buildActionMask = 2147483647;
@@ -2023,6 +2319,19 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		F543322416296E0200863A0B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$HOME/Library/Audio/Plug-Ins/Components/\" \n";
+		};
 		F55B68CB15863F4600FDA7C2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2114,6 +2423,47 @@
 				F5432C271627AE4200863A0B /* EchoKernel.cpp in Sources */,
 				F5432F321628117D00863A0B /* C700Kernel.cpp in Sources */,
 				F5432FF4162915F900863A0B /* C700Parameters.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F54331E016296E0200863A0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F54331FC16296E0200863A0B /* czt.cpp in Sources */,
+				F54331FD16296E0200863A0B /* brrcodec.cpp in Sources */,
+				F54331FE16296E0200863A0B /* Chip700Generator.cpp in Sources */,
+				F54331FF16296E0200863A0B /* cocoasupport.mm in Sources */,
+				F543320116296E0200863A0B /* cvstguitimer.cpp in Sources */,
+				F543320216296E0200863A0B /* cfileselector.cpp in Sources */,
+				F543320316296E0200863A0B /* vstcontrols.cpp in Sources */,
+				F543320416296E0200863A0B /* vstgui.cpp in Sources */,
+				F543320616296E0200863A0B /* C700Edit.cpp in Sources */,
+				F543320716296E0200863A0B /* C700GUI.cpp in Sources */,
+				F543320816296E0200863A0B /* ctooltipsupport.cpp in Sources */,
+				F543320916296E0200863A0B /* MyKnob.cpp in Sources */,
+				F543320A16296E0200863A0B /* MySlider.cpp in Sources */,
+				F543320B16296E0200863A0B /* LabelOnOffButton.cpp in Sources */,
+				F543320C16296E0200863A0B /* WaveView.cpp in Sources */,
+				F543320D16296E0200863A0B /* DummyCntl.cpp in Sources */,
+				F543320E16296E0200863A0B /* SeparatorLine.cpp in Sources */,
+				F543320F16296E0200863A0B /* MyParamDisplay.cpp in Sources */,
+				F543321016296E0200863A0B /* MyTextEdit.cpp in Sources */,
+				F543321116296E0200863A0B /* EfxAccess.cpp in Sources */,
+				F543321216296E0200863A0B /* FileAccess.cpp in Sources */,
+				F543321316296E0200863A0B /* AudioFile.cpp in Sources */,
+				F543321416296E0200863A0B /* SPCFile.cpp in Sources */,
+				F543321516296E0200863A0B /* BRRFile.cpp in Sources */,
+				F543321616296E0200863A0B /* XIFile.cpp in Sources */,
+				F543321716296E0200863A0B /* PlistBRRFile.cpp in Sources */,
+				F543321816296E0200863A0B /* EchoKernel.cpp in Sources */,
+				F543321916296E0200863A0B /* C700Kernel.cpp in Sources */,
+				F543321A16296E0200863A0B /* C700Parameters.cpp in Sources */,
+				F54338A8162973E600863A0B /* audioeffect.cpp in Sources */,
+				F54338AA162973E600863A0B /* audioeffectx.cpp in Sources */,
+				F54338AC162973E600863A0B /* vstplugmain.cpp in Sources */,
+				F54338C41629749600863A0B /* aeffguieditor.cpp in Sources */,
+				F54338DB1629759600863A0B /* C700VST.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2381,6 +2731,104 @@
 			};
 			name = Deployment;
 		};
+		F543322616296E0200863A0B /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				DEPLOYMENT_LOCATION = NO;
+				EXPORTED_SYMBOLS_FILE = "";
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Chip700_Prefix_VST.pch;
+				GCC_VERSION = 4.2;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = vstsdk2.4;
+				INFOPLIST_FILE = Info_vst.plist;
+				INFOPLIST_PREPROCESS = YES;
+				INSTALL_PATH = "";
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = Bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
+				PRODUCT_NAME = C700;
+				REZ_SEARCH_PATHS = "";
+				SDKROOT = macosx10.5;
+				SECTORDER_FLAGS = "";
+				VERSIONING_SYSTEM = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = vst;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		F543322716296E0200863A0B /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					"$(ARCHS_STANDARD_32_64_BIT)",
+				);
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
+				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
+				EXPORTED_SYMBOLS_FILE = "";
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_AUTO_VECTORIZATION = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Chip700_Prefix_VST.pch;
+				GCC_UNROLL_LOOPS = NO;
+				GCC_VERSION = 4.2;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = vstsdk2.4;
+				INFOPLIST_FILE = Info_vst.plist;
+				INFOPLIST_PREPROCESS = YES;
+				INSTALL_PATH = "";
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = Bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers";
+				PRODUCT_NAME = C700;
+				REZ_SEARCH_PATHS = "";
+				SDKROOT = macosx10.5;
+				SECTORDER_FLAGS = "";
+				VERSIONING_SYSTEM = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = vst;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
 		F569CA5F1626D130006C91AD /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2413,7 +2861,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bundle";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
-				PRODUCT_NAME = C700;
+				PRODUCT_NAME = "C700 Carbon";
 				REZ_SEARCH_PATHS = (
 					/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers,
 					/Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase,
@@ -2467,7 +2915,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bundle";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
-				PRODUCT_NAME = C700;
+				PRODUCT_NAME = "C700 Carbon";
 				REZ_SEARCH_PATHS = (
 					/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers,
 					/Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase,
@@ -2526,7 +2974,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3E0BED020898391C00E1F0F7 /* Build configuration list for PBXNativeTarget "C700" */ = {
+		3E0BED020898391C00E1F0F7 /* Build configuration list for PBXNativeTarget "C700 AU" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3E0BED030898391C00E1F0F7 /* Development */,
@@ -2540,6 +2988,15 @@
 			buildConfigurations = (
 				3E0BED070898391C00E1F0F7 /* Development */,
 				3E0BED080898391C00E1F0F7 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		F543322516296E0200863A0B /* Build configuration list for PBXNativeTarget "C700 VST" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F543322616296E0200863A0B /* Development */,
+				F543322716296E0200863A0B /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;

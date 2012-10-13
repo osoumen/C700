@@ -14,6 +14,9 @@
 #if AU
 #include <AudioUnit/AUComponent.h>
 #include <AudioToolbox/AudioToolbox.h>
+#else
+#include "audioeffectx.h"
+class C700VST;
 #endif
 
 #include "SPCFile.h"
@@ -54,6 +57,6 @@ private:
 	AudioUnit			mAU;
 	AUEventListenerRef	mEventListener;
 #else
-	AudioEffect*		mEfx;
+	C700VST*			mEfx;
 #endif
 };
