@@ -1,3 +1,5 @@
+#pragma once
+
 #include "AUInstrumentBase.h"
 #include "Chip700Version.h"
 #include "Chip700Generator.h"
@@ -10,20 +12,15 @@
 	#include "AUDebugDispatcher.h"
 #endif
 
-
-#ifndef __Chip700_h__
-#define __Chip700_h__
-
 #include "Chip700defines.h"
+#include "C700Kernel.h"
 
 #pragma mark ____Chip700
 class Chip700 : public AUInstrumentBase
 {
 public:
 	Chip700(AudioUnit component);
-#if AU_DEBUG_DISPATCHER
-	virtual ~Chip700 () { delete mDebugDispatcher; }
-#endif
+	virtual ~Chip700();
 	
 	virtual OSStatus			Initialize();
 	virtual void				Cleanup();
@@ -116,28 +113,27 @@ public:
 #endif
 
 private:
+	static void PropertyNotifyFunc(int propID, void* userData);
+	static void ParameterSetFunc(int paramID, float value, void* userData);
+	
+	double				mTempo;
+	
+	C700Kernel			*mEfx;
+	AUPreset			*mPresets;
+	/*
 	int					mEditProg;		// 編集中のプログラムNo.
 	int					mEditChannel;	// 編集中のチャンネル
-	Float64				mTempo;
 	// MIDIチャンネルノート別発音数
 	int					mOnNotes[16];
 	int					mMaxNote[16];
 	
 	VoiceParams			mVPset[128];
-	TAUBuffer<UInt8>	mBRRdata[128];
 	// エコー
-	Float32				mFilterBand[5];
+	float				mFilterBand[5];
 	
 	Chip700Generator	mGenerator;
-	
-	int			CreateXIData( CFDataRef *data );
+	*/
 	int			CreatePGDataDic(CFDictionaryRef *data, int pgnum);
 	void		RestorePGDataDic(CFPropertyListRef data, int pgnum);
-	void		SetBandParam( int band, Float32 value );
-	UInt32		GetTotalRAM();
+	//UInt32		GetTotalRAM();
 };
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-#endif

@@ -129,6 +129,18 @@ void C700Edit::setParameter(long index, float value)
 		return;
 	}
 	
+	//チャンネル表示更新
+	if ( index == kAudioUnitCustomProperty_EditingChannel ) {
+		SetTrackSelectorValue(value);
+		return;
+	}
+	
+	//バンク表示更新
+	if ( index == kAudioUnitCustomProperty_Bank ) {
+		SetBankSelectorValue(value);
+		return;
+	}
+	
 	//brr換算のループポイントを実サンプル単位に変換する
 	if ( index == kAudioUnitCustomProperty_LoopPoint ) {
 		value = (int)value/9*16;
@@ -137,7 +149,7 @@ void C700Edit::setParameter(long index, float value)
 	//brr換算のループポイントを実サンプル単位に変換する
 	if ( index == kParam_velocity ) {
 		value = value/2.0f;
-	}	
+	}
 	
 	CControl	*cntl;
 	int			tag = index;
@@ -149,6 +161,15 @@ void C700Edit::setParameter(long index, float value)
 		
 		tag += 1000;
 		cntl = m_pUIView->FindControlByTag(tag);
+	}
+	
+	//ループポイント更新処理
+	if ( index == kAudioUnitCustomProperty_LoopPoint ) {
+		SetLoopPoint( value );
+	}
+	
+	if ( index >= kAudioUnitCustomProperty_Band1 && kAudioUnitCustomProperty_Band5 >= index ) {
+		UpdateXMSNESText();
 	}
 }
 
@@ -178,7 +199,7 @@ void C700Edit::SetLoopPoint( int lp )
 	if ( brr.data == NULL ) return;
 	
 	CRect	bounds;
-	int		looppoint = lp/9*16;
+	int		looppoint = lp;
 	overView->setLooppoint(looppoint);
 	
 	int		start;

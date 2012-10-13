@@ -1,104 +1,8 @@
 #include <AudioToolbox/AudioToolbox.h>
 #include "Chip700.h"
-#include "samplebrr.h"
 #include "brrcodec.h"
 #include "AudioFile.h"
 #include "XIFile.h"
-
-static CFStringRef kParam_poly_Name = CFSTR("Voices");
-static const float kDefaultValue_poly = 8;
-
-static CFStringRef kParameter_mainvol_L_Name = CFSTR("MainVol(L)");
-static const float kDefaultValue_mainvol_L = 64;
-
-static CFStringRef kParameter_mainvol_R_Name = CFSTR("MainVol(R)");
-static const float kDefaultValue_mainvol_R = 64;
-
-static CFStringRef kParam_vibdepth_Name = CFSTR("Vibrato Depth");
-static const float kDefaultValue_vibdepth = 0;
-
-static CFStringRef kParam_vibrate_Name = CFSTR("Vibrato Rate");
-static const float kDefaultValue_vibrate = 7;
-static const float kMinimumValue_vibrate = 0.01;
-static const float kMaximumValue_vibrate = 35;
-
-static CFStringRef kParam_vibdepth2_Name = CFSTR("Vibrato Depth2");
-static const float kDefaultValue_vibdepth2 = 1;
-
-static CFStringRef kParam_velocity_Name = CFSTR("Velocity");
-static const float kDefaultValue_velocity = 1;
-
-static CFStringRef kParam_clipnoise_Name = CFSTR("New ADPCM");
-static const float kDefaultValue_clipnoise = 1;
-
-static CFStringRef kParam_bendrange_Name = CFSTR("Bend Range");
-static const float kDefaultValue_bendrange = 2;
-
-static CFStringRef kParam_program_Name = CFSTR("Program");
-static const float kDefaultValue_program = 0;
-
-static CFStringRef kParam_bankAmulti_Name = CFSTR("Bank A Multi");
-static const float kDefaultValue_bankAmulti = 0;
-
-static CFStringRef kParam_bankBmulti_Name = CFSTR("Bank B Multi");
-static const float kDefaultValue_bankBmulti = 0;
-
-static CFStringRef kParam_bankCmulti_Name = CFSTR("Bank C Multi");
-static const float kDefaultValue_bankCmulti = 0;
-
-static CFStringRef kParam_bankDmulti_Name = CFSTR("Bank D Multi");
-static const float kDefaultValue_bankDmulti = 0;
-
-//エコー部
-static CFStringRef kParameter_echovol_L_Name = CFSTR("Wet(L)");
-static const float kDefaultValue_echovol_L = 50;
-
-static CFStringRef kParameter_echovol_R_Name = CFSTR("Wet(R)");
-static const float kDefaultValue_echovol_R = -50;
-
-static CFStringRef kParameter_echoFB_Name = CFSTR("FeedBack");
-static const float kDefaultValue_echoFB = -70;
-
-static CFStringRef kParameter_echodelay_Name = CFSTR("Delay");
-static const float kDefaultValue_echodelay = 6;
-
-static CFStringRef kParameter_firC0_Name = CFSTR("Filter a0");
-static const float kDefaultValue_fir0 = 127;
-
-static CFStringRef kParameter_firC1_Name = CFSTR("Filter a1");
-static const float kDefaultValue_fir1 = 0;
-
-static CFStringRef kParameter_firC2_Name = CFSTR("Filter a2");
-static const float kDefaultValue_fir2 = 0;
-
-static CFStringRef kParameter_firC3_Name = CFSTR("Filter a3");
-static const float kDefaultValue_fir3 = 0;
-
-static CFStringRef kParameter_firC4_Name = CFSTR("Filter a4");
-static const float kDefaultValue_fir4 = 0;
-
-static CFStringRef kParameter_firC5_Name = CFSTR("Filter a5");
-static const float kDefaultValue_fir5 = 0;
-
-static CFStringRef kParameter_firC6_Name = CFSTR("Filter a6");
-static const float kDefaultValue_fir6 = 0;
-
-static CFStringRef kParameter_firC7_Name = CFSTR("Filter a7");
-static const float kDefaultValue_fir7 = 0;
-
-
-static const int kNumberPresets = 2;
-static AUPreset kPresets[kNumberPresets] = 
-{
-	{ 0, CFSTR("Empty") },		
-	{ 1, CFSTR("Testtones") }		
-};
-
-static const int kDefaultValue_AR = 15;
-static const int kDefaultValue_DR = 7;
-static const int kDefaultValue_SL = 7;
-static const int kDefaultValue_SR = 0;
-
 
 static CFStringRef kSaveKey_ProgName = CFSTR("progname");
 static CFStringRef kSaveKey_EditProg = CFSTR("editprog");
@@ -120,130 +24,101 @@ static CFStringRef kSaveKey_bank = CFSTR("bank");
 static CFStringRef kSaveKey_IsEmphasized = CFSTR("isemph");
 static CFStringRef kSaveKey_SourceFile = CFSTR("srcfile");
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 
 COMPONENT_ENTRY(Chip700)
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::Chip700
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 Chip700::Chip700(AudioUnit component)
 : AUInstrumentBase(component, 0, 1)
 {
 	CreateElements();
 	Globals()->UseIndexedParameters(kNumberOfParameters);
 	
-	Globals()->SetParameter(kParam_poly, kDefaultValue_poly);
-	Globals()->SetParameter(kParam_mainvol_L, kDefaultValue_mainvol_L );
-	Globals()->SetParameter(kParam_mainvol_R, kDefaultValue_mainvol_R );
-	Globals()->SetParameter(kParam_vibdepth, kDefaultValue_vibdepth);
-	Globals()->SetParameter(kParam_vibrate, kDefaultValue_vibrate);
-	Globals()->SetParameter(kParam_vibdepth2, kDefaultValue_vibdepth2);
-	Globals()->SetParameter(kParam_velocity, kDefaultValue_velocity);
-	Globals()->SetParameter(kParam_clipnoise, kDefaultValue_clipnoise);
-	Globals()->SetParameter(kParam_bendrange, kDefaultValue_bendrange);
-	Globals()->SetParameter(kParam_program, kDefaultValue_program);
-	Globals()->SetParameter(kParam_bankAmulti, kDefaultValue_bankAmulti);
-	Globals()->SetParameter(kParam_bankBmulti, kDefaultValue_bankBmulti);
-	Globals()->SetParameter(kParam_bankCmulti, kDefaultValue_bankCmulti);
-	Globals()->SetParameter(kParam_bankDmulti, kDefaultValue_bankDmulti);
-	for ( int i=0; i<15; i++ ) {
-		Globals()->SetParameter(kParam_program_2+i, kDefaultValue_program);
-		Globals()->SetParameter(kParam_vibdepth_2+i, kDefaultValue_vibdepth);
+	mEfx = new C700Kernel();
+	mEfx->SetPropertyNotifyFunc(PropertyNotifyFunc, this);
+	mEfx->SetParameterSetFunc(ParameterSetFunc, this);
+	
+	//プリセット名テーブルを作成する
+	mPresets = new AUPreset[NUM_PRESETS];
+	for (int i = 0; i < NUM_PRESETS; ++i) {
+		const char		*pname;
+		pname = C700Kernel::GetPresetName(i);
+		mPresets[i].presetNumber = i;
+		CFMutableStringRef cfpname = CFStringCreateMutable(NULL, 64);
+		mPresets[i].presetName = cfpname;
+		CFStringAppendCString( cfpname, pname, kCFStringEncodingASCII );
+    }
+	
+	for ( int i=0; i<kNumberOfParameters; i++ ) {
+		Globals()->SetParameter(i, C700Kernel::GetParameterDefault(i) );
 	}
-	
-	//エコー
-	Globals()->SetParameter(kParam_echovol_L, kDefaultValue_echovol_L );
-	Globals()->SetParameter(kParam_echovol_R, kDefaultValue_echovol_R );
-	Globals()->SetParameter(kParam_echoFB, kDefaultValue_echoFB );
-	Globals()->SetParameter(kParam_echodelay, kDefaultValue_echodelay );
-	Globals()->SetParameter(kParam_fir0, kDefaultValue_fir0 );
-	Globals()->SetParameter(kParam_fir1, kDefaultValue_fir1 );
-	Globals()->SetParameter(kParam_fir2, kDefaultValue_fir2 );
-	Globals()->SetParameter(kParam_fir3, kDefaultValue_fir3 );
-	Globals()->SetParameter(kParam_fir4, kDefaultValue_fir4 );
-	Globals()->SetParameter(kParam_fir5, kDefaultValue_fir5 );
-	Globals()->SetParameter(kParam_fir6, kDefaultValue_fir6 );
-	Globals()->SetParameter(kParam_fir7, kDefaultValue_fir7 );
-	for (int i=0; i<5; i++) {
-		mFilterBand[i] = 1.0f;
-	}
-	
-	mEditProg = 0;
-	mEditChannel = 0;
-	
-	// ノートオンインジケータ初期化
-	for ( int i=0; i<16; i++ ) {
-		mOnNotes[i] = 0;
-		mMaxNote[i] = 0;
-	}
-	
-	//プログラムの初期化
-	for (int i=0; i<128; i++) {
-		mVPset[i].pgname[0] = 0;
-		mVPset[i].brr.size = 0;
-		mVPset[i].brr.data = NULL;
-		mVPset[i].basekey = 0;
-		mVPset[i].lowkey = 0;
-		mVPset[i].highkey = 0;
-		mVPset[i].loop = false;
-		mVPset[i].echo = false;
-		mVPset[i].bank = 0;
-		mVPset[i].lp = 0;
-		mVPset[i].rate = 0;
-		mVPset[i].volL = 100;
-		mVPset[i].volR = 100;
-		
-		mVPset[i].sourceFile[0] = 0;
-		mVPset[i].isEmphasized = true;
-		
-		mVPset[i].ar = kDefaultValue_AR;
-		mVPset[i].dr = kDefaultValue_DR;
-		mVPset[i].sl = kDefaultValue_SL;
-		mVPset[i].sr = kDefaultValue_SR;
-	}
-	
-	// 音源にプログラムのメモリを渡す
-	mGenerator.SetVPSet(mVPset);
 	
 #if AU_DEBUG_DISPATCHER
 	mDebugDispatcher = new AUDebugDispatcher(this);
 #endif
 }
 
+//-----------------------------------------------------------------------------
+Chip700::~Chip700()
+{
+	for (int i = 0; i < NUM_PRESETS; ++i) {
+		CFRelease(mPresets[i].presetName);
+	}
+	delete [] mPresets;
+	
+#if AU_DEBUG_DISPATCHER
+	delete mDebugDispatcher;
+#endif
+}
+
+//-----------------------------------------------------------------------------
+void Chip700::PropertyNotifyFunc(int propID, void* userData)
+{
+	Chip700	*This = reinterpret_cast<Chip700*> (userData);
+	This->PropertyChanged(propID, kAudioUnitScope_Global, 0);
+}
+
+//-----------------------------------------------------------------------------
+void Chip700::ParameterSetFunc(int paramID, float value, void* userData)
+{
+	Chip700	*This = reinterpret_cast<Chip700*> (userData);
+	This->Globals()->SetParameter(paramID, value);
+	AudioUnitEvent auEvent;
+	auEvent.mEventType = kAudioUnitEvent_ParameterValueChange;
+	auEvent.mArgument.mParameter.mAudioUnit = (AudioUnit)This->GetComponentInstance();
+	auEvent.mArgument.mParameter.mScope = kAudioUnitScope_Global;
+	auEvent.mArgument.mParameter.mParameterID = paramID;
+	auEvent.mArgument.mParameter.mElement = 0;
+	AUEventListenerNotify(NULL, NULL, &auEvent);
+}
+
+//-----------------------------------------------------------------------------
 ComponentResult Chip700::Initialize()
 {	
 	AUInstrumentBase::Initialize();
 	return noErr;
 }
 
+//-----------------------------------------------------------------------------
 void Chip700::Cleanup()
 {
-	for (int i=0; i<128; i++) {
-		mVPset[i].pgname[0] = 0;
-		mVPset[i].sourceFile[0] = 0;
-	}
+	delete mEfx;
 }
 
+//-----------------------------------------------------------------------------
 ComponentResult Chip700::Reset(	AudioUnitScope 		inScope,
 							   AudioUnitElement 	inElement)
 {
-	if (inScope == kAudioUnitScope_Global) {
-		mGenerator.Reset();
-	}
-	
-	// MIDIインジケータをリセット
-	for ( int i=0; i<16; i++ ) {
-		mOnNotes[i] = 0;
-		mMaxNote[i] = 0;
-		PropertyChanged(kAudioUnitCustomProperty_NoteOnTrack_1+i, kAudioUnitScope_Global, 0);
-		PropertyChanged(kAudioUnitCustomProperty_MaxNoteTrack_1+i, kAudioUnitScope_Global, 0);
-	}
-	
+//	if (inScope == kAudioUnitScope_Global) {
+		mEfx->Reset();
+//	}	
 	return AUInstrumentBase::Reset(inScope, inElement);
 }
 
+//-----------------------------------------------------------------------------
 OSStatus	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 												const AudioTimeStamp &			inTimeStamp,
 												UInt32							inNumberFrames)
@@ -251,6 +126,7 @@ OSStatus	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 	OSStatus result = AUInstrumentBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
 	
 	CallHostBeatAndTempo(NULL, &mTempo);
+	mEfx->SetTempo( mTempo );
 	//バッファの確保
 	float				*output[2];
 	AudioBufferList&	bufferList = GetOutput(0)->GetBufferList();
@@ -260,61 +136,21 @@ OSStatus	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 	output[0] = (float*)bufferList.mBuffers[0].mData;
 	output[1] = numChans==2 ? (float*)bufferList.mBuffers[1].mData : NULL;
 
-	//パラメータの読み込み
-	mGenerator.SetSampleRate( GetOutput(0)->GetStreamFormat().mSampleRate );
-	
-	mGenerator.SetVoiceLimit( Globals()->GetParameter(kParam_poly) );
-	mGenerator.SetVibFreq( Globals()->GetParameter(kParam_vibrate) );
-	mGenerator.SetVibDepth( Globals()->GetParameter(kParam_vibdepth2) );
-	mGenerator.SetClipper( Globals()->GetParameter(kParam_clipnoise)==0 ? false:true );
-	mGenerator.SetMultiMode( 0, Globals()->GetParameter(kParam_bankAmulti)==0 ? false:true );
-	mGenerator.SetMultiMode( 1, Globals()->GetParameter(kParam_bankBmulti)==0 ? false:true );
-	mGenerator.SetMultiMode( 2, Globals()->GetParameter(kParam_bankCmulti)==0 ? false:true );
-	mGenerator.SetMultiMode( 3, Globals()->GetParameter(kParam_bankDmulti)==0 ? false:true );
-	switch ( (int)Globals()->GetParameter(kParam_velocity) ) {
-		case 0:
-			mGenerator.SetVelocityMode( kVelocityMode_Constant );
-			break;
-		case 1:
-			mGenerator.SetVelocityMode( kVelocityMode_Square );
-			break;
-		case 2:
-			mGenerator.SetVelocityMode( kVelocityMode_Linear );
-			break;
-		default:
-			mGenerator.SetVelocityMode( kVelocityMode_Square );
+	//パラメータの反映
+	for ( int i=0; i<kNumberOfParameters; i++ ) {
+		mEfx->SetParameter(i, Globals()->GetParameter(i));
 	}
-	mGenerator.SetPBRange( Globals()->GetParameter(kParam_bendrange) );
 	
-	mGenerator.ModWheel( 0, Globals()->GetParameter(kParam_vibdepth), 0 );
-	for ( int i=1; i<16; i++ ) {
-		mGenerator.ModWheel( i, Globals()->GetParameter(kParam_vibdepth_2 - 1 + i), 0 );
-	}	
+	mEfx->SetSampleRate( GetOutput(0)->GetStreamFormat().mSampleRate );
 	
-	mGenerator.ProgramChange( 0, Globals()->GetParameter(kParam_program), 0 );
-	for ( int i=1; i<16; i++ ) {
-		mGenerator.ProgramChange( i, Globals()->GetParameter(kParam_program_2 - 1 + i), 0 );
-	}	
-	
-	//エコーパラメータの読み込み
-	mGenerator.SetMainVol_L( Globals()->GetParameter(kParam_mainvol_L) );
-	mGenerator.SetMainVol_R( Globals()->GetParameter(kParam_mainvol_R) );
-	mGenerator.SetEchoVol_L( Globals()->GetParameter(kParam_echovol_L) );
-	mGenerator.SetEchoVol_R( Globals()->GetParameter(kParam_echovol_R) );
-	mGenerator.SetFeedBackLevel( Globals()->GetParameter(kParam_echoFB) );
-	mGenerator.SetDelayTime( Globals()->GetParameter( kParam_echodelay ) );
-	for ( int i=0; i<8; i++ ) {
-		mGenerator.SetFIRTap( i, Globals()->GetParameter( kParam_fir0+i ) );
-	}
-
-	mGenerator.Process(inNumberFrames, output);
+	mEfx->Render(inNumberFrames, output);
 	
 	return result;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::SetParameter
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 OSStatus Chip700::SetParameter(	AudioUnitParameterID			inID,
 								 AudioUnitScope 				inScope,
 								 AudioUnitElement 				inElement,
@@ -323,6 +159,7 @@ OSStatus Chip700::SetParameter(	AudioUnitParameterID			inID,
 {
 	OSStatus result = AUInstrumentBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
 	if ( inScope == kAudioUnitScope_Global ) {
+		//mEfx->SetParameter(inID, inValue);
 		switch ( inID ) {
 			case kParam_echodelay:
 				PropertyChanged(kAudioUnitCustomProperty_TotalRAM, kAudioUnitScope_Global, 0);
@@ -345,9 +182,104 @@ OSStatus Chip700::SetParameter(	AudioUnitParameterID			inID,
 	return result;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
+AudioUnitParameterUnit getParameterUnit( int id )
+{
+	switch(id)
+	{
+		case kParam_poly:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_vibdepth:
+		case kParam_vibdepth_2:
+		case kParam_vibdepth_3:
+		case kParam_vibdepth_4:
+		case kParam_vibdepth_5:
+		case kParam_vibdepth_6:
+		case kParam_vibdepth_7:
+		case kParam_vibdepth_8:
+		case kParam_vibdepth_9:
+		case kParam_vibdepth_10:
+		case kParam_vibdepth_11:
+		case kParam_vibdepth_12:
+		case kParam_vibdepth_13:
+		case kParam_vibdepth_14:
+		case kParam_vibdepth_15:
+		case kParam_vibdepth_16:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_vibrate:
+			return kAudioUnitParameterUnit_Hertz;
+		case kParam_vibdepth2:
+			return kAudioUnitParameterUnit_Generic;
+		case kParam_velocity:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_clipnoise:
+			return kAudioUnitParameterUnit_Boolean;
+		case kParam_bendrange:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_program:
+		case kParam_program_2:
+		case kParam_program_3:
+		case kParam_program_4:
+		case kParam_program_5:
+		case kParam_program_6:
+		case kParam_program_7:
+		case kParam_program_8:
+		case kParam_program_9:
+		case kParam_program_10:
+		case kParam_program_11:
+		case kParam_program_12:
+		case kParam_program_13:
+		case kParam_program_14:
+		case kParam_program_15:
+		case kParam_program_16:
+			return kAudioUnitParameterUnit_Indexed;
+			
+		case kParam_bankAmulti:
+			return kAudioUnitParameterUnit_Boolean;
+		case kParam_bankBmulti:
+			return kAudioUnitParameterUnit_Boolean;
+		case kParam_bankCmulti:
+			return kAudioUnitParameterUnit_Boolean;
+		case kParam_bankDmulti:
+			return kAudioUnitParameterUnit_Boolean;
+			
+			//エコー
+		case kParam_mainvol_L:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_mainvol_R:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_echovol_L:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_echovol_R:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_echoFB:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_echodelay:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_fir0:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_fir1:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_fir2:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_fir3:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_fir4:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_fir5:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_fir6:
+			return kAudioUnitParameterUnit_Indexed;
+		case kParam_fir7:
+			return kAudioUnitParameterUnit_Indexed;
+			
+		default:
+			return kAudioUnitParameterUnit_Indexed;
+	}
+}
+//-----------------------------------------------------------------------------
 //	Chip700::GetParameterInfo
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 											  AudioUnitParameterID	inParameterID,
 											  AudioUnitParameterInfo	&outParameterInfo )
@@ -358,229 +290,17 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 		|		kAudioUnitParameterFlag_IsReadable;
     
     if (inScope == kAudioUnitScope_Global) {
-        switch(inParameterID)
-        {
-			case kParam_poly:
-                AUBase::FillInParameterName(outParameterInfo, kParam_poly_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_1;
-                outParameterInfo.maxValue = kMaximumVoices;
-                outParameterInfo.defaultValue = kDefaultValue_poly;
-				break;
-			case kParam_vibdepth:
-			case kParam_vibdepth_2:
-			case kParam_vibdepth_3:
-			case kParam_vibdepth_4:
-			case kParam_vibdepth_5:
-			case kParam_vibdepth_6:
-			case kParam_vibdepth_7:
-			case kParam_vibdepth_8:
-			case kParam_vibdepth_9:
-			case kParam_vibdepth_10:
-			case kParam_vibdepth_11:
-			case kParam_vibdepth_12:
-			case kParam_vibdepth_13:
-			case kParam_vibdepth_14:
-			case kParam_vibdepth_15:
-			case kParam_vibdepth_16:
-				AUBase::FillInParameterName (outParameterInfo, kParam_vibdepth_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-				outParameterInfo.minValue = kMinimumValue_0;
-				outParameterInfo.maxValue = kMaximumValue_127;
-				outParameterInfo.defaultValue = kDefaultValue_vibdepth;
-				break;
-			case kParam_vibrate:
-				AUBase::FillInParameterName (outParameterInfo, kParam_vibrate_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Hertz;
-				outParameterInfo.minValue = kMinimumValue_vibrate;
-				outParameterInfo.maxValue = kMaximumValue_vibrate;
-				outParameterInfo.defaultValue = kDefaultValue_vibrate;
-				break;
-			case kParam_vibdepth2:
-				AUBase::FillInParameterName (outParameterInfo, kParam_vibdepth2_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Generic;
-				outParameterInfo.minValue = kMinimumValue_1;
-				outParameterInfo.maxValue = kMaximumValue_15;
-				outParameterInfo.defaultValue = kDefaultValue_vibdepth2;
-				break;
-			case kParam_velocity:
-				AUBase::FillInParameterName (outParameterInfo, kParam_velocity_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-				outParameterInfo.minValue = kMinimumValue_0;
-				outParameterInfo.maxValue = 2;
-				outParameterInfo.defaultValue = kDefaultValue_velocity;
-				break;
-			case kParam_clipnoise:
-				AUBase::FillInParameterName (outParameterInfo, kParam_clipnoise_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
-				outParameterInfo.minValue = kMinimumValue_0;
-				outParameterInfo.maxValue = 1;
-				outParameterInfo.defaultValue = kDefaultValue_clipnoise;
-				break;
-			case kParam_bendrange:
-				AUBase::FillInParameterName (outParameterInfo, kParam_bendrange_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-				outParameterInfo.minValue = 1;
-				outParameterInfo.maxValue = 24;
-				outParameterInfo.defaultValue = kDefaultValue_bendrange;
-				break;
-			case kParam_program:
-			case kParam_program_2:
-			case kParam_program_3:
-			case kParam_program_4:
-			case kParam_program_5:
-			case kParam_program_6:
-			case kParam_program_7:
-			case kParam_program_8:
-			case kParam_program_9:
-			case kParam_program_10:
-			case kParam_program_11:
-			case kParam_program_12:
-			case kParam_program_13:
-			case kParam_program_14:
-			case kParam_program_15:
-			case kParam_program_16:
-				AUBase::FillInParameterName (outParameterInfo, kParam_program_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-				outParameterInfo.minValue = kMinimumValue_0;
-				outParameterInfo.maxValue = kMaximumValue_127;
-				outParameterInfo.defaultValue = kDefaultValue_program;
-				break;
-				
-			case kParam_bankAmulti:
-				AUBase::FillInParameterName (outParameterInfo, kParam_bankAmulti_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
-				outParameterInfo.minValue = kMinimumValue_0;
-				outParameterInfo.maxValue = 1;
-				outParameterInfo.defaultValue = kDefaultValue_bankAmulti;
-				break;
-			case kParam_bankBmulti:
-				AUBase::FillInParameterName (outParameterInfo, kParam_bankBmulti_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
-				outParameterInfo.minValue = kMinimumValue_0;
-				outParameterInfo.maxValue = 1;
-				outParameterInfo.defaultValue = kDefaultValue_bankBmulti;
-				break;
-			case kParam_bankCmulti:
-				AUBase::FillInParameterName (outParameterInfo, kParam_bankCmulti_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
-				outParameterInfo.minValue = kMinimumValue_0;
-				outParameterInfo.maxValue = 1;
-				outParameterInfo.defaultValue = kDefaultValue_bankCmulti;
-				break;
-			case kParam_bankDmulti:
-				AUBase::FillInParameterName (outParameterInfo, kParam_bankDmulti_Name, false);
-				outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
-				outParameterInfo.minValue = kMinimumValue_0;
-				outParameterInfo.maxValue = 1;
-				outParameterInfo.defaultValue = kDefaultValue_bankDmulti;
-				break;
-				
-			//エコー
-			case kParam_mainvol_L:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_mainvol_L_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_mainvol_L;
-                break;
-            case kParam_mainvol_R:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_mainvol_R_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_mainvol_R;
-                break;
-            case kParam_echovol_L:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_echovol_L_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_echovol_L;
-                break;
-            case kParam_echovol_R:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_echovol_R_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_echovol_R;
-                break;
-            case kParam_echoFB:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_echoFB_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_echoFB;
-                break;
-			case kParam_echodelay:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_echodelay_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_0;
-                outParameterInfo.maxValue = kMaximumValue_15;
-                outParameterInfo.defaultValue = kDefaultValue_echodelay;
-                break;
-            case kParam_fir0:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_firC0_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_fir0;
-                break;
-            case kParam_fir1:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_firC1_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_fir1;
-                break;
-            case kParam_fir2:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_firC2_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_fir2;
-                break;
-            case kParam_fir3:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_firC3_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_fir3;
-                break;
-            case kParam_fir4:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_firC4_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_fir4;
-                break;
-            case kParam_fir5:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_firC5_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_fir5;
-                break;
-            case kParam_fir6:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_firC6_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_fir6;
-                break;
-            case kParam_fir7:
-                AUBase::FillInParameterName (outParameterInfo, kParameter_firC7_Name, false);
-                outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-                outParameterInfo.minValue = kMinimumValue_n128;
-                outParameterInfo.maxValue = kMaximumValue_127;
-                outParameterInfo.defaultValue = kDefaultValue_fir7;
-                break;
-				
-				
-			default:
-				result = kAudioUnitErr_InvalidParameter;
-				break;
-            }
+		if ( inParameterID >= 0 && inParameterID < kNumberOfParameters ) {
+			CFStringRef	cfName = CFStringCreateWithCString(NULL, mEfx->GetParameterName(inParameterID), kCFStringEncodingUTF8);
+			AUBase::FillInParameterName(outParameterInfo, cfName, true);
+			outParameterInfo.unit = getParameterUnit( inParameterID );
+			outParameterInfo.minValue = C700Kernel::GetParameterMin(inParameterID);
+			outParameterInfo.maxValue = C700Kernel::GetParameterMax(inParameterID);
+			outParameterInfo.defaultValue = C700Kernel::GetParameterDefault(inParameterID);
+		}
+		else {
+			result = kAudioUnitErr_InvalidParameter;
+		}
 	}
 	else {
         result = kAudioUnitErr_InvalidParameter;
@@ -589,9 +309,9 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 	return result;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::GetPropertyInfo
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 											  AudioUnitScope		inScope,
 											  AudioUnitElement	inElement,
@@ -736,9 +456,9 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 	return AUInstrumentBase::GetPropertyInfo(inID, inScope, inElement, outDataSize, outWritable);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::GetProperty
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 											AudioUnitScope 		inScope,
 											AudioUnitElement 	inElement,
@@ -768,108 +488,23 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 			}
 #endif
 			
-			case kAudioUnitCustomProperty_BRRData:
-				*((BRRData *)outData) = mVPset[mEditProg].brr;
-				return noErr;
-			
 			case kAudioUnitCustomProperty_Rate:
-				*((double *)outData) = mVPset[mEditProg].rate;
+				*((double *)outData) = mEfx->GetPropertyValue(inID);
 				return noErr;
 			
 			case kAudioUnitCustomProperty_BaseKey:
-				*((int *)outData) = mVPset[mEditProg].basekey;
-				return noErr;
 			case kAudioUnitCustomProperty_LowKey:
-				*((int *)outData) = mVPset[mEditProg].lowkey;
-				return noErr;
 			case kAudioUnitCustomProperty_HighKey:
-				*((int *)outData) = mVPset[mEditProg].highkey;
-				return noErr;
-			
 			case kAudioUnitCustomProperty_LoopPoint:
-				*((int *)outData) = mVPset[mEditProg].lp;
-				return noErr;
-				
-			case kAudioUnitCustomProperty_Loop:
-				*((bool *)outData) = mVPset[mEditProg].loop;
-				return noErr;
-				
-			case kAudioUnitCustomProperty_Echo:
-				*((bool *)outData) = mVPset[mEditProg].echo;
-				return noErr;
-				
 			case kAudioUnitCustomProperty_Bank:
-				*((int *)outData) = mVPset[mEditProg].bank;
-				return noErr;
-
 			case kAudioUnitCustomProperty_AR:
-				*((int *)outData) = mVPset[mEditProg].ar;
-				return noErr;
-				
 			case kAudioUnitCustomProperty_DR:
-				*((int *)outData) = mVPset[mEditProg].dr;
-				return noErr;
-				
 			case kAudioUnitCustomProperty_SL:
-				*((int *)outData) = mVPset[mEditProg].sl;
-				return noErr;
-				
 			case kAudioUnitCustomProperty_SR:
-				*((int *)outData) = mVPset[mEditProg].sr;
-				return noErr;
-				
 			case kAudioUnitCustomProperty_VolL:
-				*((int *)outData) = mVPset[mEditProg].volL;
-				return noErr;
-				
 			case kAudioUnitCustomProperty_VolR:
-				*((int *)outData) = mVPset[mEditProg].volR;
-				return noErr;
-				
 			case kAudioUnitCustomProperty_EditingProgram:
-				*((int *)outData) = mEditProg;
-				return noErr;
-				
 			case kAudioUnitCustomProperty_EditingChannel:
-				*((int *)outData) = mEditChannel;
-				return noErr;
-				
-			case kAudioUnitCustomProperty_TotalRAM:
-				*((UInt32 *)outData) = GetTotalRAM();
-				return noErr;
-			
-			case kAudioUnitCustomProperty_PGDictionary:
-			{
-				CFDictionaryRef	pgdata;
-				CreatePGDataDic(&pgdata, mEditProg);
-				*((CFDictionaryRef *)outData) = pgdata;	//使用後要release
-				return noErr;
-			}
-			
-			case kAudioUnitCustomProperty_XIData:
-			{
-				CFDataRef xidata;
-				CreateXIData( &xidata );
-				*((CFDataRef *)outData) = xidata;	//使用後要release
-				return noErr;
-			}
-				
-			case kAudioUnitCustomProperty_ProgramName:
-			{
-				CFStringRef	str = CFStringCreateWithCString(NULL, mVPset[mEditProg].pgname, kCFStringEncodingUTF8);
-				*((CFStringRef *)outData) = str;	//使用後要release
-				return noErr;
-			}
-				
-			//エコー
-			case kAudioUnitCustomProperty_Band1:
-			case kAudioUnitCustomProperty_Band2:
-			case kAudioUnitCustomProperty_Band3:
-			case kAudioUnitCustomProperty_Band4:
-			case kAudioUnitCustomProperty_Band5:
-				*((Float32 *)outData) = mFilterBand[inID-kAudioUnitCustomProperty_Band1];
-				return noErr;
-				
 			case kAudioUnitCustomProperty_NoteOnTrack_1:
 			case kAudioUnitCustomProperty_NoteOnTrack_2:
 			case kAudioUnitCustomProperty_NoteOnTrack_3:
@@ -886,9 +521,6 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_NoteOnTrack_14:
 			case kAudioUnitCustomProperty_NoteOnTrack_15:
 			case kAudioUnitCustomProperty_NoteOnTrack_16:
-				*((int *)outData) = mOnNotes[inID-kAudioUnitCustomProperty_NoteOnTrack_1];
-				return noErr;
-				
 			case kAudioUnitCustomProperty_MaxNoteTrack_1:
 			case kAudioUnitCustomProperty_MaxNoteTrack_2:
 			case kAudioUnitCustomProperty_MaxNoteTrack_3:
@@ -905,31 +537,83 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_MaxNoteTrack_14:
 			case kAudioUnitCustomProperty_MaxNoteTrack_15:
 			case kAudioUnitCustomProperty_MaxNoteTrack_16:
-				*((int *)outData) = mMaxNote[inID-kAudioUnitCustomProperty_MaxNoteTrack_1];
+				*((int *)outData) = mEfx->GetPropertyValue(inID);
 				return noErr;
 				
-			case kAudioUnitCustomProperty_SourceFileRef:
+			case kAudioUnitCustomProperty_Loop:
+			case kAudioUnitCustomProperty_Echo:
+			case kAudioUnitCustomProperty_IsEmaphasized:
+				*((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
+				return noErr;
+				
+			case kAudioUnitCustomProperty_TotalRAM:
+				*((UInt32 *)outData) = mEfx->GetPropertyValue(inID);
+				return noErr;
+							
+			//エコー
+			case kAudioUnitCustomProperty_Band1:
+			case kAudioUnitCustomProperty_Band2:
+			case kAudioUnitCustomProperty_Band3:
+			case kAudioUnitCustomProperty_Band4:
+			case kAudioUnitCustomProperty_Band5:
+				*((Float32 *)outData) = mEfx->GetPropertyValue(inID);
+				return noErr;
+				
+			case kAudioUnitCustomProperty_BRRData:
+				*((BRRData *)outData) = *(mEfx->GetBRRData());
+				return noErr;
+				
+			case kAudioUnitCustomProperty_PGDictionary:
 			{
-				CFURLRef	url = 
-				CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)mVPset[mEditProg].sourceFile, 
-														strlen(mVPset[mEditProg].sourceFile), false);
-				*((CFURLRef *)outData) = url;	//使用後要release
+				CFDictionaryRef	pgdata;
+				int				editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+				CreatePGDataDic(&pgdata, editProg);
+				*((CFDictionaryRef *)outData) = pgdata;	//使用後要release
 				return noErr;
 			}
 				
-			case kAudioUnitCustomProperty_IsEmaphasized:
-				*((bool *)outData) = mVPset[mEditProg].isEmphasized;
-				return noErr;
+			case kAudioUnitCustomProperty_XIData:
+			{
+				XIFile	fileData(NULL);
 				
+				fileData.SetDataFromChip(mEfx->GetGenerator(), 
+										 mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram), mTempo);
+				
+				if ( fileData.IsLoaded() ) {
+					CFDataRef xidata;
+					xidata = CFDataCreate(NULL, fileData.GetDataPtr(), fileData.GetWriteSize() );
+					*((CFDataRef *)outData) = xidata;	//使用後要release
+				}
+				else {
+					*((CFDataRef *)outData) = NULL;
+				}
+				return noErr;
+			}
+				
+			case kAudioUnitCustomProperty_ProgramName:
+			{
+				CFStringRef	str = CFStringCreateWithCString(NULL, mEfx->GetProgramName(), kCFStringEncodingUTF8);
+				*((CFStringRef *)outData) = str;	//使用後要release
+				return noErr;
+			}
+
+			case kAudioUnitCustomProperty_SourceFileRef:
+			{
+				const char *srcPath = mEfx->GetSourceFilePath();
+				CFURLRef	url = 
+				CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)srcPath, strlen(srcPath), false);
+				*((CFURLRef *)outData) = url;	//使用後要release
+				return noErr;
+			}				
 				
 		}
 	}
 	return AUInstrumentBase::GetProperty(inID, inScope, inElement, outData);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::SetProperty
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 											AudioUnitScope 		inScope,
 											AudioUnitElement 	inElement,
@@ -942,136 +626,51 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_BRRData:
 			{
 				BRRData *brr = (BRRData *)inData;
-				//brrデータをこちら側に移動する
-				if (brr->data) {
-					mBRRdata[mEditProg].Allocate(brr->size);
-					mVPset[mEditProg].brr.data = &mBRRdata[mEditProg][0];
-					memmove(mVPset[mEditProg].brr.data,brr->data,brr->size);
-					mVPset[mEditProg].brr.size = brr->size;
-				}
-				else {
-					if (mVPset[mEditProg].brr.data) {
-						mBRRdata[mEditProg].Deallocate();
-						mVPset[mEditProg].brr.data = NULL;
-						mVPset[mEditProg].brr.size = 0;
-						if (mVPset[mEditProg].pgname) {
-							CFRelease(mVPset[mEditProg].pgname);
-						}
-						mVPset[mEditProg].pgname[0] = 0;
-						PropertyChanged(kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0);
-					}
-				}
-				PropertyChanged(kAudioUnitCustomProperty_TotalRAM, kAudioUnitScope_Global, 0);
+				mEfx->SetBRRData(brr);
 				return noErr;
 			}
-			
+
 			case kAudioUnitCustomProperty_Rate:
-				mVPset[mEditProg].rate = *((double*)inData);
+				mEfx->SetPropertyValue(inID, *((double*)inData));
 				return noErr;
 				
 			case kAudioUnitCustomProperty_BaseKey:
-				mVPset[mEditProg].basekey = *((int*)inData);
-				mGenerator.RefreshKeyMap();
-				return noErr;
 			case kAudioUnitCustomProperty_LowKey:
-				mVPset[mEditProg].lowkey = *((int*)inData);
-				mGenerator.RefreshKeyMap();
-				return noErr;
 			case kAudioUnitCustomProperty_HighKey:
-				mVPset[mEditProg].highkey = *((int*)inData);
-				mGenerator.RefreshKeyMap();
-				return noErr;
-				
 			case kAudioUnitCustomProperty_LoopPoint:
-				mVPset[mEditProg].lp = *((int*)inData);
-				if (mVPset[mEditProg].lp > mVPset[mEditProg].brr.size) {
-					mVPset[mEditProg].lp = mVPset[mEditProg].brr.size;
-				}
-				if ( mVPset[mEditProg].lp < 0 ) {
-					mVPset[mEditProg].lp = 0;
-				}
+			case kAudioUnitCustomProperty_Bank:
+			case kAudioUnitCustomProperty_AR:
+			case kAudioUnitCustomProperty_DR:
+			case kAudioUnitCustomProperty_SL:
+			case kAudioUnitCustomProperty_SR:
+			case kAudioUnitCustomProperty_VolL:
+			case kAudioUnitCustomProperty_VolR:
+			case kAudioUnitCustomProperty_EditingProgram:
+			case kAudioUnitCustomProperty_EditingChannel:
+			case kAudioUnitCustomProperty_MaxNoteTrack_1:
+			case kAudioUnitCustomProperty_MaxNoteTrack_2:
+			case kAudioUnitCustomProperty_MaxNoteTrack_3:
+			case kAudioUnitCustomProperty_MaxNoteTrack_4:
+			case kAudioUnitCustomProperty_MaxNoteTrack_5:
+			case kAudioUnitCustomProperty_MaxNoteTrack_6:
+			case kAudioUnitCustomProperty_MaxNoteTrack_7:
+			case kAudioUnitCustomProperty_MaxNoteTrack_8:
+			case kAudioUnitCustomProperty_MaxNoteTrack_9:
+			case kAudioUnitCustomProperty_MaxNoteTrack_10:
+			case kAudioUnitCustomProperty_MaxNoteTrack_11:
+			case kAudioUnitCustomProperty_MaxNoteTrack_12:
+			case kAudioUnitCustomProperty_MaxNoteTrack_13:
+			case kAudioUnitCustomProperty_MaxNoteTrack_14:
+			case kAudioUnitCustomProperty_MaxNoteTrack_15:
+			case kAudioUnitCustomProperty_MaxNoteTrack_16:
+				mEfx->SetPropertyValue(inID, *((int*)inData) );
 				return noErr;
 				
 			case kAudioUnitCustomProperty_Loop:
-				mVPset[mEditProg].loop = *((bool*)inData);
-				return noErr;
-				
 			case kAudioUnitCustomProperty_Echo:
-				mVPset[mEditProg].echo = *((bool*)inData);
+			case kAudioUnitCustomProperty_IsEmaphasized:
+				mEfx->SetPropertyValue(inID, *((bool*)inData) ? 1.0f:.0f );
 				return noErr;
-			
-			case kAudioUnitCustomProperty_Bank:
-				mVPset[mEditProg].bank = *((int*)inData);
-				mGenerator.RefreshKeyMap();
-				return noErr;
-			
-			case kAudioUnitCustomProperty_AR:
-				mVPset[mEditProg].ar = *((int*)inData);
-				return noErr;
-				
-			case kAudioUnitCustomProperty_DR:
-				mVPset[mEditProg].dr = *((int*)inData);
-				return noErr;
-				
-			case kAudioUnitCustomProperty_SL:
-				mVPset[mEditProg].sl = *((int*)inData);
-				return noErr;
-				
-			case kAudioUnitCustomProperty_SR:
-				mVPset[mEditProg].sr = *((int*)inData);
-				return noErr;
-			
-			case kAudioUnitCustomProperty_VolL:
-				mVPset[mEditProg].volL = *((int *)inData);
-				return noErr;
-				
-			case kAudioUnitCustomProperty_VolR:
-				mVPset[mEditProg].volR = *((int *)inData);
-				return noErr;
-				
-			case kAudioUnitCustomProperty_EditingProgram:
-			{
-				int	pg = *((int*)inData);
-				if (pg>127) pg=127;
-				if (pg<0) pg=0;
-				mEditProg = pg;
-				
-				// 選択チャンネルのプログラムをチェンジ
-				if ( mEditChannel == 0 ) {
-					Globals()->SetParameter(kParam_program, mEditProg);
-				}
-				else {
-					Globals()->SetParameter(kParam_program_2 + mEditChannel - 1, mEditProg);
-				}
-				
-				// 表示更新が必要なプロパティの変更を通知する
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Bank; i++) {
-					PropertyChanged(i, kAudioUnitScope_Global, 0);
-				}
-				return noErr;
-			}
-				
-			case kAudioUnitCustomProperty_EditingChannel:
-			{
-				int	ch = *((int*)inData);
-				if (ch>15) ch=15;
-				if (ch<0) ch=0;
-				mEditChannel = ch;
-				
-				// 変更したチャンネルのプログラムチェンジを取得してmEditProgに設定する
-				if ( mEditChannel == 0 ) {
-					mEditProg = Globals()->GetParameter(kParam_program);
-				}
-				else {
-					mEditProg = Globals()->GetParameter(kParam_program_2 + mEditChannel - 1);
-				}
-				
-				// 表示更新が必要なプロパティの変更を通知する
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_EditingProgram; i++) {
-					PropertyChanged(i, kAudioUnitScope_Global, 0);
-				}
-				return noErr;
-			}
 				
 			case kAudioUnitCustomProperty_TotalRAM:
 				return noErr;
@@ -1079,7 +678,8 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_PGDictionary:
 			{
 				CFDictionaryRef	pgdata = *((CFDictionaryRef*)inData);
-				RestorePGDataDic(pgdata, mEditProg);
+				int				editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+				RestorePGDataDic(pgdata, editProg);
 				return noErr;
 			}
 				
@@ -1089,8 +689,12 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			}
 			
 			case kAudioUnitCustomProperty_ProgramName:
-				CFStringGetCString(*((CFStringRef*)inData), mVPset[mEditProg].pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
+			{
+				char	pgname[PROGRAMNAME_MAX_LEN];
+				CFStringGetCString(*((CFStringRef*)inData), pgname, PROGRAMNAME_MAX_LEN-1, kCFStringEncodingUTF8);
+				mEfx->SetProgramName(pgname);
 				return noErr;
+			}
 				
 			//エコー
 			case kAudioUnitCustomProperty_Band1:
@@ -1098,7 +702,7 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_Band3:
 			case kAudioUnitCustomProperty_Band4:
 			case kAudioUnitCustomProperty_Band5:
-				SetBandParam( inID-kAudioUnitCustomProperty_Band1, *((Float32*)inData) );
+				mEfx->SetPropertyValue(inID, *((float*)inData) );
 				return noErr;
 				
 			case kAudioUnitCustomProperty_NoteOnTrack_1:
@@ -1119,229 +723,56 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_NoteOnTrack_16:
 				return noErr;
 				
-			case kAudioUnitCustomProperty_MaxNoteTrack_1:
-			case kAudioUnitCustomProperty_MaxNoteTrack_2:
-			case kAudioUnitCustomProperty_MaxNoteTrack_3:
-			case kAudioUnitCustomProperty_MaxNoteTrack_4:
-			case kAudioUnitCustomProperty_MaxNoteTrack_5:
-			case kAudioUnitCustomProperty_MaxNoteTrack_6:
-			case kAudioUnitCustomProperty_MaxNoteTrack_7:
-			case kAudioUnitCustomProperty_MaxNoteTrack_8:
-			case kAudioUnitCustomProperty_MaxNoteTrack_9:
-			case kAudioUnitCustomProperty_MaxNoteTrack_10:
-			case kAudioUnitCustomProperty_MaxNoteTrack_11:
-			case kAudioUnitCustomProperty_MaxNoteTrack_12:
-			case kAudioUnitCustomProperty_MaxNoteTrack_13:
-			case kAudioUnitCustomProperty_MaxNoteTrack_14:
-			case kAudioUnitCustomProperty_MaxNoteTrack_15:
-			case kAudioUnitCustomProperty_MaxNoteTrack_16:
-				mMaxNote[inID-kAudioUnitCustomProperty_MaxNoteTrack_1] = *((int *)inData);
-				mOnNotes[inID-kAudioUnitCustomProperty_MaxNoteTrack_1] = 0;
-				return noErr;
-				
 			case kAudioUnitCustomProperty_SourceFileRef:
 			{
 				CFStringRef pathStr = CFURLCopyFileSystemPath(*((CFURLRef*)inData), kCFURLPOSIXPathStyle);
-				CFStringGetCString(pathStr, mVPset[mEditProg].sourceFile, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
+				char		path[PATH_LEN_MAX];
+				CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
 				CFRelease(pathStr);
+				mEfx->SetSourceFilePath(path);
 				return noErr;
 			}
-								
-			case kAudioUnitCustomProperty_IsEmaphasized:
-				mVPset[mEditProg].isEmphasized = *((bool *)inData);
-				return noErr;
 		}
 	}
 	return AUInstrumentBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
 }
 
-void Chip700::SetBandParam( int band, Float32 value )
-{
-	float bandfactor[8][5] = {
-		{0.0625,0.125,		0.12500,	0.25,		0.4375},
-		{0.0625,0.11548,	0.08839,	0.04784,	-0.314209},
-		{0.0625,0.08839,	0.00000,	-0.21339,	0.0625},
-		{0.0625,0.04784,	-0.08839,	-0.11548,	0.093538},	
-		{0.0625,0.00000,	-0.12500,	0.125,		-0.0625},
-		{0.0625,-0.04784,	-0.08839,	0.11548,	-0.041761},
-		{0.0625,-0.08839,	0.00000,	-0.03661,	0.0625},
-		{0.0625,-0.11548,	0.08839,	-0.04784,	0.012432}
-	};
-	float	temp;
-	AudioUnitEvent auEvent;
-	
-	mFilterBand[band] = value;
-	
-	for (int j=0; j<8; j++) {
-		temp = 0;
-		for (int i=0; i<5; i++) {
-			temp += mFilterBand[i] * bandfactor[j][i];
-		}
-		if (temp < 0) {
-			temp = ceil(temp*127);
-		}
-		else {
-			temp = floor(temp*127);
-		}
-		Globals()->SetParameter(kParam_fir0+j, temp);
-		auEvent.mEventType = kAudioUnitEvent_ParameterValueChange;
-		auEvent.mArgument.mParameter.mAudioUnit = (AudioUnit)GetComponentInstance();
-		auEvent.mArgument.mParameter.mScope = kAudioUnitScope_Global;
-		auEvent.mArgument.mParameter.mParameterID = kParam_fir0+j;
-		auEvent.mArgument.mParameter.mElement = 0;
-		AUEventListenerNotify(NULL, NULL, &auEvent);
-	}
-}
-
-UInt32 Chip700::GetTotalRAM()
-{
-	//使用メモリを合計
-	UInt32	totalRam = 0;
-	for ( int i=0; i<128; i++ ) {
-		if ( mVPset[i].brr.data ) {
-			totalRam += mVPset[i].brr.size;
-		}
-	}
-	totalRam += 2048 * Globals()->GetParameter(kParam_echodelay );
-	return totalRam;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::GetPresets
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 ComponentResult Chip700::GetPresets(CFArrayRef *outData) const
 {	
 	if (outData == NULL) return noErr;
 	
-	CFMutableArrayRef theArray = CFArrayCreateMutable(NULL, kNumberPresets, NULL);
-	for (int i = 0; i < kNumberPresets; ++i) {
-		CFArrayAppendValue(theArray, &kPresets[i]);
+	CFMutableArrayRef theArray = CFArrayCreateMutable(NULL, NUM_PRESETS, NULL);
+	for (int i = 0; i < NUM_PRESETS; ++i) {
+		CFArrayAppendValue(theArray, &mPresets[i]);
     }
     
 	*outData = (CFArrayRef)theArray;
 	return noErr;
 }
 
+//-----------------------------------------------------------------------------
 OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 {
-	SInt32 chosenPreset = inNewFactoryPreset.presetNumber;
-	//与えられたプリセット番号に一致するプリセットを内部で呼び出す
-	for(int i = 0; i < kNumberPresets; ++i)
-	{
-		if(chosenPreset == kPresets[i].presetNumber)
-		{
-			switch(chosenPreset) {
-				case 0:
-					for (int j=0; j<128; j++) {
-						if (mVPset[j].brr.data) {
-							mBRRdata[j].Deallocate();
-							mVPset[j].brr.data = NULL;
-							mVPset[j].brr.size = 0;
-							mVPset[j].pgname[0] = 0;
-						}
-					}
-					PropertyChanged(kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0);
-					PropertyChanged(kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0);
-					break;
-				case 1:
-					//プリセット音色
-					mVPset[0].brr.size=0x36;
-					mBRRdata[0].Allocate(mVPset[0].brr.size);
-					mVPset[0].brr.data=&mBRRdata[0][0];
-					memmove(mVPset[0].brr.data,sinewave_brr,mVPset[0].brr.size);
-					mVPset[0].basekey=81;
-					mVPset[0].lowkey=0;
-					mVPset[0].highkey=127;
-					mVPset[0].loop=true;
-					mVPset[0].echo=false;
-					mVPset[0].bank=0;
-					mVPset[0].lp=18;
-					mVPset[0].rate=28160.0;
-					mVPset[0].volL=100;
-					mVPset[0].volR=100;
-					strcpy(mVPset[0].pgname, "Sine Wave");
-					
-					mVPset[1].brr.size=0x2d;
-					mBRRdata[1].Allocate(mVPset[1].brr.size);
-					mVPset[1].brr.data=&mBRRdata[1][0];
-					memmove(mVPset[1].brr.data,squarewave_brr,mVPset[1].brr.size);
-					mVPset[1].basekey=69;
-					mVPset[1].lowkey=0;
-					mVPset[1].highkey=127;
-					mVPset[1].loop=true;
-					mVPset[1].echo=true;
-					mVPset[1].bank=0;
-					mVPset[1].lp=9;
-					mVPset[1].rate=28160.0;
-					mVPset[1].volL=100;
-					mVPset[1].volR=100;
-					strcpy(mVPset[1].pgname, "Square Wave");
-					
-					mVPset[2].brr.size=0x2d;
-					mBRRdata[2].Allocate(mVPset[2].brr.size);
-					mVPset[2].brr.data=&mBRRdata[2][0];
-					memmove(mVPset[2].brr.data,pulse1_brr,mVPset[2].brr.size);
-					mVPset[2].basekey=69;
-					mVPset[2].lowkey=0;
-					mVPset[2].highkey=127;
-					mVPset[2].loop=true;
-					mVPset[2].echo=true;
-					mVPset[2].bank=0;
-					mVPset[2].lp=9;
-					mVPset[2].rate=28160.0;
-					mVPset[2].volL=100;
-					mVPset[2].volR=100;
-					strcpy(mVPset[2].pgname, "25% Pulse");
-					
-					mVPset[3].brr.size=0x2d;
-					mBRRdata[3].Allocate(mVPset[3].brr.size);
-					mVPset[3].brr.data=&mBRRdata[3][0];
-					memmove(mVPset[3].brr.data,pulse2_brr,mVPset[3].brr.size);
-					mVPset[3].basekey=69;
-					mVPset[3].lowkey=0;
-					mVPset[3].highkey=127;
-					mVPset[3].loop=true;
-					mVPset[3].echo=true;
-					mVPset[3].bank=0;
-					mVPset[3].lp=9;
-					mVPset[3].rate=28160.0;
-					mVPset[3].volL=100;
-					mVPset[3].volR=100;
-					strcpy(mVPset[3].pgname, "12.5% Pulse");
-					
-					mVPset[4].brr.size=0x2d;
-					mBRRdata[4].Allocate(mVPset[4].brr.size);
-					mVPset[4].brr.data=&mBRRdata[4][0];
-					memmove(mVPset[4].brr.data,pulse3_brr,mVPset[4].brr.size);
-					mVPset[4].basekey=69;
-					mVPset[4].lowkey=0;
-					mVPset[4].highkey=127;
-					mVPset[4].loop=true;
-					mVPset[4].echo=true;
-					mVPset[4].bank=0;
-					mVPset[4].lp=9;
-					mVPset[4].rate=28160.0;
-					mVPset[4].volL=100;
-					mVPset[4].volR=100;
-					strcpy(mVPset[4].pgname, "6.25% Pulse");
-					
-					for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_VolR; i++) {
-						PropertyChanged(i, kAudioUnitScope_Global, 0);
-					}
-					break;
-			}
-			SetAFactoryPresetAsCurrent(kPresets[i]);
-			
-			mGenerator.RefreshKeyMap();
-			
-			return noErr;
+	UInt32 chosenPreset = inNewFactoryPreset.presetNumber;
+	if ( chosenPreset < (UInt32)NUM_PRESETS ) {
+		mEfx->SelectPreset(chosenPreset);
+		char cname[32];
+		CFStringGetCString(inNewFactoryPreset.presetName, cname, 32, kCFStringEncodingASCII);
+		//mEfx->setProgramName(cname);
+		SetAFactoryPresetAsCurrent(inNewFactoryPreset);
+		for ( UInt32 i=0; i<kNumberOfParameters; i++ ) {
+			Globals()->SetParameter(i, mEfx->GetParameter(i));
 		}
+		return noErr;
 	}
-	
 	return kAudioUnitErr_InvalidPropertyValue;
 }
 
 
+//-----------------------------------------------------------------------------
 static void AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int value)
 {
 	CFNumberRef num = CFNumberCreate(NULL, kCFNumberIntType, &value);
@@ -1349,6 +780,7 @@ static void AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int
 	CFRelease(num);
 }
 
+//-----------------------------------------------------------------------------
 static void AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key, bool value)
 {
 	if ( value ) {
@@ -1359,9 +791,9 @@ static void AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key,
 	}
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::SaveState
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
 {
 	ComponentResult result;
@@ -1371,8 +803,10 @@ ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
 		CFDictionaryRef	pgdata;
 		CFStringRef pgnum,pgname;
 		
+		
 		for (int i=0; i<128; i++) {
-			if (mVPset[i].brr.data) {
+			const BRRData		*brr = mEfx->GetBRRData(i);
+			if (brr->data) {
 				CreatePGDataDic(&pgdata, i);
 				pgnum = CFStringCreateWithFormat(NULL,NULL,CFSTR("pg%03d"),i);
 				CFDictionarySetValue(dict, pgnum, pgdata);
@@ -1382,8 +816,10 @@ ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
 		}
 		
 		// 作業状態を保存
-		AddNumToDictionary(dict, kSaveKey_EditProg, mEditProg);
-		AddNumToDictionary(dict, kSaveKey_EditChan, mEditChannel);
+		int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+		int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
+		AddNumToDictionary(dict, kSaveKey_EditProg, editProg);
+		AddNumToDictionary(dict, kSaveKey_EditChan, editChan);
 		
 		pgname = CFStringCreateCopy(NULL,CFSTR("C700"));
 		CFDictionarySetValue(dict, CFSTR(kAUPresetNameKey), pgname);
@@ -1392,9 +828,9 @@ ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
 	return result;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::RestoreState
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 ComponentResult	Chip700::RestoreState(CFPropertyListRef plist)
 {
 	ComponentResult result;
@@ -1414,80 +850,67 @@ ComponentResult	Chip700::RestoreState(CFPropertyListRef plist)
 		}
 		
 		if (CFDictionaryContainsKey(dict, kSaveKey_EditProg)) {
+			int	editProg;
 			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_EditProg));
-			CFNumberGetValue(cfnum, kCFNumberIntType, &mEditProg);
+			CFNumberGetValue(cfnum, kCFNumberIntType, &editProg);
 			
-			Globals()->SetParameter(kParam_program, mEditProg);
+			//Globals()->SetParameter(kParam_program, editProg);
 			//変更の通知
-			PropertyChanged(kAudioUnitCustomProperty_EditingProgram, kAudioUnitScope_Global, 0);
+			//PropertyChanged(kAudioUnitCustomProperty_EditingProgram, kAudioUnitScope_Global, 0);
+			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
 		}
 		if (CFDictionaryContainsKey(dict, kSaveKey_EditChan)) {
+			int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
 			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_EditChan));
-			CFNumberGetValue(cfnum, kCFNumberIntType, &mEditChannel);
+			CFNumberGetValue(cfnum, kCFNumberIntType, &editChan);
 			
 			//変更の通知
-			PropertyChanged(kAudioUnitCustomProperty_EditingChannel, kAudioUnitScope_Global, 0);
+			//PropertyChanged(kAudioUnitCustomProperty_EditingChannel, kAudioUnitScope_Global, 0);
+			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingChannel, editChan);
 		}
 	}
 	return result;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-int Chip700::CreateXIData( CFDataRef *data )
-{
-	XIFile	fileData(NULL);
-	
-	fileData.SetDataFromChip(&mGenerator, mEditProg, mTempo);
-	
-	if ( fileData.IsLoaded() ) {
-		CFDataRef mdata;
-		mdata = CFDataCreate(NULL, fileData.GetDataPtr(), fileData.GetWriteSize() );
-		*data = mdata;
-	}
-	else {
-		*data = NULL;
-	}	
-	return 0;
-}
-
+//-----------------------------------------------------------------------------
 int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 {
 	CFMutableDictionaryRef dict = CFDictionaryCreateMutable	(NULL, 0, 
 								&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+	const VoiceParams	*vpSet = mEfx->GetVP();
 	
-	if (mVPset[pgnum].loop) {
-		mBRRdata[pgnum][mVPset[pgnum].brr.size - 9] |= 2;
+	if (vpSet[pgnum].loop) {
+		vpSet[pgnum].brr.data[vpSet[pgnum].brr.size - 9] |= 2;
 	}
 	else {
-		mBRRdata[pgnum][mVPset[pgnum].brr.size - 9] &= ~2;
+		vpSet[pgnum].brr.data[vpSet[pgnum].brr.size - 9] &= ~2;
 	}
-	CFDataRef	brrdata = CFDataCreate(NULL, mVPset[pgnum].brr.data, mVPset[pgnum].brr.size);
+	CFDataRef	brrdata = CFDataCreate(NULL, vpSet[pgnum].brr.data, vpSet[pgnum].brr.size);
 	CFDictionarySetValue(dict, kSaveKey_brrdata, brrdata);
 	CFRelease(brrdata);
 	
-	AddNumToDictionary(dict, kSaveKey_looppoint, mVPset[pgnum].lp);
-	CFNumberRef	num = CFNumberCreate(NULL, kCFNumberDoubleType, &mVPset[pgnum].rate);
+	AddNumToDictionary(dict, kSaveKey_looppoint, vpSet[pgnum].lp);
+	CFNumberRef	num = CFNumberCreate(NULL, kCFNumberDoubleType, &vpSet[pgnum].rate);
 	CFDictionarySetValue(dict, kSaveKey_samplerate, num);
 	CFRelease(num);
-	AddNumToDictionary(dict, kSaveKey_basekey, mVPset[pgnum].basekey);
-	AddNumToDictionary(dict, kSaveKey_lowkey, mVPset[pgnum].lowkey);
-	AddNumToDictionary(dict, kSaveKey_highkey, mVPset[pgnum].highkey);
-	AddNumToDictionary(dict, kSaveKey_ar, mVPset[pgnum].ar);
-	AddNumToDictionary(dict, kSaveKey_dr, mVPset[pgnum].dr);
-	AddNumToDictionary(dict, kSaveKey_sl, mVPset[pgnum].sl);
-	AddNumToDictionary(dict, kSaveKey_sr, mVPset[pgnum].sr);
-	AddNumToDictionary(dict, kSaveKey_volL, mVPset[pgnum].volL);
-	AddNumToDictionary(dict, kSaveKey_volR, mVPset[pgnum].volR);
-	AddBooleanToDictionary(dict, kSaveKey_echo, mVPset[pgnum].echo);
-	AddNumToDictionary(dict, kSaveKey_bank, mVPset[pgnum].bank);
+	AddNumToDictionary(dict, kSaveKey_basekey, vpSet[pgnum].basekey);
+	AddNumToDictionary(dict, kSaveKey_lowkey, vpSet[pgnum].lowkey);
+	AddNumToDictionary(dict, kSaveKey_highkey, vpSet[pgnum].highkey);
+	AddNumToDictionary(dict, kSaveKey_ar, vpSet[pgnum].ar);
+	AddNumToDictionary(dict, kSaveKey_dr, vpSet[pgnum].dr);
+	AddNumToDictionary(dict, kSaveKey_sl, vpSet[pgnum].sl);
+	AddNumToDictionary(dict, kSaveKey_sr, vpSet[pgnum].sr);
+	AddNumToDictionary(dict, kSaveKey_volL, vpSet[pgnum].volL);
+	AddNumToDictionary(dict, kSaveKey_volR, vpSet[pgnum].volR);
+	AddBooleanToDictionary(dict, kSaveKey_echo, vpSet[pgnum].echo);
+	AddNumToDictionary(dict, kSaveKey_bank, vpSet[pgnum].bank);
 	
 	//元波形情報
-	AddBooleanToDictionary(dict, kSaveKey_IsEmphasized, mVPset[pgnum].isEmphasized);
-	if ( mVPset[pgnum].sourceFile[0] ) {
+	AddBooleanToDictionary(dict, kSaveKey_IsEmphasized, vpSet[pgnum].isEmphasized);
+	if ( vpSet[pgnum].sourceFile[0] ) {
 		CFURLRef	url = 
-		CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)mVPset[pgnum].sourceFile, 
-												strlen(mVPset[pgnum].sourceFile), false);
+		CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)vpSet[pgnum].sourceFile, 
+												strlen(vpSet[pgnum].sourceFile), false);
 		CFDataRef urlData = CFURLCreateData( NULL, url, kCFStringEncodingUTF8, false );
 		CFDictionarySetValue(dict, kSaveKey_SourceFile, urlData);
 		CFRelease(urlData);
@@ -1495,8 +918,8 @@ int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 	}
 	
 	//プログラム名
-	if (mVPset[pgnum].pgname[0] != 0) {
-		CFStringRef	str = CFStringCreateWithCString(NULL, mVPset[pgnum].pgname, kCFStringEncodingUTF8);
+	if (vpSet[pgnum].pgname[0] != 0) {
+		CFStringRef	str = CFStringCreateWithCString(NULL, vpSet[pgnum].pgname, kCFStringEncodingUTF8);
 		CFDictionarySetValue(dict, kSaveKey_ProgName, str);
 		CFRelease(str);
 	}
@@ -1505,124 +928,156 @@ int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 	return 0;
 }
 
+//-----------------------------------------------------------------------------
 void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 {
+	int editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, pgnum);
+
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(data);
 	CFNumberRef cfnum;
 	
 	CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_brrdata));
 	int	size = CFDataGetLength(cfdata);
 	const UInt8	*dataptr = CFDataGetBytePtr(cfdata);
-	mBRRdata[pgnum].Allocate(size);
-	mVPset[pgnum].brr.data = &mBRRdata[pgnum][0];
-	memmove(mVPset[pgnum].brr.data,dataptr,size);
-	mVPset[pgnum].brr.size = size;
-	mVPset[pgnum].loop = mBRRdata[pgnum][mVPset[pgnum].brr.size-9]&2?true:false;
+	BRRData		brr;
+	brr.data = const_cast<unsigned char*>(dataptr);
+	brr.size = size;
+	mEfx->SetBRRData(&brr);
+//	mVPset[pgnum].brr.data = new unsigned char[size];
+//	memmove(mVPset[pgnum].brr.data,dataptr,size);
+//	mVPset[pgnum].brr.size = size;
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_Loop, 
+						   brr.data[brr.size-9]&2?true:false);
+//	mVPset[pgnum].loop = brr.data[brr.size-9]&2?true:false;
 	
 	int	value;
 	if (CFDictionaryContainsKey(dict, kSaveKey_looppoint)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_looppoint));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].lp = value;
+		//mVPset[pgnum].lp = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, value);
 	}
 	
 	double	dvalue;
 	if (CFDictionaryContainsKey(dict, kSaveKey_samplerate)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_samplerate));
 		CFNumberGetValue(cfnum, kCFNumberDoubleType, &dvalue);
-		mVPset[pgnum].rate = dvalue;
+		//mVPset[pgnum].rate = dvalue;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Rate, dvalue);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_basekey)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_basekey));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].basekey = value;
+		//mVPset[pgnum].basekey = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_BaseKey, value);
 	}
 	else {
-		mVPset[pgnum].basekey = 60;
+		//mVPset[pgnum].basekey = 60;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_BaseKey, 60);
 	}
 	if (CFDictionaryContainsKey(dict, kSaveKey_lowkey)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_lowkey));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].lowkey = value;
+		//mVPset[pgnum].lowkey = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LowKey, value);
 	}
 	else {
-		mVPset[pgnum].lowkey = 0;
+		//mVPset[pgnum].lowkey = 0;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LowKey, 0);
 	}
 	if (CFDictionaryContainsKey(dict, kSaveKey_highkey)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_highkey));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].highkey = value;
+		//mVPset[pgnum].highkey = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_HighKey,value );
 	}
 	else {
-		mVPset[pgnum].highkey = 127;
+		//mVPset[pgnum].highkey = 127;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_HighKey,127 );
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_ar)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_ar));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].ar = value;
+		//mVPset[pgnum].ar = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_AR, value);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_dr)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_dr));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].dr = value;
+		//mVPset[pgnum].dr = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_DR, value);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_sl)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_sl));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].sl = value;
+		//mVPset[pgnum].sl = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SL, value);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_sr)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_sr));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].sr = value;
+		//mVPset[pgnum].sr = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SR, value);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_volL)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volL));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].volL = value;
+		//mVPset[pgnum].volL = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolL, value);
 	}
 	else {
-		mVPset[pgnum].volL = 100;
+		//mVPset[pgnum].volL = 100;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolL, 100);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_volR)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volR));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].volR = value;
+		//mVPset[pgnum].volR = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolR, value);
 	}
 	else {
-		mVPset[pgnum].volR = 100;
+		//mVPset[pgnum].volR = 100;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolR, 100);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_echo)) {
 		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_echo));
-		mVPset[pgnum].echo = CFBooleanGetValue(cfbool) ? true:false;
+		//mVPset[pgnum].echo = CFBooleanGetValue(cfbool) ? true:false;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Echo,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
 	}
 	else {
-		mVPset[pgnum].echo = false;
+		//mVPset[pgnum].echo = false;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Echo, .0f);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_bank)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_bank));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mVPset[pgnum].bank = value;
+		//mVPset[pgnum].bank = value;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Bank, value );
 	}
 	else {
-		mVPset[pgnum].bank = 0;
+		//mVPset[pgnum].bank = 0;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Bank, 0 );
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_ProgName)) {
+		char	pgname[PROGRAMNAME_MAX_LEN];
 		CFStringGetCString(reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, kSaveKey_ProgName)),
-						   mVPset[pgnum].pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
+						   pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
+		mEfx->SetProgramName(pgname);
 	}
 	else {
-		mVPset[pgnum].pgname[0] = 0;
+		//mVPset[pgnum].pgname[0] = 0;
+		mEfx->SetProgramName("");
 	}
 	
 	//元波形ファイル情報を復元
@@ -1631,28 +1086,34 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		CFURLRef	url = CFURLCreateWithBytes( NULL, CFDataGetBytePtr(urlData), 
 											   CFDataGetLength(urlData), kCFStringEncodingUTF8, NULL );
 		CFStringRef pathStr = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
-		CFStringGetCString(pathStr, mVPset[pgnum].sourceFile, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
+		char	path[PATH_LEN_MAX];
+		CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
+		mEfx->SetSourceFilePath(path);
 		CFRelease(pathStr);
 		CFRelease(url);
 		
 		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_IsEmphasized));
-		mVPset[pgnum].isEmphasized = CFBooleanGetValue(cfbool) ? true:false;
+		//mVPset[pgnum].isEmphasized = CFBooleanGetValue(cfbool) ? true:false;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, CFBooleanGetValue(cfbool) ? 1.0f:.0f);
 	}
 	else {
-		mVPset[pgnum].sourceFile[0] = 0;
-		mVPset[pgnum].isEmphasized = true;
+		//mVPset[pgnum].sourceFile[0] = 0;
+		mEfx->SetSourceFilePath("");
+		//mVPset[pgnum].isEmphasized = true;
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, .0f);
 	}
 	
 	//UIに変更を反映
-	if (pgnum == mEditProg) {
-		for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Bank; i++) {
-			PropertyChanged(i, kAudioUnitScope_Global, 0);
-		}
+	if (pgnum == editProg) {
+		//for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Bank; i++) {
+		//	PropertyChanged(i, kAudioUnitScope_Global, 0);
+		//}
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
 	}
 	
-	mGenerator.RefreshKeyMap();
+	mEfx->GetGenerator()->RefreshKeyMap();
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 ComponentResult Chip700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
 											NoteInstanceID 				inNoteInstanceID, 
 											UInt32 						inOffsetSampleFrame, 
@@ -1661,19 +1122,11 @@ ComponentResult Chip700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
 	//MIDIチャンネルの取得
 	unsigned int		chID = inGroup->GroupID() % 16;
 	
-	mGenerator.KeyOn(chID, inParams.mPitch, inParams.mVelocity, inNoteInstanceID+chID*256, inOffsetSampleFrame);
-	
-	// MIDIインジケーターに反映
-	mOnNotes[chID]++;
-	if ( mOnNotes[chID] > mMaxNote[chID] ) {
-		mMaxNote[chID] = mOnNotes[chID];
-	}
-	PropertyChanged(kAudioUnitCustomProperty_MaxNoteTrack_1+chID, kAudioUnitScope_Global, 0);
-	PropertyChanged(kAudioUnitCustomProperty_NoteOnTrack_1+chID, kAudioUnitScope_Global, 0);
-//printf("noteon chID=%d inOffsetSampleFrame=%d inNoteInstanceID=%d\n", chID, inOffsetSampleFrame, inNoteInstanceID );
+	mEfx->HandleNoteOn(chID, inParams.mPitch, inParams.mVelocity, inNoteInstanceID+chID*256, inOffsetSampleFrame);
 	return noErr;
 }
 
+//-----------------------------------------------------------------------------
 ComponentResult Chip700::RealTimeStopNote( MusicDeviceGroupID 			inGroup, 
 										   NoteInstanceID 				inNoteInstanceID, 
 										   UInt32 						inOffsetSampleFrame)
@@ -1682,97 +1135,59 @@ ComponentResult Chip700::RealTimeStopNote( MusicDeviceGroupID 			inGroup,
 	//MIDIチャンネルの取得
 	unsigned int		chID = inGroup % 16;
 	
-	mGenerator.KeyOff(chID, 0xff, 0, inNoteInstanceID+chID*256, inOffsetSampleFrame);
-	
-	// MIDIインジケーターに反映
-	if ( mOnNotes[chID] > 0 ) {
-		mOnNotes[chID]--;
-	}
-	PropertyChanged(kAudioUnitCustomProperty_NoteOnTrack_1+chID, kAudioUnitScope_Global, 0);
-//printf("noteoff chID=%d inOffsetSampleFrame=%d inNoteInstanceID=%d\n", chID, inOffsetSampleFrame, inNoteInstanceID );
+	mEfx->HandleNoteOff(chID, 0xff, inNoteInstanceID+chID*256, inOffsetSampleFrame);
 	return noErr;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 OSStatus Chip700::HandlePitchWheel(	UInt8 	inChannel,
 							   UInt8 	inPitch1,
 							   UInt8 	inPitch2,
 							   UInt32	inStartFrame)
 {
-	int pitchBend = (inPitch2 << 7) | inPitch1;
-	mGenerator.PitchBend(inChannel, pitchBend - 8192, inStartFrame);
+	mEfx->HandlePitchBend(inChannel, inPitch1, inPitch2, inStartFrame);
 	return noErr;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::HandleControlChange
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 OSStatus Chip700::HandleControlChange(	UInt8 	inChannel,
 									UInt8 	inController,
 									UInt8 	inValue,
 									UInt32	inStartFrame)
 {
-	//モジュレーションホイール
-	if (inController == kMidiController_ModWheel) {
-		AudioUnitParameterID	paramID = kParam_vibdepth;
-		if ( inChannel > 0 ) {
-			paramID = kParam_vibdepth_2 - 1 + inChannel;
-		}
-		Globals()->SetParameter(paramID, inValue);
-		AudioUnitEvent auEvent;
-		auEvent.mEventType = kAudioUnitEvent_ParameterValueChange;
-		auEvent.mArgument.mParameter.mAudioUnit = (AudioUnit)GetComponentInstance();
-		auEvent.mArgument.mParameter.mScope = kAudioUnitScope_Global;
-		auEvent.mArgument.mParameter.mParameterID = paramID;
-		auEvent.mArgument.mParameter.mElement = 0;
-		AUEventListenerNotify(NULL, NULL, &auEvent);
-	}
+	mEfx->HandleControlChange(inChannel, inController, inValue, inStartFrame);	//モジュレーションホイール
 	return AUInstrumentBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 //	Chip700::HandleProgramChange
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//-----------------------------------------------------------------------------
 OSStatus Chip700::HandleProgramChange(	UInt8	inChannel,
 										UInt8	inValue)
 {
-	AudioUnitParameterID	paramID = kParam_program;
-	if ( inChannel > 0 ) {
-		paramID = kParam_program_2 - 1 + inChannel;
-	}
-	Globals()->SetParameter(paramID, inValue);
-	AudioUnitEvent auEvent;
-	auEvent.mEventType = kAudioUnitEvent_ParameterValueChange;
-	auEvent.mArgument.mParameter.mAudioUnit = (AudioUnit)GetComponentInstance();
-	auEvent.mArgument.mParameter.mScope = kAudioUnitScope_Global;
-	auEvent.mArgument.mParameter.mParameterID = paramID;
-	auEvent.mArgument.mParameter.mElement = 0;
-	AUEventListenerNotify(NULL, NULL, &auEvent);
+	mEfx->HandleProgramChange(inChannel, inValue, 0);
 	return AUInstrumentBase::HandleProgramChange(inChannel, inValue);
 }
 
+//-----------------------------------------------------------------------------
 OSStatus Chip700::HandleResetAllControllers( UInt8 	inChannel)
 {
-	mGenerator.ResetAllControllers();
+	mEfx->HandleResetAllControllers(inChannel, 0);
 	return AUInstrumentBase::HandleResetAllControllers( inChannel);
 }
 
+//-----------------------------------------------------------------------------
 OSStatus Chip700::HandleAllNotesOff( UInt8 inChannel )
 {
-	mGenerator.AllNotesOff();
-	// ノートオンインジケータ初期化
-	for ( int i=0; i<16; i++ ) {
-		mOnNotes[i] = 0;
-	}
+	mEfx->HandleAllNotesOff(inChannel, 0);
 	return AUInstrumentBase::HandleAllNotesOff( inChannel);
 }
 
+//-----------------------------------------------------------------------------
 OSStatus Chip700::HandleAllSoundOff( UInt8 inChannel )
 {
-	mGenerator.AllSoundOff();
-	// ノートオンインジケータ初期化
-	for ( int i=0; i<16; i++ ) {
-		mOnNotes[i] = 0;
-	}
+	mEfx->HandleAllSoundOff(inChannel, 0);
 	return AUInstrumentBase::HandleAllSoundOff( inChannel);
 }

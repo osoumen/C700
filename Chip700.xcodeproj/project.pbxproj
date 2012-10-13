@@ -89,6 +89,14 @@
 		F5432C291627AE4200863A0B /* EchoKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432C251627AE4200863A0B /* EchoKernel.cpp */; };
 		F5432E401627FC2900863A0B /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432E3F1627FC2900863A0B /* ControlInstacnesDefs.h */; };
 		F5432E411627FC2900863A0B /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432E3F1627FC2900863A0B /* ControlInstacnesDefs.h */; };
+		F5432F2F1628117D00863A0B /* C700Kernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432F2D1628117D00863A0B /* C700Kernel.h */; };
+		F5432F301628117D00863A0B /* C700Kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432F2E1628117D00863A0B /* C700Kernel.cpp */; };
+		F5432F311628117D00863A0B /* C700Kernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432F2D1628117D00863A0B /* C700Kernel.h */; };
+		F5432F321628117D00863A0B /* C700Kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432F2E1628117D00863A0B /* C700Kernel.cpp */; };
+		F5432FF1162915F900863A0B /* C700Parameters.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432FEF162915F900863A0B /* C700Parameters.h */; };
+		F5432FF2162915F900863A0B /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
+		F5432FF3162915F900863A0B /* C700Parameters.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432FEF162915F900863A0B /* C700Parameters.h */; };
+		F5432FF4162915F900863A0B /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
 		F543D0AC147D285F00DC53A3 /* Chip700Generator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */; };
 		F543D0AD147D285F00DC53A3 /* Chip700Generator.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* Chip700Generator.h */; };
 		F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
@@ -765,6 +773,10 @@
 		F5432C241627AE4200863A0B /* EchoKernel.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = EchoKernel.h; sourceTree = "<group>"; };
 		F5432C251627AE4200863A0B /* EchoKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = EchoKernel.cpp; sourceTree = "<group>"; };
 		F5432E3F1627FC2900863A0B /* ControlInstacnesDefs.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstacnesDefs.h; sourceTree = "<group>"; };
+		F5432F2D1628117D00863A0B /* C700Kernel.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Kernel.h; sourceTree = "<group>"; };
+		F5432F2E1628117D00863A0B /* C700Kernel.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Kernel.cpp; sourceTree = "<group>"; };
+		F5432FEF162915F900863A0B /* C700Parameters.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Parameters.h; sourceTree = "<group>"; };
+		F5432FF0162915F900863A0B /* C700Parameters.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Parameters.cpp; sourceTree = "<group>"; };
 		F543D0AA147D285F00DC53A3 /* Chip700Generator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chip700Generator.cpp; sourceTree = "<group>"; };
 		F543D0AB147D285F00DC53A3 /* Chip700Generator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chip700Generator.h; sourceTree = "<group>"; };
 		F546EDE9155E57AD002D6E59 /* track01_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = track01_0.png; sourceTree = "<group>"; };
@@ -1350,6 +1362,10 @@
 				8A10AB550AE2855600271511 /* samplebrr.h */,
 				8BC6025B073B072D006C4272 /* Chip700.h */,
 				8BA05A660720730100365D66 /* Chip700.cpp */,
+				F5432F2D1628117D00863A0B /* C700Kernel.h */,
+				F5432F2E1628117D00863A0B /* C700Kernel.cpp */,
+				F5432FEF162915F900863A0B /* C700Parameters.h */,
+				F5432FF0162915F900863A0B /* C700Parameters.cpp */,
 				F5432C241627AE4200863A0B /* EchoKernel.h */,
 				F5432C251627AE4200863A0B /* EchoKernel.cpp */,
 				F543D0AB147D285F00DC53A3 /* Chip700Generator.h */,
@@ -1598,6 +1614,8 @@
 				F569C6DF162644AE006C91AD /* PlistBRRFile.h in Headers */,
 				F5432C261627AE4200863A0B /* EchoKernel.h in Headers */,
 				F5432E411627FC2900863A0B /* ControlInstacnesDefs.h in Headers */,
+				F5432F311628117D00863A0B /* C700Kernel.h in Headers */,
+				F5432FF3162915F900863A0B /* C700Parameters.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1729,6 +1747,8 @@
 				F569C97D1626D130006C91AD /* PlistBRRFile.h in Headers */,
 				F5432C281627AE4200863A0B /* EchoKernel.h in Headers */,
 				F5432E401627FC2900863A0B /* ControlInstacnesDefs.h in Headers */,
+				F5432F2F1628117D00863A0B /* C700Kernel.h in Headers */,
+				F5432FF1162915F900863A0B /* C700Parameters.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2092,6 +2112,8 @@
 				F569C40C16254B6E006C91AD /* XIFile.cpp in Sources */,
 				F569C6E0162644AE006C91AD /* PlistBRRFile.cpp in Sources */,
 				F5432C271627AE4200863A0B /* EchoKernel.cpp in Sources */,
+				F5432F321628117D00863A0B /* C700Kernel.cpp in Sources */,
+				F5432FF4162915F900863A0B /* C700Parameters.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2199,6 +2221,8 @@
 				F569CA521626D130006C91AD /* XIFile.cpp in Sources */,
 				F569CA531626D130006C91AD /* PlistBRRFile.cpp in Sources */,
 				F5432C291627AE4200863A0B /* EchoKernel.cpp in Sources */,
+				F5432F301628117D00863A0B /* C700Kernel.cpp in Sources */,
+				F5432FF2162915F900863A0B /* C700Parameters.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

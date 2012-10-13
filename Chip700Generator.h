@@ -66,6 +66,7 @@ public:
 	void		SetEchoVol_R( int value );
 	void		SetFeedBackLevel( int value );
 	void		SetDelayTime( int value );
+	int			GetDelayTime();
 	void		SetFIRTap( int tap, int value );
 	
 	void		SetSampleRate( double samplerate ) { mSampleRate = samplerate; }

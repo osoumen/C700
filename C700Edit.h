@@ -30,12 +30,8 @@ public:
 	
 	void			SetEfxAccess(EfxAccess* efxacc);
 	void			SetParameterInfo(long index, float minValue, float maxValue, float defaultValue );
-	void			SetLoopPoint( int lp );
 	void			SetProgramName( const char *pgname );
 	void			SetBRRData( const BRRData *brr );
-	void			UpdateXMSNESText();
-	void			SetTrackSelectorValue( int track );
-	void			SetBankSelectorValue( int bank );
 	
 	virtual bool	getRect(ERect **);
 	virtual bool	open(void *ptr);
@@ -46,6 +42,11 @@ public:
 	long			getTag();
 
 private:
+	void			SetLoopPoint( int lp );
+	void			UpdateXMSNESText();
+	void			SetTrackSelectorValue( int track );
+	void			SetBankSelectorValue( int bank );
+	
 	CBitmap				*m_pBackground;
 	C700GUI				*m_pUIView;
 	CTooltipSupport		*m_pTooltipSupport;

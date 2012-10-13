@@ -53,17 +53,15 @@ bool CWaveView::onDrop(CDragContainer* drag, const CPoint& where)
 //------------------------------------------------------------------------
 void CWaveView::onDragEnter (CDragContainer* drag, const CPoint& where)
 {
-	getFrame ()->setCursor (kCursorCopy);
-	//focus = true;
-	setDirty ();
+	getFrame()->setCursor(kCursorCopy);
+	setDirty();
 }
 
 //------------------------------------------------------------------------
 void CWaveView::onDragLeave (CDragContainer* drag, const CPoint& where)
 {
-	getFrame ()->setCursor (kCursorNotAllowed);
-	//focus = false;
-	setDirty ();
+	getFrame()->setCursor(kCursorNotAllowed);
+	setDirty();
 }
 
 //------------------------------------------------------------------------

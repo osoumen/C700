@@ -196,19 +196,9 @@ enum
 	kControlSelectTrack1
 };
 
-static const float kMinimumValue_n128 = -128;
-static const float kMinimumValue_0 = 0;
-static const float kMinimumValue_1 = 1;
-
-static const float kMaximumValue_3 = 3;
-static const float kMaximumValue_7 = 7;
-static const float kMaximumValue_15 = 15;
-static const float kMaximumValue_31 = 31;
-static const float kMaximumValue_127 = 127;
-
 static const int kMaximumVoices = 16;
-
 static const int NUM_BANKS = 4;
+static const int NUM_PRESETS = 2;
 
 static const int PROGRAMNAME_MAX_LEN = 256;
 static const int PATH_LEN_MAX = 1024;
