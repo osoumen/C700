@@ -262,13 +262,11 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				}
 				default:
 					goto makeDummy;
-					break;
 			}
 			break;
 			
 		default:
 			goto makeDummy;
-			break;
 	}
 	goto setupCntl;
 	
@@ -443,7 +441,7 @@ void C700GUI::valueChanged(CControl* control)
 	//テキストボックスの場合は数値に変換する
 	if ( control->isTypeOf("CMyTextEdit") )
 	{
-		CMyTextEdit		*textedit = static_cast<CMyTextEdit*> (control);
+		CMyTextEdit		*textedit = reinterpret_cast<CMyTextEdit*> (control);
 		text = textedit->getText();
 		sscanf(text, "%f", &value);
 		if ( tag == kAudioUnitCustomProperty_LoopPoint ) {
@@ -905,7 +903,7 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 	//Filedata.fileTypes=&waveType;
 	Filedata.returnPath= path;
 	Filedata.initialPath = 0;
-	Filedata.future[0] = 1;
+	Filedata.future[0] = 0;
 	if (OpenFile.run(&Filedata) > 0) {
 		return true;
 	}

@@ -57,10 +57,8 @@ void C700Edit::SetEfxAccess(EfxAccess* efxacc)
 //-----------------------------------------------------------------------------
 void C700Edit::SetParameterInfo(long index, float minValue, float maxValue, float defaultValue)
 {
-	if (!frame)
-	{
-		return;
-	}
+	if (!frame) return;
+	if (m_pUIView == NULL) return;
 	
 	CControl	*cntl;
 	int			tag = index;
@@ -136,6 +134,7 @@ void C700Edit::close()
 		frame->forget();
 	}
 	frame = NULL;
+	m_pUIView = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -144,9 +143,8 @@ void C700Edit::setParameter(int index, float value)
 	//エフェクタのパラメータが変化したときに呼ばれる
 	//GUI側に変化したパラメータを反映させる処理を行う
 	
-	if (!frame) {
-		return;
-	}
+	if (!frame) return;
+	if (m_pUIView == NULL) return;
 	
 	//チャンネル表示更新
 	if ( index == kAudioUnitCustomProperty_EditingChannel ) {
@@ -195,9 +193,8 @@ void C700Edit::setParameter(int index, float value)
 //-----------------------------------------------------------------------------
 void C700Edit::SetLoopPoint( int lp )
 {
-	if (!frame) {
-		return;
-	}
+	if (!frame) return;
+	if (m_pUIView == NULL) return;
 	
 	CWaveView	*overView=NULL;
 	CWaveView	*headView=NULL;
@@ -239,9 +236,8 @@ void C700Edit::SetLoopPoint( int lp )
 //-----------------------------------------------------------------------------
 void C700Edit::SetProgramName( const char *pgname )
 {
-	if (!frame) {
-		return;
-	}
+	if (!frame) return;
+	if (m_pUIView == NULL) return;
 	
 	CControl	*cntl;
 	cntl = m_pUIView->FindControlByTag(kAudioUnitCustomProperty_ProgramName);
@@ -256,9 +252,8 @@ void C700Edit::SetProgramName( const char *pgname )
 //-----------------------------------------------------------------------------
 void C700Edit::SetBRRData( const BRRData *brr )
 {
-	if (!frame) {
-		return;
-	}
+	if (!frame) return;
+	if (m_pUIView == NULL) return;
 	
 	long	start;
 	long	viewlength;
@@ -325,9 +320,8 @@ void C700Edit::SetBRRData( const BRRData *brr )
 //-----------------------------------------------------------------------------
 void C700Edit::UpdateXMSNESText()
 {
-	if (!frame) {
-		return;
-	}
+	if (!frame) return;
+	if (m_pUIView == NULL) return;
 	
 	float echovol_L;
 	float echovol_R;
@@ -394,9 +388,8 @@ void C700Edit::UpdateXMSNESText()
 //-----------------------------------------------------------------------------
 void C700Edit::SetTrackSelectorValue( int track )
 {
-	if (!frame) {
-		return;
-	}
+	if (!frame) return;
+	if (m_pUIView == NULL) return;
 	
 	track = 15-track;
 	for ( int i=0; i<16; i++ ) {
@@ -415,9 +408,8 @@ void C700Edit::SetTrackSelectorValue( int track )
 //-----------------------------------------------------------------------------
 void C700Edit::SetBankSelectorValue( int bank )
 {
-	if (!frame) {
-		return;
-	}
+	if (!frame) return;
+	if (m_pUIView == NULL) return;
 	
 	bank = 3-bank;
 	for ( int i=0; i<4; i++ ) {
