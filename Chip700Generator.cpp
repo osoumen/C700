@@ -488,6 +488,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 							StopPlayingVoice( &(*it) );
 						}
 						mNoteEvt.erase( it );
+						continue;
 					}
 				}
 				it++;

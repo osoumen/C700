@@ -23,9 +23,6 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 	mEfx->SetPropertyNotifyFunc(PropertyNotifyFunc, this);
 	mEfx->SetParameterSetFunc(ParameterSetFunc, this);
 	
-	//setProgram(0);
-	mCurrentPreset = 0;
-	
 	if (audioMaster)
 	{
 		setNumInputs(0);				// no inputs
@@ -38,7 +35,6 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 	
 	suspend();
 	
-//	pChunk= new unsigned char[32*1024];
 	mEditor = new C700Edit(this);
 	editor = mEditor;
 	
@@ -49,10 +45,9 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 	for ( int i=0; i<kNumberOfParameters; i++ ) {
 		setParameter(i, shrinkParam(i, C700Kernel::GetParameterDefault(i)) );
 	}
-		
-//	if(!editor){
-//		oome = true;
-//	}
+	
+	//setProgram(0);
+	mCurrentPreset = 0;
 }
 
 //-----------------------------------------------------------------------------------------

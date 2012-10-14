@@ -2321,16 +2321,16 @@
 /* Begin PBXShellScriptBuildPhase section */
 		F543322416296E0200863A0B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputPaths = (
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "ln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$HOME/Library/Audio/Plug-Ins/Components/\" \n";
+			shellScript = "ln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$HOME/Library/Audio/Plug-Ins/VST/\" \n";
 		};
 		F55B68CB15863F4600FDA7C2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
