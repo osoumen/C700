@@ -487,7 +487,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 						else if ( it->type == NOTE_OFF ) {
 							StopPlayingVoice( &(*it) );
 						}
-						mNoteEvt.erase( it );
+						it = mNoteEvt.erase( it );
 						continue;
 					}
 				}
