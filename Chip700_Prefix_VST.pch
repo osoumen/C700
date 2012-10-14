@@ -12,7 +12,7 @@
 #define ENABLE_VST_EXTENSION_IN_VSTGUI 1
 #include "vstgui.h"
 #else
-#define VSTGUI_USES_UTF8 0
+//#define VSTGUI_USES_UTF8 0
 #define USE_LIBPNG 1
 #define png_set_gray_1_2_4_to_8 png_set_expand_gray_1_2_4_to_8
 #define snprintf _snprintf

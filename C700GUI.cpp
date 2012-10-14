@@ -49,8 +49,8 @@ void getFileNameDeletingPathExt( const char *path, char *out, int maxLen )
 CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame )
 {
 	CControl	*cntl = NULL;
-	CRect size(0, 0, desc->w , desc->h);
-	size.offset(desc->x, desc->y);
+	CRect cntlSize(0, 0, desc->w , desc->h);
+	cntlSize.offset(desc->x, desc->y);
 	int	value = desc->value;
 	int	minimum = desc->minimum;
 	int	maximum = desc->maximum;
@@ -61,7 +61,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				case 'wave':
 				{
 					CWaveView	*waveview;
-					waveview = new CWaveView(size, frame, this, desc->id);
+					waveview = new CWaveView(cntlSize, frame, this, desc->id);
 					cntl = waveview;
 					break;
 				}
@@ -78,11 +78,11 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					CMySlider	*slider;
 					if ( desc->w < desc->h )
 					{
-						slider = new CMySlider(size, this, desc->id, size.top, size.bottom - sliderHandleBitmap->getHeight(), sliderHandleBitmap, 0, CPoint(0, 0), kBottom|kVertical );
+						slider = new CMySlider(cntlSize, this, desc->id, cntlSize.top, cntlSize.bottom - sliderHandleBitmap->getHeight(), sliderHandleBitmap, 0, CPoint(0, 0), kBottom|kVertical );
 					}
 					else
 					{
-						slider = new CMySlider(size, this, desc->id, size.left, size.right - sliderHandleBitmap->getWidth(), sliderHandleBitmap, 0, CPoint(0, 0), kLeft|kHorizontal );
+						slider = new CMySlider(cntlSize, this, desc->id, cntlSize.left, cntlSize.right - sliderHandleBitmap->getWidth(), sliderHandleBitmap, 0, CPoint(0, 0), kLeft|kHorizontal );
 					}
 					cntl = slider;
 					break;
@@ -90,7 +90,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				case 'knob':
 				{
 					CMyKnob		*knob;
-					knob = new CMyKnob(size, this, desc->id, bgKnob, 0);
+					knob = new CMyKnob(cntlSize, this, desc->id, bgKnob, 0);
 					knob->setColorHandle( MakeCColor(67, 75, 88, 255) );
 					knob->setColorShadowHandle( kTransparentCColor );
 					knob->setInsetValue(1);
@@ -100,7 +100,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				case 'cbtn':
 				{
 					CLabelOnOffButton	*button;
-					button = new CLabelOnOffButton(size, this, desc->id, onOffButton, desc->title);
+					button = new CLabelOnOffButton(cntlSize, this, desc->id, onOffButton, desc->title);
 					cntl = button;
 					break;
 				}
@@ -112,7 +112,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					
 					CFontRef	fontDesc = new CFontDesc(fontName, fontSize);
 					CMyParamDisplay	*paramdisp;
-					paramdisp = new CMyParamDisplay(size, desc->id, valueMultipler, unitStr, 0, 0);
+					paramdisp = new CMyParamDisplay(cntlSize, desc->id, valueMultipler, unitStr, 0, 0);
 					paramdisp->setListener(this);
 					paramdisp->setFont(fontDesc);
 					paramdisp->setFontColor(MakeCColor(fontRColour, fontGColour, fontBColour, 255));
@@ -125,7 +125,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				case 'eutx':
 				{
 					CMyTextEdit	*textEdit;
-					textEdit = new CMyTextEdit(size, this, desc->id, desc->title, desc->futureuse==2?true:false, desc->futureuse==1?true:false);
+					textEdit = new CMyTextEdit(cntlSize, this, desc->id, desc->title, desc->futureuse==2?true:false, desc->futureuse==1?true:false);
 					textEdit->setFontColor(MakeCColor(180, 248, 255, 255));
 					textEdit->setAntialias(true);
 					
@@ -161,7 +161,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					snprintf(rsrcName, 99, "%s.png", desc->title);
 					CBitmap		*btnImage = new CBitmap(rsrcName);
 					CMovieBitmap	*button;
-					button = new CMovieBitmap(size, this, desc->id, btnImage );
+					button = new CMovieBitmap(cntlSize, this, desc->id, btnImage );
 					btnImage->forget();
 					cntl = button;
 					break;
@@ -172,7 +172,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					snprintf(rsrcName, 99, "%s.png", desc->title);
 					CBitmap		*btnImage = new CBitmap(rsrcName);
 					COnOffButton	*button;
-					button = new COnOffButton(size, this, desc->id, btnImage );
+					button = new COnOffButton(cntlSize, this, desc->id, btnImage );
 					btnImage->forget();
 					cntl = button;
 					break;
@@ -183,7 +183,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					snprintf(rsrcName, 99, "%s.png", desc->title);
 					CBitmap		*btnImage = new CBitmap(rsrcName);
 					CKickButton	*button;
-					button = new CKickButton(size, this, desc->id, btnImage );
+					button = new CKickButton(cntlSize, this, desc->id, btnImage );
 					btnImage->forget();
 					cntl = button;
 					break;
@@ -194,7 +194,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					snprintf(rsrcName, 99, "%s.png", desc->title);
 					CBitmap			*btnImage = new CBitmap(rsrcName);
 					CVerticalSwitch	*button;
-					button = new CVerticalSwitch(size, this, desc->id, btnImage );
+					button = new CVerticalSwitch(cntlSize, this, desc->id, btnImage );
 					btnImage->forget();
 					cntl = button;
 					break;
@@ -210,8 +210,8 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				case 'stxt':
 				{
 					CTextLabel	*textLabel;
-					size.offset(0, -2);	//ˆÊ’u•â³
-					textLabel = new CTextLabel(size, desc->title, 0, 0);
+					cntlSize.offset(0, -2);	//ˆÊ’u•â³
+					textLabel = new CTextLabel(cntlSize, desc->title, 0, 0);
 					textLabel->setFontColor(kBlackCColor);
 					textLabel->setHoriAlign(desc->fontalign);
 					textLabel->setTransparency(true);
@@ -247,7 +247,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				case 'larr':
 				{
 					CRockerSwitch *rockerSwitch;
-					rockerSwitch = new CRockerSwitch(size, this, desc->id, rocker->getHeight() / 3, rocker, CPoint(0, 0), kVertical);
+					rockerSwitch = new CRockerSwitch(cntlSize, this, desc->id, rocker->getHeight() / 3, rocker, CPoint(0, 0), kVertical);
 					cntl = rockerSwitch;
 					minimum = -1;
 					maximum = 1; 
@@ -256,7 +256,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 				case 'sepa':
 				{
 					CSeparatorLine	*sepa;
-					sepa = new CSeparatorLine(size, this, desc->id);
+					sepa = new CSeparatorLine(cntlSize, this, desc->id);
 					cntl = sepa;
 					break;
 				}
@@ -273,7 +273,7 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 	goto setupCntl;
 	
 makeDummy:
-	cntl = new CDummyCntl(size);
+	cntl = new CDummyCntl(cntlSize);
 	
 setupCntl:
 	if ( cntl )
