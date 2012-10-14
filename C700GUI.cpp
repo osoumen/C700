@@ -868,7 +868,7 @@ bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 	//Filedata.fileTypes=&waveType;
 	Filedata.returnPath= path;
 	Filedata.initialPath = 0;
-	Filedata.future[0] = 1;
+	Filedata.future[0] = 0;
 	if (OpenFile.run(&Filedata) > 0) {
 		return true;
 	}

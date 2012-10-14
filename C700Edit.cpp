@@ -114,11 +114,11 @@ bool C700Edit::open(void *ptr)
 	}
 #endif
 	
-	m_pTooltipSupport = new CTooltipSupport(frame);
-	frame->setMouseObserver(m_pTooltipSupport);
+//	m_pTooltipSupport = new CTooltipSupport(frame);
+//	frame->setMouseObserver(m_pTooltipSupport);
 	
 	// last but not least set the class variable frame to our newly created frame
-	this->frame = frame;
+	//this->frame = frame;
 	return true;
 }
 
