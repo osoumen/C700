@@ -9,6 +9,10 @@
 
 #include "C700Edit.h"
 #include "brrcodec.h"
+#include "C700Parameters.h"
+#ifndef AU
+#include "C700VST.h"
+#endif
 
 //-----------------------------------------------------------------------------
 C700Edit::C700Edit( void *pEffect )
@@ -83,7 +87,7 @@ bool C700Edit::getRect(ERect **erect)
 //-----------------------------------------------------------------------------
 bool C700Edit::open(void *ptr)
 {
-	AEffGUIEditor::open (ptr);
+	AEffGUIEditor::open(ptr);
 	systemWindow = ptr;
 	
 	CRect frameSize(0, 0, m_pBackground->getWidth(), m_pBackground->getHeight());
@@ -93,6 +97,22 @@ bool C700Edit::open(void *ptr)
 	m_pUIView = new C700GUI(frameSize, frame);
 	m_pUIView->setTransparency(true);
 	frame->addView(m_pUIView);
+	if ( efxAcc ) {
+		m_pUIView->SetEfxAccess(efxAcc);
+	}
+#ifndef AU
+	//現在パラメータの反映
+	C700VST	*efx = (C700VST*)effect;
+	for (int i=0; i<kNumberOfParameters; i++) {
+		SetParameterInfo(i, C700Parameters::GetParameterMin(i),
+						 C700Parameters::GetParameterMax(i), C700Parameters::GetParameterDefault(i));
+		efx->ParameterSetFunc( i, efxAcc->GetParameter(i), effect );
+	}
+	//現在プロパティの反映
+	for (int i=kAudioUnitCustomProperty_Begin; i<kAudioUnitCustomProperty_End; i++) {
+		efx->PropertyNotifyFunc( i, effect );
+	}
+#endif
 	
 	m_pTooltipSupport = new CTooltipSupport(frame);
 	frame->setMouseObserver(m_pTooltipSupport);
@@ -119,13 +139,12 @@ void C700Edit::close()
 }
 
 //-----------------------------------------------------------------------------
-void C700Edit::setParameter(long index, float value)
+void C700Edit::setParameter(int index, float value)
 {
 	//エフェクタのパラメータが変化したときに呼ばれる
 	//GUI側に変化したパラメータを反映させる処理を行う
 	
-	if (!frame)
-	{
+	if (!frame) {
 		return;
 	}
 	
@@ -176,6 +195,10 @@ void C700Edit::setParameter(long index, float value)
 //-----------------------------------------------------------------------------
 void C700Edit::SetLoopPoint( int lp )
 {
+	if (!frame) {
+		return;
+	}
+	
 	CWaveView	*overView=NULL;
 	CWaveView	*headView=NULL;
 	CControl	*cntl;
@@ -216,6 +239,10 @@ void C700Edit::SetLoopPoint( int lp )
 //-----------------------------------------------------------------------------
 void C700Edit::SetProgramName( const char *pgname )
 {
+	if (!frame) {
+		return;
+	}
+	
 	CControl	*cntl;
 	cntl = m_pUIView->FindControlByTag(kAudioUnitCustomProperty_ProgramName);
 	if ( cntl ) {
@@ -229,6 +256,10 @@ void C700Edit::SetProgramName( const char *pgname )
 //-----------------------------------------------------------------------------
 void C700Edit::SetBRRData( const BRRData *brr )
 {
+	if (!frame) {
+		return;
+	}
+	
 	long	start;
 	long	viewlength;
 	
@@ -294,6 +325,10 @@ void C700Edit::SetBRRData( const BRRData *brr )
 //-----------------------------------------------------------------------------
 void C700Edit::UpdateXMSNESText()
 {
+	if (!frame) {
+		return;
+	}
+	
 	float echovol_L;
 	float echovol_R;
 	float fir0;
@@ -359,6 +394,10 @@ void C700Edit::UpdateXMSNESText()
 //-----------------------------------------------------------------------------
 void C700Edit::SetTrackSelectorValue( int track )
 {
+	if (!frame) {
+		return;
+	}
+	
 	track = 15-track;
 	for ( int i=0; i<16; i++ ) {
 		CControl *cntl = m_pUIView->FindControlByTag(kControlSelectTrack16 + i);
@@ -376,6 +415,10 @@ void C700Edit::SetTrackSelectorValue( int track )
 //-----------------------------------------------------------------------------
 void C700Edit::SetBankSelectorValue( int bank )
 {
+	if (!frame) {
+		return;
+	}
+	
 	bank = 3-bank;
 	for ( int i=0; i<4; i++ ) {
 		CControl *cntl = m_pUIView->FindControlByTag(kControlBankDBtn + i);

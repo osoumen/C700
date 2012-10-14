@@ -46,11 +46,11 @@ public:
 	bool	GetProgramName( char *pgname, int maxLen );
 	bool	GetBRRData( BRRData *data );
 	bool	SetBRRData( const BRRData *data );
-	float	GetPropertyValue( int propertyId );
-	float	GetParameter( int parameterId );
 	
-	void	SetParam( void *sender, int index, float value );
-	void	SetProperty( int propertyID, float value );
+	float	GetPropertyValue( int propertyId );
+	void	SetPropertyValue( int propertyID, float value );
+	float	GetParameter( int parameterId );
+	void	SetParameter( void *sender, int index, float value );
 	
 private:
 #if AU

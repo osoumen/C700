@@ -8,7 +8,9 @@
  */
 
 #include "EfxAccess.h"
+#ifndef AU
 #include "C700VST.h"
+#endif
 
 //-----------------------------------------------------------------------------
 EfxAccess::EfxAccess( void *efx )
@@ -59,7 +61,7 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 			return true;
 		}
 		else {
-			CFRelease(cfdata);
+			delete file;
 			return false;
 		}
 	}
@@ -67,6 +69,16 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 	return true;
 #else
 	//TODO : VSTŽž‚Ìˆ—
+	XIFile	*file = new XIFile(NULL);
+	file->SetDataFromChip( mEfx->mEfx->GetGenerator(),
+							 mEfx->mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram),
+							 mEfx->mTempo );
+	if ( file->IsLoaded() ) {
+		*outData = file;
+		return true;
+	}
+	*outData = NULL;
+	delete file;
 	return false;
 #endif
 }
@@ -137,7 +149,8 @@ bool EfxAccess::SetSourceFilePath( const char *path )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
-	return false;
+	mEfx->mEfx->SetSourceFilePath(path);
+	return true;
 #endif
 }
 
@@ -168,6 +181,11 @@ bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
+	const char	*outpath = mEfx->mEfx->GetSourceFilePath();
+	if ( outpath ) {
+		strncpy(path, outpath, maxLen-1);
+		return true;
+	}
 	return false;
 #endif
 }
@@ -190,6 +208,9 @@ bool EfxAccess::SetProgramName( const char *pgname )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
+	mEfx->mEfx->SetProgramName( pgname );
+	mEfx->PropertyNotifyFunc(kAudioUnitCustomProperty_ProgramName, mEfx);
+	return true;
 #endif
 }
 
@@ -216,6 +237,12 @@ bool EfxAccess::GetProgramName( char *pgname, int maxLen )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
+	const char *outpgname = mEfx->mEfx->GetProgramName();
+	if ( outpgname ) {
+		strncpy(pgname, outpgname, maxLen-1);
+		return true;
+	}
+	return false;
 #endif
 }
 
@@ -232,6 +259,12 @@ bool EfxAccess::GetBRRData( BRRData *data )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
+	const BRRData	*brr = mEfx->mEfx->GetBRRData();
+	if ( brr ) {
+		*data = *brr;
+		return true;
+	}
+	return true;
 #endif
 }
 
@@ -249,6 +282,9 @@ bool EfxAccess::SetBRRData( const BRRData *data )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
+	mEfx->mEfx->SetBRRData(data);
+	mEfx->PropertyNotifyFunc(kAudioUnitCustomProperty_BRRData, mEfx);
+	return true;
 #endif
 }
 
@@ -349,6 +385,7 @@ float EfxAccess::GetPropertyValue( int propertyId )
 	return value;
 #else
 	//VSTŽž‚Ìˆ—
+	return mEfx->mEfx->GetPropertyValue(propertyId);
 #endif
 }
 
@@ -361,11 +398,13 @@ float EfxAccess::GetParameter( int parameterId )
 	return param;
 #else
 	//VSTŽž‚Ìˆ—
+	float	param = mEfx->getParameter(parameterId);
+	return mEfx->expandParam( parameterId, param );
 #endif
 }
 
 //-----------------------------------------------------------------------------
-void EfxAccess::SetParam( void *sender, int index, float value )
+void EfxAccess::SetParameter( void *sender, int index, float value )
 {
 #if AU
 	AudioUnitParameter parameter = { mAU, index, kAudioUnitScope_Global, 0 };
@@ -373,11 +412,12 @@ void EfxAccess::SetParam( void *sender, int index, float value )
 	//AUParameterListenerNotify( mEventListener, this, &parameter );
 #else
 	//VSTŽž‚Ìˆ—
+	mEfx->setParameter(index, mEfx->shrinkParam( index, value ) );
 #endif
 }
 
 //-----------------------------------------------------------------------------
-void EfxAccess::SetProperty( int propertyID, float value )
+void EfxAccess::SetPropertyValue( int propertyID, float value )
 {
 #if AU
 	double		doubleData = value;
@@ -498,5 +538,7 @@ void EfxAccess::SetProperty( int propertyID, float value )
 	}
 #else
 	//VSTŽž‚Ìˆ—
+	mEfx->mEfx->SetPropertyValue(propertyID, value);
+	mEfx->PropertyNotifyFunc(propertyID, mEfx);
 #endif
 }

@@ -12,13 +12,18 @@
 #include "audioeffectx.h"
 #include "C700Kernel.h"
 #include "C700Edit.h"
+#include "EfxAccess.h"
 
 class C700VST : public AudioEffectX
 {
+	friend class EfxAccess;
 public:
 	C700VST(audioMasterCallback audioMaster);
 	virtual ~C700VST();
 	
+	virtual void open();
+	virtual void close();
+	virtual void suspend();
 	virtual void resume();
 	
 	virtual void processReplacing(float **inputs, float **outputs, int sampleframes);
@@ -45,17 +50,18 @@ public:
 	virtual VstIntPtr vendorSpecific (VstInt32 lArg, VstIntPtr lArg2, void* ptrArg, float floatArg);
 	
 	
-	virtual VstInt32 canDo (char* text);
+	virtual VstInt32 canDo(char* text);
 	virtual VstInt32 getChunk(void** data, bool isPreset = false);	// returns byteSize
 	virtual VstInt32 setChunk(void* data, VstInt32 byteSize, bool isPreset = false);
 	
+	static void		PropertyNotifyFunc(int propID, void* userData);
+	static void		ParameterSetFunc(int paramID, float value, void* userData);
 private:
-	static void PropertyNotifyFunc(int propID, void* userData);
-	static void ParameterSetFunc(int paramID, float value, void* userData);
 	float		expandParam( int index, float value );
 	float		shrinkParam( int index, float value );
 	
 	C700Edit			*mEditor;
+	EfxAccess			*efxAcc;
 	double				mTempo;
 	
 	C700Kernel			*mEfx;

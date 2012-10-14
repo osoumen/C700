@@ -19,7 +19,7 @@ public:
 	
 	virtual bool		Write();
 	
-#if AU
+#if MAC
 	void				SetCFData( CFDataRef propertydata );
 	CFDataRef			GetCFData() const;
 #endif
@@ -32,7 +32,7 @@ private:
 	bool				writeData( void* data, int byte );	//容量不足で全部を書き込めないときはfalse
 	bool				setPos( int pos );					//書き込み位置を移動する　出来なかったらfalse
 	
-#if AU
+#if MAC
 	CFDataRef		mCFData;
 #endif
 	unsigned char	*m_pData;

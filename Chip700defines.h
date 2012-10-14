@@ -82,9 +82,9 @@ enum {
 // properties
 enum
 {
-	kAudioUnitCustomProperty_First = 64000,
+	kAudioUnitCustomProperty_Begin = 64000,
 
-	kAudioUnitCustomProperty_ProgramName = kAudioUnitCustomProperty_First,
+	kAudioUnitCustomProperty_ProgramName = kAudioUnitCustomProperty_Begin,
 	kAudioUnitCustomProperty_BRRData,
 	kAudioUnitCustomProperty_Rate,
 	kAudioUnitCustomProperty_BaseKey,
@@ -152,7 +152,8 @@ enum
 	kAudioUnitCustomProperty_SourceFileRef,
 	kAudioUnitCustomProperty_IsEmaphasized,
 	
-	kNumberOfProperties = kAudioUnitCustomProperty_MaxNoteTrack_16-kAudioUnitCustomProperty_First+1
+	kAudioUnitCustomProperty_End,
+	kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
 };
 
 // control commands

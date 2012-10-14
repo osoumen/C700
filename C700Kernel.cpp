@@ -378,6 +378,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 	switch (inID) {
 		case kAudioUnitCustomProperty_Rate:
 			mVPset[mEditProg].rate = value;
+			return true;
 			
 		case kAudioUnitCustomProperty_BaseKey:
 			mVPset[mEditProg].basekey = value;
@@ -772,7 +773,7 @@ bool C700Kernel::SelectPreset( int num )
 			strcpy(mVPset[4].pgname, "6.25% Pulse");
 			
 			if ( propertyNotifyFunc ) {
-				for (int i=kAudioUnitCustomProperty_First; i<kAudioUnitCustomProperty_First+kNumberOfProperties; i++) {
+				for (int i=kAudioUnitCustomProperty_Begin; i<kAudioUnitCustomProperty_Begin+kNumberOfProperties; i++) {
 					propertyNotifyFunc(i,propNotifyUserData);
 				}
 			}

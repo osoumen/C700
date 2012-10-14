@@ -52,6 +52,7 @@ Chip700::Chip700(AudioUnit component)
 		CFStringAppendCString( cfpname, pname, kCFStringEncodingASCII );
     }
 	
+	//デフォルト値を設定する
 	for ( int i=0; i<kNumberOfParameters; i++ ) {
 		Globals()->SetParameter(i, C700Kernel::GetParameterDefault(i) );
 	}

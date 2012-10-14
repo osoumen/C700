@@ -94,14 +94,14 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 				outId.id = cntlcmdId++;
 			}
 			else {
-				outId.id += kAudioUnitCustomProperty_First;
+				outId.id += kAudioUnitCustomProperty_Begin;
 			}
 		}
 		if ( outId.signature != 'user' && outId.signature != 'AUid' )
 		{
 			if ( outId.signature == 'trac' )
 			{
-				outId.id += kAudioUnitCustomProperty_First;
+				outId.id += kAudioUnitCustomProperty_Begin;
 			}
 			else if ( (outKind.kind == 'stxt' && (strcmp(title, "0 bytes")!=0) && (strcmp(title, "0123456abcde")!=0) ) ||
 				outKind.kind == 'sepa' )
@@ -139,7 +139,7 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		}
 		if ( outKind.kind == 'eutx' && outId.signature == 'user' )
 		{
-			if ( outId.id == kAudioUnitCustomProperty_First )
+			if ( outId.id == kAudioUnitCustomProperty_Begin )
 			{
 				strcpy(fontalign, "kLeftText");
 			}
@@ -153,11 +153,11 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		{
 			futureuse = 1;
 		}
-		if ( outId.signature == 'user' && outId.id == kAudioUnitCustomProperty_First+2 )
+		if ( outId.signature == 'user' && outId.id == kAudioUnitCustomProperty_Begin+2 )
 		{
 			futureuse = 1;
 		}
-		if ( outId.signature == 'user' && outId.id == kAudioUnitCustomProperty_First )
+		if ( outId.signature == 'user' && outId.id == kAudioUnitCustomProperty_Begin )
 		{
 			futureuse = 2;
 		}
@@ -383,9 +383,9 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 	
 	// プロパティが変更されたらPropertyHasChangedが呼ばれるように設定
 	for (int i=0; i<kNumberOfProperties; i++) {
-		RegisterPropertyChanges(kAudioUnitCustomProperty_First+i);
+		RegisterPropertyChanges(kAudioUnitCustomProperty_Begin+i);
 		// デフォルト値を反映させる
-		PropertyHasChanged(kAudioUnitCustomProperty_First+i,kAudioUnitScope_Global,0);
+		PropertyHasChanged(kAudioUnitCustomProperty_Begin+i,kAudioUnitScope_Global,0);
 	}
 }
 
@@ -616,7 +616,7 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 	
 	if (eclass == kEventClassControl) {
 		HIViewGetID(view,&id);
-		propertyID = (id.id%1000)+kAudioUnitCustomProperty_First;
+		propertyID = (id.id%1000)+kAudioUnitCustomProperty_Begin;
 //printf("propertyID=%d\n",propertyID);
 		if (id.signature == 'user') {
 			switch (ekind) {
@@ -706,7 +706,7 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 							maximum = GetControl32BitMaximum(view);
 							cval = GetControl32BitValue(view);
 							floatValue = (float)cval / (float)maximum;
-							AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_First+id.id,
+							AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Begin+id.id,
 												 kAudioUnitScope_Global,0,&floatValue,sizeof(float));
 							break;
 						}
@@ -732,7 +732,7 @@ void Chip700View::applyEditTextProp(ControlRef control)
 	AudioUnitPropertyID propertyID;
 	
 	HIViewGetID(control,&id);
-	propertyID = (id.id%1000)+kAudioUnitCustomProperty_First;
+	propertyID = (id.id%1000)+kAudioUnitCustomProperty_Begin;
 	cstr=HIViewCopyText(control);
 	switch (propertyID) {
 		case kAudioUnitCustomProperty_ProgramName:
@@ -785,7 +785,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			size = sizeof(CFStringRef);
 			AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_ProgramName,
 								 kAudioUnitScope_Global,0,&pgstr,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				if (pgstr)
@@ -818,7 +818,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			size = sizeof(double);
 			AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Rate,
 								 kAudioUnitScope_Global,0,&doubleValue,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				CFStringRef	cfstr=CFStringCreateWithFormat(NULL,NULL,CFSTR("%.03f"),doubleValue);
@@ -831,13 +831,13 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_LoopPoint,
 								 kAudioUnitScope_Global,0,&intValue,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First+1000;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin+1000;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue/9*16);
 			}
 			setLoopoint(intValue);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				CFStringRef	cfstr=CFStringCreateWithFormat(NULL,NULL,CFSTR("%d"),intValue/9*16);
@@ -851,7 +851,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			size = sizeof(bool);
 			AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Loop,
 								 kAudioUnitScope_Global,0,&looping,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				maximum = GetControl32BitMaximum(control);
@@ -868,7 +868,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			size = sizeof(bool);
 			AudioUnitGetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Echo,
 								 kAudioUnitScope_Global,0,&echo_on,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				maximum = GetControl32BitMaximum(control);
@@ -883,12 +883,12 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
 			/*
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue);
 			}
-			id.id=inPropertyID-kAudioUnitCustomProperty_First+1000;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin+1000;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue);
@@ -901,7 +901,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 		case kAudioUnitCustomProperty_HighKey:
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue);
@@ -919,12 +919,12 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 		case kAudioUnitCustomProperty_VolR:
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue);
 			}
-			id.id=inPropertyID-kAudioUnitCustomProperty_First+1000;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin+1000;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue);
@@ -934,12 +934,12 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 		case kAudioUnitCustomProperty_EditingProgram:
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
-			id.id = inPropertyID-kAudioUnitCustomProperty_First+1000;
+			id.id = inPropertyID-kAudioUnitCustomProperty_Begin+1000;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue);
 			}
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				CFStringRef	cfstr=CFStringCreateWithFormat(NULL,NULL,CFSTR("%d"),intValue);
@@ -951,12 +951,12 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			size = sizeof(int);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,kAudioUnitScope_Global,0,&intValue,&size);
 			/*
-			id.id = inPropertyID-kAudioUnitCustomProperty_First;
+			id.id = inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				HIViewSetValue(control, intValue);
 			}
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				CFStringRef	cfstr=CFStringCreateWithFormat(NULL,NULL,CFSTR("%d"),intValue);
@@ -976,7 +976,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			
 			size = sizeof(float);
 			AudioUnitGetProperty(mEditAudioUnit,inPropertyID,inScope,inElement,&floatValue,&size);
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				maximum = GetControl32BitMaximum(control);
@@ -1032,7 +1032,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			//printf("cnote=%d\n",intValue);
 			
 			id.signature = 'trac';
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				if ( intValue > 0 ) {
@@ -1068,7 +1068,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 			//printf("mnote=%d\n",intValue);
 			
 			//id.signature = 'user';
-			id.id=inPropertyID-kAudioUnitCustomProperty_First;
+			id.id=inPropertyID-kAudioUnitCustomProperty_Begin;
 			result = HIViewFindByID(mRootUserPane, id, &control);
 			if (result == noErr) {
 				SetControl32BitValue(control, intValue);

@@ -232,7 +232,7 @@ AudioUnitParameterValue		inParameterValue
 	
 	//プロパティリスナーの登録
 	for (int i=0; i<kNumberOfProperties; ++i) {
-		AudioUnitProperty property = { mAU, kAudioUnitCustomProperty_First+i, kAudioUnitScope_Global, 0 };
+		AudioUnitProperty property = { mAU, kAudioUnitCustomProperty_Begin+i, kAudioUnitScope_Global, 0 };
 		AudioUnitEvent	event;
 		event.mEventType = kAudioUnitEvent_PropertyChange;
 		event.mArgument.mProperty = property;
@@ -248,7 +248,7 @@ AudioUnitParameterValue		inParameterValue
 - (void)_removeListeners
 {
 	for (int i=0; i<kNumberOfProperties; ++i) {
-		AudioUnitProperty property = { mAU, i+kAudioUnitCustomProperty_First, kAudioUnitScope_Global, 0 };
+		AudioUnitProperty property = { mAU, i+kAudioUnitCustomProperty_Begin, kAudioUnitScope_Global, 0 };
 		AudioUnitEvent	event;
 		event.mEventType = kAudioUnitEvent_PropertyChange;
 		event.mArgument.mProperty = property;

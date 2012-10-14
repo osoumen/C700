@@ -21,7 +21,7 @@ int GetSRTicks( int sr, double tempo );
 //-----------------------------------------------------------------------------
 XIFile::XIFile( const char *path, int allocMemSize )
 : FileAccess(path, true)
-#if AU
+#if MAC
 , mCFData( NULL )
 #endif
 , m_pData( NULL )
@@ -37,7 +37,7 @@ XIFile::XIFile( const char *path, int allocMemSize )
 //-----------------------------------------------------------------------------
 XIFile::~XIFile()
 {
-#if AU
+#if MAC
 	if ( mCFData ) {
 		CFRelease(mCFData);
 	}
@@ -309,7 +309,7 @@ bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, d
 //-----------------------------------------------------------------------------
 bool XIFile::Write()
 {
-#if AU
+#if MAC
 	if ( IsLoaded() == false ) return false;
 	if ( mPath == NULL ) return false;
 	
@@ -336,7 +336,7 @@ bool XIFile::Write()
 }
 
 //-----------------------------------------------------------------------------
-#if AU
+#if MAC
 void XIFile::SetCFData( CFDataRef data )
 {
 	if ( mIsLoaded ) {

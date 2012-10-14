@@ -451,19 +451,18 @@ void C700GUI::valueChanged(CControl* control)
 		}
 	}
 	
-#if AU
 	//0-2の値域に拡張する
 	if ( tag == kParam_velocity )
 	{
 		value *= 2;
 	}
-#endif
-	if ( tag < kAudioUnitCustomProperty_First )
+
+	if ( tag < kAudioUnitCustomProperty_Begin )
 	{
-		efxAcc->SetParam( this, tag%1000, value );
+		efxAcc->SetParameter( this, tag%1000, value );
 	}
 	else if ( tag < kControlCommandsFirst ) {
-		int	propertyId = ((tag-kAudioUnitCustomProperty_First)%1000)+kAudioUnitCustomProperty_First;
+		int	propertyId = ((tag-kAudioUnitCustomProperty_Begin)%1000)+kAudioUnitCustomProperty_Begin;
 		switch (propertyId) {
 			case kAudioUnitCustomProperty_ProgramName:
 				if ( text ) {
@@ -471,7 +470,7 @@ void C700GUI::valueChanged(CControl* control)
 				}
 				break;
 			default:
-				efxAcc->SetProperty( propertyId, value );
+				efxAcc->SetPropertyValue( propertyId, value );
 				break;
 		}
 	}
@@ -596,7 +595,7 @@ void C700GUI::valueChanged(CControl* control)
 			{
 				int	loopPoint = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_LoopPoint);
 				loopPoint -= value * 9;
-				efxAcc->SetProperty(kAudioUnitCustomProperty_LoopPoint, loopPoint);
+				efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, loopPoint);
 				break;
 			}
 				
@@ -604,7 +603,7 @@ void C700GUI::valueChanged(CControl* control)
 			{
 				int	programNo = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
 				programNo -= value;
-				efxAcc->SetProperty(kAudioUnitCustomProperty_EditingProgram, programNo);
+				efxAcc->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, programNo);
 				break;
 			}
 			
@@ -624,14 +623,14 @@ void C700GUI::valueChanged(CControl* control)
 			case kControlSelectTrack3:
 			case kControlSelectTrack2:
 			case kControlSelectTrack1:
-				efxAcc->SetProperty( kAudioUnitCustomProperty_EditingChannel, 15-(tag-kControlSelectTrack16) );
+				efxAcc->SetPropertyValue( kAudioUnitCustomProperty_EditingChannel, 15-(tag-kControlSelectTrack16) );
 				break;
 				
 			case kControlBankDBtn:
 			case kControlBankCBtn:
 			case kControlBankBBtn:
 			case kControlBankABtn:
-				efxAcc->SetProperty( kAudioUnitCustomProperty_Bank, 3-(tag-kControlBankDBtn) );
+				efxAcc->SetPropertyValue( kAudioUnitCustomProperty_Bank, 3-(tag-kControlBankDBtn) );
 				break;
 				
 			default:
@@ -686,6 +685,7 @@ void C700GUI::copyFIRParamToClipBoard()
 	
 	const char	*text = textView->getText();
 	
+#if MAC
 	OSStatus err = noErr;
 	PasteboardRef theClipboard;
 	err = PasteboardCreate( kPasteboardClipboard, &theClipboard );
@@ -696,6 +696,7 @@ void C700GUI::copyFIRParamToClipBoard()
 	
 	CFRelease(theClipboard);
 	CFRelease( data );
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -773,16 +774,16 @@ bool C700GUI::loadToCurrentProgramFromAudioFile( AudioFile *file )
 	
 	//波形データを設定
 	efxAcc->SetBRRData(&brr);
-	efxAcc->SetProperty(kAudioUnitCustomProperty_Rate,		inst.srcSamplerate);
-	efxAcc->SetProperty(kAudioUnitCustomProperty_BaseKey,	inst.basekey);
-	efxAcc->SetProperty(kAudioUnitCustomProperty_LowKey,	inst.lowkey);
-	efxAcc->SetProperty(kAudioUnitCustomProperty_HighKey,	inst.highkey);
-	efxAcc->SetProperty(kAudioUnitCustomProperty_LoopPoint,	looppoint);
-	efxAcc->SetProperty(kAudioUnitCustomProperty_Loop,		loop ? 1.0f:.0f);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate,		inst.srcSamplerate);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_BaseKey,	inst.basekey);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LowKey,	inst.lowkey);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_HighKey,	inst.highkey);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint,	looppoint);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		loop ? 1.0f:.0f);
 	
 	//元波形データの情報をセットする
 	efxAcc->SetSourceFilePath( file->GetFilePath() );
-	efxAcc->SetProperty(kAudioUnitCustomProperty_IsEmaphasized,	IsPreemphasisOn() ? 1.0f:.0f);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized,	IsPreemphasisOn() ? 1.0f:.0f);
 	
 	//拡張子を除いたファイル名をプログラム名に設定する
 	char	pgname[256];
@@ -824,14 +825,14 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 			delete[] buffer;
 		}
 		
-		efxAcc->SetProperty(kAudioUnitCustomProperty_EditingProgram, cEditNum);
+		efxAcc->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, cEditNum);
 		efxAcc->SetBRRData(&brr);
-		efxAcc->SetProperty(kAudioUnitCustomProperty_Rate, samplerate);
-		efxAcc->SetProperty(kAudioUnitCustomProperty_BaseKey, 60);
-		efxAcc->SetProperty(kAudioUnitCustomProperty_LowKey, 0);
-		efxAcc->SetProperty(kAudioUnitCustomProperty_HighKey, 127);
-		efxAcc->SetProperty(kAudioUnitCustomProperty_LoopPoint, looppoint);
-		efxAcc->SetProperty(kAudioUnitCustomProperty_Loop, loop?1.0f:.0f);
+		efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate, samplerate);
+		efxAcc->SetPropertyValue(kAudioUnitCustomProperty_BaseKey, 60);
+		efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LowKey, 0);
+		efxAcc->SetPropertyValue(kAudioUnitCustomProperty_HighKey, 127);
+		efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, looppoint);
+		efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop, loop?1.0f:.0f);
 		
 		//ファイルネームの処理
 		char	pgname[256];
@@ -842,7 +843,7 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 
 		cEditNum++;
 	}
-	efxAcc->SetParam(this, kParam_clipnoise, 1);
+	efxAcc->SetParameter(this, kParam_clipnoise, 1);
 	
 	return true;
 }
@@ -976,7 +977,7 @@ void C700GUI::autocalcCurrentProgramSampleRate()
 	pitch = estimatebasefreq(buffer+looppoint/9*16, length);
 	if (pitch > 0) {
 		samplerate = length/(double)pitch * 440.0*pow(2.0,(key-69.0)/12);
-		efxAcc->SetProperty(kAudioUnitCustomProperty_Rate, samplerate);
+		efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate, samplerate);
 	}
 	delete[] buffer;
 }
@@ -1010,7 +1011,7 @@ void C700GUI::autocalcCurrentProgramBaseKey()
 	if (pitch > 0) {
 		freq = samplerate / (length/(double)pitch);
 		key = log(freq)*17.312-35.874;
-		efxAcc->SetProperty(kAudioUnitCustomProperty_BaseKey, key);
+		efxAcc->SetPropertyValue(kAudioUnitCustomProperty_BaseKey, key);
 	}
 	delete[] buffer;
 }

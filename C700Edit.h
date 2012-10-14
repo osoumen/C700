@@ -37,7 +37,7 @@ public:
 	virtual bool	open(void *ptr);
 	virtual void	close();
 	
-	virtual void	setParameter(long index, float value);
+	virtual void	setParameter(int index, float value);
 	virtual void	valueChanged(CControl *pControl);	
 	long			getTag();
 

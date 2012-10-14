@@ -9,14 +9,14 @@
 
 #include "C700VST.h"
 
-AudioEffect* createEffectInstance (audioMasterCallback audioMaster)
+AudioEffect* createEffectInstance(audioMasterCallback audioMaster)
 {
-	return new C700VST (audioMaster);
+	return new C700VST(audioMaster);
 }
 
 //-----------------------------------------------------------------------------------------
 C700VST::C700VST(audioMasterCallback audioMaster)
-: AudioEffectX (audioMaster, NUM_PRESETS, kNumberOfParameters)
+: AudioEffectX(audioMaster, NUM_PRESETS, kNumberOfParameters)
 {
 	mEfx = new C700Kernel();
 	mEfx->SetPropertyNotifyFunc(PropertyNotifyFunc, this);
@@ -35,11 +35,20 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 		setUniqueID(CCONST ('C', '7', '0', '0'));
 	}
 	
+	//èâä˙ílÇÃê›íË
+	for ( int i=0; i<kNumberOfParameters; i++ ) {
+		setParameter(i, shrinkParam(i, C700Kernel::GetParameterDefault(i)) );
+	}
+		
 	suspend();
 	
 //	pChunk= new unsigned char[32*1024];
 	mEditor = new C700Edit(this);
 	editor = mEditor;
+	
+	efxAcc = new EfxAccess(this);
+	mEditor->SetEfxAccess(efxAcc);
+	
 //	if(!editor){
 //		oome = true;
 //	}
@@ -48,6 +57,7 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 //-----------------------------------------------------------------------------------------
 C700VST::~C700VST()
 {
+	delete efxAcc;
 	delete mEfx;
 }
 
@@ -67,14 +77,55 @@ float C700VST::shrinkParam( int index, float value )
 void C700VST::PropertyNotifyFunc(int propID, void* userData)
 {
 	C700VST	*This = reinterpret_cast<C700VST*> (userData);
+	if ( propID == kAudioUnitCustomProperty_ProgramName ) {
+		const char *pgname;
+		pgname = This->mEfx->GetProgramName();
+		if ( pgname ) {
+			This->mEditor->SetProgramName(pgname);
+		}
+	}
+	else if ( propID == kAudioUnitCustomProperty_BRRData ) {
+		const	BRRData *brr;
+		brr = This->mEfx->GetBRRData();
+		if ( brr ) {
+			This->mEditor->SetBRRData(brr);
+		}
+	}
+	else {
+		float	value = This->mEfx->GetPropertyValue(propID);
+		This->mEditor->setParameter(propID, value);
+	}
 }
 
 //-----------------------------------------------------------------------------
 void C700VST::ParameterSetFunc(int paramID, float value, void* userData)
 {
 	C700VST	*This = reinterpret_cast<C700VST*> (userData);
-	
 	This->setParameter(paramID, This->shrinkParam(paramID, value));
+}
+
+//-----------------------------------------------------------------------------------------
+void C700VST::open()
+{
+	AudioEffectX::open();
+}
+
+//-----------------------------------------------------------------------------------------
+void C700VST::close()
+{
+	AudioEffectX::close();
+}
+
+//-----------------------------------------------------------------------------------------
+void C700VST::suspend()
+{
+	AudioEffectX::suspend();
+}
+
+//-----------------------------------------------------------------------------------------
+void C700VST::resume()
+{
+	AudioEffectX::resume();
 }
 
 //------------------------------------------------------------------------
@@ -146,11 +197,15 @@ void C700VST::setParameter(VstInt32 index, float value)
 #if DEBUG
 	DebugPrint("exec C700VST::setParamaeter index=%d value=%f",index,value);
 #endif
-	mEfx->SetParameter(index, expandParam(index, value));
+	float	realValue = expandParam(index, value);
+	mEfx->SetParameter(index, realValue);
+	if (editor) {
+		((AEffGUIEditor*)editor)->setParameter(index, realValue);
+	}
 }
 
 //-----------------------------------------------------------------------------------------
-float C700VST::getParameter (VstInt32 index)
+float C700VST::getParameter(VstInt32 index)
 {
 #if DEBUG
 	DebugPrint("exec C700VST::getParamaeter");
@@ -243,13 +298,6 @@ void C700VST::setBlockSize(long blockSize)
 {
 	AudioEffectX::setBlockSize(blockSize);
 	// you may need to have to do something here...
-}
-
-//-----------------------------------------------------------------------------------------
-void C700VST::resume()
-{
-	//	wantEvents ();
-	AudioEffectX::resume();
 }
 
 //-----------------------------------------------------------------------------------------
