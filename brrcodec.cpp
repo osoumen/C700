@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include "brrcodec.h"
 
-int abs( int value ) { return value < 0 ? -value : value; }
+int IntAbs( int value ) { return value < 0 ? -value : value; }
 
 #define XMSNES_LIKE_ENC
 
@@ -192,7 +192,7 @@ int brrencode(short *input_data, unsigned char *output_data, long inputframes, b
 //				printf("out_1=%d\n",out_1);
 //				printf("lc_value=%d\n",lc_value);
 //				printf("loopstart_sample=%d\n",loopstart_sample);
-				if( abs( lc_value - loopstart_sample ) > looploss_tolerance )
+				if( IntAbs( lc_value - loopstart_sample ) > looploss_tolerance )
 				{
 					// ループ地点から再エンコード
 					frame_offset = pad_frames;
