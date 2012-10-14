@@ -842,7 +842,7 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath="C700.rc"
+			RelativePath="..\graphics\C700.rc"
 			>
 		</File>
 		<File
