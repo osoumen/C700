@@ -36,11 +36,6 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 		setUniqueID(CCONST ('C', '7', '0', '0'));
 	}
 	
-	//‰Šú’l‚Ìİ’è
-	for ( int i=0; i<kNumberOfParameters; i++ ) {
-		setParameter(i, shrinkParam(i, C700Kernel::GetParameterDefault(i)) );
-	}
-		
 	suspend();
 	
 //	pChunk= new unsigned char[32*1024];
@@ -50,6 +45,11 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 	efxAcc = new EfxAccess(this);
 	mEditor->SetEfxAccess(efxAcc);
 	
+	//‰Šú’l‚Ìİ’è
+	for ( int i=0; i<kNumberOfParameters; i++ ) {
+		setParameter(i, shrinkParam(i, C700Kernel::GetParameterDefault(i)) );
+	}
+		
 //	if(!editor){
 //		oome = true;
 //	}
@@ -200,6 +200,24 @@ void C700VST::setParameter(VstInt32 index, float value)
 #endif
 	float	realValue = expandParam(index, value);
 	mEfx->SetParameter(index, realValue);
+	switch ( index ) {
+		case kParam_echodelay:
+			PropertyNotifyFunc(kAudioUnitCustomProperty_TotalRAM, this);
+			
+		case kParam_echovol_L:
+		case kParam_echovol_R:
+		case kParam_echoFB:
+		case kParam_fir0:
+		case kParam_fir1:
+		case kParam_fir2:
+		case kParam_fir3:
+		case kParam_fir4:
+		case kParam_fir5:
+		case kParam_fir6:
+		case kParam_fir7:
+			PropertyNotifyFunc(kAudioUnitCustomProperty_Band1, this);
+			break;
+	}
 	if (editor) {
 		((AEffGUIEditor*)editor)->setParameter(index, realValue);
 	}
