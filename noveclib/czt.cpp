@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "czt.h"
+#include "fft_czt.h"
 
 #undef PI
 #define PI	3.1415926535897932384626433832795L	/* ‰~Žü—¦(ƒÎ) */

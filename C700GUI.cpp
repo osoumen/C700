@@ -9,9 +9,14 @@
 
 #include "C700GUI.h"
 #include "ControlInstacnesDefs.h"
-#include "czt.h"
 #include "brrcodec.h"
 #include "cfileselector.h"
+
+#if MAC
+#include "czt.h"
+#else
+#include "fft_czt.h"
+#endif
 
 #if AU
 #include "plugguieditor.h"
