@@ -8,6 +8,7 @@
  */
 
 #include "C700VST.h"
+#include <stdio.h>
 
 AudioEffect* createEffectInstance(audioMasterCallback audioMaster)
 {
@@ -279,11 +280,13 @@ VstInt32 C700VST::canDo(char* text)
 //-----------------------------------------------------------------------------------------
 VstInt32 C700VST::getChunk(void** data, bool isPreset)
 {
+	return 0;
 }
 
 //-----------------------------------------------------------------------------------------
 VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 {
+	return 0;
 }
 
 //-----------------------------------------------------------------------------------------

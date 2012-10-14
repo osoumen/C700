@@ -8,6 +8,7 @@
  */
 
 #include "MyTextEdit.h"
+#include <stdio.h>
 
 //------------------------------------------------------------------------
 CMyTextEdit::CMyTextEdit(const CRect& size, CControlListener* listener, long tag, const char* txt, bool isFreeText, bool showDecimal, CBitmap* background, const long style)

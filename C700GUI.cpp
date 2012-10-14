@@ -11,11 +11,12 @@
 #include "ControlInstacnesDefs.h"
 #include "brrcodec.h"
 #include "cfileselector.h"
+#include <math.h>
 
 #if MAC
 #include "czt.h"
 #else
-#include "fft_czt.h"
+#include "noveclib/fft_czt.h"
 #endif
 
 #if AU

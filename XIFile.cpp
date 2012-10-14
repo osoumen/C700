@@ -11,6 +11,7 @@
 #include "XIFile.h"
 #include "AudioFile.h"
 #include "brrcodec.h"
+#include <math.h>
 #include <algorithm>
 
 int RenumberKeyMap( unsigned char *snum, int size );
@@ -252,7 +253,7 @@ bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, d
 	
 	// XI Sample Data
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
-		if ( chip->getVP(ismp)->brr.data != nil && chip->getVP(ismp)->bank == selectBank ) {
+		if ( chip->getVP(ismp)->brr.data != NULL && chip->getVP(ismp)->bank == selectBank ) {
 			short	*wavedata;
 			long	numSamples;
 			bool	existSrcFile = false;	//元ファイルが存在するか？

@@ -9,6 +9,7 @@
 
 #include "SPCFile.h"
 #include "brrcodec.h"
+#include <string.h>
 
 //-----------------------------------------------------------------------------
 SPCFile::SPCFile( const char *path, bool isWriteable )

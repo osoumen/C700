@@ -9,6 +9,7 @@
 
 #include "C700GUI.h"
 #include "WaveView.h"
+#include <math.h>
 
 static CFontDesc g_MessageFont("Courier", 18);
 

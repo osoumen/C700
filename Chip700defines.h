@@ -3,14 +3,12 @@
  *  Chip700
  *
  *  Created by osoumen on 06/10/12.
- *  Copyright 2006 ppse部 All rights reserved.
+ *  Copyright 2006 ppse All rights reserved.
  *
  */
 
 
 #pragma once
-
-#pragma mark ____Chip700 Parameters
 
 // parameters
 enum {
@@ -72,9 +70,9 @@ enum {
 	kParam_fir6,
 	kParam_fir7,
 	
-	kParam_bankBmulti,			// 追加 12.04.16
-	kParam_bankCmulti,			// 追加 12.04.16
-	kParam_bankDmulti,			// 追加 12.04.16
+	kParam_bankBmulti,
+	kParam_bankCmulti,
+	kParam_bankDmulti,
 	
 	kNumberOfParameters
 };
@@ -99,7 +97,7 @@ enum
 	kAudioUnitCustomProperty_VolL,
 	kAudioUnitCustomProperty_VolR,
 	kAudioUnitCustomProperty_Echo,
-	kAudioUnitCustomProperty_Bank,			// 追加 12.04.16
+	kAudioUnitCustomProperty_Bank,
 	kAudioUnitCustomProperty_EditingProgram,
 	kAudioUnitCustomProperty_EditingChannel,
 	
@@ -219,7 +217,7 @@ typedef struct {
 	int			lp;
 	bool		loop;
 	bool		echo;
-	int			bank;			// 追加 12.04.16
+	int			bank;
 	BRRData		brr;
 	char		sourceFile[PATH_LEN_MAX];
 	bool		isEmphasized;

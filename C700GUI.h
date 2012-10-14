@@ -24,7 +24,7 @@
 #include "MyTextEdit.h"
 
 #include "SPCFile.h"
-#include "PlistBRRFile.h"
+//#include "PlistBRRFile.h"
 #include "BRRFile.h"
 #include "AudioFile.h"
 #include "XIFile.h"

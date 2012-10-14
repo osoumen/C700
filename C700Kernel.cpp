@@ -9,6 +9,7 @@
 
 #include "C700Kernel.h"
 #include "samplebrr.h"
+#include <math.h>
 
 static const int kDefaultValue_AR = 15;
 static const int kDefaultValue_DR = 7;
@@ -778,11 +779,13 @@ bool C700Kernel::SelectPreset( int num )
 				}
 			}
 			break;
+		default:
+			return false;
 	}
 	
 	mGenerator.RefreshKeyMap();
 	
-	return noErr;
+	return true;
 }
 
 //-----------------------------------------------------------------------------

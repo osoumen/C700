@@ -11,10 +11,14 @@
 #define VSTGUI_USES_UTF8 0
 #define USE_LIBPNG 1
 #define png_set_gray_1_2_4_to_8 png_set_expand_gray_1_2_4_to_8
+#define snprintf _snprintf
+#define EndianU16_NtoL(a) (a)
+#define EndianS16_NtoL(a) (a)
+#define EndianU32_NtoL(a) (a)
 #endif
 #define VSTGUI_ENABLE_DEPRECATED_METHODS 1
 #define USE_NAMESPACE 0
 
 //#define	DEBUG_PRINT	1
 
-#include "vstgui.h"
+//#include "vstgui.h"

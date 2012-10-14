@@ -9,6 +9,7 @@
 **	[TAB4]
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -72,9 +73,9 @@ int czt_init(czt_struct *cztp, int n, int no)
 	cztp->samples     = n;
 	cztp->samples_out = no;
 	cztp->samples_ex  = nx;
-	cztp->wr = malloc(2 * n  * sizeof(REAL));
-	cztp->vr = malloc(2 * nx * sizeof(REAL));
-	cztp->tr = malloc(2 * nx * sizeof(REAL));
+	cztp->wr = (REAL*)malloc(2 * n  * sizeof(REAL));
+	cztp->vr = (REAL*)malloc(2 * nx * sizeof(REAL));
+	cztp->tr = (REAL*)malloc(2 * nx * sizeof(REAL));
 	if (cztp->wr == NULL || cztp->vr == NULL || cztp->tr == NULL) {
 		czt_end(cztp);
 		return 2;
@@ -176,9 +177,9 @@ int estimatebasefreq(short *src, int length)
 	if (half > 530)
 		half = 530;
 	
-	real = malloc(sizeof(REAL)*length);
-	imag = malloc(sizeof(REAL)*length);
-	autoc = malloc(sizeof(REAL)*length);
+	real = (REAL*)malloc(sizeof(REAL)*length);
+	imag = (REAL*)malloc(sizeof(REAL)*length);
+	autoc = (REAL*)malloc(sizeof(REAL)*length);
 	
 	for (i = 0; i < length; i++) {
 		real[i] = src[i];

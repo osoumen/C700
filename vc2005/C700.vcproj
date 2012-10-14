@@ -49,7 +49,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="2"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 				ForcedIncludeFiles="Chip700_Prefix_VST.pch"
@@ -203,7 +203,7 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="2"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 				ForcedIncludeFiles="Chip700_Prefix_VST.pch"
@@ -392,11 +392,11 @@
 				Name="VST Source"
 				>
 				<File
-					RelativePath="..\C700VST.h"
+					RelativePath="..\C700VST.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\C700VST.cpp"
+					RelativePath="..\C700VST.h"
 					>
 				</File>
 			</Filter>
@@ -404,47 +404,7 @@
 				Name="Common Source"
 				>
 				<File
-					RelativePath="..\Chip700defines.h"
-					>
-				</File>
-				<File
-					RelativePath="..\gauss.h"
-					>
-				</File>
-				<File
-					RelativePath="..\samplebrr.h"
-					>
-				</File>
-				<File
-					RelativePath="..\C700Kernel.h"
-					>
-				</File>
-				<File
-					RelativePath="..\C700Kernel.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\VC700Parameters.h"
-					>
-				</File>
-				<File
-					RelativePath="..\C700Parameters.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\EchoKernel.h"
-					>
-				</File>
-				<File
-					RelativePath="..\EchoKernel.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Chip700Generator.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Chip700Generator.cpp"
+					RelativePath="..\brrcodec.cpp"
 					>
 				</File>
 				<File
@@ -452,11 +412,43 @@
 					>
 				</File>
 				<File
-					RelativePath="..\brrcodec.cpp"
+					RelativePath="..\C700Kernel.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\C700Kernel.h"
+					>
+				</File>
+				<File
+					RelativePath="..\C700Parameters.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\C700Parameters.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Chip700defines.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Chip700Generator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Chip700Generator.h"
 					>
 				</File>
 				<File
 					RelativePath="..\noveclib\czt.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\EchoKernel.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\EchoKernel.h"
 					>
 				</File>
 				<File
@@ -467,48 +459,20 @@
 					RelativePath="..\noveclib\fft_czt.h"
 					>
 				</File>
+				<File
+					RelativePath="..\gauss.h"
+					>
+				</File>
+				<File
+					RelativePath="..\samplebrr.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="UI"
 				>
 				<File
-					RelativePath="..\ControlInstances.h"
-					>
-				</File>
-				<File
-					RelativePath="..\ControlInstacnesDefs.h"
-					>
-				</File>
-				<File
-					RelativePath="..\FileAccess.h"
-					>
-				</File>
-				<File
-					RelativePath="..\FileAccess.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\SPCFile.h"
-					>
-				</File>
-				<File
-					RelativePath="..\SPCFile.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\BRRFile.h"
-					>
-				</File>
-				<File
-					RelativePath="..\BRRFile.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\PlistBRRFile.h"
-					>
-				</File>
-				<File
-					RelativePath="..\PlistBRRFile.cpp"
+					RelativePath="..\AudioFile.cpp"
 					>
 				</File>
 				<File
@@ -516,27 +480,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\AudioFile.cpp"
+					RelativePath="..\BRRFile.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\XIFile.h"
-					>
-				</File>
-				<File
-					RelativePath="..\XIFile.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\EfxAccess.h"
-					>
-				</File>
-				<File
-					RelativePath="..\EfxAccess.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\C700Edit.h"
+					RelativePath="..\BRRFile.h"
 					>
 				</File>
 				<File
@@ -544,7 +492,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\C700GUI.h"
+					RelativePath="..\C700Edit.h"
 					>
 				</File>
 				<File
@@ -552,39 +500,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\MyKnob.h"
+					RelativePath="..\C700GUI.h"
 					>
 				</File>
 				<File
-					RelativePath="..\MyKnob.cpp"
+					RelativePath="..\ControlInstacnesDefs.h"
 					>
 				</File>
 				<File
-					RelativePath="..\MySlider.h"
-					>
-				</File>
-				<File
-					RelativePath="..\MySlider.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\LabelOnOffButton.h"
-					>
-				</File>
-				<File
-					RelativePath="..\LabelOnOffButton.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\WaveView.h"
-					>
-				</File>
-				<File
-					RelativePath="..\WaveView.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\DummyCntl.h"
+					RelativePath="..\ControlInstances.h"
 					>
 				</File>
 				<File
@@ -592,15 +516,39 @@
 					>
 				</File>
 				<File
-					RelativePath="..\SeparatorLine.h"
+					RelativePath="..\DummyCntl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\SeparatorLine.cpp"
+					RelativePath="..\EfxAccess.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\MyParamDisplay.h"
+					RelativePath="..\EfxAccess.h"
+					>
+				</File>
+				<File
+					RelativePath="..\FileAccess.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\FileAccess.h"
+					>
+				</File>
+				<File
+					RelativePath="..\LabelOnOffButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\LabelOnOffButton.h"
+					>
+				</File>
+				<File
+					RelativePath="..\MyKnob.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\MyKnob.h"
 					>
 				</File>
 				<File
@@ -608,11 +556,63 @@
 					>
 				</File>
 				<File
-					RelativePath="..\MyTextEdit.h"
+					RelativePath="..\MyParamDisplay.h"
+					>
+				</File>
+				<File
+					RelativePath="..\MySlider.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\MySlider.h"
 					>
 				</File>
 				<File
 					RelativePath="..\MyTextEdit.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\MyTextEdit.h"
+					>
+				</File>
+				<File
+					RelativePath="..\PlistBRRFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\PlistBRRFile.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SeparatorLine.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\SeparatorLine.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SPCFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\SPCFile.h"
+					>
+				</File>
+				<File
+					RelativePath="..\WaveView.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\WaveView.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XIFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XIFile.h"
 					>
 				</File>
 			</Filter>
@@ -634,6 +634,14 @@
 			</File>
 			<File
 				RelativePath="..\vstgui\cfileselector.h"
+				>
+			</File>
+			<File
+				RelativePath="..\vstgui\ctooltipsupport.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\vstgui\ctooltipsupport.h"
 				>
 			</File>
 			<File

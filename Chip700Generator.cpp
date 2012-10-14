@@ -2,12 +2,14 @@
  *  Chip700Generator.cpp
  *  Chip700
  *
- *  Created by é–‹ç™ºç”¨ on 06/09/06.
+ *  Created by ŠJ”­—p on 06/09/06.
  *  Copyright 2006 Vermicelli Magic. All rights reserved.
  *
  */
 
+#include "Chip700defines.h"
 #include "Chip700Generator.h"
+#include <math.h>
 #include "gauss.h"
 
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
@@ -348,19 +350,19 @@ int Chip700Generator::FindFreeVoice( const NoteEvt *evt )
 {
 	int	v=-1;
 
-	//ç©ºããƒœã‚¤ã‚¹ã‚’æ¢ã™
-	for ( int i=0; i<kMaximumVoices && i<mVoiceLimit; i++ ) {
+	//‹ó‚«ƒ{ƒCƒX‚ğ’T‚·
+	for (int i=0; i<kMaximumVoices && i<mVoiceLimit; i++ ) {
 		if ( mVoice[i].envstate == RELEASE ) {
 			v = i;
 		}
 	}
 	
-	//ç©ºããƒœã‚¤ã‚¹ãŒã‚ã£ãŸå ´åˆ
+	//‹ó‚«ƒ{ƒCƒX‚ª‚ ‚Á‚½ê‡
 	if ( v != -1 ) {
 		return v;
 	}
 	
-	//ç©ºããƒœã‚¤ã‚¹ãŒç„¡ã‹ã£ãŸå ´åˆ
+	//‹ó‚«ƒ{ƒCƒX‚ª–³‚©‚Á‚½ê‡
 	v = 0;
 	for ( int i=0; i<kMaximumVoices && i<mVoiceLimit; i++ ) {
 		if ( mVoice[i].envx < mVoice[v].envx ) {
@@ -389,25 +391,25 @@ void Chip700Generator::DoKeyOn(NoteEvt *evt)
 {
 	VoiceParams		*vp;
 	
-	//æ³¢å½¢ã‚¢ãƒ‰ãƒ¬ã‚¹ã®å–å¾—
+	//”gŒ`ƒAƒhƒŒƒX‚Ìæ“¾
 	vp = getVP(mChProgram[evt->ch]);
 	if ( mDrumMode[vp->bank]) {
 		vp = getMappedVP(vp->bank, evt->note);
 	}
 	
-	//æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯ã€ã“ã“ã§ä¸­æ–­
+	//”gŒ`ƒf[ƒ^‚ª‘¶İ‚µ‚È‚¢ê‡‚ÍA‚±‚±‚Å’†’f
 	if (vp->brr.data == NULL) {
 		return;
 	}
 	
-	//ç©ºããƒœã‚¤ã‚¹ã‚’å–å¾—
+	//‹ó‚«ƒ{ƒCƒX‚ğæ“¾
 	int	v = FindFreeVoice( evt );
 	
-	//MIDIãƒãƒ£ãƒ³ãƒãƒ«ã‚’è¨­å®š
+	//MIDIƒ`ƒƒƒ“ƒlƒ‹‚ğİ’è
 	mVoice[v].midi_ch = evt->ch;
 	mVoice[v].uniqueID = evt->uniqueID;
 	
-	//ãƒ™ãƒ­ã‚·ãƒ†ã‚£ã®å–å¾—
+	//ƒxƒƒVƒeƒB‚Ìæ“¾
 	if ( mVelocityMode == kVelocityMode_Square ) {
 		mVoice[v].velo = VELOCITY_CURB[evt->velo];
 	}
@@ -423,7 +425,7 @@ void Chip700Generator::DoKeyOn(NoteEvt *evt)
 	mVoice[v].loop = vp->loop;
 	mVoice[v].echoOn = vp->echo;
 	
-	//ä¸­å¿ƒå‘¨æ³¢æ•°ã®ç®—å‡º
+	//’†Sü”g”‚ÌZo
 	mVoice[v].pitch = pow(2., (evt->note - vp->basekey) / 12.)/INTERNAL_CLOCK*vp->rate*4096 + 0.5;
 	
 	mVoice[v].pb = CalcPBValue( mChPitchBend[evt->ch], mVoice[v].pitch );
@@ -470,9 +472,9 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 	int		pitch;
 	int		procstep = (INTERNAL_CLOCK*21168) / mSampleRate;
 	
-	//ãƒ¡ã‚¤ãƒ³å‡¦ç†
+	//ƒƒCƒ“ˆ—
 	for (unsigned int frame=0; frame<frames; ++frame) {
-		//ã‚¤ãƒ™ãƒ³ãƒˆå‡¦ç†
+		//ƒCƒxƒ“ƒgˆ—
 		if ( !mNoteEvt.empty() ) {
 			std::list<NoteEvt>::iterator	it = mNoteEvt.begin();
 			while ( it != mNoteEvt.end() ) {
@@ -560,7 +562,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 					continue;
 				}
 				
-				//ãƒ”ãƒƒãƒã®ç®—å‡º
+				//ƒsƒbƒ`‚ÌZo
 				pitch = (mVoice[v].pitch + mVoice[v].pb) & 0x3fff;
 				
 				if (mVoice[v].reg_pmod) {
@@ -579,12 +581,12 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 				}
 				
 				for( ; mVoice[v].mixfrac >= 0; mVoice[v].mixfrac -= 4096 ) {
-					if( !mVoice[v].headerCnt ) {	//ãƒ–ãƒ­ãƒƒã‚¯ã®å§‹ã¾ã‚Š
-						if( mVoice[v].end & 1 ) {	//ãƒ‡ãƒ¼ã‚¿çµ‚äº†ãƒ•ãƒ©ã‚°ã‚ã‚Š
+					if( !mVoice[v].headerCnt ) {	//ƒuƒƒbƒN‚Ìn‚Ü‚è
+						if( mVoice[v].end & 1 ) {	//ƒf[ƒ^I—¹ƒtƒ‰ƒO‚ ‚è
 							if( mVoice[v].loop ) {
-								mVoice[v].memPtr = mVoice[v].loopPoint;	//èª­ã¿å‡ºã—ä½ç½®ã‚’ãƒ«ãƒ¼ãƒ—ãƒã‚¤ãƒ³ãƒˆã¾ã§æˆ»ã™
+								mVoice[v].memPtr = mVoice[v].loopPoint;	//“Ç‚İo‚µˆÊ’u‚ğƒ‹[ƒvƒ|ƒCƒ“ƒg‚Ü‚Å–ß‚·
 							}
-							else {	//ãƒ«ãƒ¼ãƒ—ãªã—
+							else {	//ƒ‹[ƒv‚È‚µ
 								mVoice[v].envx = 0;
 								while( mVoice[v].mixfrac >= 0 ) {
 									mVoice[v].sampbuf[mVoice[v].sampptr] = 0;
@@ -596,7 +598,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 							}
 						}
 						
-						//é–‹å§‹ãƒã‚¤ãƒˆã®æƒ…å ±ã‚’å–å¾—
+						//ŠJnƒoƒCƒg‚Ìî•ñ‚ğæ“¾
 						mVoice[v].headerCnt = 8;
 						vl = ( unsigned char )mVoice[v].brrdata[mVoice[v].memPtr++];
 						mVoice[v].range = vl >> 4;
@@ -614,7 +616,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 						outx >>= 4;
 						mVoice[v].headerCnt--;
 					}
-					//outx:4bitãƒ‡ãƒ¼ã‚¿
+					//outx:4bitƒf[ƒ^
 					
 					if ( mVoice[v].range <= 0xC ) {
 						outx = ( outx << mVoice[v].range ) >> 1;
@@ -622,7 +624,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 					else {
 						outx &= ~0x7FF;
 					}
-					//outx:4bitãƒ‡ãƒ¼ã‚¿*Range
+					//outx:4bitƒf[ƒ^*Range
 					
 					switch( mVoice[v].filter ) {
 						case 0:
@@ -686,16 +688,16 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 				outx = ( ( outx * mVoice[v].envx ) >> 11 ) & ~1;
 				outx = ( outx * mVoice[v].velo ) >> 11;
 				
-				//ãƒœãƒªãƒ¥ãƒ¼ãƒ å€¤ã®åæ˜ 
+				//ƒ{ƒŠƒ…[ƒ€’l‚Ì”½‰f
 				vl = ( mVoice[v].vol_l * outx ) >> 7;
 				vr = ( mVoice[v].vol_r * outx ) >> 7;
 				
-				//ã‚¨ã‚³ãƒ¼å‡¦ç†
+				//ƒGƒR[ˆ—
 				if ( mVoice[v].echoOn ) {
 					mEcho[0].Input(vl);
 					mEcho[1].Input(vr);
 				}
-				//ãƒ¡ã‚¤ãƒ³ãƒœãƒªãƒ¥ãƒ¼ãƒ ã®åæ˜ 
+				//ƒƒCƒ“ƒ{ƒŠƒ…[ƒ€‚Ì”½‰f
 				outl += ( vl * mMainVolume_L ) >> 7;
 				outr += ( vr * mMainVolume_R ) >> 7;
 			}
@@ -706,7 +708,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 			mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
 		}
 		//--
-		//16pointSincè£œé–“
+		//16pointSinc•âŠÔ
 		for ( int ch=0; ch<2; ch++ ) {
 			int inputFrac = mProcessFrac+21168;
 			int tabidx1 = ( inputFrac/1764 ) << 4;
@@ -748,7 +750,7 @@ void Chip700Generator::RefreshKeyMap(void)
 		for (int prg=0; prg<128; prg++) {
 			if (mVPset[prg].brr.data) {
 				if ( !initialized[mVPset[prg].bank] ) {
-					// ä¸€ç•ªæœ€åˆã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã§åˆæœŸåŒ–ã™ã‚‹ã“ã¨ã§ã€æœªä½¿ç”¨ãƒ‘ãƒƒãƒãŒ0ã«ãªã‚‰ãªã„ã‚ˆã†ã«ã™ã‚‹
+					// ˆê”ÔÅ‰‚ÌƒvƒƒOƒ‰ƒ€‚Å‰Šú‰»‚·‚é‚±‚Æ‚ÅA–¢g—pƒpƒbƒ`‚ª0‚É‚È‚ç‚È‚¢‚æ‚¤‚É‚·‚é
 					for (int i=0; i<128; i++) {
 						mKeyMap[mVPset[prg].bank][i]=prg;
 					}

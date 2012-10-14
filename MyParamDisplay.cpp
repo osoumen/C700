@@ -8,6 +8,7 @@
  */
 
 #include "MyParamDisplay.h"
+#include <stdio.h>
 
 //------------------------------------------------------------------------
 CMyParamDisplay::CMyParamDisplay(const CRect& size, long tag, float valueMultipler, char *unitStr, CBitmap* background, const long style)

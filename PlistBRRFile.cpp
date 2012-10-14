@@ -9,7 +9,6 @@
 
 #include "PlistBRRFile.h"
 
-#if MAC
 //-----------------------------------------------------------------------------
 PlistBRRFile::PlistBRRFile( const char *path, bool isWriteable )
 : FileAccess(path, isWriteable)
@@ -20,10 +19,13 @@ PlistBRRFile::PlistBRRFile( const char *path, bool isWriteable )
 PlistBRRFile::~PlistBRRFile()
 {
 	if ( mIsLoaded ) {
+#if MAC
 		CFRelease(mPropertydata);
+#endif
 	}
 }
 
+#if MAC
 //-----------------------------------------------------------------------------
 bool PlistBRRFile::Load()
 {

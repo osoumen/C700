@@ -15,6 +15,7 @@ class PlistBRRFile : public FileAccess {
 public:
 	PlistBRRFile( const char *path, bool isWriteable=true );
 	virtual ~PlistBRRFile();
+#if __APPLE_CC__
 	
 	virtual bool	Load();
 	virtual bool	Write();
@@ -24,4 +25,5 @@ public:
 	
 public:
 	CFPropertyListRef	mPropertydata;
+#endif
 };

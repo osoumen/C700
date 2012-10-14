@@ -8,6 +8,7 @@
  */
 
 #include "FileAccess.h"
+#include <string.h>
 
 //-----------------------------------------------------------------------------
 FileAccess::FileAccess( const char *path, bool isWriteable )

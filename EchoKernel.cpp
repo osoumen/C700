@@ -8,6 +8,7 @@
  */
 
 #include "EchoKernel.h"
+#include <string.h>
 
 //-----------------------------------------------------------------------------
 EchoKernel::EchoKernel()

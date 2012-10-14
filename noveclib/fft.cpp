@@ -73,8 +73,8 @@ int fft_init(fft_struct *fftp, int n)
 	if (i != n) return 1;
 
 	fftp->samples = n;
-	fftp->sintbl  = malloc((n / 4 * 3) * sizeof(REAL));
-	fftp->bitrev  = malloc(n * sizeof(int));
+	fftp->sintbl  = (REAL*)malloc((n / 4 * 3) * sizeof(REAL));
+	fftp->bitrev  = (int*)malloc(n * sizeof(int));
 	if (fftp->sintbl == NULL || fftp->bitrev == NULL) {
 		fft_end(fftp);
 		return 2;

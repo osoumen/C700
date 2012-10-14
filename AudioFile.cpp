@@ -34,6 +34,7 @@ AudioFile::~AudioFile()
 //-----------------------------------------------------------------------------
 bool AudioFile::IsVarid()
 {
+#if MAC
 	AudioFileID mAudioFileID;
 	FSRef	ref;
 	Boolean	isDirectory=false;
@@ -43,6 +44,7 @@ bool AudioFile::IsVarid()
 		AudioFileClose(mAudioFileID);
 		return true;
 	}
+#endif
 	return false;
 }
 
