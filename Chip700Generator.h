@@ -2,7 +2,7 @@
  *  Chip700Generator.h
  *  Chip700
  *
- *  Created by é–‹ç™ºç”¨ on 06/09/06.
+ *  Created by osoumen on 06/09/06.
  *  Copyright 2006 Vermicelli Magic. All rights reserved.
  *
  */
@@ -109,7 +109,7 @@ private:
 		int             filter;         /* Last header's filter         */
 		int             half;           /* Active nybble of BRR         */
 		int             headerCnt;     /* Bytes before new header (0-8)*/
-		int             mixfrac;        /* Fractional part of smpl pstn */	//ã‚µãƒ³ãƒ—ãƒ«é–“ã‚’4096åˆ†å‰²ã—ãŸä½ç½®
+		int             mixfrac;        /* Fractional part of smpl pstn */	//ƒTƒ“ƒvƒ‹ŠÔ‚ğ4096•ªŠ„‚µ‚½ˆÊ’u
 		int				pitch;          /* Sample pitch (4096->32000Hz) */
 		int             range;          /* Last header's range          */
 		int             sampptr;        /* Where in sampbuf we are      */
@@ -137,13 +137,13 @@ private:
 	double			mSampleRate;
 	
 	int				mProcessFrac;
-	int				mProcessbuf[2][16];		//ãƒªã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç”¨ãƒãƒƒãƒ•ã‚¡
-	int				mProcessbufPtr;			//ãƒªã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ç”¨ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿ä½ç½®
+	int				mProcessbuf[2][16];		//ƒŠƒTƒ“ƒvƒŠƒ“ƒO—pƒoƒbƒtƒ@
+	int				mProcessbufPtr;			//ƒŠƒTƒ“ƒvƒŠƒ“ƒO—pƒoƒbƒtƒ@‘‚«‚İˆÊ’u
 	EchoKernel		mEcho[2];
 	
-	std::list<NoteEvt>	mNoteEvt;			//å—ã‘å–ã£ãŸã‚¤ãƒ™ãƒ³ãƒˆã®ã‚­ãƒ¥ãƒ¼
+	std::list<NoteEvt>	mNoteEvt;			//ó‚¯æ‚Á‚½ƒCƒxƒ“ƒg‚ÌƒLƒ…[
 	
-	VoiceState		mVoice[kMaximumVoices];		//ãƒœã‚¤ã‚¹ã®çŠ¶æ³
+	VoiceState		mVoice[kMaximumVoices];		//ƒ{ƒCƒX‚Ìó‹µ
 	
 	int				mVoiceLimit;
 	int				mMainVolume_L;
@@ -158,7 +158,7 @@ private:
 	float			mChPitchBend[16];
 	int				mChVibDepth[16];
 	
-	int				mKeyMap[NUM_BANKS][128];	//å„ã‚­ãƒ¼ã«å¯¾å¿œã™ã‚‹ãƒ—ãƒ­ã‚°ãƒ©ãƒ No.
+	int				mKeyMap[NUM_BANKS][128];	//ŠeƒL[‚É‘Î‰‚·‚éƒvƒƒOƒ‰ƒ€No.
 	VoiceParams		*mVPset;
 	
 	int		FindFreeVoice( const NoteEvt *evt );

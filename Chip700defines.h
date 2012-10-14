@@ -56,7 +56,7 @@ enum {
 	kParam_vibdepth_15,
 	kParam_vibdepth_16,
 	
-	//竊薙お繧ｳ繝ｼ驛ｨ
+	//↓エコー部
 	kParam_echovol_L,
 	kParam_echovol_R,
 	kParam_echoFB,
@@ -101,7 +101,7 @@ enum
 	kAudioUnitCustomProperty_EditingProgram,
 	kAudioUnitCustomProperty_EditingChannel,
 	
-	//竊薙お繧ｳ繝ｼ驛ｨ
+	//↓エコー部
 	kAudioUnitCustomProperty_Band1,
 	kAudioUnitCustomProperty_Band2,
 	kAudioUnitCustomProperty_Band3,

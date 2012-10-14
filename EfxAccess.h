@@ -2,7 +2,7 @@
  *  EfxAccess.h
  *  Chip700
  *
- *  Created by “¡“c ‹§•F on 12/10/08.
+ *  Created by osoumen on 12/10/08.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
  *
  */

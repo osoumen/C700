@@ -2,7 +2,7 @@
  *  Chip700Generator.cpp
  *  Chip700
  *
- *  Created by ŠJ”­—p on 06/09/06.
+ *  Created by osoumen on 06/09/06.
  *  Copyright 2006 Vermicelli Magic. All rights reserved.
  *
  */

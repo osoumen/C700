@@ -4,9 +4,13 @@
 
 //#include <Carbon/Carbon.h>
 
+#define VSTGUI_ENABLE_DEPRECATED_METHODS 1
+#define USE_NAMESPACE 0
+
 #if __APPLE_CC__
 #define VSTGUI_NEW_CFILESELECTOR 1
 #define ENABLE_VST_EXTENSION_IN_VSTGUI 1
+#include "vstgui.h"
 #else
 #define VSTGUI_USES_UTF8 0
 #define USE_LIBPNG 1
@@ -16,9 +20,6 @@
 #define EndianS16_NtoL(a) (a)
 #define EndianU32_NtoL(a) (a)
 #endif
-#define VSTGUI_ENABLE_DEPRECATED_METHODS 1
-#define USE_NAMESPACE 0
 
 //#define	DEBUG_PRINT	1
 
-//#include "vstgui.h"
