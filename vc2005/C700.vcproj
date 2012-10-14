@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="VOPM"
+	Name="C700"
 	ProjectGUID="{59248302-52E0-4CC0-9BBE-E475BA4A9B41}"
-	RootNamespace="VOPM"
+	RootNamespace="C700"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -52,7 +52,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
-				ForcedIncludeFiles="VOPM_VST_Prefix.pch"
+				ForcedIncludeFiles="Chip700_Prefix_VST.pch"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -144,7 +144,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				ModuleDefinitionFile="../../win/vstplug.def"
+				ModuleDefinitionFile="vstplug.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="17"
@@ -206,7 +206,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
-				ForcedIncludeFiles="VOPM_VST_Prefix.pch"
+				ForcedIncludeFiles="Chip700_Prefix_VST.pch"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -285,7 +285,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
-				ForcedIncludeFiles="VOPM_VST_Prefix.pch"
+				ForcedIncludeFiles="Chip700_Prefix_VST.pch"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -386,57 +386,85 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="VOPMsource"
+			Name="C700source"
 			>
 			<Filter
 				Name="VST Source"
 				>
 				<File
-					RelativePath="..\VOPMsource\VOPM.cpp"
+					RelativePath="..\C700VST.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\VOPM.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\VOPMsource\VOPMproc.cpp"
+					RelativePath="..\C700VST.cpp"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="OPM"
+				Name="Common Source"
 				>
 				<File
-					RelativePath="..\VOPMsource\lfo.cpp"
+					RelativePath="..\Chip700defines.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\lfo.h"
+					RelativePath="..\gauss.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\op.cpp"
+					RelativePath="..\samplebrr.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\op.h"
+					RelativePath="..\C700Kernel.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\OPM.cpp"
+					RelativePath="..\C700Kernel.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\OPM.hpp"
+					RelativePath="..\VC700Parameters.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\OPMdrv.cpp"
+					RelativePath="..\C700Parameters.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\OPMdrv.hpp"
+					RelativePath="..\EchoKernel.h"
+					>
+				</File>
+				<File
+					RelativePath="..\EchoKernel.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Chip700Generator.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Chip700Generator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\brrcodec.h"
+					>
+				</File>
+				<File
+					RelativePath="..\brrcodec.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\noveclib\czt.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\noveclib\fft.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\noveclib\fft_czt.h"
 					>
 				</File>
 			</Filter>
@@ -444,59 +472,147 @@
 				Name="UI"
 				>
 				<File
-					RelativePath="..\VOPMsource\disp.cpp"
+					RelativePath="..\ControlInstances.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\disp.h"
+					RelativePath="..\ControlInstacnesDefs.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\form.cpp"
+					RelativePath="..\FileAccess.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\form.h"
+					RelativePath="..\FileAccess.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\Slider.cpp"
+					RelativePath="..\SPCFile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\Slider.hpp"
+					RelativePath="..\SPCFile.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\VOPMEdit.cpp"
+					RelativePath="..\BRRFile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\VOPMsource\VOPMEdit.hpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="GIMIC"
-				>
-				<File
-					RelativePath="..\GIMIC_HW.cpp"
+					RelativePath="..\BRRFile.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\GIMIC_HW.h"
+					RelativePath="..\PlistBRRFile.h"
 					>
 				</File>
 				<File
-					RelativePath=".\hid.c"
+					RelativePath="..\PlistBRRFile.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\hidapi.h"
+					RelativePath="..\AudioFile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\ringbuff.h"
+					RelativePath="..\AudioFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XIFile.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XIFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\EfxAccess.h"
+					>
+				</File>
+				<File
+					RelativePath="..\EfxAccess.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\C700Edit.h"
+					>
+				</File>
+				<File
+					RelativePath="..\C700Edit.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\C700GUI.h"
+					>
+				</File>
+				<File
+					RelativePath="..\C700GUI.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\MyKnob.h"
+					>
+				</File>
+				<File
+					RelativePath="..\MyKnob.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\MySlider.h"
+					>
+				</File>
+				<File
+					RelativePath="..\MySlider.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\LabelOnOffButton.h"
+					>
+				</File>
+				<File
+					RelativePath="..\LabelOnOffButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\WaveView.h"
+					>
+				</File>
+				<File
+					RelativePath="..\WaveView.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DummyCntl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DummyCntl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\SeparatorLine.h"
+					>
+				</File>
+				<File
+					RelativePath="..\SeparatorLine.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\MyParamDisplay.h"
+					>
+				</File>
+				<File
+					RelativePath="..\MyParamDisplay.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\MyTextEdit.h"
+					>
+				</File>
+				<File
+					RelativePath="..\MyTextEdit.cpp"
 					>
 				</File>
 			</Filter>
@@ -726,23 +842,11 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\VOPMsource\ResVOPM.h"
+			RelativePath="C700.rc"
 			>
 		</File>
 		<File
-			RelativePath="$(VCInstallDir)\PlatformSDK\Lib\AMD64\SetupAPI.Lib"
-			>
-		</File>
-		<File
-			RelativePath="$(VCInstallDir)\PlatformSDK\Lib\SetupAPI.Lib"
-			>
-		</File>
-		<File
-			RelativePath="..\VOPMsource\VOPM.rc"
-			>
-		</File>
-		<File
-			RelativePath="..\VOPM_VST_Prefix.pch"
+			RelativePath="..\Chip700_Prefix_VST.pch"
 			>
 		</File>
 	</Files>
