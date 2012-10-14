@@ -1,34 +1,34 @@
-100 PNG AUBackground.png
-101 PNG dragimg.png
-102 PNG rocker_sw.png
-103 PNG knobBack.png
-104 PNG sliderThumb.png
-105 PNG bt_check.png
-106 PNG bt_velocitysens.png
-107 PNG bt_copy.png
-108 PNG bt_calc.png
-109 PNG bt_load.png
-110 PNG bt_save.png
-111 PNG bt_unload.png
-112 PNG bt_save_xi.png
-113 PNG bank_a.png
-114 PNG bank_b.png
-115 PNG bank_c.png
-116 PNG bank_d.png
-117 PNG ind_track.png
-118 PNG track01_.png
-119 PNG track02_.png
-120 PNG track03_.png
-121 PNG track04_.png
-122 PNG track05_.png
-123 PNG track06_.png
-124 PNG track07_.png
-125 PNG track08_.png
-126 PNG track09_.png
-127 PNG track10_.png
-128 PNG track11_.png
-129 PNG track12_.png
-130 PNG track13_.png
-131 PNG track14_.png
-132 PNG track15_.png
-133 PNG track16_.png
+AUBackground.png	PNG	DISCARDABLE	"AUBackground.png"
+dragimg.png	PNG	DISCARDABLE	"dragimg.png"
+rocker_sw.png	PNG	DISCARDABLE	"rocker_sw.png"
+knobBack.png	PNG	DISCARDABLE	"knobBack.png"
+sliderThumb.png	PNG	DISCARDABLE	"sliderThumb.png"
+bt_check.png	PNG	DISCARDABLE	"bt_check.png"
+bt_velocitysens.png	PNG	DISCARDABLE	"bt_velocitysens.png"
+bt_copy.png	PNG	DISCARDABLE	"bt_copy.png"
+bt_calc.png	PNG	DISCARDABLE	"bt_calc.png"
+bt_load.png	PNG	DISCARDABLE	"bt_load.png"
+bt_save.png	PNG	DISCARDABLE	"bt_save.png"
+bt_unload.png	PNG	DISCARDABLE	"bt_unload.png"
+bt_save_xi.png	PNG	DISCARDABLE	"bt_save_xi.png"
+bank_a.png	PNG	DISCARDABLE	"bank_a.png"
+bank_b.png	PNG	DISCARDABLE	"bank_b.png"
+bank_c.png	PNG	DISCARDABLE	"bank_c.png"
+bank_d.png	PNG	DISCARDABLE	"bank_d.png"
+ind_track.png	PNG	DISCARDABLE	"ind_track.png"
+track01_.png	PNG	DISCARDABLE	"track01_.png"
+track02_.png	PNG	DISCARDABLE	"track02_.png"
+track03_.png	PNG	DISCARDABLE	"track03_.png"
+track04_.png	PNG	DISCARDABLE	"track04_.png"
+track05_.png	PNG	DISCARDABLE	"track05_.png"
+track06_.png	PNG	DISCARDABLE	"track06_.png"
+track07_.png	PNG	DISCARDABLE	"track07_.png"
+track08_.png	PNG	DISCARDABLE	"track08_.png"
+track09_.png	PNG	DISCARDABLE	"track09_.png"
+track10_.png	PNG	DISCARDABLE	"track10_.png"
+track11_.png	PNG	DISCARDABLE	"track11_.png"
+track12_.png	PNG	DISCARDABLE	"track12_.png"
+track13_.png	PNG	DISCARDABLE	"track13_.png"
+track14_.png	PNG	DISCARDABLE	"track14_.png"
+track15_.png	PNG	DISCARDABLE	"track15_.png"
+track16_.png	PNG	DISCARDABLE	"track16_.png"
