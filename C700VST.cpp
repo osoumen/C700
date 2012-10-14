@@ -319,6 +319,8 @@ void C700VST::setBlockSize(long blockSize)
 //-----------------------------------------------------------------------------------------
 void C700VST::processReplacing(float **inputs, float **outputs, int sampleFrames)
 {
+	memset(outputs[0], 0, sampleFrames*sizeof(float));
+	memset(outputs[1], 0, sampleFrames*sizeof(float));
 	mEfx->Render(sampleFrames, outputs);
 }
 
