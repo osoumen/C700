@@ -4,7 +4,7 @@
 
 //#include <Carbon/Carbon.h>
 
-#define VSTGUI_ENABLE_DEPRECATED_METHODS 1
+#define VSTGUI_ENABLE_DEPRECATED_METHODS 0
 #define USE_NAMESPACE 0
 
 #if __APPLE_CC__
