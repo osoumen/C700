@@ -198,19 +198,6 @@ void C700VST::setParameter(VstInt32 index, float value)
 	switch ( index ) {
 		case kParam_echodelay:
 			PropertyNotifyFunc(kAudioUnitCustomProperty_TotalRAM, this);
-			
-		case kParam_echovol_L:
-		case kParam_echovol_R:
-		case kParam_echoFB:
-		case kParam_fir0:
-		case kParam_fir1:
-		case kParam_fir2:
-		case kParam_fir3:
-		case kParam_fir4:
-		case kParam_fir5:
-		case kParam_fir6:
-		case kParam_fir7:
-			PropertyNotifyFunc(kAudioUnitCustomProperty_Band1, this);
 			break;
 	}
 	if (editor) {
