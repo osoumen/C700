@@ -859,22 +859,7 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 //-----------------------------------------------------------------------------
 bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 {
-#ifdef WIN32
-	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
-	VstFileSelect Filedata;
-	memset(&Filedata, 0, sizeof(VstFileSelect));
-	Filedata.command=kVstFileLoad;
-	Filedata.type= kVstFileType;
-	strncpy(Filedata.title, title, maxLen-1 );
-	//Filedata.nbFileTypes=1;
-	//Filedata.fileTypes=&waveType;
-	Filedata.returnPath= path;
-	Filedata.initialPath = 0;
-	Filedata.future[0] = 0;
-	if (OpenFile.run(&Filedata) > 0) {
-		return true;
-	}
-#else
+#if VSTGUI_NEW_CFILESELECTOR
 	CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectFile);
 	if (selector)
 	{
@@ -889,18 +874,12 @@ bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 		selector->forget();
 		return false;
 	}
-#endif
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, const char *title )
-{
-#ifdef WIN32
-	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
+#else
+//	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
+	CFileSelector OpenFile(0);
 	VstFileSelect Filedata;
 	memset(&Filedata, 0, sizeof(VstFileSelect));
-	Filedata.command=kVstFileSave;
+	Filedata.command=kVstFileLoad;
 	Filedata.type= kVstFileType;
 	strncpy(Filedata.title, title, maxLen-1 );
 	//Filedata.nbFileTypes=1;
@@ -911,7 +890,14 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 	if (OpenFile.run(&Filedata) > 0) {
 		return true;
 	}
-#else
+#endif
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, const char *title )
+{
+#if VSTGUI_NEW_CFILESELECTOR
 	CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectSaveFile);
 	if (selector)
 	{
@@ -926,6 +912,22 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 		}
 		selector->forget();
 		return false;
+	}
+#else
+//	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
+	CFileSelector OpenFile(0);
+	VstFileSelect Filedata;
+	memset(&Filedata, 0, sizeof(VstFileSelect));
+	Filedata.command=kVstFileSave;
+	Filedata.type= kVstFileType;
+	strncpy(Filedata.title, title, maxLen-1 );
+	//Filedata.nbFileTypes=1;
+	//Filedata.fileTypes=&waveType;
+	Filedata.returnPath= path;
+	Filedata.initialPath = 0;
+	Filedata.future[0] = 0;
+	if (OpenFile.run(&Filedata) > 0) {
+		return true;
 	}
 #endif
 	return false;
