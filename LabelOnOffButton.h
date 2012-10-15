@@ -26,4 +26,5 @@ public:
 protected:
 	void freeText();
 	char* text;
+	CFontRef	mLabelFont;
 };

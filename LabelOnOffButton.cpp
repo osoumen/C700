@@ -16,6 +16,7 @@ CLabelOnOffButton::CLabelOnOffButton(const CRect& size, CControlListener* listen
 : COnOffButton(size, listener, tag, background, style)
 , text(NULL)
 {
+	mLabelFont = new CFontDesc(*kLabelFont);
 	setText(txt);
 }
 
@@ -23,6 +24,7 @@ CLabelOnOffButton::CLabelOnOffButton(const CRect& size, CControlListener* listen
 CLabelOnOffButton::~CLabelOnOffButton()
 {
 	freeText();
+	mLabelFont->forget();
 }
 
 //------------------------------------------------------------------------
@@ -69,7 +71,7 @@ void CLabelOnOffButton::draw(CDrawContext* pContext)
 	newClip.offset( getBackground()->getWidth(), 0 );
 //	newClip.bound(oldClip);
 //	pContext->setClipRect(newClip);
-	pContext->setFont(kLabelFont);
+	pContext->setFont(mLabelFont);
 	pContext->setFontColor(kBlackCColor);
 	
 #if VSTGUI_USES_UTF8

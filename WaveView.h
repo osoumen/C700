@@ -34,8 +34,9 @@ public:
 	CLASS_METHODS(CWaveView, CControl)
 protected:
 	COffscreenContext	*m_pDrawBuffer;
-	CColor	lineColor;
-	CColor	backColor;
+	CColor		lineColor;
+	CColor		backColor;
+	CFontRef	mMessageFont;
 	
 	bool	isWaveLoaded;
 	bool	converting;

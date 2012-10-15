@@ -62,6 +62,7 @@ private:
 	void			autocalcCurrentProgramBaseKey();
 	bool			IsPreemphasisOn();
 	
+	CFontRef				mLabelFont;
 	int						mNumCntls;
 	CControl				**mCntl;
 	

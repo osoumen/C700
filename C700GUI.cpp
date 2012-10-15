@@ -239,7 +239,8 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					}
 					else
 					{
-						textLabel->setFont(kLabelFont);
+						textLabel->setFont(mLabelFont);
+						//mLabelFont->forget();
 					}
 					cntl = textLabel;
 					break;
@@ -291,6 +292,8 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 , mCntl(NULL)
 , efxAcc(NULL)
 {
+	mLabelFont = new CFontDesc(g_LabelFont);
+
 	//共通グラフィックの読み込み
 	bgKnob = new CBitmap("knobBack.png");
 	sliderHandleBitmap = new CBitmap("sliderThumb.png");
@@ -412,6 +415,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 //-----------------------------------------------------------------------------
 C700GUI::~C700GUI()
 {
+	mLabelFont->forget();
 	if ( mCntl )
 	{
 		delete [] mCntl;

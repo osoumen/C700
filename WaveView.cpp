@@ -11,8 +11,6 @@
 #include "WaveView.h"
 #include <math.h>
 
-static CFontDesc g_MessageFont("Courier", 18);
-
 //-----------------------------------------------------------------------------
 CWaveView::CWaveView(CRect &size, CFrame *pFrame, CControlListener* listener, long tag)
 : CControl(size, listener, tag, 0)
@@ -21,6 +19,7 @@ CWaveView::CWaveView(CRect &size, CFrame *pFrame, CControlListener* listener, lo
 	
 	lineColor = MakeCColor(180, 248, 255, 255);
 	backColor = MakeCColor(67, 75, 88, 255);
+	mMessageFont = new CFontDesc("Courier", 18);
 	isWaveLoaded = false;
 	looppoint = 0;
 	datanum = 0;
@@ -31,6 +30,7 @@ CWaveView::CWaveView(CRect &size, CFrame *pFrame, CControlListener* listener, lo
 CWaveView::~CWaveView()
 {
 	delete m_pDrawBuffer;
+	mMessageFont->forget();
 }
 
 //-----------------------------------------------------------------------------
@@ -85,7 +85,7 @@ void CWaveView::draw(CDrawContext *pContext)
 		newClip.offset(10, 16);
 		//newClip.bound(oldClip);
 		//pContext->setClipRect(newClip);
-		pContext->setFont(&g_MessageFont);
+		pContext->setFont(mMessageFont);
 		pContext->setFontColor(lineColor);
 		
 #if VSTGUI_USES_UTF8
@@ -121,7 +121,7 @@ void CWaveView::draw(CDrawContext *pContext)
 			newClip.offset(10, 16);
 			//newClip.bound(oldClip);
 			//pContext->setClipRect(newClip);
-			pContext->setFont(&g_MessageFont);
+			pContext->setFont(mMessageFont);
 			pContext->setFontColor(lineColor);
 			
 #if VSTGUI_USES_UTF8
