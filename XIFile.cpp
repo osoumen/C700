@@ -14,6 +14,10 @@
 #include <math.h>
 #include <algorithm>
 
+#if _WIN32
+#include <windows.h>
+#endif
+
 int RenumberKeyMap( unsigned char *snum, int size );
 int GetARTicks( int ar, double tempo );
 int GetDRTicks( int dr, double tempo );
@@ -310,10 +314,9 @@ bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, d
 //-----------------------------------------------------------------------------
 bool XIFile::Write()
 {
-#if MAC
 	if ( IsLoaded() == false ) return false;
 	if ( mPath == NULL ) return false;
-	
+#if MAC
 	//CFURLを作成
 	CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)mPath, strlen(mPath), false);
 	
@@ -331,7 +334,15 @@ bool XIFile::Write()
 	
 	return true;
 #else
-	//TODO : VSTのときのXIファイル書き出し処理
+	//VSTのときのXIファイル書き出し処理
+	HANDLE	hFile;
+
+	hFile = CreateFile( mPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+	if ( hFile != INVALID_HANDLE_VALUE ) {
+		DWORD	writeSize;
+		WriteFile( hFile, GetDataPtr(), GetWriteSize(), &writeSize, NULL );
+		CloseHandle( hFile );
+	}
 	return false;
 #endif
 }
