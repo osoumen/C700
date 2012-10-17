@@ -637,6 +637,9 @@ bool C700Kernel::SetBRRData( const BRRData *brr )
 {
 	//brrƒf[ƒ^‚ð‚±‚¿‚ç‘¤‚ÉˆÚ“®‚·‚é
 	if (brr->data) {
+		if ( mVPset[mEditProg].brr.data ) {
+			delete [] mVPset[mEditProg].brr.data;
+		}
 		mVPset[mEditProg].brr.data = new unsigned char[brr->size];
 		memmove(mVPset[mEditProg].brr.data, brr->data, brr->size);
 		mVPset[mEditProg].brr.size = brr->size;
