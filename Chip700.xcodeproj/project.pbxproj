@@ -626,6 +626,8 @@
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
+		F5710731162EB3D40043EF00 /* PGChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = F571072F162EB3D40043EF00 /* PGChunk.h */; };
+		F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5710730162EB3D40043EF00 /* PGChunk.cpp */; };
 		F597AD36160B67860003E710 /* cocoasupport.mm in Sources */ = {isa = PBXBuildFile; fileRef = F597AD28160B67860003E710 /* cocoasupport.mm */; };
 		F597AD37160B67860003E710 /* getpluginbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD29160B67860003E710 /* getpluginbundle.h */; };
 		F597AD38160B67860003E710 /* plugguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2A160B67860003E710 /* plugguieditor.cpp */; };
@@ -1019,6 +1021,8 @@
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
 		F56D359F156A185300038960 /* libMiniAiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMiniAiff.a; path = encodetest/libMiniAiff.a; sourceTree = "<group>"; };
 		F56D35A1156A185D00038960 /* MiniAiff.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = MiniAiff.h; path = encodetest/MiniAiff.h; sourceTree = "<group>"; };
+		F571072F162EB3D40043EF00 /* PGChunk.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = PGChunk.h; sourceTree = "<group>"; };
+		F5710730162EB3D40043EF00 /* PGChunk.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = PGChunk.cpp; sourceTree = "<group>"; };
 		F5855D271478E8F800D87CF2 /* bt_copy0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_copy0.png; sourceTree = "<group>"; };
 		F5855D281478E8F800D87CF2 /* bt_copy1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_copy1.png; sourceTree = "<group>"; };
 		F5855D871478FD9300D87CF2 /* bt_echo0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_echo0.png; sourceTree = "<group>"; };
@@ -1614,6 +1618,18 @@
 				8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */,
 				8AEECD2D0B020BC6002C9BB7 /* czt.cpp */,
 				8AEECD2E0B020BC6002C9BB7 /* czt.h */,
+				F569C388162515ED006C91AD /* FileAccess.h */,
+				F569C389162515ED006C91AD /* FileAccess.cpp */,
+				F569C3AF162518BF006C91AD /* SPCFile.h */,
+				F569C3B0162518BF006C91AD /* SPCFile.cpp */,
+				F569C3B3162518C6006C91AD /* BRRFile.h */,
+				F569C3B4162518C6006C91AD /* BRRFile.cpp */,
+				F569C6DD162644AE006C91AD /* PlistBRRFile.h */,
+				F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */,
+				F569C3AB162518B9006C91AD /* AudioFile.h */,
+				F569C3AC162518B9006C91AD /* AudioFile.cpp */,
+				F569C40916254B6E006C91AD /* XIFile.h */,
+				F569C40A16254B6E006C91AD /* XIFile.cpp */,
 			);
 			name = "Common Source";
 			sourceTree = "<group>";
@@ -1639,6 +1655,8 @@
 			children = (
 				F54338D81629759600863A0B /* C700VST.h */,
 				F54338D91629759600863A0B /* C700VST.cpp */,
+				F571072F162EB3D40043EF00 /* PGChunk.h */,
+				F5710730162EB3D40043EF00 /* PGChunk.cpp */,
 			);
 			name = "VST Source";
 			sourceTree = "<group>";
@@ -1648,18 +1666,6 @@
 			children = (
 				F55D6447161D7A94001CF9AB /* ControlInstances.h */,
 				F5432E3F1627FC2900863A0B /* ControlInstacnesDefs.h */,
-				F569C388162515ED006C91AD /* FileAccess.h */,
-				F569C389162515ED006C91AD /* FileAccess.cpp */,
-				F569C3AF162518BF006C91AD /* SPCFile.h */,
-				F569C3B0162518BF006C91AD /* SPCFile.cpp */,
-				F569C3B3162518C6006C91AD /* BRRFile.h */,
-				F569C3B4162518C6006C91AD /* BRRFile.cpp */,
-				F569C6DD162644AE006C91AD /* PlistBRRFile.h */,
-				F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */,
-				F569C3AB162518B9006C91AD /* AudioFile.h */,
-				F569C3AC162518B9006C91AD /* AudioFile.cpp */,
-				F569C40916254B6E006C91AD /* XIFile.h */,
-				F569C40A16254B6E006C91AD /* XIFile.cpp */,
 				F569BEC01622B5F8006C91AD /* EfxAccess.h */,
 				F569BEC11622B5F8006C91AD /* EfxAccess.cpp */,
 				F569A40316195488006C91AD /* C700Edit.h */,
@@ -1842,6 +1848,7 @@
 				F54338AB162973E600863A0B /* audioeffectx.h in Headers */,
 				F54338C31629749600863A0B /* aeffguieditor.h in Headers */,
 				F54338DA1629759600863A0B /* C700VST.h in Headers */,
+				F5710731162EB3D40043EF00 /* PGChunk.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2464,6 +2471,7 @@
 				F54338AC162973E600863A0B /* vstplugmain.cpp in Sources */,
 				F54338C41629749600863A0B /* aeffguieditor.cpp in Sources */,
 				F54338DB1629759600863A0B /* C700VST.cpp in Sources */,
+				F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
