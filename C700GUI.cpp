@@ -41,7 +41,21 @@ void getFileNameDeletingPathExt( const char *path, char *out, int maxLen )
 	CFRelease(url);
 #else
 	//TODO : Windowsでの拡張子、パス除去処理
-	strncpy(out, path, maxLen-1);
+	int	len = strlen(path);
+	int extPos = len;
+	int bcPos = 0;
+	for ( int i=len-1 i>=0; i-- ) {
+		if ( path[i] == '.' ) {
+			extPos = i;
+			break;
+		}
+	}
+	for ( int i=0; i<len; i++ ) {
+		if ( path[i] == '\\' ) {
+			bcPos = i+1;
+		}
+	}
+	strncpy(out, path+bcPos, extPos-bcPos);
 #endif
 }
 
