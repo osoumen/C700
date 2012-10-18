@@ -46,6 +46,15 @@ bool SPCFile::Load()
 	CFReadStreamClose(filestream);
 	CFRelease( url );
 #else
+	//VSTのときのXIファイル書き出し処理
+	HANDLE	hFile;
+	
+	hFile = CreateFile( mPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+	if ( hFile != INVALID_HANDLE_VALUE ) {
+		DWORD	readSize;
+		ReadFile( hFile, m_pFileData, SPC_READ_SIZE, &readSize, NULL );
+		CloseHandle( hFile );
+	}
 #endif
 	
 	//ファイルチェック
