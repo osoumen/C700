@@ -260,7 +260,7 @@ void Chip700Generator::SetVoiceLimit( int value )
 //-----------------------------------------------------------------------------
 void Chip700Generator::SetPBRange( float value )
 {
-	mPbrange = value / 2.0;
+	mPbrange = value;
 }
 
 //-----------------------------------------------------------------------------

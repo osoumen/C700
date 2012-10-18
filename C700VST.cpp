@@ -48,11 +48,16 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 	
 	//setProgram(0);
 	mCurrentPreset = 0;
+	
+	mSaveChunk = NULL;
 }
 
 //-----------------------------------------------------------------------------------------
 C700VST::~C700VST()
 {
+	if ( mSaveChunk ) {
+		delete mSaveChunk;
+	}
 	delete efxAcc;
 	delete mEfx;
 }
@@ -280,12 +285,104 @@ VstInt32 C700VST::canDo(char* text)
 //-----------------------------------------------------------------------------------------
 VstInt32 C700VST::getChunk(void** data, bool isPreset)
 {
-	return 0;
+	int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+
+	if ( mSaveChunk ) {
+		delete mSaveChunk;
+	}
+	
+	VoiceParams	*vp = mEfx->GetVP();
+	int		totalSize = 0;
+	int		totalProgs = 0;
+	
+	if ( isPreset ) {
+		totalSize = PGChunk::getPGChunkSize( &vp[editProg] ) + sizeof(PGChunk::MyChunkHead);
+		totalProgs = 1;
+	}
+	else {
+		for ( int i=0; i<128; i++ ) {
+			int size = PGChunk::getPGChunkSize( &vp[i] );
+			if ( size > 0 ) {
+				totalSize += size + sizeof(PGChunk::MyChunkHead);
+				totalProgs++;
+			}
+		}
+		totalSize += sizeof(PGChunk::MyChunkHead) + sizeof(int);	//プログラム定義数
+	}
+	
+	PGChunk		*saveChunk;
+	saveChunk = new PGChunk( totalSize );
+	//保存するプログラム数を書き込む
+	saveChunk->writeChunk(CKID_PROGRAM_TOTAL, &totalProgs, sizeof(int));
+	
+	if ( isPreset ) {
+		if ( vp[editProg].brr.data ) {
+			PGChunk		*pg = new PGChunk( PGChunk::getPGChunkSize( &vp[editProg] ) );
+			pg->AppendDataFromVP(&vp[editProg]);
+			saveChunk->writeChunk(CKID_PROGRAM_DATA+editProg, pg->GetDataPtr(), pg->GetDataSize());
+			delete pg;
+		}
+	}
+	else {
+		for ( int i=0; i<128; i++ ) {
+			if ( vp[i].brr.data ) {
+				PGChunk		*pg = new PGChunk( PGChunk::getPGChunkSize( &vp[i] ) );
+				pg->AppendDataFromVP(&vp[i]);
+				saveChunk->writeChunk(CKID_PROGRAM_DATA+i, pg->GetDataPtr(), pg->GetDataSize());
+				delete pg;
+			}
+		}
+	}
+	
+	*data = mSaveChunk = saveChunk;
+	
+	return saveChunk->GetDataSize();
 }
 
 //-----------------------------------------------------------------------------------------
 VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 {
+	int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+	VoiceParams	*vp = mEfx->GetVP();
+	
+	PGChunk		*saveChunk;
+	saveChunk = new PGChunk( data, byteSize );
+	int			totalProgs;
+	
+	while ( byteSize - saveChunk->GetDataPos() > (int)sizeof( PGChunk::MyChunkHead ) ) {
+		int		ckType;
+		long	ckSize;
+		saveChunk->readChunkHead(&ckType, &ckSize);
+		
+		//保存されているプログラム数
+		
+		if ( ckType == CKID_PROGRAM_TOTAL ) {
+			saveChunk->readData( &totalProgs, sizeof(int), &ckSize );
+		}
+		else if ( ckType >= CKID_PROGRAM_DATA && ckType < (CKID_PROGRAM_DATA+128) ) {
+			//CKID_PROGRAM_DATA+pgnumのチャンクに入れ子でプログラムデータが入っている
+			int pgnum = ckType - CKID_PROGRAM_DATA;
+			PGChunk	*pg = new PGChunk( saveChunk->GetDataPtr()+saveChunk->GetDataPos(), ckSize );
+			if ( isPreset ) {
+				pg->ReadDataToVP(&vp[editProg]);
+			}
+			else {
+				pg->ReadDataToVP(&vp[pgnum]);
+			}
+			delete pg;
+			saveChunk->AdvDataPos(ckSize);
+		}
+		else {
+			saveChunk->AdvDataPos(ckSize);
+		}
+	}
+	
+	//UIに変更を反映
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, kAudioUnitCustomProperty_EditingProgram );
+	mEfx->GetGenerator()->RefreshKeyMap();
+	
+	delete saveChunk;
+	
 	return 0;
 }
 

@@ -13,6 +13,7 @@
 #include "C700Kernel.h"
 #include "C700Edit.h"
 #include "EfxAccess.h"
+#include "PGChunk.h"
 
 class C700VST : public AudioEffectX
 {
@@ -66,4 +67,6 @@ private:
 	
 	C700Kernel			*mEfx;
 	int					mCurrentPreset;
+	
+	PGChunk				*mSaveChunk;
 };

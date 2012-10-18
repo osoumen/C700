@@ -18,6 +18,7 @@ PGChunk::PGChunk(int allocMemSize)
 , mDataUsed( 0 )
 , mDataPos( 0 )
 , mNumPrograms( 0 )
+, mReadOnly( false )
 {
 	if ( allocMemSize > 0 ) {
 		m_pData = new unsigned char[allocMemSize];
@@ -25,14 +26,15 @@ PGChunk::PGChunk(int allocMemSize)
 }
 
 //-----------------------------------------------------------------------------
-PGChunk::PGChunk( unsigned char *data, int dataSize )
+PGChunk::PGChunk( const void *data, int dataSize )
 : FileAccess(NULL, true)
 , mShouldRelease( true )
-, m_pData( data )
+, m_pData( (unsigned char*)data )
 , mDataSize( dataSize )
 , mDataUsed( dataSize )
 , mDataPos( 0 )
 , mNumPrograms( 0 )
+, mReadOnly( true )
 {
 }
 
@@ -45,8 +47,12 @@ PGChunk::~PGChunk()
 }
 
 //-----------------------------------------------------------------------------
-bool PGChunk::SetDataFromVP( int pgnum, VoiceParams *vp )
+bool PGChunk::AppendDataFromVP( VoiceParams *vp )
 {
+	if ( mReadOnly ) {
+		return false;
+	}
+	
 	int		intValue;
 	double	doubleValue;
 	
@@ -107,9 +113,24 @@ bool PGChunk::SetDataFromVP( int pgnum, VoiceParams *vp )
 }
 
 //-----------------------------------------------------------------------------
-bool PGChunk::ReadDataToVP( int index, VoiceParams *vp )
+int PGChunk::getPGChunkSize( const VoiceParams *vp )
 {
-	while ( (mDataSize - mDataPos) > sizeof( MyChunkHead ) ) {
+	int cksize = 0;
+	if ( vp->brr.data ) {
+		cksize += sizeof( MyChunkHead ) * 17;
+		cksize += sizeof( int ) * 13;	//int型データ×13
+		cksize += sizeof(double);		//double型データ１つ
+		cksize += PROGRAMNAME_MAX_LEN;
+		cksize += PATH_LEN_MAX;
+		cksize += vp->brr.size;
+	}
+	return cksize;
+}
+
+//-----------------------------------------------------------------------------
+bool PGChunk::ReadDataToVP( VoiceParams *vp )
+{
+	while ( (mDataSize - mDataPos) > (int)sizeof( MyChunkHead ) ) {
 		int		ckType;
 		long	ckSize;
 		readChunkHead(&ckType, &ckSize);
@@ -186,6 +207,8 @@ bool PGChunk::ReadDataToVP( int index, VoiceParams *vp )
 				readData(vp->sourceFile, ckSize, &ckSize);
 				break;
 			default:
+				//不明チャンクの場合は飛ばす
+				mDataPos += ckSize;
 				break;
 		}
 	}
@@ -195,10 +218,14 @@ bool PGChunk::ReadDataToVP( int index, VoiceParams *vp )
 //-----------------------------------------------------------------------------
 bool PGChunk::writeChunk( int type, const void *data, int byte )
 {
+	if ( mReadOnly ) {
+		return false;
+	}
+	
 	MyChunkHead	ckHead = {type, byte};
 	
 	//空き容量チェック
-	if ( mDataSize < ( mDataPos + byte + sizeof(MyChunkHead) ) ) {
+	if ( mDataSize < ( mDataPos + byte + (int)sizeof(MyChunkHead) ) ) {
 		return false;
 	}
 	

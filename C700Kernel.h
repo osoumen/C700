@@ -56,7 +56,7 @@ public:
 	void			SetPropertyNotifyFunc( void (*func) (int propID, void* userData), void* userData );
 	void			SetParameterSetFunc( void (*func) (int paramID, float value, void* userData) , void* userData );
 	
-	const VoiceParams* GetVP() { return mVPset; }
+	VoiceParams* GetVP() { return mVPset; }
 	
 private:
 	int		GetTotalRAM();
