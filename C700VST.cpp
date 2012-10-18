@@ -95,6 +95,9 @@ void C700VST::PropertyNotifyFunc(int propID, void* userData)
 	else {
 		float	value = This->mEfx->GetPropertyValue(propID);
 		This->mEditor->setParameter(propID, value);
+		if ( propID == kAudioUnitCustomProperty_EditingProgram ) { 
+			This->curProgram = value;
+		}
 	}
 }
 
