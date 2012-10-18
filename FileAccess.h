@@ -11,6 +11,10 @@
 
 #include "Chip700defines.h"
 
+#if _WIN32
+#include <windows.h>
+#endif
+
 class FileAccess {
 public:
 	FileAccess( const char *path, bool isWriteable );

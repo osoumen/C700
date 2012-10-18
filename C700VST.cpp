@@ -146,6 +146,7 @@ VstIntPtr C700VST::vendorSpecific(VstInt32 lArg1, VstIntPtr lArg2, void* ptrArg,
 //-----------------------------------------------------------------------------------------
 void C700VST::setProgram(VstInt32 program)
 {
+	AudioEffectX::setProgram(program);
 #ifdef DEBUG
 	DebugPrint("C700VST::setProgram %d",program);
 #endif

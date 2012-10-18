@@ -14,10 +14,6 @@
 #include <math.h>
 #include <algorithm>
 
-#if _WIN32
-#include <windows.h>
-#endif
-
 int RenumberKeyMap( unsigned char *snum, int size );
 int GetARTicks( int ar, double tempo );
 int GetDRTicks( int dr, double tempo );
