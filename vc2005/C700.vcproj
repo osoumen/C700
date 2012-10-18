@@ -401,6 +401,14 @@
 					RelativePath="..\C700VST.h"
 					>
 				</File>
+				<File
+					RelativePath="..\PGChunk.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\PGChunk.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Common Source"
