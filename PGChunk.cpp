@@ -12,7 +12,7 @@
 //-----------------------------------------------------------------------------
 PGChunk::PGChunk(int allocMemSize)
 : FileAccess(NULL, true)
-, mShouldRelease( false )
+, mShouldRelease( true )
 , m_pData( NULL )
 , mDataSize( allocMemSize )
 , mDataUsed( 0 )
@@ -28,7 +28,7 @@ PGChunk::PGChunk(int allocMemSize)
 //-----------------------------------------------------------------------------
 PGChunk::PGChunk( const void *data, int dataSize )
 : FileAccess(NULL, true)
-, mShouldRelease( true )
+, mShouldRelease( false )
 , m_pData( (unsigned char*)data )
 , mDataSize( dataSize )
 , mDataUsed( dataSize )

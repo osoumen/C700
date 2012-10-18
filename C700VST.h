@@ -66,7 +66,6 @@ private:
 	double				mTempo;
 	
 	C700Kernel			*mEfx;
-	int					mCurrentPreset;
 	
 	PGChunk				*mSaveChunk;
 };

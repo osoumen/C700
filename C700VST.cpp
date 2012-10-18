@@ -17,7 +17,7 @@ AudioEffect* createEffectInstance(audioMasterCallback audioMaster)
 
 //-----------------------------------------------------------------------------------------
 C700VST::C700VST(audioMasterCallback audioMaster)
-: AudioEffectX(audioMaster, NUM_PRESETS, kNumberOfParameters)
+: AudioEffectX(audioMaster, 128, kNumberOfParameters)
 {
 	mEfx = new C700Kernel();
 	mEfx->SetPropertyNotifyFunc(PropertyNotifyFunc, this);
@@ -29,7 +29,7 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 		setNumOutputs(NUM_OUTPUTS);	//
 		canProcessReplacing();
 		isSynth();
-		//programsAreChunks(true);
+		programsAreChunks(true);
 		setUniqueID(CCONST ('C', '7', '0', '0'));
 	}
 	
@@ -47,7 +47,7 @@ C700VST::C700VST(audioMasterCallback audioMaster)
 	}
 	
 	//setProgram(0);
-	mCurrentPreset = 0;
+	mEfx->SelectPreset(1);
 	
 	mSaveChunk = NULL;
 }
@@ -149,19 +149,20 @@ void C700VST::setProgram(VstInt32 program)
 #ifdef DEBUG
 	DebugPrint("C700VST::setProgram %d",program);
 #endif
-	mEfx->SelectPreset(program);
-	mCurrentPreset = program;
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, program);
+	mEditor->setParameter(kAudioUnitCustomProperty_EditingProgram, program);
 }
 
 //-----------------------------------------------------------------------------------------
 void C700VST::setProgramName(char *name)
 {
+	mEfx->SetProgramName(name);
 }
 
 //-----------------------------------------------------------------------------------------
 void C700VST::getProgramName(char *name)
 {
-	strncpy(name, mEfx->GetPresetName(mCurrentPreset), kVstMaxProgNameLen-1);
+	strncpy(name, mEfx->GetProgramName(), kVstMaxProgNameLen-1);
 }
 
 //-----------------------------------------------------------------------------------------
@@ -171,7 +172,6 @@ void C700VST::getParameterLabel(VstInt32 index, char *label)
 	DebugPrint("exec C700VST::getParamaeterLabel");
 #endif
 	strncpy(label, mEfx->GetParameterName(index), kVstMaxParamStrLen-1);
-	
 }
 
 //-----------------------------------------------------------------------------------------
@@ -286,6 +286,7 @@ VstInt32 C700VST::canDo(char* text)
 VstInt32 C700VST::getChunk(void** data, bool isPreset)
 {
 	int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+	int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
 
 	if ( mSaveChunk ) {
 		delete mSaveChunk;
@@ -307,13 +308,22 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 				totalProgs++;
 			}
 		}
-		totalSize += sizeof(PGChunk::MyChunkHead) + sizeof(int);	//プログラム定義数
+		totalSize += (sizeof(PGChunk::MyChunkHead) + sizeof(int))*3;	//プログラム定義数
 	}
+	
+	
+#if TESTING
+	printf("getChunk totalSize=%d\n",totalSize);
+	printf("getChunk totalProgs=%d\n",totalProgs);
+#endif
 	
 	PGChunk		*saveChunk;
 	saveChunk = new PGChunk( totalSize );
-	//保存するプログラム数を書き込む
-	saveChunk->writeChunk(CKID_PROGRAM_TOTAL, &totalProgs, sizeof(int));
+	if ( !isPreset ) {
+		saveChunk->writeChunk(CKID_PROGRAM_TOTAL, &totalProgs, sizeof(int));
+		saveChunk->writeChunk(kAudioUnitCustomProperty_EditingProgram, &editProg, sizeof(int));
+		saveChunk->writeChunk(kAudioUnitCustomProperty_EditingChannel, &editChan, sizeof(int));
+	}
 	
 	if ( isPreset ) {
 		if ( vp[editProg].brr.data ) {
@@ -334,7 +344,11 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 		}
 	}
 	
-	*data = mSaveChunk = saveChunk;
+#if TESTING
+	printf("getChunk saveChunk->GetDataSize()=%d\n",saveChunk->GetDataSize());
+#endif
+	mSaveChunk = saveChunk;
+	*data = (void*)saveChunk->GetDataPtr();
 	
 	return saveChunk->GetDataSize();
 }
@@ -342,7 +356,11 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 //-----------------------------------------------------------------------------------------
 VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 {
+#if TESTING
+	printf("setChunk byteSize=%d\n",byteSize);
+#endif
 	int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+	int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
 	VoiceParams	*vp = mEfx->GetVP();
 	
 	PGChunk		*saveChunk;
@@ -358,6 +376,12 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 		
 		if ( ckType == CKID_PROGRAM_TOTAL ) {
 			saveChunk->readData( &totalProgs, sizeof(int), &ckSize );
+		}
+		else if ( ckType == kAudioUnitCustomProperty_EditingProgram && isPreset == false ) {
+			saveChunk->readData( &editProg, sizeof(int), &ckSize );
+		}
+		else if ( ckType == kAudioUnitCustomProperty_EditingChannel && isPreset == false ) {
+			saveChunk->readData( &editChan, sizeof(int), &ckSize );
 		}
 		else if ( ckType >= CKID_PROGRAM_DATA && ckType < (CKID_PROGRAM_DATA+128) ) {
 			//CKID_PROGRAM_DATA+pgnumのチャンクに入れ子でプログラムデータが入っている
@@ -376,9 +400,12 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 			saveChunk->AdvDataPos(ckSize);
 		}
 	}
-	
+#if TESTING
+	printf("setChunk saveChunk->GetDataPos()=%d\n",saveChunk->GetDataPos());
+#endif	
 	//UIに変更を反映
-	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, kAudioUnitCustomProperty_EditingProgram );
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg );
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingChannel, editChan );
 	mEfx->GetGenerator()->RefreshKeyMap();
 	
 	delete saveChunk;
