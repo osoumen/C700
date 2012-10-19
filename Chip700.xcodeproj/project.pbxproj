@@ -1013,7 +1013,7 @@
 		F569C40A16254B6E006C91AD /* XIFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = XIFile.cpp; sourceTree = "<group>"; };
 		F569C6DD162644AE006C91AD /* PlistBRRFile.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = PlistBRRFile.h; sourceTree = "<group>"; };
 		F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = PlistBRRFile.cpp; sourceTree = "<group>"; };
-		F569CA611626D130006C91AD /* C700 Carbon.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "C700 Carbon.component"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F569CA611626D130006C91AD /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		F569CA621626D130006C91AD /* Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy.plist"; sourceTree = "<group>"; };
 		F569CA951626D281006C91AD /* Chip700_carbon.exp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.exports; path = Chip700_carbon.exp; sourceTree = "<group>"; };
 		F56AAB00158DCB6000864DD4 /* bt_velocitysens2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_velocitysens2.png; sourceTree = "<group>"; };
@@ -1200,7 +1200,7 @@
 			children = (
 				8D01CCD20486CAD60068D4B7 /* C700.component */,
 				F56D351F156A0EA000038960 /* encodetest */,
-				F569CA611626D130006C91AD /* C700 Carbon.component */,
+				F569CA611626D130006C91AD /* C700.component */,
 				F543322816296E0200863A0B /* C700.vst */,
 			);
 			name = Products;
@@ -2048,7 +2048,7 @@
 			name = "C700 CarbonUI";
 			productInstallPath = "$(HOME)/Library/Bundles";
 			productName = Chip700;
-			productReference = F569CA611626D130006C91AD /* C700 Carbon.component */;
+			productReference = F569CA611626D130006C91AD /* C700.component */;
 			productType = "com.apple.product-type.bundle";
 		};
 		F56D351E156A0EA000038960 /* encodetest */ = {
@@ -2873,7 +2873,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bundle";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
-				PRODUCT_NAME = "C700 Carbon";
+				PRODUCT_NAME = C700;
 				REZ_SEARCH_PATHS = (
 					/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers,
 					/Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase,
@@ -2927,7 +2927,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bundle";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
-				PRODUCT_NAME = "C700 Carbon";
+				PRODUCT_NAME = C700;
 				REZ_SEARCH_PATHS = (
 					/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers,
 					/Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase,
