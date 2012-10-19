@@ -39,7 +39,7 @@ public:
 private:	
 	static const int CKID_NULL_DATA	= 0;
 	
-	bool			mShouldRelease;
+	bool			mIsBufferInternal;
 	unsigned char	*m_pData;
 	int				mDataSize;
 	int				mDataUsed;

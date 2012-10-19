@@ -203,13 +203,15 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					cntl = button;
 					break;
 				}
-				case 'vtsw':
+				case 'hzsw':
 				{
 					char		rsrcName[100];
 					snprintf(rsrcName, 99, "%s.png", desc->title);
-					CBitmap			*btnImage = new CBitmap(rsrcName);
-					CVerticalSwitch	*button;
-					button = new CVerticalSwitch(cntlSize, this, desc->id, btnImage );
+					CBitmap				*btnImage = new CBitmap(rsrcName);
+					CHorizontalSwitch	*button;
+					int					subPixmaps = desc->maximum-desc->minimum+1;
+					CCoord				heightOfOneImage = btnImage->getHeight()/subPixmaps;
+					button = new CHorizontalSwitch(cntlSize, this, desc->id, subPixmaps, heightOfOneImage, subPixmaps, btnImage );
 					btnImage->forget();
 					cntl = button;
 					break;

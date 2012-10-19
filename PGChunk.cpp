@@ -13,7 +13,7 @@
 //-----------------------------------------------------------------------------
 PGChunk::PGChunk(int allocMemSize)
 : FileAccess(NULL, true)
-, mShouldRelease( true )
+, mIsBufferInternal( true )
 , m_pData( NULL )
 , mDataSize( allocMemSize )
 , mDataUsed( 0 )
@@ -29,7 +29,7 @@ PGChunk::PGChunk(int allocMemSize)
 //-----------------------------------------------------------------------------
 PGChunk::PGChunk( const void *data, int dataSize )
 : FileAccess(NULL, true)
-, mShouldRelease( false )
+, mIsBufferInternal( false )
 , m_pData( (unsigned char*)data )
 , mDataSize( dataSize )
 , mDataUsed( dataSize )
@@ -42,7 +42,7 @@ PGChunk::PGChunk( const void *data, int dataSize )
 //-----------------------------------------------------------------------------
 PGChunk::~PGChunk()
 {
-	if ( (m_pData != NULL) && mShouldRelease ) {
+	if ( (m_pData != NULL) && mIsBufferInternal ) {
 		delete [] m_pData;
 	}
 }

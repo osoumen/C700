@@ -2190,7 +2190,7 @@ ControlInstances	sCntl[] = {
 	},
 	{
 		'airy',	//sig
-		'vtsw',	//kind
+		'hzsw',	//kind
 		"bt_velocitysens",	//title
 		1,	//Value
 		0,	//Minimum

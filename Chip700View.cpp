@@ -121,7 +121,7 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 		//ベロシティカーブコントロールのkind変更
 		if ( outKind.kind == 'bttn' && (strcmp(title, "bt_velocitysens")==0) )
 		{
-			outKind.kind = 'vtsw';
+			outKind.kind = 'hzsw';
 		}
 		//Fontの設定
 		if ( strcmp(title, "0 bytes") == 0 )
