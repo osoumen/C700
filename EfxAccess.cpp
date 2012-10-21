@@ -29,13 +29,13 @@ EfxAccess::~EfxAccess()
 }
 
 //-----------------------------------------------------------------------------
-bool	EfxAccess::CreateBRRFileData( BRRFile **outData )
+bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 {
 	return false;
 }
 
 //-----------------------------------------------------------------------------
-bool	EfxAccess::SetBRRFileData( const BRRFile *data )
+bool	EfxAccess::SetBRRFileData( const RawBRRFile *data )
 {
 	return false;
 }

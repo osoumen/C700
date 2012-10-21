@@ -22,7 +22,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		168, 47, 62, 11,	//x,y,w,h
+		178, 42, 62, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -345,7 +345,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		-1,	//id
 		0,	//command
-		20, 268, 496, 5,	//x,y,w,h
+		20, 267, 496, 5,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1654,7 +1654,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		70006,	//id
 		'emph',	//command
-		321, 248, 67, 12,	//x,y,w,h
+		114, 248, 67, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1671,7 +1671,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		70007,	//id
 		'unlo',	//command
-		116, 248, 41, 14,	//x,y,w,h
+		361, 248, 41, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1688,7 +1688,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		70008,	//id
 		'load',	//command
-		273, 248, 40, 14,	//x,y,w,h
+		187, 248, 40, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1705,7 +1705,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		70009,	//id
 		'save',	//command
-		165, 248, 40, 14,	//x,y,w,h
+		235, 248, 40, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1722,7 +1722,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		70010,	//id
 		'sav2',	//command
-		213, 248, 52, 14,	//x,y,w,h
+		283, 248, 52, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2192,7 +2192,7 @@ ControlInstances	sCntl[] = {
 		'airy',	//sig
 		'cbtn',	//kind
 		"Multi Bank A",	//title
-		1,	//Value
+		0,	//Value
 		0,	//Minimum
 		1,	//Maximum
 		'AUid',	//sig
@@ -2215,7 +2215,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		6,	//id
 		0,	//command
-		171, 59, 80, 12,	//x,y,w,h
+		169, 53, 80, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign

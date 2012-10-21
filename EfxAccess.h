@@ -21,7 +21,7 @@ class C700VST;
 
 #include "SPCFile.h"
 #include "PlistBRRFile.h"
-#include "BRRFile.h"
+#include "RawBRRFile.h"
 #include "AudioFile.h"
 #include "XIFile.h"
 
@@ -34,8 +34,8 @@ public:
 	void	SetEventListener( AUEventListenerRef listener ) { mEventListener = listener; }
 #endif
 	
-	bool	CreateBRRFileData( BRRFile **outData );
-	bool	SetBRRFileData( const BRRFile *data );
+	bool	CreateBRRFileData( RawBRRFile **outData );
+	bool	SetBRRFileData( const RawBRRFile *data );
 	bool	CreateXIFileData( XIFile **outData );
 	bool	CreatePlistBRRFileData( PlistBRRFile **outData );
 	bool	SetPlistBRRFileData( const PlistBRRFile *data );

@@ -13,38 +13,22 @@
 //-----------------------------------------------------------------------------
 PGChunk::PGChunk(int allocMemSize)
 : FileAccess(NULL, true)
-, mIsBufferInternal( true )
-, m_pData( NULL )
-, mDataSize( allocMemSize )
-, mDataUsed( 0 )
-, mDataPos( 0 )
+, DataBuffer(allocMemSize)
 , mNumPrograms( 0 )
-, mReadOnly( false )
 {
-	if ( allocMemSize > 0 ) {
-		m_pData = new unsigned char[allocMemSize];
-	}
 }
 
 //-----------------------------------------------------------------------------
 PGChunk::PGChunk( const void *data, int dataSize )
 : FileAccess(NULL, true)
-, mIsBufferInternal( false )
-, m_pData( (unsigned char*)data )
-, mDataSize( dataSize )
-, mDataUsed( dataSize )
-, mDataPos( 0 )
+, DataBuffer( data, dataSize )
 , mNumPrograms( 0 )
-, mReadOnly( true )
 {
 }
 
 //-----------------------------------------------------------------------------
 PGChunk::~PGChunk()
 {
-	if ( (m_pData != NULL) && mIsBufferInternal ) {
-		delete [] m_pData;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -209,7 +193,7 @@ bool PGChunk::ReadDataToVP( VoiceParams *vp )
 				break;
 			default:
 				//•s–¾ƒ`ƒƒƒ“ƒN‚Ìê‡‚Í”ò‚Î‚·
-				mDataPos += ckSize;
+				AdvDataPos(ckSize);
 				break;
 		}
 	}
@@ -230,48 +214,39 @@ bool PGChunk::writeChunk( int type, const void *data, int byte )
 		return false;
 	}
 	
-	memcpy(m_pData+mDataPos, &ckHead, sizeof(MyChunkHead));
-	mDataPos += sizeof(MyChunkHead);
-	
-	memcpy(m_pData+mDataPos, data, byte);
-	mDataPos += byte;
-	
-	if ( mDataPos > mDataUsed ) {
-		mDataUsed = mDataPos;
+	long	writeSize;
+	if ( writeData(&ckHead, sizeof(MyChunkHead), &writeSize) == false ) {
+		return false;
 	}
+	
+//	memcpy(m_pData+mDataPos, &ckHead, sizeof(MyChunkHead));
+//	mDataPos += sizeof(MyChunkHead);
+	
+	if ( writeData(data, byte, &writeSize) == false ) {
+		return false;
+	}
+	
+//	memcpy(m_pData+mDataPos, data, byte);
+//	mDataPos += byte;
+	
+//	if ( mDataPos > mDataUsed ) {
+//		mDataUsed = mDataPos;
+//	}
 	return true;
 }
 
 //-----------------------------------------------------------------------------
 bool PGChunk::readChunkHead( int *type, long *byte )
 {
-	int		toRead = sizeof( MyChunkHead );
+	long		toRead = sizeof( MyChunkHead );
 	
 	MyChunkHead	head;
-	memcpy(&head, m_pData+mDataPos, toRead);
-	mDataPos += toRead;
-	*type = head.type;
-	*byte = head.size;
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-bool PGChunk::readData( void *data, long byte, long *actualReadByte )
-{
-	int		toRead = byte;
-	
-	if ( mDataPos >= mDataSize ) {
+	if ( readData(&head, toRead, &toRead) == false ) {
 		return false;
 	}
-	if ( mDataSize < ( mDataPos + byte ) ) {
-		toRead = mDataSize - mDataPos;
-	}
-	
-	memcpy(data, m_pData+mDataPos, toRead);
-	mDataPos += toRead;
-	
-	if ( actualReadByte ) {
-		*actualReadByte = toRead;
-	}
+//	memcpy(&head, m_pData+mDataPos, toRead);
+//	mDataPos += toRead;
+	(*type) = head.type;
+	(*byte) = head.size;
 	return true;
 }

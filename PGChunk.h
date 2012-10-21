@@ -10,9 +10,10 @@
 #pragma once
 
 #include "Chip700defines.h"
+#include "DataBuffer.h"
 #include "FileAccess.h"
 
-class PGChunk : public FileAccess {
+class PGChunk : public FileAccess, public DataBuffer {
 public:
 	PGChunk( int allocMemSize );
 	PGChunk( const void *data, int dataSize );
@@ -20,14 +21,14 @@ public:
 	
 	bool				AppendDataFromVP( VoiceParams *vp );
 	bool				ReadDataToVP( VoiceParams *vp );
-	const unsigned char	*GetDataPtr() const { return m_pData; }
-	int					GetDataSize() const { return mDataUsed; }
-	int					GetDataPos() const { return mDataPos; }
-	void				AdvDataPos( int adv ) { mDataPos+=adv; }
+//	const unsigned char	*GetDataPtr() const { return m_pData; }
+//	int					GetDataSize() const { return mDataUsed; }
+//	int					GetDataPos() const { return mDataPos; }
+//	void				AdvDataPos( int adv ) { mDataPos+=adv; }
 	
 	bool				writeChunk( int type, const void* data, int byte );	//óeó ïsë´Ç≈ëSïîÇèëÇ´çûÇﬂÇ»Ç¢Ç∆Ç´ÇÕfalse
 	bool				readChunkHead( int *type, long *byte );
-	bool				readData( void *data, long byte, long *actualReadByte );
+//	bool				readData( void *data, long byte, long *actualReadByte );
 	
 	static int			getPGChunkSize( const VoiceParams *vp );
 
@@ -39,11 +40,11 @@ public:
 private:	
 	static const int CKID_NULL_DATA	= 0;
 	
-	bool			mIsBufferInternal;
-	unsigned char	*m_pData;
-	int				mDataSize;
-	int				mDataUsed;
-	int				mDataPos;
+//	bool			mIsBufferInternal;
+//	unsigned char	*m_pData;
+//	int				mDataSize;
+//	int				mDataUsed;
+//	int				mDataPos;
 	int				mNumPrograms;
-	bool			mReadOnly;
+//	bool			mReadOnly;
 };

@@ -1,5 +1,5 @@
 /*
- *  BRRFile.h
+ *  RawBRRFile.h
  *  Chip700
  *
  *  Created by osoumen on 12/10/10.
@@ -11,8 +11,8 @@
 
 #include "FileAccess.h"
 
-class BRRFile : public FileAccess {
+class RawBRRFile : public FileAccess {
 public:
-	BRRFile( const char *path, bool isWriteable=true );
-	virtual ~BRRFile();
+	RawBRRFile( const char *path, bool isWriteable=true );
+	virtual ~RawBRRFile();
 };

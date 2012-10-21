@@ -727,7 +727,7 @@ void C700GUI::copyFIRParamToClipBoard()
 //-----------------------------------------------------------------------------
 bool C700GUI::loadToCurrentProgram( const char *path )
 {
-	BRRFile			brrfile(path,false);
+	RawBRRFile			brrfile(path,false);
 	PlistBRRFile	plbrrfile(path,false);
 	AudioFile		audiofile(path,false);
 	SPCFile			spcfile(path,false);
@@ -756,7 +756,7 @@ bool C700GUI::loadToCurrentProgram( const char *path )
 }
 
 //-----------------------------------------------------------------------------
-bool C700GUI::loadToCurrentProgramFromBRR( BRRFile *file )
+bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 {
 	return efxAcc->SetBRRFileData(file);
 }

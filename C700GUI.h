@@ -25,7 +25,7 @@
 
 #include "SPCFile.h"
 //#include "PlistBRRFile.h"
-#include "BRRFile.h"
+#include "RawBRRFile.h"
 #include "AudioFile.h"
 #include "XIFile.h"
 
@@ -50,7 +50,7 @@ public:
 private:
 	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
 	void			copyFIRParamToClipBoard();
-	bool			loadToCurrentProgramFromBRR( BRRFile *file );
+	bool			loadToCurrentProgramFromBRR( RawBRRFile *file );
 	bool			loadToCurrentProgramFromPlistBRR( PlistBRRFile *file );
 	bool			loadToCurrentProgramFromAudioFile( AudioFile *file );
 	bool			loadToCurrentProgramFromSPC( SPCFile *file );

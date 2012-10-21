@@ -22,17 +22,18 @@ int GetSRTicks( int sr, double tempo );
 //-----------------------------------------------------------------------------
 XIFile::XIFile( const char *path, int allocMemSize )
 : FileAccess(path, true)
+, DataBuffer( allocMemSize )
 #if MAC
 , mCFData( NULL )
 #endif
-, m_pData( NULL )
-, mDataSize( allocMemSize )
-, mDataUsed( 0 )
-, mDataPos( 0 )
+//, m_pData( NULL )
+//, mDataSize( allocMemSize )
+//, mDataUsed( 0 )
+//, mDataPos( 0 )
 {
-	if ( allocMemSize > 0 ) {
-		m_pData = new unsigned char[allocMemSize];
-	}
+//	if ( allocMemSize > 0 ) {
+//		m_pData = new unsigned char[allocMemSize];
+//	}
 }
 
 //-----------------------------------------------------------------------------
@@ -43,12 +44,13 @@ XIFile::~XIFile()
 		CFRelease(mCFData);
 	}
 #endif
-	if ( m_pData ) {
-		delete [] m_pData;
-	}
+//	if ( m_pData ) {
+//		delete [] m_pData;
+//	}
 }
 
 //-----------------------------------------------------------------------------
+/*
 bool XIFile::writeData( void* data, int byte )
 {
 	//空き容量チェック
@@ -63,19 +65,7 @@ bool XIFile::writeData( void* data, int byte )
 	}
 	return true;
 }
-
-//-----------------------------------------------------------------------------
-bool XIFile::setPos( int pos )
-{
-	if ( mDataSize < pos ) {
-		return false;
-	}
-	mDataPos = pos;
-	if ( mDataPos > mDataUsed ) {
-		mDataUsed = mDataPos;
-	}
-	return true;
-}
+*/
 
 //-----------------------------------------------------------------------------
 bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, double tempo )
@@ -127,7 +117,7 @@ bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, d
 	xfh.name[22] = 0x1A;
 	memcpy(xfh.trkname, "FastTracker v2.00   ", 20);
 	xfh.shsize = EndianU16_NtoL( 0x0102 );
-	if ( writeData( &xfh, sizeof(xfh) ) == false ) {
+	if ( writeData( &xfh, sizeof(xfh),NULL ) == false ) {
 		return false;
 	}
 	
@@ -193,7 +183,7 @@ bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, d
 	xih.ptype = 0;
 	xih.volfade = EndianU16_NtoL( 5000 );
 	xih.reserved2 = EndianU16_NtoL( nsamples );
-	if ( writeData( &xih, sizeof(xih) ) == false ) {
+	if ( writeData( &xih, sizeof(xih),NULL ) == false ) {
 		return false;
 	}
 	
@@ -245,7 +235,7 @@ bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, d
 			else {
 				strncpy(xsh.name, chip->getVP(ismp)->pgname, 21);
 			}
-			if ( writeData( &xsh, sizeof(xsh) ) == false ) {
+			if ( writeData( &xsh, sizeof(xsh),NULL ) == false ) {
 				return false;
 			}
 		}
@@ -294,7 +284,7 @@ bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, d
 				wavedata[i] = EndianS16_NtoL( wavedata[i] );
 				s_old = s_new;
 			}
-			if ( writeData( wavedata, numSamples*2 ) == false ) {
+			if ( writeData( wavedata, numSamples*2,NULL ) == false ) {
 				free(wavedata);
 				return false;
 			}
@@ -320,7 +310,7 @@ bool XIFile::Write()
 	CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
 	if (CFWriteStreamOpen(filestream)) {
 		if ( mCFData == NULL ) {
-			mCFData = CFDataCreate(NULL, GetDataPtr(), GetWriteSize() );
+			mCFData = CFDataCreate(NULL, GetDataPtr(), GetDataSize() );
 		}
 		CFWriteStreamWrite(filestream,CFDataGetBytePtr(mCFData),CFDataGetLength(mCFData));
 		CFWriteStreamClose(filestream);
