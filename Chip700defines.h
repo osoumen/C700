@@ -226,3 +226,5 @@ typedef struct {
 	bool		isEmphasized;
 } VoiceParams;
 
+float ConvertToVSTValue( float value, float min, float max );
+float ConvertFromVSTValue( float value, float min, float max );

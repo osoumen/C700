@@ -65,13 +65,13 @@ C700VST::~C700VST()
 //-----------------------------------------------------------------------------
 float C700VST::expandParam( int index, float value )
 {
-	return (value * (C700Kernel::GetParameterMax(index) - C700Kernel::GetParameterMin(index)) + C700Kernel::GetParameterMin(index));
+	return ConvertFromVSTValue(value, C700Kernel::GetParameterMin(index), C700Kernel::GetParameterMax(index));
 }
 
 //-----------------------------------------------------------------------------
 float C700VST::shrinkParam( int index, float value )
 {
-	return (value - C700Kernel::GetParameterMin(index)) / (C700Kernel::GetParameterMax(index) - C700Kernel::GetParameterMin(index));
+	return ConvertToVSTValue(value, C700Kernel::GetParameterMin(index), C700Kernel::GetParameterMax(index));
 }
 
 //-----------------------------------------------------------------------------

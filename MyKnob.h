@@ -10,6 +10,7 @@
 #pragma once
 
 #include "vstgui.h"
+#include "Chip700defines.h"
 
 class CMyKnob : public CKnob
 {
@@ -18,8 +19,8 @@ public:
 	virtual ~CMyKnob();
 	
 	//0-1.0にスケーリングしてmin,maxの変更に対応する
-	virtual void  setValue (float val) { value = (val - mRealVmin) / (mRealVmax - mRealVmin); }
-	virtual float getValue () const { return (value * (mRealVmax - mRealVmin) + mRealVmin); };
+	virtual void  setValue (float val) { value = ConvertToVSTValue(val, mRealVmin, mRealVmax); }
+	virtual float getValue () const { return ConvertFromVSTValue(value, mRealVmin, mRealVmax); }
 	virtual void  setMin (float val) { mRealVmin = val; }
 	virtual float getMin () const { return mRealVmin; }
 	virtual void  setMax (float val) { mRealVmax = val; }

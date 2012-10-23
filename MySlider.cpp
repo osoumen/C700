@@ -7,6 +7,7 @@
  *
  */
 
+#include "Chip700defines.h"
 #include "MySlider.h"
 
 //-----------------------------------------------------------------------------
@@ -62,7 +63,7 @@ void CMySlider::draw(CDrawContext* pContext)
 	
 	//Å‘å’lÅ¬’l‚Ì•ÏX‚Ö‚Ì‘Î‰
 	float	origVal = value;
-	value = (value - vmin) / (vmax - vmin);
+	value = ConvertToVSTValue(value, vmin, vmax);
 	CSlider::draw(pContext);
 	value = origVal;
 }
