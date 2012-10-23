@@ -326,7 +326,7 @@ bool XIFile::Write()
 	hFile = CreateFile( mPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 	if ( hFile != INVALID_HANDLE_VALUE ) {
 		DWORD	writeSize;
-		WriteFile( hFile, GetDataPtr(), GetWriteSize(), &writeSize, NULL );
+		WriteFile( hFile, GetDataPtr(), GetDataSize(), &writeSize, NULL );
 		CloseHandle( hFile );
 	}
 	return false;

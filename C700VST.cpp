@@ -8,11 +8,25 @@
  */
 
 #include "C700VST.h"
-#include <stdio.h>
+#include <math.h>
+
 
 AudioEffect* createEffectInstance(audioMasterCallback audioMaster)
 {
 	return new C700VST(audioMaster);
+}
+
+//-----------------------------------------------------------------------------
+float ConvertToVSTValue( float value, float min, float max )
+{
+	return (value - min) / (max - min);
+}
+
+//-----------------------------------------------------------------------------
+float ConvertFromVSTValue( float value, float min, float max )
+{
+	float range = value * (max - min);
+	return (range + min);
 }
 
 //-----------------------------------------------------------------------------------------

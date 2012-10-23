@@ -454,6 +454,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\DataBuffer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DataBuffer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\EchoKernel.cpp"
 					>
 				</File>
@@ -474,6 +482,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\RawBRRFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\RawBRRFile.h"
+					>
+				</File>
+				<File
 					RelativePath="..\samplebrr.h"
 					>
 				</File>
@@ -487,14 +503,6 @@
 				</File>
 				<File
 					RelativePath="..\AudioFile.h"
-					>
-				</File>
-				<File
-					RelativePath="..\BRRFile.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\BRRFile.h"
 					>
 				</File>
 				<File

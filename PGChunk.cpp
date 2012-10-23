@@ -132,6 +132,7 @@ bool PGChunk::ReadDataToVP( VoiceParams *vp )
 				long	actSize;
 				readData(vp->brr.data, ckSize, &actSize);
 				vp->brr.size = actSize;
+				vp->loop = vp->brr.data[actSize-9]&2?true:false;
 				break;
 			}
 			case kAudioUnitCustomProperty_Rate:
