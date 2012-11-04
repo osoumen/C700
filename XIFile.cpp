@@ -329,7 +329,7 @@ bool XIFile::Write()
 		WriteFile( hFile, GetDataPtr(), GetDataSize(), &writeSize, NULL );
 		CloseHandle( hFile );
 	}
-	return false;
+	return true;
 #endif
 }
 
