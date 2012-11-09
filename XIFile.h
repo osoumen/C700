@@ -26,20 +26,12 @@ public:
 #endif
 	
 	bool				SetDataFromChip( const Chip700Generator *chip, int targetProgram, double tempo );
-//	const unsigned char	*GetDataPtr() const { return m_pData; }
-//	int					GetWriteSize() const { return mDataUsed; }
 	
 private:
-//	bool				writeData( void* data, int byte );	//容量不足で全部を書き込めないときはfalse
-//	bool				setPos( int pos );					//書き込み位置を移動する　出来なかったらfalse
 	
 #if MAC
 	CFDataRef		mCFData;
 #endif
-//	unsigned char	*m_pData;
-//	int				mDataSize;
-//	int				mDataUsed;
-//	int				mDataPos;
 	
 public:
 	

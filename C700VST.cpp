@@ -16,19 +16,6 @@ AudioEffect* createEffectInstance(audioMasterCallback audioMaster)
 	return new C700VST(audioMaster);
 }
 
-//-----------------------------------------------------------------------------
-float ConvertToVSTValue( float value, float min, float max )
-{
-	return (value - min) / (max - min);
-}
-
-//-----------------------------------------------------------------------------
-float ConvertFromVSTValue( float value, float min, float max )
-{
-	float range = value * (max - min);
-	return (range + min);
-}
-
 //-----------------------------------------------------------------------------------------
 C700VST::C700VST(audioMasterCallback audioMaster)
 : AudioEffectX(audioMaster, 128, kNumberOfParameters)

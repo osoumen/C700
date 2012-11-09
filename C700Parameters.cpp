@@ -51,6 +51,18 @@ static const float kDefaultValue_fir5 = 0;
 static const float kDefaultValue_fir6 = 0;
 static const float kDefaultValue_fir7 = 0;
 
+//-----------------------------------------------------------------------------
+float ConvertToVSTValue( float value, float min, float max )
+{
+	return (value - min) / (max - min);
+}
+
+//-----------------------------------------------------------------------------
+float ConvertFromVSTValue( float value, float min, float max )
+{
+	float range = value * (max - min);
+	return (range + min);
+}
 
 //-----------------------------------------------------------------------------
 C700Parameters::C700Parameters(int numParams)

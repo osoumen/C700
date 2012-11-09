@@ -21,14 +21,9 @@ public:
 	
 	bool				AppendDataFromVP( VoiceParams *vp );
 	bool				ReadDataToVP( VoiceParams *vp );
-//	const unsigned char	*GetDataPtr() const { return m_pData; }
-//	int					GetDataSize() const { return mDataUsed; }
-//	int					GetDataPos() const { return mDataPos; }
-//	void				AdvDataPos( int adv ) { mDataPos+=adv; }
 	
 	bool				writeChunk( int type, const void* data, int byte );	//—e—Ê•s‘«‚Å‘S•”‚ğ‘‚«‚ß‚È‚¢‚Æ‚«‚Ífalse
 	bool				readChunkHead( int *type, long *byte );
-//	bool				readData( void *data, long byte, long *actualReadByte );
 	
 	static int			getPGChunkSize( const VoiceParams *vp );
 
@@ -39,12 +34,5 @@ public:
 	
 private:	
 	static const int CKID_NULL_DATA	= 0;
-	
-//	bool			mIsBufferInternal;
-//	unsigned char	*m_pData;
-//	int				mDataSize;
-//	int				mDataUsed;
-//	int				mDataPos;
 	int				mNumPrograms;
-//	bool			mReadOnly;
 };

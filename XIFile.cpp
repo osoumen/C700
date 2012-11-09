@@ -26,14 +26,7 @@ XIFile::XIFile( const char *path, int allocMemSize )
 #if MAC
 , mCFData( NULL )
 #endif
-//, m_pData( NULL )
-//, mDataSize( allocMemSize )
-//, mDataUsed( 0 )
-//, mDataPos( 0 )
 {
-//	if ( allocMemSize > 0 ) {
-//		m_pData = new unsigned char[allocMemSize];
-//	}
 }
 
 //-----------------------------------------------------------------------------
@@ -44,28 +37,7 @@ XIFile::~XIFile()
 		CFRelease(mCFData);
 	}
 #endif
-//	if ( m_pData ) {
-//		delete [] m_pData;
-//	}
 }
-
-//-----------------------------------------------------------------------------
-/*
-bool XIFile::writeData( void* data, int byte )
-{
-	//空き容量チェック
-	if ( mDataSize < ( mDataPos + byte ) ) {
-		return false;
-	}
-	
-	memcpy(m_pData+mDataPos, data, byte);
-	mDataPos += byte;
-	if ( mDataPos > mDataUsed ) {
-		mDataUsed = mDataPos;
-	}
-	return true;
-}
-*/
 
 //-----------------------------------------------------------------------------
 bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, double tempo )

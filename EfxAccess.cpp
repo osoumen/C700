@@ -31,12 +31,14 @@ EfxAccess::~EfxAccess()
 //-----------------------------------------------------------------------------
 bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 {
+	//TODO: エフェクタ側から現在のプログラムの情報を取得してRawBRRFileを作成
 	return false;
 }
 
 //-----------------------------------------------------------------------------
 bool	EfxAccess::SetBRRFileData( const RawBRRFile *data )
 {
+	//TODO: RawBRRFileからデータを取得してエフェクタ側へ反映
 	return false;
 }
 
@@ -47,7 +49,9 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 	XIFile	*file = new XIFile(NULL, 0);
 	*outData = file;
 	
-	//データを取得する
+	//AU内部で生成されたデータを取得する
+	//問題が無ければVST時と同じでも良いかも？
+	//AU内部でやっていることもほぼ同じ
 	CFDataRef	cfdata;
 	UInt32 size = sizeof(CFDataRef);
 	if (
@@ -68,11 +72,18 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 	CFRelease(cfdata);
 	return true;
 #else
-	//TODO : VST時の処理
+	//VST時の処理
+	//ホスト側からテンポを取得
+	double	tempo = 120.0;
+	VstTimeInfo*	info = mEfx->getTimeInfo(kVstTempoValid);
+	if ( info ) {
+		tempo = info->tempo;
+	}
+	
 	XIFile	*file = new XIFile(NULL);
 	file->SetDataFromChip( mEfx->mEfx->GetGenerator(),
 							 mEfx->mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram),
-							 mEfx->mTempo );
+							 tempo );
 	if ( file->IsLoaded() ) {
 		*outData = file;
 		return true;

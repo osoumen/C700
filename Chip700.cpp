@@ -570,7 +570,7 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 				
 				if ( fileData.IsLoaded() ) {
 					CFDataRef xidata;
-					xidata = CFDataCreate(NULL, fileData.GetDataPtr(), fileData.GetWriteSize() );
+					xidata = CFDataCreate(NULL, fileData.GetDataPtr(), fileData.GetDataSize() );
 					*((CFDataRef *)outData) = xidata;	//égópå„óvrelease
 				}
 				else {

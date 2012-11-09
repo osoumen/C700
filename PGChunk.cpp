@@ -220,19 +220,9 @@ bool PGChunk::writeChunk( int type, const void *data, int byte )
 		return false;
 	}
 	
-//	memcpy(m_pData+mDataPos, &ckHead, sizeof(MyChunkHead));
-//	mDataPos += sizeof(MyChunkHead);
-	
 	if ( writeData(data, byte, &writeSize) == false ) {
 		return false;
 	}
-	
-//	memcpy(m_pData+mDataPos, data, byte);
-//	mDataPos += byte;
-	
-//	if ( mDataPos > mDataUsed ) {
-//		mDataUsed = mDataPos;
-//	}
 	return true;
 }
 
@@ -245,8 +235,6 @@ bool PGChunk::readChunkHead( int *type, long *byte )
 	if ( readData(&head, toRead, &toRead) == false ) {
 		return false;
 	}
-//	memcpy(&head, m_pData+mDataPos, toRead);
-//	mDataPos += toRead;
 	(*type) = head.type;
 	(*byte) = head.size;
 	return true;
