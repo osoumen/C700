@@ -57,9 +57,9 @@ public:
 	} XIINSTRUMENTHEADER;
 	
 	typedef struct {
-		unsigned long samplen;
-		unsigned long loopstart;
-		unsigned long looplen;
+		unsigned int samplen;
+		unsigned int loopstart;
+		unsigned int looplen;
 		unsigned char vol;
 		signed char finetune;
 		unsigned char type;

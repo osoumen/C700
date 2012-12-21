@@ -167,7 +167,7 @@ bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, d
 			bool	existSrcFile = false;
 			if ( chip->getVP(ismp)->sourceFile[0] ) {
 				AudioFile::InstData	inst;
-				long		numSamples;
+				int		numSamples;
 				
 				AudioFile	origFile(chip->getVP(ismp)->sourceFile,false);
 				origFile.Load();
@@ -217,7 +217,7 @@ bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, d
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
 		if ( chip->getVP(ismp)->brr.data != NULL && chip->getVP(ismp)->bank == selectBank ) {
 			short	*wavedata;
-			long	numSamples;
+			int	numSamples;
 			bool	existSrcFile = false;	//元ファイルが存在するか？
 			
 			if ( chip->getVP(ismp)->sourceFile[0] ) {

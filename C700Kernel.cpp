@@ -702,6 +702,9 @@ bool C700Kernel::SelectPreset( int num )
 		case 1:
 			//プリセット音色
 			mVPset[0].brr.size=0x36;
+			if ( mVPset[0].brr.data ) {
+				delete [] mVPset[0].brr.data;
+			}
 			mVPset[0].brr.data	= new unsigned char[mVPset[0].brr.size];
 			memmove(mVPset[0].brr.data,sinewave_brr,mVPset[0].brr.size);
 			mVPset[0].basekey=81;
@@ -717,6 +720,9 @@ bool C700Kernel::SelectPreset( int num )
 			strcpy(mVPset[0].pgname, "Sine Wave");
 			
 			mVPset[1].brr.size=0x2d;
+			if ( mVPset[1].brr.data ) {
+				delete [] mVPset[1].brr.data;
+			}
 			mVPset[1].brr.data = new unsigned char[mVPset[1].brr.size];
 			memmove(mVPset[1].brr.data,squarewave_brr,mVPset[1].brr.size);
 			mVPset[1].basekey=69;
@@ -732,6 +738,9 @@ bool C700Kernel::SelectPreset( int num )
 			strcpy(mVPset[1].pgname, "Square Wave");
 			
 			mVPset[2].brr.size=0x2d;
+			if ( mVPset[2].brr.data ) {
+				delete [] mVPset[2].brr.data;
+			}
 			mVPset[2].brr.data= new unsigned char[mVPset[2].brr.size];
 			memmove(mVPset[2].brr.data,pulse1_brr,mVPset[2].brr.size);
 			mVPset[2].basekey=69;
@@ -747,6 +756,9 @@ bool C700Kernel::SelectPreset( int num )
 			strcpy(mVPset[2].pgname, "25% Pulse");
 			
 			mVPset[3].brr.size=0x2d;
+			if ( mVPset[3].brr.data ) {
+				delete [] mVPset[2].brr.data;
+			}
 			mVPset[3].brr.data=  new unsigned char[mVPset[3].brr.size];
 			memmove(mVPset[3].brr.data,pulse2_brr,mVPset[3].brr.size);
 			mVPset[3].basekey=69;
@@ -762,6 +774,9 @@ bool C700Kernel::SelectPreset( int num )
 			strcpy(mVPset[3].pgname, "12.5% Pulse");
 			
 			mVPset[4].brr.size=0x2d;
+			if ( mVPset[4].brr.data ) {
+				delete [] mVPset[4].brr.data;
+			}
 			mVPset[4].brr.data= new unsigned char[mVPset[4].brr.size];
 			memmove(mVPset[4].brr.data,pulse3_brr,mVPset[4].brr.size);
 			mVPset[4].basekey=69;
