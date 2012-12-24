@@ -12,6 +12,8 @@
 
 //-----------------------------------------------------------------------------
 EchoKernel::EchoKernel()
+: mEchoBuffer(NULL)
+, mFIRbuf(NULL)
 {
 	mEchoBuffer = new int[ECHO_BUFFER_SIZE];
 	mFIRbuf = new int[FIR_LENGTH];
@@ -26,8 +28,12 @@ EchoKernel::EchoKernel()
 //-----------------------------------------------------------------------------
 EchoKernel::~EchoKernel()
 {
-	delete [] mEchoBuffer;
-	delete [] mFIRbuf;
+	if ( mEchoBuffer ) {
+		delete [] mEchoBuffer;
+	}
+	if ( mFIRbuf ) {
+		delete [] mFIRbuf;
+	}
 }
 
 //-----------------------------------------------------------------------------

@@ -33,6 +33,7 @@ COMPONENT_ENTRY(Chip700)
 //-----------------------------------------------------------------------------
 Chip700::Chip700(AudioUnit component)
 : AUInstrumentBase(component, 0, 1)
+, mEfx(NULL)
 {
 	CreateElements();
 	Globals()->UseIndexedParameters(kNumberOfParameters);
@@ -69,7 +70,9 @@ Chip700::~Chip700()
 		CFRelease(mPresets[i].presetName);
 	}
 	delete [] mPresets;
-	delete mEfx;
+	if ( mEfx ) {
+		delete mEfx;
+	}
 	
 #if AU_DEBUG_DISPATCHER
 	delete mDebugDispatcher;
@@ -107,7 +110,6 @@ ComponentResult Chip700::Initialize()
 //-----------------------------------------------------------------------------
 void Chip700::Cleanup()
 {
-	delete mEfx;
 }
 
 //-----------------------------------------------------------------------------
