@@ -391,7 +391,7 @@ int GetARTicks( int ar, double tempo )
 		0
 	};
 	//四分音符＝25tick
-	double tick_per_sec = tempo/60.0 * 50;
+	double tick_per_sec = tempo/60.0 * 25;
 	return (int)(basetime[ar] * tick_per_sec);
 }
 
@@ -409,7 +409,7 @@ int GetDRTicks( int dr, double tempo )
 		0.037
 	};
 	//四分音符＝25tick
-	double tick_per_sec = tempo/60.0 * 50;
+	double tick_per_sec = tempo/60.0 * 25;
 	//tick_per_sec /= 2;	//実際は半分くらいなような気がする？？
 	return (int)(basetime[dr] * tick_per_sec);
 }
@@ -452,6 +452,6 @@ int GetSRTicks( int sr, double tempo )
 		0.028
 	};
 	//四分音符＝25tick
-	double tick_per_sec = tempo/60.0 * 50;
+	double tick_per_sec = tempo/60.0 * 25;
 	return (int)(basetime[sr] * tick_per_sec);
 }
