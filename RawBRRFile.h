@@ -13,6 +13,38 @@
 
 class RawBRRFile : public FileAccess {
 public:
+	static const int	HAS_PGNAME = 1 << 0;
+	static const int	HAS_RATE = 1 << 1;
+	static const int	HAS_BASEKEY = 1 << 2;
+	static const int	HAS_LOWKEY = 1 << 3;
+	static const int	HAS_HIGHKEY = 1 << 4;
+	static const int	HAS_AR = 1 << 5;
+	static const int	HAS_DR = 1 << 6;
+	static const int	HAS_SL = 1 << 7;
+	static const int	HAS_SR = 1 << 8;
+	static const int	HAS_VOLL = 1 << 9;
+	static const int	HAS_VOLR = 1 << 10;
+	static const int	HAS_ECHO = 1 << 11;
+	static const int	HAS_BANK = 1 << 12;
+	static const int	HAS_ISEMPHASIZED = 1 << 13;
+	static const int	HAS_SOURCEFILE = 1 << 14;
+	
 	RawBRRFile( const char *path, bool isWriteable=true );
 	virtual ~RawBRRFile();
+	
+	virtual bool	Load();
+	virtual bool	Write();
+	
+	const VoiceParams		*GetLoadedVoice() const;
+	unsigned int			GetHasFlag() const { return mHasData; }
+
+private:
+	static const int	MAX_BRR_SIZE = 65536;
+	
+	unsigned char	mFileData[MAX_BRR_SIZE];
+	int				mFileSize;
+	
+	VoiceParams		mVoice;
+	char			mInstFile[PATH_LEN_MAX+1];
+	unsigned int	mHasData;
 };

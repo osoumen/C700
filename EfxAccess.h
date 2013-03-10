@@ -4,7 +4,7 @@
  *
  *  Created by osoumen on 12/10/08.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
- *
+ *  GUI内からエフェクタへアクセスするためのクラス
  */
 
 #pragma once
@@ -35,7 +35,6 @@ public:
 #endif
 	
 	bool	CreateBRRFileData( RawBRRFile **outData );
-	bool	SetBRRFileData( const RawBRRFile *data );
 	bool	CreateXIFileData( XIFile **outData );
 	bool	CreatePlistBRRFileData( PlistBRRFile **outData );
 	bool	SetPlistBRRFileData( const PlistBRRFile *data );

@@ -758,7 +758,53 @@ bool C700GUI::loadToCurrentProgram( const char *path )
 //-----------------------------------------------------------------------------
 bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 {
-	return efxAcc->SetBRRFileData(file);
+	//return efxAcc->SetBRRFileData(file);
+	//RawBRRFileからデータを取得してエフェクタ側へ反映
+	const VoiceParams	*inst = file->GetLoadedVoice();
+	
+	efxAcc->SetBRRData(&inst->brr);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint,inst->lp);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		inst->loop ? 1.0f:.0f);
+	
+	unsigned int	hasFlg = file->GetHasFlag();
+	if ( hasFlg & RawBRRFile::HAS_PGNAME ) efxAcc->SetProgramName( inst->pgname );
+	if ( hasFlg & RawBRRFile::HAS_RATE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate,		inst->rate);
+	else {
+		if ( inst->loop ) {
+			double	samplerate;
+			short	*buffer;
+			int		pitch;
+			int		length;
+			buffer = new short[(inst->brr.size*2)/9*16];
+			brrdecode(inst->brr.data, buffer, inst->lp, 2);
+			length = ((inst->brr.size-inst->lp)*2)/9*16;
+			pitch = estimatebasefreq(buffer+inst->lp/9*16, length);
+			if (pitch > 0) {
+				samplerate = length/(double)pitch * 440.0*pow(2.0,-9.0/12);
+			}
+			delete[] buffer;
+			efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate,	samplerate);
+		}
+	}	
+	if ( hasFlg & RawBRRFile::HAS_BASEKEY ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_BaseKey,	inst->basekey);
+	if ( hasFlg & RawBRRFile::HAS_LOWKEY ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LowKey,	inst->lowkey);
+	if ( hasFlg & RawBRRFile::HAS_HIGHKEY ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_HighKey,	inst->highkey);
+	if ( hasFlg & RawBRRFile::HAS_AR ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_AR,	inst->ar);
+	if ( hasFlg & RawBRRFile::HAS_DR ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_DR,	inst->dr);
+	if ( hasFlg & RawBRRFile::HAS_SL ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SL,	inst->sl);
+	if ( hasFlg & RawBRRFile::HAS_SR ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SR,	inst->sr);
+	if ( hasFlg & RawBRRFile::HAS_VOLL ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_VolL,	inst->volL);
+	if ( hasFlg & RawBRRFile::HAS_VOLR ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_VolR,	inst->volR);
+	if ( hasFlg & RawBRRFile::HAS_ECHO ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Echo,	inst->echo ? 1.0:0.f);
+	if ( hasFlg & RawBRRFile::HAS_BANK ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Bank,	inst->bank);
+	if ( hasFlg & RawBRRFile::HAS_ISEMPHASIZED ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized,inst->isEmphasized ? 1.0f:.0f);
+	if ( hasFlg & RawBRRFile::HAS_SOURCEFILE ) {
+		if ( strlen(inst->sourceFile) ) {
+			efxAcc->SetSourceFilePath( inst->sourceFile );
+		}
+	}
+	
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -827,7 +873,8 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 	double	samplerate;
 	int		looppoint;
 	bool	loop;
-	int		pitch, length;
+	int		pitch;
+	int		length;
 	short	*buffer;
 	int		cEditNum=0;
 	

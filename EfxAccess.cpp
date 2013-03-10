@@ -32,13 +32,24 @@ EfxAccess::~EfxAccess()
 bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 {
 	//TODO: エフェクタ側から現在のプログラムの情報を取得してRawBRRFileを作成
+	BRRData *data;
+#if AU
+	UInt32		outSize = sizeof(BRRData);
+	if (
+		AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, data, &outSize)
+		== noErr ) {
+		return true;
+	}
 	return false;
-}
-
-//-----------------------------------------------------------------------------
-bool	EfxAccess::SetBRRFileData( const RawBRRFile *data )
-{
-	//TODO: RawBRRFileからデータを取得してエフェクタ側へ反映
+#else
+	//VST時の処理
+	const BRRData	*brr = mEfx->mEfx->GetBRRData();
+	if ( brr ) {
+		*data = *brr;
+		return true;
+	}
+	return true;
+#endif
 	return false;
 }
 
@@ -145,6 +156,7 @@ bool	EfxAccess::SetPlistBRRFileData( const PlistBRRFile *data )
 //-----------------------------------------------------------------------------
 bool EfxAccess::SetSourceFilePath( const char *path )
 {
+	if ( strlen(path) == 0 ) return false;
 #if AU
 	UInt32		inSize = sizeof(CFStringRef);
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
