@@ -8,6 +8,7 @@
  */
 
 #include "RawBRRFile.h"
+#include <stdio.h>
 
 void getFileNameDeletingPathExt( const char *path, char *out, int maxLen );
 
