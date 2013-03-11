@@ -56,7 +56,7 @@ public:
 	void			SetPropertyNotifyFunc( void (*func) (int propID, void* userData), void* userData );
 	void			SetParameterSetFunc( void (*func) (int paramID, float value, void* userData) , void* userData );
 	
-	VoiceParams* GetVP() { return mVPset; }
+	InstParams* GetVP() { return mVPset; }
 	
 private:
 	int		GetTotalRAM();
@@ -73,7 +73,7 @@ private:
 	int					mOnNotes[16];
 	int					mMaxNote[16];
 	
-	VoiceParams			mVPset[128];
+	InstParams			mVPset[128];
 	// ÉGÉRÅ[
 	float				mFilterBand[5];
 	

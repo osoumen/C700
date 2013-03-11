@@ -32,7 +32,7 @@ PGChunk::~PGChunk()
 }
 
 //-----------------------------------------------------------------------------
-bool PGChunk::AppendDataFromVP( VoiceParams *vp )
+bool PGChunk::AppendDataFromVP( InstParams *vp )
 {
 	if ( mReadOnly ) {
 		return false;
@@ -98,7 +98,7 @@ bool PGChunk::AppendDataFromVP( VoiceParams *vp )
 }
 
 //-----------------------------------------------------------------------------
-int PGChunk::getPGChunkSize( const VoiceParams *vp )
+int PGChunk::getPGChunkSize( const InstParams *vp )
 {
 	int cksize = 0;
 	if ( vp->brr.data ) {
@@ -113,7 +113,7 @@ int PGChunk::getPGChunkSize( const VoiceParams *vp )
 }
 
 //-----------------------------------------------------------------------------
-bool PGChunk::ReadDataToVP( VoiceParams *vp )
+bool PGChunk::ReadDataToVP( InstParams *vp )
 {
 	while ( (mDataSize - mDataPos) > (int)sizeof( MyChunkHead ) ) {
 		int		ckType;

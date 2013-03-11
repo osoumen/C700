@@ -19,13 +19,13 @@ public:
 	PGChunk( const void *data, int dataSize );
 	virtual ~PGChunk();
 	
-	bool				AppendDataFromVP( VoiceParams *vp );
-	bool				ReadDataToVP( VoiceParams *vp );
+	bool				AppendDataFromVP( InstParams *vp );
+	bool				ReadDataToVP( InstParams *vp );
 	
 	bool				writeChunk( int type, const void* data, int byte );	//—e—Ê•s‘«‚Å‘S•”‚ğ‘‚«‚ß‚È‚¢‚Æ‚«‚Ífalse
 	bool				readChunkHead( int *type, long *byte );
 	
-	static int			getPGChunkSize( const VoiceParams *vp );
+	static int			getPGChunkSize( const InstParams *vp );
 
 	typedef struct {
 		int		type;

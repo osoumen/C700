@@ -73,9 +73,9 @@ public:
 	
 	void		Process( unsigned int frames, float *output[2] );
 	int			GetKeyMap( int bank, int key ) const { return mKeyMap[bank][key]; }
-	VoiceParams	*getVP(int pg) const { return &mVPset[pg]; }
-	VoiceParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
-	void		SetVPSet( VoiceParams *vp ) { mVPset = vp; }
+	InstParams	*getVP(int pg) const { return &mVPset[pg]; }
+	InstParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
+	void		SetVPSet( InstParams *vp ) { mVPset = vp; }
 	
 	void		RefreshKeyMap(void);
 	
@@ -159,7 +159,7 @@ private:
 	int				mChVibDepth[16];
 	
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
-	VoiceParams		*mVPset;
+	InstParams		*mVPset;
 	
 	int		FindFreeVoice( const NoteEvt *evt );
 	int		StopPlayingVoice( const NoteEvt *evt );

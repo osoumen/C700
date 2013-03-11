@@ -298,7 +298,7 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 		delete mSaveChunk;
 	}
 	
-	VoiceParams	*vp = mEfx->GetVP();
+	InstParams	*vp = mEfx->GetVP();
 	int		totalSize = 0;
 	int		totalProgs = 0;
 	
@@ -367,7 +367,7 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 #endif
 	int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
 	int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
-	VoiceParams	*vp = mEfx->GetVP();
+	InstParams	*vp = mEfx->GetVP();
 	
 	PGChunk		*saveChunk;
 	saveChunk = new PGChunk( data, byteSize );

@@ -46,7 +46,7 @@ bool SPCFile::Load()
 	CFReadStreamClose(filestream);
 	CFRelease( url );
 #else
-	//VSTのときのSPCファイル読み込み処理
+	//WindowsVSTのときのSPCファイル読み込み処理
 	HANDLE	hFile;
 	
 	hFile = CreateFile( mPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
@@ -58,7 +58,8 @@ bool SPCFile::Load()
 #endif
 	
 	//ファイルチェック
-	if ( strncmp((char*)m_pFileData, "SNES-SPC700 Sound File Data v0.30", 33) != 0 ) {
+//	if ( strncmp((char*)m_pFileData, "SNES-SPC700 Sound File Data v0.30", 33) != 0 ) {
+	if ( strncmp((char*)m_pFileData, "SNES-SPC700 Sound File Data v", 29) != 0 ) {
 		return false;
 	}
 	

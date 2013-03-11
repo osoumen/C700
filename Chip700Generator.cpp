@@ -389,7 +389,7 @@ int Chip700Generator::StopPlayingVoice( const NoteEvt *evt )
 //-----------------------------------------------------------------------------
 void Chip700Generator::DoKeyOn(NoteEvt *evt)
 {
-	VoiceParams		*vp;
+	InstParams		*vp;
 	
 	//波形アドレスの取得
 	vp = getVP(mChProgram[evt->ch]);

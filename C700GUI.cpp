@@ -721,13 +721,15 @@ void C700GUI::copyFIRParamToClipBoard()
 	
 	CFRelease(theClipboard);
 	CFRelease( data );
+#else
+	//TODO: Windowsのコピー処理
 #endif
 }
 
 //-----------------------------------------------------------------------------
 bool C700GUI::loadToCurrentProgram( const char *path )
 {
-	RawBRRFile			brrfile(path,false);
+	RawBRRFile		brrfile(path,false);
 	PlistBRRFile	plbrrfile(path,false);
 	AudioFile		audiofile(path,false);
 	SPCFile			spcfile(path,false);
@@ -758,9 +760,8 @@ bool C700GUI::loadToCurrentProgram( const char *path )
 //-----------------------------------------------------------------------------
 bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 {
-	//return efxAcc->SetBRRFileData(file);
 	//RawBRRFileからデータを取得してエフェクタ側へ反映
-	const VoiceParams	*inst = file->GetLoadedVoice();
+	const InstParams	*inst = file->GetLoadedInst();
 	
 	efxAcc->SetBRRData(&inst->brr);
 	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint,inst->lp);
@@ -1000,15 +1001,13 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 //-----------------------------------------------------------------------------
 void C700GUI::saveFromCurrentProgram(const char *path)
 {
-#if AU
-	PlistBRRFile	*file;
+	RawBRRFile	*file;
 	
-	if ( efxAcc->CreatePlistBRRFileData(&file) ) {
+	if ( efxAcc->CreateBRRFileData(&file) ) {
 		file->SetFilePath( path );
 		file->Write();
 		delete file;
 	}
-#endif
 }
 
 //-----------------------------------------------------------------------------

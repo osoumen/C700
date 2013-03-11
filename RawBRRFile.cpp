@@ -14,6 +14,7 @@ void getFileNameDeletingPathExt( const char *path, char *out, int maxLen );
 //-----------------------------------------------------------------------------
 void getInstFileName( const char *path, char *out, int maxLen )
 {
+	//拡張子を.instに変えたファイルパスを得る
 #if MAC
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
 	CFURLRef	extlesspath=CFURLCreateCopyDeletingPathExtension(NULL, url);
@@ -24,7 +25,6 @@ void getInstFileName( const char *path, char *out, int maxLen )
 	CFRelease(extlesspath);
 	CFRelease(url);
 #else
-	//Windowsでの拡張子除去処理
 	int	len = strlen(path);
 	int extPos = len;
 	//"."の位置を検索
@@ -54,6 +54,9 @@ RawBRRFile::~RawBRRFile()
 //-----------------------------------------------------------------------------
 bool RawBRRFile::Load()
 {
+	if ( strlen(mPath) == 0 ) {
+		return false;
+	}
 #if MAC
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)mPath, strlen(mPath), false);
 	
@@ -63,14 +66,7 @@ bool RawBRRFile::Load()
 		return false;
 	}
 	
-	CFIndex	readbytes=CFReadStreamRead(filestream, mFileData, MAX_BRR_SIZE);
-	/*
-	if (readbytes < SPC_READ_SIZE) {
-		CFRelease( url );
-		CFReadStreamClose(filestream);
-		return false;
-	}
-	 */
+	CFIndex	readbytes=CFReadStreamRead(filestream, mFileData, MAX_FILE_SIZE);
 	mFileSize = readbytes;
 	CFReadStreamClose(filestream);
 	CFRelease( url );
@@ -81,27 +77,27 @@ bool RawBRRFile::Load()
 	hFile = CreateFile( mPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
 	if ( hFile != INVALID_HANDLE_VALUE ) {
 		DWORD	readSize;
-		ReadFile( hFile, m_pFileData, MAX_BRR_SIZE, &readSize, NULL );
+		ReadFile( hFile, m_pFileData, MAX_FILE_SIZE, &readSize, NULL );
 		mFileSize = readSize;
 		CloseHandle( hFile );
 	}
 #endif
 	//先頭2バイト(リトルエンディアン)の数値+2よりファイルサイズが大きい
-	mVoice.lp = (mFileData[1] << 8) | mFileData[0];
-	if ( mVoice.lp+2 >= mFileSize ) {
+	mInst.lp = (mFileData[1] << 8) | mFileData[0];
+	if ( mInst.lp+2 >= mFileSize ) {
 		return false;
 	}
 	
 	//ループポイントの次のバイトから9バイトずつ進め、ファイルの終端までにエンドフラグが出現する
-	mVoice.brr.data = mFileData+2;
-	mVoice.brr.size = mFileSize - 2;
+	mInst.brr.data = mFileData+2;
+	mInst.brr.size = mFileSize-2;
 	int	end_flag = 0;
 	int	end_ptr = 0;
-	for ( int i=0; i<mVoice.brr.size; i+=9 ) {
-		end_flag |= mVoice.brr.data[i] & 0x01;
+	for ( int i=0; i<mInst.brr.size; i+=9 ) {
+		end_flag |= mInst.brr.data[i] & 0x01;
 		if ( end_flag ) {
 			end_ptr = i;
-			mVoice.loop = (mVoice.brr.data[i] & 0x02)?true:false;	//最終ブロックのループフラグでループ有り無しを判断
+			mInst.loop = (mInst.brr.data[i] & 0x02)?true:false;	//最終ブロックのループフラグでループ有り無しを判断
 			break;
 		}
 	}
@@ -110,34 +106,32 @@ bool RawBRRFile::Load()
 	}
 	
 	//最初のエンドフラグの出現位置が、ループポイント以降の位置である
-	if ( end_ptr <= mVoice.lp ) {
+	if ( end_ptr <= mInst.lp ) {
 		return false;
 	}
 	
 	//instデータの初期化
-	getFileNameDeletingPathExt( mPath, mVoice.pgname, PROGRAMNAME_MAX_LEN );
+	getFileNameDeletingPathExt( mPath, mInst.pgname, PROGRAMNAME_MAX_LEN );
 	mHasData = HAS_PGNAME;
-	/*
-	mVoice.rate = 32000.0;
-	mVoice.basekey = 60;
-	mVoice.lowkey = 0;
-	mVoice.highkey = 127;
-	mVoice.ar = 15;
-	mVoice.dr = 7;
-	mVoice.sl = 7;
-	mVoice.sr = 0;
-	mVoice.volL = 100;
-	mVoice.volR	= 100;
-	mVoice.echo = false;
-	mVoice.bank = 0;
-	mVoice.isEmphasized = false;
-	mVoice.sourceFile[0] = 0;
-	 */
+	mInst.rate = 32000.0;
+	mInst.basekey = 60;
+	mInst.lowkey = 0;
+	mInst.highkey = 127;
+	mInst.ar = 15;
+	mInst.dr = 7;
+	mInst.sl = 7;
+	mInst.sr = 0;
+	mInst.volL = 100;
+	mInst.volR	= 100;
+	mInst.echo = false;
+	mInst.bank = 0;
+	mInst.isEmphasized = false;
+	mInst.sourceFile[0] = 0;
 	
 	//同名で、拡張子が '.inst'のファイルがある
-	getInstFileName(mPath,mInstFile,PATH_LEN_MAX);
+	getInstFileName(mPath,mInstFilePath,PATH_LEN_MAX);
 	FILE	*fp;
-	fp = fopen(mInstFile, "r");
+	fp = fopen(mInstFilePath, "r");
 	if ( fp == NULL ) {
 		goto success;
 	}
@@ -153,72 +147,73 @@ bool RawBRRFile::Load()
 		getc(fp);	//"="の空読み
 		if ( strcmp(buf, "progname")==0 ) {
 			fscanf(fp, "%[^\n]s", buf);
-			strncpy(mVoice.pgname, buf, PROGRAMNAME_MAX_LEN);
+			strncpy(mInst.pgname, buf, PROGRAMNAME_MAX_LEN);
 			mHasData |= HAS_PGNAME;
 		}
 		else if ( strcmp(buf, "samplerate")==0 ) {
-			fscanf(fp, "%lf", &mVoice.rate );
+			fscanf(fp, "%lf", &mInst.rate );
 			mHasData |= HAS_RATE;
 		}
 		else if ( strcmp(buf, "key")==0 ) {
-			fscanf(fp, "%d", &mVoice.basekey );
+			fscanf(fp, "%d", &mInst.basekey );
 			mHasData |= HAS_BASEKEY;
 		}
 		else if ( strcmp(buf, "lowkey")==0 ) {
-			fscanf(fp, "%d", &mVoice.lowkey );
+			fscanf(fp, "%d", &mInst.lowkey );
 			mHasData |= HAS_LOWKEY;
 		}
 		else if ( strcmp(buf, "highkey")==0 ) {
-			fscanf(fp, "%d", &mVoice.highkey );
+			fscanf(fp, "%d", &mInst.highkey );
 			mHasData |= HAS_HIGHKEY;
 		}
 		else if ( strcmp(buf, "ar")==0 ) {
-			fscanf(fp, "%d", &mVoice.ar );
+			fscanf(fp, "%d", &mInst.ar );
 			mHasData |= HAS_AR;
 		}
 		else if ( strcmp(buf, "dr")==0 ) {
-			fscanf(fp, "%d", &mVoice.dr );
+			fscanf(fp, "%d", &mInst.dr );
 			mHasData |= HAS_DR;
 		}
 		else if ( strcmp(buf, "sl")==0 ) {
-			fscanf(fp, "%d", &mVoice.sl );
+			fscanf(fp, "%d", &mInst.sl );
 			mHasData |= HAS_SL;
 		}
 		else if ( strcmp(buf, "sr")==0 ) {
-			fscanf(fp, "%d", &mVoice.sr );
+			fscanf(fp, "%d", &mInst.sr );
 			mHasData |= HAS_SR;
 		}
 		else if ( strcmp(buf, "volL")==0 ) {
-			fscanf(fp, "%d", &mVoice.volL );
+			fscanf(fp, "%d", &mInst.volL );
 			mHasData |= HAS_VOLL;
 		}
 		else if ( strcmp(buf, "volR")==0 ) {
-			fscanf(fp, "%d", &mVoice.volR );
+			fscanf(fp, "%d", &mInst.volR );
 			mHasData |= HAS_VOLR;
 		}
 		else if ( strcmp(buf, "echo")==0 ) {
 			int	val;
 			fscanf(fp, "%d", &val );
-			mVoice.echo = val?true:false;
+			mInst.echo = val?true:false;
 			mHasData |= HAS_ECHO;
 		}
 		else if ( strcmp(buf, "bank")==0 ) {
-			fscanf(fp, "%d", &mVoice.bank );
+			fscanf(fp, "%d", &mInst.bank );
 			mHasData |= HAS_BANK;
 		}
 		else if ( strcmp(buf, "isemph")==0 ) {
 			int	val;
 			fscanf(fp, "%d", &val );
-			mVoice.isEmphasized = val?true:false;
+			mInst.isEmphasized = val?true:false;
 			mHasData |= HAS_ISEMPHASIZED;
 		}
 		else if ( strcmp(buf, "srcfile")==0 ) {
 			fscanf(fp, "%[^\n]s", buf);
-			strncpy(mVoice.sourceFile, buf, PATH_LEN_MAX);
+			strncpy(mInst.sourceFile, buf, PATH_LEN_MAX);
 			mHasData |= HAS_SOURCEFILE;
 		}
 		fgets(buf, sizeof(buf), fp);	//"\n"の空読み
     }
+	fclose(fp);
 	
 	//読み込みに成功
 success:
@@ -229,14 +224,84 @@ success:
 //-----------------------------------------------------------------------------
 bool RawBRRFile::Write()
 {
-	return false;
+	if ( strlen(mPath) == 0 ) {
+		return false;
+	}
+	
+	if ( mIsLoaded != true ) {
+		return false;
+	}
+	//instファイルのパスを作成
+	getInstFileName(mPath,mInstFilePath,PATH_LEN_MAX);
+	
+	//.brrファイルを書き出す
+	FILE	*fp;
+	fp = fopen(mPath, "wb");
+	fwrite(mFileData, sizeof(unsigned char), mFileSize, fp);
+	fclose(fp);
+	
+	//.instファイルに音色パラメータを書き出す
+	fp = fopen(mInstFilePath, "w");
+	fprintf(fp, "[C700INST]\n");
+	fprintf(fp, "progname=%s\n",mInst.pgname);
+	fprintf(fp, "samplerate=%lf\n",mInst.rate);
+	fprintf(fp, "key=%d\n",mInst.basekey);
+	fprintf(fp, "lowkey=%d\n",mInst.lowkey);
+	fprintf(fp, "highkey=%d\n",mInst.highkey);
+	fprintf(fp, "ar=%d\n",mInst.ar);
+	fprintf(fp, "dr=%d\n",mInst.dr);
+	fprintf(fp, "sl=%d\n",mInst.sl);
+	fprintf(fp, "sr=%d\n",mInst.sr);
+	fprintf(fp, "volL=%d\n",mInst.volL);
+	fprintf(fp, "volR=%d\n",mInst.volR);
+	fprintf(fp, "echo=%d\n",mInst.echo?1:0);
+	fprintf(fp, "bank=%d\n",mInst.bank);
+	fprintf(fp, "isemph=%d\n",mInst.isEmphasized?1:0);
+	if ( mHasData & HAS_SOURCEFILE ) {
+		fprintf(fp, "srcfile=%s\n",mInst.sourceFile);
+	}
+	fclose(fp);
+	
+	return true;
 }
 
 //-----------------------------------------------------------------------------
-const VoiceParams *RawBRRFile::GetLoadedVoice() const
+const InstParams *RawBRRFile::GetLoadedInst() const
 {
 	if ( mIsLoaded ) {
-		return &mVoice;
+		return &mInst;
 	}
 	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+void RawBRRFile::StoreInst( const InstParams *inst )
+{
+	mInst = *inst;
+	mHasData = 0x3fff;		//HAS_SOURCEFILE以外のフラグ
+	if ( strlen(mInst.sourceFile) > 0 ) {
+		mHasData |= HAS_SOURCEFILE;
+	}
+	
+	//データサイズにループポイントを加えたサイズがファイルサイズ
+	mFileSize = mInst.brr.size + 2;
+	//ファイルサイズに一応上限を設ける
+	if ( mFileSize > MAX_FILE_SIZE ) mFileSize = MAX_FILE_SIZE;
+	
+	//ファイルの先頭2バイトにループポイントをセット
+	mFileData[0] = mInst.lp & 0xff;
+	mFileData[1] = (mInst.lp >> 8) & 0xff;
+	
+	memcpy(mFileData+2, mInst.brr.data, mFileSize-2);
+	
+	mInst.brr.data = mFileData+2;
+	
+	if (mInst.loop) {
+		mInst.brr.data[mInst.brr.size - 9] |= 2;
+	}
+	else {
+		mInst.brr.data[mInst.brr.size - 9] &= ~2;
+	}
+	
+	mIsLoaded = true;
 }

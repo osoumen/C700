@@ -224,7 +224,7 @@ typedef struct {
 	BRRData		brr;
 	char		sourceFile[PATH_LEN_MAX];
 	bool		isEmphasized;
-} VoiceParams;
+} InstParams;
 
 float ConvertToVSTValue( float value, float min, float max );
 float ConvertFromVSTValue( float value, float min, float max );

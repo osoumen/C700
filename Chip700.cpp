@@ -865,7 +865,7 @@ int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 {
 	CFMutableDictionaryRef dict = CFDictionaryCreateMutable	(NULL, 0, 
 								&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-	const VoiceParams	*vpSet = mEfx->GetVP();
+	const InstParams	*vpSet = mEfx->GetVP();
 	
 	if (vpSet[pgnum].loop) {
 		vpSet[pgnum].brr.data[vpSet[pgnum].brr.size - 9] |= 2;

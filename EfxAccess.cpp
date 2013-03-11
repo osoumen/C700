@@ -31,24 +31,42 @@ EfxAccess::~EfxAccess()
 //-----------------------------------------------------------------------------
 bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 {
-	//TODO: エフェクタ側から現在のプログラムの情報を取得してRawBRRFileを作成
-	BRRData *data;
+	//エフェクタ側から現在のプログラムの情報を取得してRawBRRFileを作成
 #if AU
-	UInt32		outSize = sizeof(BRRData);
-	if (
-		AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, data, &outSize)
-		== noErr ) {
-		return true;
-	}
-	return false;
+	InstParams	inst;
+	GetBRRData(&inst.brr);
+	GetProgramName(inst.pgname, PROGRAMNAME_MAX_LEN);
+	inst.ar = GetPropertyValue(kAudioUnitCustomProperty_AR);
+	inst.dr = GetPropertyValue(kAudioUnitCustomProperty_DR);
+	inst.sl = GetPropertyValue(kAudioUnitCustomProperty_SL);
+	inst.sr = GetPropertyValue(kAudioUnitCustomProperty_SR);
+	inst.volL = GetPropertyValue(kAudioUnitCustomProperty_VolL);
+	inst.volR = GetPropertyValue(kAudioUnitCustomProperty_VolR);
+	inst.rate = GetPropertyValue(kAudioUnitCustomProperty_Rate);
+	inst.basekey= GetPropertyValue(kAudioUnitCustomProperty_BaseKey);
+	inst.lowkey = GetPropertyValue(kAudioUnitCustomProperty_LowKey);
+	inst.highkey = GetPropertyValue(kAudioUnitCustomProperty_HighKey);
+	inst.lp = GetPropertyValue(kAudioUnitCustomProperty_LoopPoint);
+	inst.loop = GetPropertyValue(kAudioUnitCustomProperty_Loop)!=0?true:false;
+	inst.echo = GetPropertyValue(kAudioUnitCustomProperty_Echo)!=0?true:false;
+	inst.bank = GetPropertyValue(kAudioUnitCustomProperty_Bank);
+	inst.isEmphasized = GetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized)!=0?true:false;
+	GetSourceFilePath(inst.sourceFile,PATH_LEN_MAX);
+	
+	RawBRRFile	*file = new RawBRRFile(NULL,true);
+	file->StoreInst(&inst);
+	*outData = file;
+	return true;
 #else
 	//VST時の処理
-	const BRRData	*brr = mEfx->mEfx->GetBRRData();
-	if ( brr ) {
-		*data = *brr;
+	int	editProg = GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+	InstParams	*inst = mEfx->mEfx->GetVP();
+	if ( inst ) {
+		RawBRRFile	*file = new RawBRRFile(NULL,true);
+		file->StoreInst(&inst[editProg]);
+		*outData = file;
 		return true;
 	}
-	return true;
 #endif
 	return false;
 }
@@ -85,7 +103,7 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 #else
 	//VST時の処理
 	//ホスト側からテンポを取得
-	double	tempo = 120.0;
+	double	tempo = 125.0;
 	VstTimeInfo*	info = mEfx->getTimeInfo(kVstTempoValid);
 	if ( info ) {
 		tempo = info->tempo;

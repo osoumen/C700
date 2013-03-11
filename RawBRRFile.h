@@ -35,16 +35,17 @@ public:
 	virtual bool	Load();
 	virtual bool	Write();
 	
-	const VoiceParams		*GetLoadedVoice() const;
+	const InstParams		*GetLoadedInst() const;
 	unsigned int			GetHasFlag() const { return mHasData; }
+	void					StoreInst( const InstParams *inst);
 
 private:
-	static const int	MAX_BRR_SIZE = 65536;
+	static const int	MAX_FILE_SIZE = 65538;
 	
-	unsigned char	mFileData[MAX_BRR_SIZE];
+	unsigned char	mFileData[MAX_FILE_SIZE];
 	int				mFileSize;
 	
-	VoiceParams		mVoice;
-	char			mInstFile[PATH_LEN_MAX+1];
+	InstParams		mInst;
+	char			mInstFilePath[PATH_LEN_MAX+1];
 	unsigned int	mHasData;
 };
