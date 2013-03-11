@@ -48,4 +48,6 @@ private:
 	InstParams		mInst;
 	char			mInstFilePath[PATH_LEN_MAX+1];
 	unsigned int	mHasData;
+	
+	bool			tryLoad(bool noLoopPoint);
 };

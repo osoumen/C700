@@ -54,9 +54,32 @@ RawBRRFile::~RawBRRFile()
 //-----------------------------------------------------------------------------
 bool RawBRRFile::Load()
 {
+	bool result;
+	//最初に、先頭2バイトにループポイントがあると仮定して読み込みを試みる
+	result = tryLoad(false);
+	//読めなかった場合は、生のrrデータとして読み込む
+	if ( result == false ) {
+		result = tryLoad(true);
+	}
+	return result;
+}
+
+//-----------------------------------------------------------------------------
+bool RawBRRFile::tryLoad(bool noLoopPoint)
+{
+	int	dataOffset=0;
+	
 	if ( strlen(mPath) == 0 ) {
 		return false;
 	}
+	
+	//ループポイント有りのデータは、3バイト目以降に読み込む
+	if( noLoopPoint ) {
+		dataOffset = 2;
+		mFileData[0] = 0;
+		mFileData[1] = 0;
+	}
+	
 #if MAC
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)mPath, strlen(mPath), false);
 	
@@ -66,8 +89,8 @@ bool RawBRRFile::Load()
 		return false;
 	}
 	
-	CFIndex	readbytes=CFReadStreamRead(filestream, mFileData, MAX_FILE_SIZE);
-	mFileSize = readbytes;
+	CFIndex	readbytes=CFReadStreamRead(filestream, mFileData+dataOffset, MAX_FILE_SIZE);
+	mFileSize = readbytes+dataOffset;
 	CFReadStreamClose(filestream);
 	CFRelease( url );
 #else
@@ -77,41 +100,44 @@ bool RawBRRFile::Load()
 	hFile = CreateFile( mPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
 	if ( hFile != INVALID_HANDLE_VALUE ) {
 		DWORD	readSize;
-		ReadFile( hFile, m_pFileData, MAX_FILE_SIZE, &readSize, NULL );
-		mFileSize = readSize;
+		ReadFile( hFile, mFileData+dataOffset, MAX_FILE_SIZE, &readSize, NULL );
+		mFileSize = readSize+dataOffset;
 		CloseHandle( hFile );
 	}
 #endif
-	//先頭2バイト(リトルエンディアン)の数値+2よりファイルサイズが大きい
+	
 	mInst.lp = (mFileData[1] << 8) | mFileData[0];
+	//先頭2バイト(リトルエンディアン)の数値+2よりファイルサイズが大きい
 	if ( mInst.lp+2 >= mFileSize ) {
 		return false;
 	}
 	
-	//ループポイントの次のバイトから9バイトずつ進め、ファイルの終端までにエンドフラグが出現する
+	//ループポイントの次のバイトから9バイトずつ進め、エンドフラグを探す
 	mInst.brr.data = mFileData+2;
 	mInst.brr.size = mFileSize-2;
-	int	end_flag = 0;
-	int	end_ptr = 0;
+	int	endflag_pos = 0;
+	int	num_endflag = 0;
 	for ( int i=0; i<mInst.brr.size; i+=9 ) {
-		end_flag |= mInst.brr.data[i] & 0x01;
+		int end_flag = mInst.brr.data[i] & 0x01;
 		if ( end_flag ) {
-			end_ptr = i;
+			endflag_pos = i;
 			mInst.loop = (mInst.brr.data[i] & 0x02)?true:false;	//最終ブロックのループフラグでループ有り無しを判断
-			break;
+			num_endflag++;
 		}
 	}
-	if ( end_flag == 0 ) {
+	
+	//エンドフラグの数が１つ以外だとエラー
+	if ( num_endflag != 1 ) {
 		return false;
 	}
 	
-	//最初のエンドフラグの出現位置が、ループポイント以降の位置である
-	if ( end_ptr <= mInst.lp ) {
+	//エンドフラグの位置がループポイントより前だとエラー
+	if ( endflag_pos <= mInst.lp ) {
 		return false;
 	}
 	
 	//instデータの初期化
-	getFileNameDeletingPathExt( mPath, mInst.pgname, PROGRAMNAME_MAX_LEN );
+	getFileNameDeletingPathExt(mPath, mInst.pgname, PROGRAMNAME_MAX_LEN);
 	mHasData = HAS_PGNAME;
 	mInst.rate = 32000.0;
 	mInst.basekey = 60;
