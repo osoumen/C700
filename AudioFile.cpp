@@ -30,7 +30,7 @@ AudioFile::AudioFile( const char *path, bool isWriteable )
 AudioFile::~AudioFile()
 {
 	if ( m_pAudioData ) {
-		free(m_pAudioData);
+		delete [] m_pAudioData;
 	}
 }
 
@@ -116,7 +116,7 @@ bool AudioFile::Load()
 		//INSTチャンクの取得
 		AudioFileGetUserDataSize(mAudioFileID, 'INST', 0, &size);
 		if ( size > 4 ) {
-			UInt8	*instChunk = (UInt8*)malloc(size);
+			UInt8	*instChunk = new UInt8[size];
 			AudioFileGetUserData(mAudioFileID, 'INST', 0, &size, instChunk);
 			
 			//MIDI情報の取得
@@ -134,7 +134,9 @@ bool AudioFile::Load()
 					AudioFileClose(mAudioFileID);
 					return NULL;
 				}
-				AudioFileMarkerList	*markers = (AudioFileMarkerList*)malloc(size);
+				UInt8	*markersBuffer = new UInt8[size];
+				AudioFileMarkerList	*markers = reinterpret_cast<AudioFileMarkerList*>(markersBuffer);
+				
 				err = AudioFileGetProperty(mAudioFileID, kAudioFilePropertyMarkerList, 
 										   &size, markers);
 				if (err) {
@@ -156,9 +158,9 @@ bool AudioFile::Load()
 				if ( st_point < end_point ) {
 					mInstData.loop = 1;
 				}
-				free( markers );
+				delete [] markersBuffer;
 			}
-			free( instChunk );
+			delete [] instChunk;
 		}
 		
 	}
@@ -166,14 +168,14 @@ bool AudioFile::Load()
 		//smplチャンクの取得
 		AudioFileGetUserDataSize( mAudioFileID, 'smpl', 0, &size );
 		if ( size >= sizeof(WAV_smpl) ) {
-			UInt8	*smplChunk = (UInt8*)malloc(size);
+			UInt8	*smplChunk = new UInt8[size];
 			AudioFileGetUserData( mAudioFileID, 'smpl', 0, &size, smplChunk );
 			WAV_smpl	*smpl = (WAV_smpl *)smplChunk;
 			
 			smpl->loops = EndianU32_LtoN( smpl->loops );
 			
 			if ( smpl->loops > 0 ) {
-				mInstData.loop = 1;
+				mInstData.loop = true;
 				mInstData.basekey = EndianU32_LtoN( smpl->note );
 				st_point = EndianU32_LtoN( smpl->start );
 				end_point = EndianU32_LtoN( smpl->end ) + 1;	//SoundForge等では最終ポイントを含める解釈
@@ -182,7 +184,7 @@ bool AudioFile::Load()
 			else {
 				mInstData.basekey = EndianU32_LtoN( smpl->note );
 			}
-			free( smplChunk );
+			delete [] smplChunk;
 		}
 	}
 	
@@ -262,7 +264,7 @@ bool AudioFile::Load()
 		delete [] fileBuffer;
 		AudioConverterDispose(converter);
 	}
-    m_pAudioData=(short *)malloc(outputSize);
+    m_pAudioData = new short[outputSize/sizeof(short)];
     
     // バイトオーダー変換
 	AudioConverterConvertBuffer(converter, dataSize, fileBuffer,
@@ -454,7 +456,7 @@ bool AudioFile::Load()
 	}
 
 	//TODO: サンプリングレートの変換
-	m_pAudioData=(short *)malloc(monoSamples * sizeof(short));
+	m_pAudioData = new short[monoSamples];
 	for (int i=0; i<monoSamples; i++) {
 		m_pAudioData[i] = static_cast<short>(monoData[i] * 32768);
 	}
