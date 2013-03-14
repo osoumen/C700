@@ -13,6 +13,9 @@
 #if MAC
 #include <AudioToolbox/AudioFile.h>
 #include <AudioToolbox/AudioConverter.h>
+#else
+#pragma comment ( lib, "winmm.lib" )
+#include <mmsystem.h>
 #endif
 
 //-----------------------------------------------------------------------------
@@ -53,7 +56,7 @@ bool AudioFile::Load()
 {
 #if MAC
 	AudioFileID mAudioFileID;
-    AudioStreamBasicDescription mFileDescription, outputFormat;
+    AudioStreamBasicDescription fileDescription, outputFormat;
     SInt64 dataSize64;
     UInt32 dataSize;
 	
@@ -71,10 +74,10 @@ bool AudioFile::Load()
         return false;
     }
 	
-    // 開いたファイルの基本情報を mFileDescription へ
+    // 開いたファイルの基本情報を fileDescription へ
     size = sizeof(AudioStreamBasicDescription);
 	err = AudioFileGetProperty(mAudioFileID, kAudioFilePropertyDataFormat, 
-							   &size, &mFileDescription);
+							   &size, &fileDescription);
     if (err) {
         //NSLog(@"AudioFileGetProperty failed");
         AudioFileClose(mAudioFileID);
@@ -101,6 +104,7 @@ bool AudioFile::Load()
         return false;
     }
 	
+	// Instrument情報を初期化
 	mInstData.basekey	= 60;
 	mInstData.lowkey	= 0;
 	mInstData.highkey	= 127;
@@ -183,43 +187,46 @@ bool AudioFile::Load()
 	}
 	
     // 波形一時読み込み用メモリを確保
-    char *mFileBuffer;
+    char *fileBuffer;
+	unsigned int	fileBufferSize;
 	if (mInstData.loop) {
-		mFileBuffer = (char *)calloc(dataSize+EXPAND_BUFFER*mFileDescription.mBytesPerFrame,sizeof(char));
+		fileBufferSize = dataSize+EXPAND_BUFFER*fileDescription.mBytesPerFrame;
 	}
 	else {
-		mFileBuffer = (char *)calloc(dataSize,sizeof(char));
+		fileBufferSize = dataSize;
 	}
+	fileBuffer = new char[fileBufferSize];
+	memset(fileBuffer, 0, fileBufferSize);
 	
-	// ファイルから読み込み
-	err = AudioFileReadBytes(mAudioFileID, false, 0, &dataSize, mFileBuffer);
+	// ファイルから波形データの読み込み
+	err = AudioFileReadBytes(mAudioFileID, false, 0, &dataSize, fileBuffer);
     if (err) {
         //NSLog(@"AudioFileReadBytes failed");
         AudioFileClose(mAudioFileID);
-        free(mFileBuffer);
+        delete [] fileBuffer;
         return false;
     }
     AudioFileClose(mAudioFileID);
 	
-    //１６bitモノラルのデータに変換
-    outputFormat=mFileDescription;
+    //ループを展開する
+    outputFormat=fileDescription;
 	if (mInstData.loop) {
 		UInt32	plusalpha=0, framestocopy;
 		while (plusalpha < EXPAND_BUFFER) {
 			framestocopy = 
 			(end_point-st_point)>(EXPAND_BUFFER-plusalpha)?(EXPAND_BUFFER-plusalpha):end_point-st_point;
-			memcpy(mFileBuffer+((int)end_point+plusalpha)*mFileDescription.mBytesPerFrame,
-				   mFileBuffer+(int)st_point*mFileDescription.mBytesPerFrame,
-				   framestocopy*mFileDescription.mBytesPerFrame);
+			memcpy(fileBuffer+((int)end_point+plusalpha)*fileDescription.mBytesPerFrame,
+				   fileBuffer+(int)st_point*fileDescription.mBytesPerFrame,
+				   framestocopy*fileDescription.mBytesPerFrame);
 			plusalpha += framestocopy;
 		}
-		dataSize += plusalpha*mFileDescription.mBytesPerFrame;
+		dataSize += plusalpha*fileDescription.mBytesPerFrame;
 		
+		//16サンプル境界にFIXする
 		Float64	adjustment = ( (long long)((end_point-st_point)/16) ) / ((end_point-st_point)/16.0);
 		outputFormat.mSampleRate *= adjustment;
-		st_point *= adjustment;		//16サンプル境界にFIXする
+		st_point *= adjustment;	
 		end_point *= adjustment;
-		
 	}
 	outputFormat.mFormatID = kAudioFormatLinearPCM;
     outputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian;
@@ -230,15 +237,15 @@ bool AudioFile::Load()
 	
     // バイトオーダー変換用のコンバータを用意
     AudioConverterRef converter;
-	err = AudioConverterNew(&mFileDescription, &outputFormat, &converter);
+	err = AudioConverterNew(&fileDescription, &outputFormat, &converter);
     if (err) {
         //NSLog(@"AudioConverterNew failed");
-        free(mFileBuffer);
+        delete [] fileBuffer;
         return false;
     }
 	
 	//サンプリングレート変換の質を最高に設定
-	if (mFileDescription.mSampleRate != outputFormat.mSampleRate) {
+	if (fileDescription.mSampleRate != outputFormat.mSampleRate) {
 		size = sizeof(UInt32);
 		UInt32	setProp = kAudioConverterQuality_Max;
 		AudioConverterSetProperty(converter, kAudioConverterSampleRateConverterQuality, 
@@ -246,33 +253,32 @@ bool AudioFile::Load()
 	}
 	
     //出力に必要十分なバッファサイズを得る
-    //if(m_pAudioData) // 2度目以降
-    //    free(m_pAudioData);
 	UInt32	outputSize = dataSize;
 	size = sizeof(UInt32);
 	err = AudioConverterGetProperty(converter, kAudioConverterPropertyCalculateOutputBufferSize, 
 									&size, &outputSize);
 	if (err) {
 		//NSLog(@"AudioConverterGetProperty failed");
-		free(mFileBuffer);
+		delete [] fileBuffer;
 		AudioConverterDispose(converter);
 	}
     m_pAudioData=(short *)malloc(outputSize);
     
     // バイトオーダー変換
-	AudioConverterConvertBuffer(converter, dataSize, mFileBuffer,
+	AudioConverterConvertBuffer(converter, dataSize, fileBuffer,
 								&outputSize, m_pAudioData);
     if(outputSize == 0) {
         //NSLog(@"AudioConverterConvertBuffer failed");
-        free(mFileBuffer);
+        delete [] fileBuffer;
         AudioConverterDispose(converter);
         return false;
     }
     
     // 後始末
-    free(mFileBuffer);
+    delete [] fileBuffer;
     AudioConverterDispose(converter);
 	
+	//Instデータの設定
 	mInstData.lp			= st_point;
 	mInstData.lp_end		= end_point;
 	mInstData.srcSamplerate	= outputFormat.mSampleRate;
@@ -282,8 +288,190 @@ bool AudioFile::Load()
 	
 	return true;
 #else
-	//TODO: Windowsのオーディオファイル読み込み処理
-	return false;
+	//Windowsのオーディオファイル読み込み処理
+
+	// ファイルを開く
+	HMMIO	hmio = NULL;
+	MMRESULT	err;
+	DWORD		size;
+
+	hmio = mmioOpen( mPath, NULL, MMIO_READ );
+	if ( !hmio ) {
+		return false;
+	}
+	
+	// RIFFチャンクを探す
+	MMCKINFO	riffChunkInfo;
+	riffChunkInfo.fccType = mmioFOURCC('W', 'A', 'V', 'E');
+	err = mmioDescend( hmio, &riffChunkInfo, NULL, MMIO_FINDRIFF );
+	if ( err != MMSYSERR_NOERROR ) {
+		mmioClose( hmio, 0 );
+		return false;
+	}
+	if ( (riffChunkInfo.ckid != FOURCC_RIFF) || (riffChunkInfo.fccType != mmioFOURCC('W', 'A', 'V', 'E') ) ) {
+		mmioClose( hmio, 0 );
+		return false;
+	}
+
+	// フォーマットチャンクを探す
+	MMCKINFO	formatChunkInfo;
+	formatChunkInfo.ckid = mmioFOURCC('f', 'm', 't', ' ');
+	err = mmioDescend( hmio, &formatChunkInfo, &riffChunkInfo, MMIO_FINDCHUNK );
+	if ( err != MMSYSERR_NOERROR ) {
+		mmioClose( hmio, 0 );
+		return false;
+	}
+	if ( formatChunkInfo.cksize < sizeof(PCMWAVEFORMAT) ) {
+		mmioClose( hmio, 0 );
+		return false;
+	}
+
+	//フォーマット情報を取得
+	WAVEFORMATEX	pcmWaveFormat;
+	DWORD			fmsize = (formatChunkInfo.cksize > sizeof(WAVEFORMATEX)) ? sizeof(WAVEFORMATEX):formatChunkInfo.cksize;
+	size = mmioRead( hmio, (HPSTR)&pcmWaveFormat, fmsize );
+	if ( size != fmsize ) {
+		mmioClose( hmio, 0 );
+		return false;
+	}
+	if ( pcmWaveFormat.wFormatTag != WAVE_FORMAT_PCM ) {
+		mmioClose( hmio, 0 );
+		return false;
+	}
+	mmioAscend(hmio, &formatChunkInfo, 0);
+
+	// Instrument情報を初期化
+	mInstData.basekey	= 60;
+	mInstData.lowkey	= 0;
+	mInstData.highkey	= 127;
+	mInstData.loop		= 0;
+
+	//smplチャンクを探す
+	MMCKINFO	smplChunkInfo;
+	smplChunkInfo.ckid = mmioFOURCC('s', 'm', 'p', 'l');
+	err = mmioDescend( hmio, &smplChunkInfo, &riffChunkInfo, MMIO_FINDCHUNK );
+	if ( err != MMSYSERR_NOERROR ) {
+		smplChunkInfo.cksize = 0;
+	}
+	double	st_point=0.0;
+	double	end_point=0.0;
+	if ( smplChunkInfo.cksize >= sizeof(WAV_smpl) ) {
+		//ループポイントの取得
+		unsigned char	*smplChunk = new unsigned char[smplChunkInfo.cksize];
+		size = mmioRead(hmio,(HPSTR)smplChunk, smplChunkInfo.cksize);
+		WAV_smpl	*smpl = (WAV_smpl *)smplChunk;
+
+		if ( smpl->loops > 0 ) {
+			mInstData.loop = 1;
+			mInstData.basekey = smpl->note;
+			st_point = smpl->start;
+			end_point = smpl->end + 1;	//SoundForge等では最終ポイントを含める解釈
+		}
+		else {
+			mInstData.basekey = smpl->note;
+		}
+		delete [] smplChunk;
+	}
+	mmioAscend(hmio, &formatChunkInfo, 0);
+
+	//dataチャンクを探す
+	MMCKINFO dataChunkInfo;
+	dataChunkInfo.ckid = mmioFOURCC('d', 'a', 't', 'a');
+	err = mmioDescend( hmio, &dataChunkInfo, &riffChunkInfo, MMIO_FINDCHUNK );
+	if( err != MMSYSERR_NOERROR ) {
+		mmioClose( hmio, 0 );
+		return false;
+	}
+
+	// 波形一時読み込み用メモリを確保
+	unsigned int	dataSize = dataChunkInfo.cksize;
+	int				bytesPerSample = pcmWaveFormat.nBlockAlign;
+	char *fileBuffer;
+	unsigned int	fileBufferSize;
+
+	if (mInstData.loop) {
+		fileBufferSize = dataSize+EXPAND_BUFFER*bytesPerSample;
+	}
+	else {
+		fileBufferSize = dataSize;
+	}
+	fileBuffer = new char[fileBufferSize];
+	memset(fileBuffer, 0, fileBufferSize);
+	
+	// ファイルから波形データの読み込み
+	size = mmioRead(hmio, (HPSTR)fileBuffer, dataSize);
+	if ( size != dataSize ) {
+		mmioClose( hmio, 0 );
+		return false;
+	}
+	mmioClose(hmio,0);
+
+	//ループを展開する
+	double	inputSsmpleRate = pcmWaveFormat.nSamplesPerSec;
+	double	outputSampleRate = inputSsmpleRate;
+	if (mInstData.loop) {
+		unsigned int	plusalpha=0;
+		double			framestocopy;
+		while (plusalpha < EXPAND_BUFFER) {
+			framestocopy = 
+			(end_point-st_point)>(EXPAND_BUFFER-plusalpha)?(EXPAND_BUFFER-plusalpha):end_point-st_point;
+			memcpy(fileBuffer+((int)end_point+plusalpha)*bytesPerSample,
+				   fileBuffer+(int)st_point*bytesPerSample,
+				   static_cast<size_t>(framestocopy*bytesPerSample));
+			plusalpha += static_cast<unsigned int>(framestocopy);
+		}
+		dataSize += plusalpha*bytesPerSample;
+		
+		//16サンプル境界にFIXする
+		double	adjustment = ( (long long)((end_point-st_point)/16) ) / ((end_point-st_point)/16.0);
+		outputSampleRate *= adjustment;
+		st_point *= adjustment;
+		end_point *= adjustment;
+	}
+
+	//一旦floatモノラルデータに変換
+	int	bytesPerChannel = bytesPerSample / pcmWaveFormat.nChannels;
+	unsigned int	inputPtr = 0;
+	unsigned int	outputPtr = 0;
+	int				monoSamples = dataSize / bytesPerSample;
+	float	range = static_cast<float>((1<<(bytesPerChannel*8-1)) * pcmWaveFormat.nChannels);
+	float	*monoData = new float[monoSamples];
+	while (inputPtr < dataSize) {
+		int	frameSum = 0;
+		for (int ch=0; ch<pcmWaveFormat.nChannels; ch++) {
+			for (int i=0; i<bytesPerChannel; i++) {
+				if (i<bytesPerChannel-1) {
+					frameSum += (unsigned char)fileBuffer[inputPtr] << (8*i);
+				}
+				else {
+					frameSum += fileBuffer[inputPtr] << (8*i);
+				}
+				inputPtr++;
+			}
+		}
+		monoData[outputPtr] = frameSum / range;
+		outputPtr++;
+	}
+
+	//TODO: サンプリングレートの変換
+	m_pAudioData=(short *)malloc(monoSamples * sizeof(short));
+	for (int i=0; i<monoSamples; i++) {
+		m_pAudioData[i] = static_cast<short>(monoData[i] * 32768);
+	}
+
+	// 後始末
+	delete [] fileBuffer;
+	delete [] monoData;
+
+	//Instデータの設定
+	mInstData.lp			= static_cast<int>(st_point);
+	mInstData.lp_end		= static_cast<int>(end_point);
+	mInstData.srcSamplerate	= outputSampleRate;
+    mLoadedSamples			= monoSamples;
+
+	mIsLoaded = true;
+
+	return true;
 #endif
 }
 

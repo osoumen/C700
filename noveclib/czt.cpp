@@ -173,7 +173,7 @@ int estimatebasefreq(short *src, int length)
 {
 	REAL	*real, *imag, *autoc;
 	czt_struct cztd;
-	int i, index=0, pitch, error, half=length/2;
+	int i, index=1, pitch, error, half=length/2;
 	if (half > 530)
 		half = 530;
 	
@@ -225,6 +225,9 @@ int estimatebasefreq(short *src, int length)
 		}
 	}
 	
+	if ( index == 0) {
+		index = 1;
+	}
 	pitch = length/index;
 	
 	free(real);

@@ -414,6 +414,14 @@
 				Name="Common Source"
 				>
 				<File
+					RelativePath="..\AudioFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\AudioFile.h"
+					>
+				</File>
+				<File
 					RelativePath="..\brrcodec.cpp"
 					>
 				</File>
@@ -497,14 +505,6 @@
 			<Filter
 				Name="UI"
 				>
-				<File
-					RelativePath="..\AudioFile.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\AudioFile.h"
-					>
-				</File>
 				<File
 					RelativePath="..\C700Edit.cpp"
 					>
