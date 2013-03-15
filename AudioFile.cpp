@@ -504,14 +504,16 @@ int AudioFile::resampling(const float *src, int srcSamples, double srcRate,
 		dstSize = actualDstSize;
 	}
 	for (int i=0; i<dstSize; i++) {
+		float	src_pos = i*srcStride;
 		float	dstSum = .0f;
 		for (int j=-half_window_len; j<half_window_len; j++) {
-			int src_pos = static_cast<int>((i+j)*srcStride + 0.5f);
-			if (src_pos >= 0 && src_pos < srcSamples) {
-				float	window_x = j/static_cast<float>(half_window_len);
-				float	sinc_x = (j*cutoffRate)/half_window_len;
-				float	window = 0.5f - 0.5f*cosf(0.5*mPi*(window_x+1.0f));
-				float	value = src[src_pos] * sincf(sinc_x) * window;
+			int	src_index = static_cast<int>(floorf(src_pos)) + j;
+			if (src_index >= 0 && src_index < srcSamples) {
+				float	x = src_index - src_pos;
+				float	window_x = x/half_window_len + 1.0f;
+				if (window_x < 0)	window_x = .0f;
+				float	window = 0.5f - 0.5f*cosf(mPi*(window_x));
+				float	value = src[src_index] * sincf(x*cutoffRate) * window;
 				dstSum += value;
 			}
 		}
