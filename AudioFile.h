@@ -54,4 +54,9 @@ private:
 	short		*m_pAudioData;
 	int			mLoadedSamples;
 	InstData	mInstData;
+	
+	float		mPi;
+	
+	int resampling(const float *src, int srcSamples, double srcRate, short *dst, int *dstSamples, double dstRate);
+	float sincf(float x);
 };

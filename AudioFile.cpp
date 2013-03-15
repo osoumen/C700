@@ -16,6 +16,7 @@
 #else
 #pragma comment ( lib, "winmm.lib" )
 #include <mmsystem.h>
+#include <math.h>
 #endif
 
 //-----------------------------------------------------------------------------
@@ -24,6 +25,7 @@ AudioFile::AudioFile( const char *path, bool isWriteable )
 , m_pAudioData( NULL )
 , mLoadedSamples( 0 )
 {
+	mPi = acosf(-1.0f);
 }
 
 //-----------------------------------------------------------------------------
@@ -409,8 +411,8 @@ bool AudioFile::Load()
 	mmioClose(hmio,0);
 
 	//ループを展開する
-	double	inputSsmpleRate = pcmWaveFormat.nSamplesPerSec;
-	double	outputSampleRate = inputSsmpleRate;
+	double	inputSampleRate = pcmWaveFormat.nSamplesPerSec;
+	double	outputSampleRate = inputSampleRate;
 	if (mInstData.loop) {
 		unsigned int	plusalpha=0;
 		double			framestocopy;
@@ -455,10 +457,19 @@ bool AudioFile::Load()
 		outputPtr++;
 	}
 
-	//TODO: サンプリングレートの変換
-	m_pAudioData = new short[monoSamples];
-	for (int i=0; i<monoSamples; i++) {
-		m_pAudioData[i] = static_cast<short>(monoData[i] * 32768);
+	//ループ長が16の倍数でない場合はサンプリングレート変換
+	int	outSamples = monoSamples;
+	if ( outputSampleRate == inputSampleRate ) {
+		m_pAudioData = new short[monoSamples];
+		for (int i=0; i<monoSamples; i++) {
+			m_pAudioData[i] = static_cast<short>(monoData[i] * 32768);
+		}
+	}
+	else {
+		outSamples = monoSamples / (inputSampleRate / outputSampleRate);
+		m_pAudioData = new short[outSamples];
+		resampling(monoData, monoSamples, inputSampleRate,
+				   m_pAudioData, &outSamples, outputSampleRate);
 	}
 
 	// 後始末
@@ -469,12 +480,61 @@ bool AudioFile::Load()
 	mInstData.lp			= static_cast<int>(st_point);
 	mInstData.lp_end		= static_cast<int>(end_point);
 	mInstData.srcSamplerate	= outputSampleRate;
-    mLoadedSamples			= monoSamples;
+    mLoadedSamples			= outSamples;
 
 	mIsLoaded = true;
 
 	return true;
 #endif
+}
+
+//-----------------------------------------------------------------------------
+int AudioFile::resampling(const float *src, int srcSamples, double srcRate,
+						  short *dst, int *dstSamples, double dstRate)
+{
+	static const int	window_len = 256;
+	static const float	cutoff_margin = 0.9f;
+	int					half_window_len = window_len / 2;
+	float				srcStride = srcRate / dstRate;
+	float				cutoffRate = srcStride > cutoff_margin?cutoff_margin:srcStride;
+	int					dstSize = *dstSamples;
+	int					actualDstSize = srcSamples / srcStride;
+	
+	if ( actualDstSize < dstSize ) {
+		dstSize = actualDstSize;
+	}
+	for (int i=0; i<dstSize; i++) {
+		float	dstSum = .0f;
+		for (int j=-half_window_len; j<half_window_len; j++) {
+			int src_pos = static_cast<int>((i+j)*srcStride + 0.5f);
+			if (src_pos >= 0 && src_pos < srcSamples) {
+				float	window_x = j/static_cast<float>(half_window_len);
+				float	sinc_x = (j*cutoffRate)/half_window_len;
+				float	window = 0.5f - 0.5f*cosf(0.5*mPi*(window_x+1.0f));
+				float	value = src[src_pos] * sincf(sinc_x) * window;
+				dstSum += value;
+			}
+		}
+		if (dstSum > 1.0f) {
+			dstSum = 1.0f;
+		}
+		if (dstSum < -1.0f) {
+			dstSum = -1.0f;
+		}
+		dst[i] = dstSum * 32767;
+	}
+	*dstSamples = dstSize;
+	return dstSize;
+}
+
+//-----------------------------------------------------------------------------
+float AudioFile::sincf(float x)
+{
+	if ( x==.0f ) return 1.0f;
+	else {
+		float pi_x = x/mPi;
+		return sinf(pi_x)/pi_x;
+	}
 }
 
 //-----------------------------------------------------------------------------
