@@ -466,7 +466,7 @@ bool AudioFile::Load()
 		}
 	}
 	else {
-		outSamples = monoSamples / (inputSampleRate / outputSampleRate);
+		outSamples = static_cast<int>(monoSamples / (inputSampleRate / outputSampleRate));
 		m_pAudioData = new short[outSamples];
 		resampling(monoData, monoSamples, inputSampleRate,
 				   m_pAudioData, &outSamples, outputSampleRate);
@@ -492,13 +492,13 @@ bool AudioFile::Load()
 int AudioFile::resampling(const float *src, int srcSamples, double srcRate,
 						  short *dst, int *dstSamples, double dstRate)
 {
-	static const int	window_len = 256;
-	static const float	cutoff_margin = 0.9f;
+	static const int	window_len = 64;
+	static const float	stopband = 0.9f;
 	int					half_window_len = window_len / 2;
 	float				srcStride = srcRate / dstRate;
-	float				cutoffRate = srcStride > cutoff_margin?cutoff_margin:srcStride;
+	float				cutoffRate = srcStride > stopband?stopband:srcStride;
 	int					dstSize = *dstSamples;
-	int					actualDstSize = srcSamples / srcStride;
+	int					actualDstSize = static_cast<int>(srcSamples / srcStride);
 	
 	if ( actualDstSize < dstSize ) {
 		dstSize = actualDstSize;
@@ -507,14 +507,15 @@ int AudioFile::resampling(const float *src, int srcSamples, double srcRate,
 		float	src_pos = i*srcStride;
 		float	dstSum = .0f;
 		for (int j=-half_window_len; j<half_window_len; j++) {
-			int	src_index = static_cast<int>(floorf(src_pos)) + j;
+			int	src_index = static_cast<int>(floorf(src_pos+0.5f)) + j;
 			if (src_index >= 0 && src_index < srcSamples) {
 				float	x = src_index - src_pos;
 				float	window_x = x/half_window_len + 1.0f;
-				if (window_x < 0)	window_x = .0f;
+				if (window_x < 0.0f)	window_x = 0.0f;
+				if (window_x > 2.0f)	window_x = 2.0f;
 				float	window = 0.5f - 0.5f*cosf(mPi*(window_x));
-				float	value = src[src_index] * sincf(x*cutoffRate) * window;
-				dstSum += value;
+				float	value = src[src_index] * sinc(x*cutoffRate) * window;
+				dstSum += value * stopband;
 			}
 		}
 		if (dstSum > 1.0f) {
@@ -523,19 +524,19 @@ int AudioFile::resampling(const float *src, int srcSamples, double srcRate,
 		if (dstSum < -1.0f) {
 			dstSum = -1.0f;
 		}
-		dst[i] = dstSum * 32767;
+		dst[i] = static_cast<short>(dstSum * 32767.0f);
 	}
 	*dstSamples = dstSize;
 	return dstSize;
 }
 
 //-----------------------------------------------------------------------------
-float AudioFile::sincf(float x)
+float AudioFile::sinc(float p_x1)
 {
-	if ( x==.0f ) return 1.0f;
+	if ( p_x1==.0f ) return 1.0f;
 	else {
-		float pi_x = x/mPi;
-		return sinf(pi_x)/pi_x;
+		float x1 = p_x1*mPi;
+		return (sinf(x1)/x1);
 	}
 }
 

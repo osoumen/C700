@@ -58,5 +58,5 @@ private:
 	float		mPi;
 	
 	int resampling(const float *src, int srcSamples, double srcRate, short *dst, int *dstSamples, double dstRate);
-	float sincf(float x);
+	float sinc(float p_x1);
 };
