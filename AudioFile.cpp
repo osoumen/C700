@@ -492,8 +492,8 @@ bool AudioFile::Load()
 int AudioFile::resampling(const float *src, int srcSamples, double srcRate,
 						  short *dst, int *dstSamples, double dstRate)
 {
-	static const int	window_len = 64;
-	static const float	stopband = 0.9f;
+	static const int	window_len = 256;
+	static const float	stopband = 0.9999f;
 	int					half_window_len = window_len / 2;
 	float				srcStride = srcRate / dstRate;
 	float				cutoffRate = srcStride > stopband?stopband:srcStride;

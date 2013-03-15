@@ -127,7 +127,11 @@ void CWaveView::draw(CDrawContext *pContext)
 #if VSTGUI_USES_UTF8
 			pContext->drawStringUTF8("Drop audio file here.", newClip, kLeftText, true);
 #else
-			pContext->drawString("Drop audio file here.", newClip, true, kLeftText);
+#if MAC
+			pContext->drawString("Drop .aif .wav .brr .spc", newClip, true, kLeftText);
+#else
+			pContext->drawString("Drop .wav .brr .spc", newClip, true, kLeftText);
+#endif
 #endif
 			//pContext->setClipRect(oldClip);
 		}
