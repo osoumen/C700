@@ -15,13 +15,13 @@ void getFileNameDeletingPathExt( const char *path, char *out, int maxLen );
 //-----------------------------------------------------------------------------
 void getInstFileName( const char *path, char *out, int maxLen )
 {
-	//拡張子を.instに変えたファイルパスを得る
+	//拡張子を.smplに変えたファイルパスを得る
 #if MAC
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
 	CFURLRef	extlesspath=CFURLCreateCopyDeletingPathExtension(NULL, url);
 	CFStringRef	filename = CFURLCopyFileSystemPath(extlesspath,kCFURLPOSIXPathStyle);
 	CFStringGetCString(filename, out, maxLen-1, kCFStringEncodingUTF8);
-	strcat(out, ".inst");
+	strcat(out, ".smpl");
 	CFRelease(filename);
 	CFRelease(extlesspath);
 	CFRelease(url);
@@ -37,7 +37,7 @@ void getInstFileName( const char *path, char *out, int maxLen )
 	}
 	strncpy(out, path, extPos);
 	out[extPos] = 0;
-	strcat(out, ".inst");
+	strcat(out, ".smpl");
 #endif
 }
 
@@ -155,7 +155,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	mInst.isEmphasized = false;
 	mInst.sourceFile[0] = 0;
 	
-	//同名で、拡張子が '.inst'のファイルがある
+	//同名で、拡張子が '.smpl'のファイルがある
 	getInstFileName(mPath,mInstFilePath,PATH_LEN_MAX);
 	FILE	*fp;
 	fp = fopen(mInstFilePath, "r");
@@ -165,7 +165,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	//ヘッダのチェック
 	char	buf[1024];
 	fgets(buf, sizeof(buf), fp);
-	if ( strncmp(buf, "[C700INST]", 10) != 0 ) {
+	if ( strncmp(buf, "[C700SMPL]", 10) != 0 ) {
 		goto success;
 	}
 	
@@ -269,7 +269,7 @@ bool RawBRRFile::Write()
 	
 	//.instファイルに音色パラメータを書き出す
 	fp = fopen(mInstFilePath, "w");
-	fprintf(fp, "[C700INST]\n");
+	fprintf(fp, "[C700SMPL]\n");
 	fprintf(fp, "progname=%s\n",mInst.pgname);
 	fprintf(fp, "samplerate=%lf\n",mInst.rate);
 	fprintf(fp, "key=%d\n",mInst.basekey);

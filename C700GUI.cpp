@@ -551,7 +551,7 @@ void C700GUI::valueChanged(CControl* control)
 					//保存ファイルダイアログを表示
 					char	path[PATH_LEN_MAX];
 					bool	isSelected;
-					isSelected = getSaveFile(path, PATH_LEN_MAX, defaultName, "Save Program To...");
+					isSelected = getSaveFile(path, PATH_LEN_MAX, defaultName, "Save brr Sample To...");
 					if ( isSelected ) {
 						saveFromCurrentProgram(path);
 					}
@@ -578,7 +578,7 @@ void C700GUI::valueChanged(CControl* control)
 						}
 					}
 					if ( existSrcFile == false ) {
-						if ( getLoadFile(srcPath, PATH_LEN_MAX, "Select Source File") ) {
+						if ( getLoadFile(srcPath, PATH_LEN_MAX, "Where is Source File?") ) {
 							efxAcc->SetSourceFilePath(srcPath);
 						}
 					}
@@ -597,7 +597,7 @@ void C700GUI::valueChanged(CControl* control)
 					//保存ファイルダイアログを表示
 					char	savePath[PATH_LEN_MAX];
 					bool	isSelected;
-					isSelected = getSaveFile(savePath, PATH_LEN_MAX, defaultName, "Export Program To...");
+					isSelected = getSaveFile(savePath, PATH_LEN_MAX, defaultName, "Export XI Inst To...");
 					if ( isSelected ) {
 						saveFromCurrentProgramToXI(savePath);
 					}
@@ -957,14 +957,19 @@ bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 	}
 #else
 //	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
+	VstFileType brrType ("AddmusicM(Raw) BRR Sample", "", "brr", "brr");
+	VstFileType waveType ("Wave File", "WAVE", "wav", "wav",  "audio/wav", "audio/x-wav");
+	VstFileType spcType ("SPC File", "", "spc", "spc");
+	VstFileType types[] = {brrType, waveType, spcType};
+
 	CFileSelector OpenFile(0);
 	VstFileSelect Filedata;
 	memset(&Filedata, 0, sizeof(VstFileSelect));
 	Filedata.command=kVstFileLoad;
 	Filedata.type= kVstFileType;
 	strncpy(Filedata.title, title, maxLen-1 );
-	//Filedata.nbFileTypes=1;
-	//Filedata.fileTypes=&waveType;
+	Filedata.nbFileTypes=3;
+	Filedata.fileTypes=types;
 	Filedata.returnPath= path;
 	Filedata.initialPath = 0;
 	Filedata.future[0] = 0;
@@ -996,14 +1001,18 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 	}
 #else
 //	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
+	VstFileType brrType ("AddmusicM BRR Sample", "", "brr", "brr");
+	VstFileType xiType ("FastTracker II Instruments", "", "xi", "xi");
+	VstFileType types[] = {brrType, xiType};
+
 	CFileSelector OpenFile(0);
 	VstFileSelect Filedata;
 	memset(&Filedata, 0, sizeof(VstFileSelect));
 	Filedata.command=kVstFileSave;
 	Filedata.type= kVstFileType;
 	strncpy(Filedata.title, title, maxLen-1 );
-	//Filedata.nbFileTypes=1;
-	//Filedata.fileTypes=&waveType;
+	Filedata.nbFileTypes=2;
+	Filedata.fileTypes=types;
 	Filedata.returnPath= path;
 	Filedata.initialPath = 0;
 	Filedata.future[0] = 0;

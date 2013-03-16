@@ -686,6 +686,10 @@
 				RelativePath="..\vstgui\vstgui.h"
 				>
 			</File>
+			<File
+				RelativePath="..\vstgui\winfileselector.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="libpng"
