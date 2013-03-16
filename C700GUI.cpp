@@ -941,10 +941,24 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 {
 #if VSTGUI_NEW_CFILESELECTOR
+	CFileExtension	brrType("AddmusicM(Raw) BRR Sample", "brr");
+	CFileExtension	aiffType("AIFF File", "aif", "audio/aiff", 'AIFF');
+	CFileExtension	aifcType("AIFC File", "aif", "audio/aiff", 'AIFC');
+	CFileExtension	waveType("Wave File", "wav", "audio/wav");
+	CFileExtension	sd2Type("Sound Designer II File", "sd2", 0, 'Sd2f');
+	CFileExtension	cafType("CoreAudio File", "caf", 0, 'caff');
+	CFileExtension	spcType("SPC File", "spc");
 	CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectFile);
 	if (selector)
 	{
 		if ( title ) selector->setTitle(title);
+		selector->addFileExtension(brrType);
+		selector->addFileExtension(aiffType);
+		selector->addFileExtension(aifcType);
+		selector->addFileExtension(waveType);
+		selector->addFileExtension(sd2Type);
+		//selector->addFileExtension(cafType);
+		selector->addFileExtension(spcType);
 		selector->runModal();
 		if ( selector->getNumSelectedFiles() > 0 ) {
 			const char *url = selector->getSelectedFile(0);
@@ -956,12 +970,12 @@ bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 		return false;
 	}
 #else
-//	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
-	VstFileType brrType ("AddmusicM(Raw) BRR Sample", "", "brr", "brr");
-	VstFileType waveType ("Wave File", "WAVE", "wav", "wav",  "audio/wav", "audio/x-wav");
-	VstFileType spcType ("SPC File", "", "spc", "spc");
+	VstFileType brrType("AddmusicM(Raw) BRR Sample", "", "brr", "brr");
+	VstFileType waveType("Wave File", "WAVE", "wav", "wav",  "audio/wav", "audio/x-wav");
+	VstFileType spcType("SPC File", "", "spc", "spc");
 	VstFileType types[] = {brrType, waveType, spcType};
 
+//	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
 	CFileSelector OpenFile(0);
 	VstFileSelect Filedata;
 	memset(&Filedata, 0, sizeof(VstFileSelect));
@@ -984,11 +998,16 @@ bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, const char *title )
 {
 #if VSTGUI_NEW_CFILESELECTOR
+	CFileExtension	brrType("AddmusicM BRR Sample", "brr");
+	CFileExtension	xiType("FastTracker II Instruments", "xi");
 	CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectSaveFile);
 	if (selector)
 	{
 		if ( defaultName ) selector->setDefaultSaveName(defaultName);
 		if ( title ) selector->setTitle(title);
+		selector->addFileExtension(brrType);
+		selector->addFileExtension(xiType);
+		selector->setDefaultExtension(brrType);
 		selector->runModal();
 		if ( selector->getNumSelectedFiles() > 0 ) {
 			const char *url = selector->getSelectedFile(0);
@@ -1000,11 +1019,11 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 		return false;
 	}
 #else
-//	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
-	VstFileType brrType ("AddmusicM BRR Sample", "", "brr", "brr");
-	VstFileType xiType ("FastTracker II Instruments", "", "xi", "xi");
+	VstFileType brrType("AddmusicM BRR Sample", "", "brr", "brr");
+	VstFileType xiType("FastTracker II Instruments", "", "xi", "xi");
 	VstFileType types[] = {brrType, xiType};
 
+//	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
 	CFileSelector OpenFile(0);
 	VstFileSelect Filedata;
 	memset(&Filedata, 0, sizeof(VstFileSelect));
