@@ -1688,7 +1688,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		70008,	//id
 		'load',	//command
-		187, 248, 40, 14,	//x,y,w,h
+		184, 248, 40, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1705,7 +1705,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		70009,	//id
 		'save',	//command
-		235, 248, 40, 14,	//x,y,w,h
+		230, 248, 68, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1722,7 +1722,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		70010,	//id
 		'sav2',	//command
-		283, 248, 52, 14,	//x,y,w,h
+		304, 248, 49, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign

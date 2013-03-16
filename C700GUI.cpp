@@ -61,6 +61,30 @@ void getFileNameDeletingPathExt( const char *path, char *out, int maxLen )
 }
 
 //-----------------------------------------------------------------------------
+void getFileNameExt( const char *path, char *out, int maxLen )
+{
+#if MAC
+	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+	CFStringRef	ext = CFURLCopyPathExtension(url);
+	CFStringGetCString(ext, out, maxLen-1, kCFStringEncodingUTF8);
+	CFRelease(ext);
+	CFRelease(url);
+#else
+	//Windows‚Å‚ÌŠg’£Žq’Šoˆ—
+	int	len = strlen(path);
+	int extPos = len;
+	for ( int i=len-1; i>=0; i-- ) {
+		if ( path[i] == '.' ) {
+			extPos = i+1;
+			break;
+		}
+	}
+	strncpy(out, path+extPos, maxLen);
+	out[maxLen-1] = 0;
+#endif
+}
+
+//-----------------------------------------------------------------------------
 CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame )
 {
 	CControl	*cntl = NULL;
@@ -951,7 +975,6 @@ bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 	CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectFile);
 	if (selector)
 	{
-		if ( title ) selector->setTitle(title);
 		selector->addFileExtension(brrType);
 		selector->addFileExtension(aiffType);
 		selector->addFileExtension(aifcType);
@@ -959,6 +982,7 @@ bool C700GUI::getLoadFile( char *path, int maxLen, const char *title )
 		selector->addFileExtension(sd2Type);
 		//selector->addFileExtension(cafType);
 		selector->addFileExtension(spcType);
+		if ( title ) selector->setTitle(title);
 		selector->runModal();
 		if ( selector->getNumSelectedFiles() > 0 ) {
 			const char *url = selector->getSelectedFile(0);
@@ -1003,11 +1027,12 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 	CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectSaveFile);
 	if (selector)
 	{
+		char	ext[8];
+		getFileNameExt(defaultName, ext, sizeof(ext));
+		if ( strncmp(ext, "brr", 3) == 0 ) selector->addFileExtension(brrType);
+		if ( strncmp(ext, "xi", 2) == 0 ) selector->addFileExtension(xiType);
 		if ( defaultName ) selector->setDefaultSaveName(defaultName);
 		if ( title ) selector->setTitle(title);
-		selector->addFileExtension(brrType);
-		selector->addFileExtension(xiType);
-		selector->setDefaultExtension(brrType);
 		selector->runModal();
 		if ( selector->getNumSelectedFiles() > 0 ) {
 			const char *url = selector->getSelectedFile(0);
@@ -1021,7 +1046,7 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 #else
 	VstFileType brrType("AddmusicM BRR Sample", "", "brr", "brr");
 	VstFileType xiType("FastTracker II Instruments", "", "xi", "xi");
-	VstFileType types[] = {brrType, xiType};
+	//VstFileType types[] = {brrType, xiType};
 
 //	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
 	CFileSelector OpenFile(0);
@@ -1030,8 +1055,19 @@ bool C700GUI::getSaveFile( char *path, int maxLen, const char *defaultName, cons
 	Filedata.command=kVstFileSave;
 	Filedata.type= kVstFileType;
 	strncpy(Filedata.title, title, maxLen-1 );
-	Filedata.nbFileTypes=2;
-	Filedata.fileTypes=types;
+	
+	char	ext[8];
+	getFileNameExt(defaultName, ext, sizeof(ext));
+	if ( strncmp(ext, "brr", 3) == 0 ) {
+		Filedata.nbFileTypes=1;
+		Filedata.fileTypes=&brrType;
+	}
+	if ( strncmp(ext, "xi", 2) == 0 ) {
+		Filedata.nbFileTypes=1;
+		Filedata.fileTypes=&xiType;
+	}
+	//Filedata.nbFileTypes=1;
+	//Filedata.fileTypes=types;
 	Filedata.returnPath= path;
 	Filedata.initialPath = 0;
 	Filedata.future[0] = 0;
