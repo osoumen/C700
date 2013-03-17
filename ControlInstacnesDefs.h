@@ -22,7 +22,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		178, 42, 62, 11,	//x,y,w,h
+		172, 42, 73, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -362,7 +362,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		24, 93, 22, 11,	//x,y,w,h
+		23, 93, 24, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -379,7 +379,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		414, 166, 42, 11,	//x,y,w,h
+		414, 166, 48, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -651,7 +651,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		2, 113, 38, 11,	//x,y,w,h
+		0, 113, 46, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -668,7 +668,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		2, 133, 38, 11,	//x,y,w,h
+		2, 133, 44, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -685,7 +685,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		2, 153, 38, 11,	//x,y,w,h
+		2, 153, 44, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -702,7 +702,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		4, 211, 53, 11,	//x,y,w,h
+		4, 211, 59, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
