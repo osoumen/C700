@@ -102,7 +102,7 @@
 		F5432FF2162915F900863A0B /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
 		F5432FF3162915F900863A0B /* C700Parameters.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432FEF162915F900863A0B /* C700Parameters.h */; };
 		F5432FF4162915F900863A0B /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
-		F543317916296E0200863A0B /* Chip700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */; };
+		F543317916296E0200863A0B /* C700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* C700_Prefix.pch */; };
 		F543319716296E0200863A0B /* C700defines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A77F1030ADE785100F2B2BE /* C700defines.h */; };
 		F543319816296E0200863A0B /* samplebrr.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A10AB550AE2855600271511 /* samplebrr.h */; };
 		F543319916296E0200863A0B /* gauss.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF717CF0AE3DD5900C79293 /* gauss.h */; };
@@ -289,7 +289,7 @@
 		F569C40C16254B6E006C91AD /* XIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C40A16254B6E006C91AD /* XIFile.cpp */; };
 		F569C6DF162644AE006C91AD /* PlistBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C6DD162644AE006C91AD /* PlistBRRFile.h */; };
 		F569C6E0162644AE006C91AD /* PlistBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */; };
-		F569C9041626D130006C91AD /* Chip700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */; };
+		F569C9041626D130006C91AD /* C700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* C700_Prefix.pch */; };
 		F569C9051626D130006C91AD /* C700Version.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A690720730100365D66 /* C700Version.h */; };
 		F569C9061626D130006C91AD /* AUBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A80072073D200365D66 /* AUBase.h */; };
 		F569C9071626D130006C91AD /* AUDispatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A82072073D200365D66 /* AUDispatch.h */; };
@@ -651,7 +651,7 @@
 
 /* Begin PBXFileReference section */
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chip700_Prefix.pch; sourceTree = "<group>"; };
+		32BAE0B30371A71500C91783 /* C700_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700_Prefix.pch; sourceTree = "<group>"; };
 		3E0BECF80898391C00E1F0F7 /* CAVectorUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CAVectorUnit.cpp; sourceTree = "<group>"; };
 		3E0BECF90898391C00E1F0F7 /* CAVectorUnit.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CAVectorUnit.h; sourceTree = "<group>"; };
 		3E0BECFA0898391C00E1F0F7 /* CAVectorUnitTypes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CAVectorUnitTypes.h; sourceTree = "<group>"; };
@@ -903,7 +903,7 @@
 		F5432FF0162915F900863A0B /* C700Parameters.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Parameters.cpp; sourceTree = "<group>"; };
 		F543322816296E0200863A0B /* C700.vst */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.vst; sourceTree = BUILT_PRODUCTS_DIR; };
 		F543322916296E0200863A0B /* Info_vst.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info_vst.plist; sourceTree = "<group>"; };
-		F543325E16296FB600863A0B /* Chip700_Prefix_VST.pch */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = Chip700_Prefix_VST.pch; sourceTree = "<group>"; };
+		F543325E16296FB600863A0B /* C700_Prefix_VST.pch */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700_Prefix_VST.pch; sourceTree = "<group>"; };
 		F543389B162973D900863A0B /* aeffect.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = aeffect.h; path = Extras/vstsdk2.4/pluginterfaces/vst2.x/aeffect.h; sourceTree = DEVELOPER_DIR; };
 		F543389C162973D900863A0B /* aeffectx.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = aeffectx.h; path = Extras/vstsdk2.4/pluginterfaces/vst2.x/aeffectx.h; sourceTree = DEVELOPER_DIR; };
 		F543389D162973D900863A0B /* vstfxstore.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = vstfxstore.h; path = Extras/vstsdk2.4/pluginterfaces/vst2.x/vstfxstore.h; sourceTree = DEVELOPER_DIR; };
@@ -1183,8 +1183,8 @@
 		08FB77ADFE841716C02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				32BAE0B30371A71500C91783 /* Chip700_Prefix.pch */,
-				F543325E16296FB600863A0B /* Chip700_Prefix_VST.pch */,
+				32BAE0B30371A71500C91783 /* C700_Prefix.pch */,
+				F543325E16296FB600863A0B /* C700_Prefix_VST.pch */,
 				8ACF4D010B214B0400EC1825 /* CarbonUI */,
 				8ACF4B8B0B2144AF00EC1825 /* AU View */,
 				8ACF4BA60B2144C900EC1825 /* Controls */,
@@ -1816,7 +1816,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F543317916296E0200863A0B /* Chip700_Prefix.pch in Headers */,
+				F543317916296E0200863A0B /* C700_Prefix.pch in Headers */,
 				F543319716296E0200863A0B /* C700defines.h in Headers */,
 				F543319816296E0200863A0B /* samplebrr.h in Headers */,
 				F543319916296E0200863A0B /* gauss.h in Headers */,
@@ -1868,7 +1868,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F569C9041626D130006C91AD /* Chip700_Prefix.pch in Headers */,
+				F569C9041626D130006C91AD /* C700_Prefix.pch in Headers */,
 				F569C9051626D130006C91AD /* C700Version.h in Headers */,
 				F569C9061626D130006C91AD /* AUBase.h in Headers */,
 				F569C9071626D130006C91AD /* AUDispatch.h in Headers */,
@@ -2639,7 +2639,7 @@
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Chip700_Prefix.pch;
+				GCC_PREFIX_HEADER = C700_Prefix.pch;
 				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
@@ -2691,7 +2691,7 @@
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Chip700_Prefix.pch;
+				GCC_PREFIX_HEADER = C700_Prefix.pch;
 				GCC_UNROLL_LOOPS = NO;
 				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
@@ -2771,7 +2771,7 @@
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Chip700_Prefix_VST.pch;
+				GCC_PREFIX_HEADER = C700_Prefix_VST.pch;
 				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
@@ -2825,7 +2825,7 @@
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Chip700_Prefix_VST.pch;
+				GCC_PREFIX_HEADER = C700_Prefix_VST.pch;
 				GCC_UNROLL_LOOPS = NO;
 				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
@@ -2873,7 +2873,7 @@
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Chip700_Prefix.pch;
+				GCC_PREFIX_HEADER = C700_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = USE_CARBON_UI;
 				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
@@ -2926,7 +2926,7 @@
 				GCC_INPUT_FILETYPE = automatic;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Chip700_Prefix.pch;
+				GCC_PREFIX_HEADER = C700_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = USE_CARBON_UI;
 				GCC_UNROLL_LOOPS = NO;
 				GCC_VERSION = 4.2;
