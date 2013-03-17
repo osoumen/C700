@@ -25,7 +25,7 @@
 #include "aeffguieditor.h"
 #endif
 
-static CFontDesc g_LabelFont("Helvetica Bold", 9);
+static CFontDesc g_LabelFont("Helvetica", 9, kBoldFace);
 CFontRef kLabelFont = &g_LabelFont;
 
 //-----------------------------------------------------------------------------
@@ -590,7 +590,7 @@ void C700GUI::valueChanged(CControl* control)
 					//データが無ければ終了する
 					if (brr.data == NULL) break;
 					
-					//ソースファイル情報が無ければ選択ダイアログを出す
+					//ソースファイルが存在するか確認する
 					bool	existSrcFile = false;
 					char	srcPath[PATH_LEN_MAX];
 					efxAcc->GetSourceFilePath(srcPath, PATH_LEN_MAX);
@@ -601,12 +601,14 @@ void C700GUI::valueChanged(CControl* control)
 							existSrcFile = true;
 						}
 					}
+					//ソースファイル情報が無ければ選択ダイアログを出す
+					/*
 					if ( existSrcFile == false ) {
 						if ( getLoadFile(srcPath, PATH_LEN_MAX, "Where is Source File?") ) {
 							efxAcc->SetSourceFilePath(srcPath);
 						}
 					}
-					
+					*/
 					//デフォルトファイル名の作成
 					char	pgname[PROGRAMNAME_MAX_LEN];
 					char	defaultName[PROGRAMNAME_MAX_LEN];
