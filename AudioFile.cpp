@@ -95,7 +95,7 @@ bool AudioFile::Load()
         AudioFileClose(mAudioFileID);
         return false;
     }
-    dataSize=(UInt32)dataSize64;
+	dataSize = static_cast<UInt32>(dataSize64);
 	
 	AudioFileTypeID	fileTypeID;
 	size = sizeof( AudioFileTypeID );
@@ -188,6 +188,18 @@ bool AudioFile::Load()
 			}
 			delete [] smplChunk;
 		}
+	}
+	
+	//容量の制限
+	SInt64	dataSamples = dataSize / fileDescription.mBytesPerFrame;
+	if ( dataSamples > MAXIMUM_SAMPLES ) {
+		dataSize = MAXIMUM_SAMPLES * fileDescription.mBytesPerFrame;
+	}
+	if ( st_point > MAXIMUM_SAMPLES ) {
+		st_point = MAXIMUM_SAMPLES;
+	}
+	if ( end_point > MAXIMUM_SAMPLES ) {
+		end_point = MAXIMUM_SAMPLES;
 	}
 	
     // 波形一時読み込み用メモリを確保
@@ -283,8 +295,18 @@ bool AudioFile::Load()
     AudioConverterDispose(converter);
 	
 	//Instデータの設定
-	mInstData.lp			= st_point;
-	mInstData.lp_end		= end_point;
+	if ( st_point > MAXIMUM_SAMPLES ) {
+		mInstData.lp = MAXIMUM_SAMPLES;
+	}
+	else {
+		mInstData.lp			= st_point;
+	}
+	if ( end_point > MAXIMUM_SAMPLES ) {
+		mInstData.lp_end = MAXIMUM_SAMPLES;
+	}
+	else {
+		mInstData.lp_end		= end_point;
+	}
 	mInstData.srcSamplerate	= outputFormat.mSampleRate;
     mLoadedSamples			= outputSize/outputFormat.mBytesPerFrame;
 	
@@ -390,9 +412,22 @@ bool AudioFile::Load()
 	// 波形一時読み込み用メモリを確保
 	unsigned int	dataSize = dataChunkInfo.cksize;
 	int				bytesPerSample = pcmWaveFormat.nBlockAlign;
-	char *fileBuffer;
+	char			*fileBuffer;
 	unsigned int	fileBufferSize;
 
+	//容量制限
+	int	dataSamples = dataSize / pcmWaveFormat.nBlockAlign;
+	if ( dataSamples > MAXIMUM_SAMPLES ) {
+		dataSize = MAXIMUM_SAMPLES * pcmWaveFormat.nBlockAlign;
+	}
+	if ( st_point > MAXIMUM_SAMPLES ) {
+		st_point = MAXIMUM_SAMPLES;
+	}
+	if ( end_point > MAXIMUM_SAMPLES ) {
+		end_point = MAXIMUM_SAMPLES;
+	}
+	
+	
 	if (mInstData.loop) {
 		fileBufferSize = dataSize+EXPAND_BUFFER*bytesPerSample;
 	}

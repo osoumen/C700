@@ -49,6 +49,7 @@ public:
 	bool	IsVarid();	//ƒ[ƒh‚ª‰Â”\‚Å‚ ‚é‚È‚çtrue
 	
 private:
+	static const unsigned int MAXIMUM_SAMPLES = 116480;	//65529-9*2
 	static const unsigned int EXPAND_BUFFER = 4096;
 	
 	short		*m_pAudioData;
