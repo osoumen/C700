@@ -2085,7 +2085,7 @@
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 3E0BED060898391C00E1F0F7 /* Build configuration list for PBXProject "Chip700" */;
+			buildConfigurationList = 3E0BED060898391C00E1F0F7 /* Build configuration list for PBXProject "C700" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -3011,7 +3011,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;
 		};
-		3E0BED060898391C00E1F0F7 /* Build configuration list for PBXProject "Chip700" */ = {
+		3E0BED060898391C00E1F0F7 /* Build configuration list for PBXProject "C700" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3E0BED070898391C00E1F0F7 /* Development */,
