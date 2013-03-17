@@ -53,7 +53,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
-				ForcedIncludeFiles="Chip700_Prefix_VST.pch"
+				ForcedIncludeFiles="C700_Prefix_VST.pch"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -132,7 +132,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
-				ForcedIncludeFiles="Chip700_Prefix_VST.pch"
+				ForcedIncludeFiles="C700_Prefix_VST.pch"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -208,7 +208,7 @@
 				WarningLevel="2"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
-				ForcedIncludeFiles="Chip700_Prefix_VST.pch"
+				ForcedIncludeFiles="C700_Prefix_VST.pch"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -287,7 +287,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
-				ForcedIncludeFiles="Chip700_Prefix_VST.pch"
+				ForcedIncludeFiles="C700_Prefix_VST.pch"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -446,15 +446,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Chip700defines.h"
+					RelativePath="..\C700defines.h"
 					>
 				</File>
 				<File
-					RelativePath="..\Chip700Generator.cpp"
+					RelativePath="..\C700Generator.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Chip700Generator.h"
+					RelativePath="..\C700Generator.h"
 					>
 				</File>
 				<File
@@ -876,7 +876,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Chip700_Prefix_VST.pch"
+			RelativePath="..\C700_Prefix_VST.pch"
 			>
 		</File>
 	</Files>
