@@ -143,6 +143,9 @@ private:
 	
 	std::list<NoteEvt>	mNoteEvt;			//受け取ったイベントのキュー
 	
+	std::list<int>	mPlayVo;				//ノートオン状態のボイス
+	std::list<int>	mWaitVo;				//ノートオフ状態のボイス
+	
 	VoiceState		mVoice[kMaximumVoices];		//ボイスの状況
 	
 	int				mVoiceLimit;

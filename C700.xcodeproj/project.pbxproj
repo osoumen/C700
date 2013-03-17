@@ -92,8 +92,6 @@
 		F5432C271627AE4200863A0B /* EchoKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432C251627AE4200863A0B /* EchoKernel.cpp */; };
 		F5432C281627AE4200863A0B /* EchoKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432C241627AE4200863A0B /* EchoKernel.h */; };
 		F5432C291627AE4200863A0B /* EchoKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432C251627AE4200863A0B /* EchoKernel.cpp */; };
-		F5432E401627FC2900863A0B /* C700Generator.cpp in Headers */ = {isa = PBXBuildFile; fileRef = F5432E3F1627FC2900863A0B /* C700Generator.cpp */; };
-		F5432E411627FC2900863A0B /* C700Generator.cpp in Headers */ = {isa = PBXBuildFile; fileRef = F5432E3F1627FC2900863A0B /* C700Generator.cpp */; };
 		F5432F2F1628117D00863A0B /* C700Kernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432F2D1628117D00863A0B /* C700Kernel.h */; };
 		F5432F301628117D00863A0B /* C700Kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432F2E1628117D00863A0B /* C700Kernel.cpp */; };
 		F5432F311628117D00863A0B /* C700Kernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432F2D1628117D00863A0B /* C700Kernel.h */; };
@@ -134,7 +132,6 @@
 		F54331B716296E0200863A0B /* XIFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C40916254B6E006C91AD /* XIFile.h */; };
 		F54331B816296E0200863A0B /* PlistBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C6DD162644AE006C91AD /* PlistBRRFile.h */; };
 		F54331B916296E0200863A0B /* EchoKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432C241627AE4200863A0B /* EchoKernel.h */; };
-		F54331BA16296E0200863A0B /* C700Generator.cpp in Headers */ = {isa = PBXBuildFile; fileRef = F5432E3F1627FC2900863A0B /* C700Generator.cpp */; };
 		F54331BB16296E0200863A0B /* C700Kernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432F2D1628117D00863A0B /* C700Kernel.h */; };
 		F54331BC16296E0200863A0B /* C700Parameters.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432FEF162915F900863A0B /* C700Parameters.h */; };
 		F54331BE16296E0200863A0B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
@@ -896,7 +893,6 @@
 		F516854E1555476100D1F408 /* bank_c0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bank_c0.png; sourceTree = "<group>"; };
 		F5432C241627AE4200863A0B /* EchoKernel.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = EchoKernel.h; sourceTree = "<group>"; };
 		F5432C251627AE4200863A0B /* EchoKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = EchoKernel.cpp; sourceTree = "<group>"; };
-		F5432E3F1627FC2900863A0B /* C700Generator.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Generator.cpp; sourceTree = "<group>"; };
 		F5432F2D1628117D00863A0B /* C700Kernel.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Kernel.h; sourceTree = "<group>"; };
 		F5432F2E1628117D00863A0B /* C700Kernel.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Kernel.cpp; sourceTree = "<group>"; };
 		F5432FEF162915F900863A0B /* C700Parameters.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Parameters.h; sourceTree = "<group>"; };
@@ -1675,7 +1671,6 @@
 			isa = PBXGroup;
 			children = (
 				F55D6447161D7A94001CF9AB /* ControlInstances.h */,
-				F5432E3F1627FC2900863A0B /* C700Generator.cpp */,
 				F569BEC01622B5F8006C91AD /* EfxAccess.h */,
 				F569BEC11622B5F8006C91AD /* EfxAccess.cpp */,
 				F569A40316195488006C91AD /* C700Edit.h */,
@@ -1805,7 +1800,6 @@
 				F569C40B16254B6E006C91AD /* XIFile.h in Headers */,
 				F569C6DF162644AE006C91AD /* PlistBRRFile.h in Headers */,
 				F5432C261627AE4200863A0B /* EchoKernel.h in Headers */,
-				F5432E411627FC2900863A0B /* C700Generator.cpp in Headers */,
 				F5432F311628117D00863A0B /* C700Kernel.h in Headers */,
 				F5432FF3162915F900863A0B /* C700Parameters.h in Headers */,
 				F510B706163266CB00A844B4 /* FileAccess.h in Headers */,
@@ -1848,7 +1842,6 @@
 				F54331B716296E0200863A0B /* XIFile.h in Headers */,
 				F54331B816296E0200863A0B /* PlistBRRFile.h in Headers */,
 				F54331B916296E0200863A0B /* EchoKernel.h in Headers */,
-				F54331BA16296E0200863A0B /* C700Generator.cpp in Headers */,
 				F54331BB16296E0200863A0B /* C700Kernel.h in Headers */,
 				F54331BC16296E0200863A0B /* C700Parameters.h in Headers */,
 				F543389E162973D900863A0B /* aeffect.h in Headers */,
@@ -1991,7 +1984,6 @@
 				F569C97C1626D130006C91AD /* XIFile.h in Headers */,
 				F569C97D1626D130006C91AD /* PlistBRRFile.h in Headers */,
 				F5432C281627AE4200863A0B /* EchoKernel.h in Headers */,
-				F5432E401627FC2900863A0B /* C700Generator.cpp in Headers */,
 				F5432F2F1628117D00863A0B /* C700Kernel.h in Headers */,
 				F5432FF1162915F900863A0B /* C700Parameters.h in Headers */,
 				F510B708163266CB00A844B4 /* FileAccess.h in Headers */,
@@ -2795,6 +2787,7 @@
 				REZ_SEARCH_PATHS = "";
 				SDKROOT = macosx10.5;
 				SECTORDER_FLAGS = "";
+				VALID_ARCHS = "i386 ppc";
 				VERSIONING_SYSTEM = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -2811,7 +2804,7 @@
 			buildSettings = {
 				ARCHS = (
 					ppc,
-					"$(ARCHS_STANDARD_32_64_BIT)",
+					"$(ARCHS_STANDARD_32_BIT)",
 				);
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
 				COPY_PHASE_STRIP = YES;
@@ -2846,6 +2839,7 @@
 				REZ_SEARCH_PATHS = "";
 				SDKROOT = macosx10.5;
 				SECTORDER_FLAGS = "";
+				VALID_ARCHS = "i386 ppc";
 				VERSIONING_SYSTEM = "";
 				WARNING_CFLAGS = (
 					"-Wmost",

@@ -206,6 +206,11 @@ static const int PATH_LEN_MAX = 1024;
 static const int CKID_PROGRAM_TOTAL	= 0x20000;
 static const int CKID_PROGRAM_DATA	= 0x30000;
 
+static const int kDefaultValue_AR = 15;
+static const int kDefaultValue_DR = 7;
+static const int kDefaultValue_SL = 7;
+static const int kDefaultValue_SR = 31;
+
 typedef struct {
 	int				size;
 	unsigned char	*data;

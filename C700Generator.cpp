@@ -124,6 +124,13 @@ void C700Generator::VoiceState::Reset()
 //-----------------------------------------------------------------------------
 void C700Generator::Reset()
 {
+	mVoiceLimit = 8;
+	mMainVolume_L = 127;
+	mMainVolume_R = 127;
+	mVibfreq = 0.00137445;
+	mVibdepth = 0.5;
+	mPbrange = 1.0;
+	
 	for (int i=0; i<16; i++) {
 		mProcessbuf[0][i]=0;
 		mProcessbuf[1][i]=0;
@@ -137,12 +144,11 @@ void C700Generator::Reset()
 		mVoice[i].Reset();
 	}
 	
-	mVoiceLimit = 8;
-	mMainVolume_L = 127;
-	mMainVolume_R = 127;
-	mVibfreq = 0.00137445;
-	mVibdepth = 0.5;
-	mPbrange = 1.0;
+	mPlayVo.clear();
+	mWaitVo.clear();
+	for(int i=0;i<mVoiceLimit;i++){
+		mWaitVo.push_back(i);
+	}
 	
 	for (int i=0; i<16; i++) {
 		mChProgram[i] = 0;
@@ -254,6 +260,18 @@ void C700Generator::Damper( int ch, int value, int inFrame )
 //-----------------------------------------------------------------------------
 void C700Generator::SetVoiceLimit( int value )
 {
+	if ( value < mVoiceLimit ) {
+		//空きボイスリストから削除する
+		for ( int i=value; i<mVoiceLimit; i++ ) {
+			mWaitVo.remove(i);
+		}
+	}
+	if ( value > mVoiceLimit ) {
+		//空きボイスを追加する
+		for ( int i=mVoiceLimit; i<value; i++ ) {
+			mWaitVo.push_back(i);
+		}
+	}
 	mVoiceLimit = value;
 }
 
@@ -351,24 +369,16 @@ int C700Generator::FindFreeVoice( const NoteEvt *evt )
 	int	v=-1;
 
 	//空きボイスを探す
-	for (int i=0; i<kMaximumVoices && i<mVoiceLimit; i++ ) {
-		if ( mVoice[i].envstate == RELEASE ) {
-			v = i;
-		}
+	if ( mWaitVo.size() > 0 ) {
+		v = mWaitVo.front();
+		mWaitVo.pop_front();
 	}
-	
-	//空きボイスがあった場合
-	if ( v != -1 ) {
-		return v;
+	else {
+		//空きボイスが無かった場合一番古い発音を停止させる
+		v = mPlayVo.front();
+		mPlayVo.pop_front();
 	}
-	
-	//空きボイスが無かった場合
-	v = 0;
-	for ( int i=0; i<kMaximumVoices && i<mVoiceLimit; i++ ) {
-		if ( mVoice[i].envx < mVoice[v].envx ) {
-			v = i;
-		}
-	}
+	mPlayVo.push_back(v);
 	return v;
 }
 
@@ -377,11 +387,25 @@ int C700Generator::StopPlayingVoice( const NoteEvt *evt )
 {
 	int	stops=0;
 
-	for ( int i=0; i<kMaximumVoices; i++ ) {
-		if ( mVoice[i].uniqueID == evt->uniqueID ) {
-			mVoice[i].envstate = RELEASE;
+	std::list<int>::iterator	it = mPlayVo.begin();
+	while (it != mPlayVo.end()) {
+		int	vo = *it;
+		
+		if ( mVoice[vo].uniqueID == evt->uniqueID ) {
+			//mVoice[i].envstate = RELEASE;
+			//キーオフさせずにsrを変更する
+			InstParams		*vp;
+			vp = getVP(mChProgram[evt->ch]);
+			mVoice[vo].dr = 7;
+			mVoice[vo].sr = vp->sr;
+			if ( vo < mVoiceLimit ) { 
+				mWaitVo.push_back(vo);
+			}
+			it = mPlayVo.erase(it);
 			stops++;
+			continue;
 		}
+		it++;
 	}
 	return stops;
 }
@@ -438,7 +462,8 @@ void C700Generator::DoKeyOn(NoteEvt *evt)
 	mVoice[v].ar=vp->ar;
 	mVoice[v].dr=vp->dr;
 	mVoice[v].sl=vp->sl;
-	mVoice[v].sr=vp->sr;
+//	mVoice[v].sr=vp->sr;
+	mVoice[v].sr=0;		//ノートオフ時に設定値になる
 	
 	mVoice[v].memPtr = 0;
 	mVoice[v].headerCnt = 0;

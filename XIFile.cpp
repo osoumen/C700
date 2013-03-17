@@ -133,14 +133,14 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 		xih.venv[3] = EndianU16_NtoL( vol );
 		xih.venv[4] = EndianU16_NtoL( xih.venv[2] + GetDRTicks( chip->getVP(targetProgram)->dr, tempo ) );
 		xih.venv[5] = EndianU16_NtoL( vol * (chip->getVP(targetProgram)->sl + 1) / 8 );
-		if (chip->getVP(targetProgram)->sr == 0) {
+		//if (chip->getVP(targetProgram)->sr == 0) {
 			xih.venv[6] = EndianU16_NtoL( xih.venv[4]+1 );
 			xih.venv[7] = EndianU16_NtoL( xih.venv[5] );
-		}
-		else {
-			xih.venv[6] = EndianU16_NtoL( xih.venv[4] + GetSRTicks( chip->getVP(targetProgram)->sr, tempo ) );
-			xih.venv[7] = EndianU16_NtoL( vol / 10 );
-		}
+		//}
+		//else {
+		//	xih.venv[6] = EndianU16_NtoL( xih.venv[4] + GetSRTicks( chip->getVP(targetProgram)->sr, tempo ) );
+		//	xih.venv[7] = EndianU16_NtoL( vol / 10 );
+		//}
 	}
 	
 	xih.vnum = 4;
@@ -217,7 +217,7 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
 		if ( chip->getVP(ismp)->brr.data != NULL && chip->getVP(ismp)->bank == selectBank ) {
 			short	*wavedata;
-			int	numSamples;
+			int		numSamples;
 			bool	existSrcFile = false;	//元ファイルが存在するか？
 			
 			if ( chip->getVP(ismp)->sourceFile[0] ) {

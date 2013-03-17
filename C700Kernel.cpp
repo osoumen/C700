@@ -11,11 +11,6 @@
 #include "samplebrr.h"
 #include <math.h>
 
-static const int kDefaultValue_AR = 15;
-static const int kDefaultValue_DR = 7;
-static const int kDefaultValue_SL = 7;
-static const int kDefaultValue_SR = 0;
-
 void CalcFIRParam( const float band[5], int filter[8] );
 
 //-----------------------------------------------------------------------------

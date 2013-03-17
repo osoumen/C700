@@ -144,10 +144,10 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	mInst.basekey = 60;
 	mInst.lowkey = 0;
 	mInst.highkey = 127;
-	mInst.ar = 15;
-	mInst.dr = 7;
-	mInst.sl = 7;
-	mInst.sr = 0;
+	mInst.ar = kDefaultValue_AR;
+	mInst.dr = kDefaultValue_DR;
+	mInst.sl = kDefaultValue_SL;
+	mInst.sr = kDefaultValue_SR;
 	mInst.volL = 100;
 	mInst.volR	= 100;
 	mInst.echo = false;
