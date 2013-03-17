@@ -1,8 +1,8 @@
 #pragma once
 
 #include "AUInstrumentBase.h"
-#include "Chip700Version.h"
-#include "Chip700Generator.h"
+#include "C700Version.h"
+#include "C700Generator.h"
 
 #ifdef USE_CARBON_UI
 #include "AUCarbonViewBase.h"
@@ -12,15 +12,15 @@
 	#include "AUDebugDispatcher.h"
 #endif
 
-#include "Chip700defines.h"
+#include "C700defines.h"
 #include "C700Kernel.h"
 
-#pragma mark ____Chip700
-class Chip700 : public AUInstrumentBase
+#pragma mark ____C700
+class C700 : public AUInstrumentBase
 {
 public:
-	Chip700(AudioUnit component);
-	virtual ~Chip700();
+	C700(AudioUnit component);
+	virtual ~C700();
 	
 	virtual OSStatus			Initialize();
 	virtual void				Cleanup();
@@ -98,15 +98,15 @@ public:
 									   UInt32							inNumberFrames);
 	
 	/*! @method Version */
-	virtual OSStatus	Version() { return kChip700Version; }
+	virtual OSStatus	Version() { return kC700Version; }
 	
 #ifdef USE_CARBON_UI
 	int		GetNumCustomUIComponents () { return 1; }
 	
 	void	GetUIComponentDescs (ComponentDescription* inDescArray) {
         inDescArray[0].componentType = kAudioUnitCarbonViewComponentType;
-        inDescArray[0].componentSubType = Chip700_COMP_SUBTYPE;
-        inDescArray[0].componentManufacturer = Chip700_COMP_MANF;
+        inDescArray[0].componentSubType = C700_COMP_SUBTYPE;
+        inDescArray[0].componentManufacturer = C700_COMP_MANF;
         inDescArray[0].componentFlags = 0;
         inDescArray[0].componentFlagsMask = 0;
 	}

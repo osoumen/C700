@@ -1,6 +1,6 @@
 /*
  *  EfxAccess.h
- *  Chip700
+ *  C700
  *
  *  Created by osoumen on 12/10/08.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Chip700defines.h"
+#include "C700defines.h"
 
 #if AU
 #include <AudioUnit/AUComponent.h>

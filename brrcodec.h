@@ -1,6 +1,6 @@
 /*
  *  brrcodec.h
- *  Chip700
+ *  C700
  *
  *  Created by osoumen on 06/11/06.
  *  Copyright 2006 Vermicelli Magic. All rights reserved.

@@ -1,6 +1,6 @@
 /*
  *  brrcodec.c
- *  Chip700
+ *  C700
  *
  *  Created by ŠJ”­—p on 06/11/06.
  *  Copyright 2006 osoumen. All rights reserved.

@@ -1,6 +1,6 @@
 /*
  *  PlistBRRFile.h
- *  Chip700
+ *  C700
  *
  *  Created by osoumen on 12/10/11.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.

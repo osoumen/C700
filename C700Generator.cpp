@@ -1,14 +1,14 @@
 /*
- *  Chip700Generator.cpp
- *  Chip700
+ *  C700Generator.cpp
+ *  C700
  *
  *  Created by osoumen on 06/09/06.
  *  Copyright 2006 Vermicelli Magic. All rights reserved.
  *
  */
 
-#include "Chip700defines.h"
-#include "Chip700Generator.h"
+#include "C700defines.h"
+#include "C700Generator.h"
 #include <math.h>
 #include "gauss.h"
 
@@ -71,7 +71,7 @@ static unsigned char silence_brr[] = {
 };
 
 //-----------------------------------------------------------------------------
-Chip700Generator::Chip700Generator()
+C700Generator::C700Generator()
 : mSampleRate(44100.0),
   mClipper( false ),
   mVelocityMode( kVelocityMode_Square ),
@@ -89,7 +89,7 @@ Chip700Generator::Chip700Generator()
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::VoiceState::Reset()
+void C700Generator::VoiceState::Reset()
 {
 	midi_ch = 0;
 	uniqueID = 0;
@@ -122,7 +122,7 @@ void Chip700Generator::VoiceState::Reset()
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::Reset()
+void C700Generator::Reset()
 {
 	for (int i=0; i<16; i++) {
 		mProcessbuf[0][i]=0;
@@ -155,7 +155,7 @@ void Chip700Generator::Reset()
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::KeyOn( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame )
+void C700Generator::KeyOn( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame )
 {
 	NoteEvt			mNoteOnEvt;
 	mNoteOnEvt.type = NOTE_ON;
@@ -168,7 +168,7 @@ void Chip700Generator::KeyOn( unsigned char ch, unsigned char note, unsigned cha
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::KeyOff( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame )
+void C700Generator::KeyOff( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame )
 {
 	NoteEvt			mNoteOffEvt;
 	mNoteOffEvt.type = NOTE_OFF;
@@ -181,7 +181,7 @@ void Chip700Generator::KeyOff( unsigned char ch, unsigned char note, unsigned ch
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::AllNotesOff()
+void C700Generator::AllNotesOff()
 {
 	mNoteEvt.clear();
 	for ( int i=0; i<kMaximumVoices; i++ ) {
@@ -190,7 +190,7 @@ void Chip700Generator::AllNotesOff()
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::AllSoundOff()
+void C700Generator::AllSoundOff()
 {
 	mNoteEvt.clear();
 	for ( int i=0; i<kMaximumVoices; i++ ) {
@@ -201,7 +201,7 @@ void Chip700Generator::AllSoundOff()
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::ResetAllControllers()
+void C700Generator::ResetAllControllers()
 {
 	for (int i=0; i<16; i++) {
 		mChPitchBend[i] = 0;
@@ -210,19 +210,19 @@ void Chip700Generator::ResetAllControllers()
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::ProgramChange( int ch, int pgnum, int inFrame )
+void C700Generator::ProgramChange( int ch, int pgnum, int inFrame )
 {
 	mChProgram[ch] = pgnum;
 }
 
 //-----------------------------------------------------------------------------
-int Chip700Generator::CalcPBValue( float pitchBend, int basePitch )
+int C700Generator::CalcPBValue( float pitchBend, int basePitch )
 {
 	return (int)((pow(2., (pitchBend*mPbrange) / 12.) - 1.0)*basePitch);
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::PitchBend( int ch, int value, int inFrame )
+void C700Generator::PitchBend( int ch, int value, int inFrame )
 {
 	float pb_value = value / 8192.0;
 	
@@ -235,7 +235,7 @@ void Chip700Generator::PitchBend( int ch, int value, int inFrame )
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::ModWheel( int ch, int value, int inFrame )
+void C700Generator::ModWheel( int ch, int value, int inFrame )
 {
 	mChVibDepth[ch] = value;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
@@ -247,98 +247,98 @@ void Chip700Generator::ModWheel( int ch, int value, int inFrame )
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::Damper( int ch, int value, int inFrame )
+void C700Generator::Damper( int ch, int value, int inFrame )
 {
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetVoiceLimit( int value )
+void C700Generator::SetVoiceLimit( int value )
 {
 	mVoiceLimit = value;
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetPBRange( float value )
+void C700Generator::SetPBRange( float value )
 {
 	mPbrange = value;
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetClipper( bool value )
+void C700Generator::SetClipper( bool value )
 {
 	mClipper = value;
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetMultiMode( int bank, bool value )
+void C700Generator::SetMultiMode( int bank, bool value )
 {
 	mDrumMode[bank] = value;
 }
 
 //-----------------------------------------------------------------------------
-bool Chip700Generator::GetMultiMode( int bank ) const
+bool C700Generator::GetMultiMode( int bank ) const
 {
 	return mDrumMode[bank];
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetVelocityMode( velocity_mode value )
+void C700Generator::SetVelocityMode( velocity_mode value )
 {
 	mVelocityMode = value;
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetVibFreq( float value )
+void C700Generator::SetVibFreq( float value )
 {
 	mVibfreq = value*((onepi*2)/INTERNAL_CLOCK);
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetVibDepth( float value )
+void C700Generator::SetVibDepth( float value )
 {
 	mVibdepth = value / 2;
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetMainVol_L( int value )
+void C700Generator::SetMainVol_L( int value )
 {
 	mMainVolume_L = value;
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetMainVol_R( int value )
+void C700Generator::SetMainVol_R( int value )
 {
 	mMainVolume_R = value;
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetEchoVol_L( int value )
+void C700Generator::SetEchoVol_L( int value )
 {
 	mEcho[0].SetEchoVol( value );
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetEchoVol_R( int value )
+void C700Generator::SetEchoVol_R( int value )
 {
 	mEcho[1].SetEchoVol( value );
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetFeedBackLevel( int value )
+void C700Generator::SetFeedBackLevel( int value )
 {
 	mEcho[0].SetFBLevel( value );
 	mEcho[1].SetFBLevel( value );
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetDelayTime( int value )
+void C700Generator::SetDelayTime( int value )
 {
 	mEcho[0].SetDelayTime( value );
 	mEcho[1].SetDelayTime( value );
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::SetFIRTap( int tap, int value )
+void C700Generator::SetFIRTap( int tap, int value )
 {
 	mEcho[0].SetFIRTap(tap, value);
 	mEcho[1].SetFIRTap(tap, value);
@@ -346,7 +346,7 @@ void Chip700Generator::SetFIRTap( int tap, int value )
 
 
 //-----------------------------------------------------------------------------
-int Chip700Generator::FindFreeVoice( const NoteEvt *evt )
+int C700Generator::FindFreeVoice( const NoteEvt *evt )
 {
 	int	v=-1;
 
@@ -373,7 +373,7 @@ int Chip700Generator::FindFreeVoice( const NoteEvt *evt )
 }
 
 //-----------------------------------------------------------------------------
-int Chip700Generator::StopPlayingVoice( const NoteEvt *evt )
+int C700Generator::StopPlayingVoice( const NoteEvt *evt )
 {
 	int	stops=0;
 
@@ -387,7 +387,7 @@ int Chip700Generator::StopPlayingVoice( const NoteEvt *evt )
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::DoKeyOn(NoteEvt *evt)
+void C700Generator::DoKeyOn(NoteEvt *evt)
 {
 	InstParams		*vp;
 	
@@ -452,7 +452,7 @@ void Chip700Generator::DoKeyOn(NoteEvt *evt)
 }
 
 //-----------------------------------------------------------------------------
-float Chip700Generator::VibratoWave(float phase)
+float C700Generator::VibratoWave(float phase)
 {
 	float x2=phase*phase;
 	float vibwave = 7.61e-03f;
@@ -465,7 +465,7 @@ float Chip700Generator::VibratoWave(float phase)
 }
 
 //-----------------------------------------------------------------------------
-void Chip700Generator::Process( unsigned int frames, float *output[2] )
+void C700Generator::Process( unsigned int frames, float *output[2] )
 {
 	int		outx;
 	int		vl, vr;
@@ -740,7 +740,7 @@ void Chip700Generator::Process( unsigned int frames, float *output[2] )
 }
 					  
 //-----------------------------------------------------------------------------
-void Chip700Generator::RefreshKeyMap(void)
+void C700Generator::RefreshKeyMap(void)
 {
 	if ( mVPset ) {
 		bool	initialized[NUM_BANKS];

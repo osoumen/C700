@@ -1,6 +1,6 @@
 /*
  *  C700Kernel.h
- *  Chip700
+ *  C700
  *
  *  Created by osoumen on 12/10/12.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "Chip700defines.h"
-#include "Chip700Generator.h"
+#include "C700defines.h"
+#include "C700Generator.h"
 #include "C700Parameters.h"
 
 class C700Kernel : public C700Parameters
@@ -51,7 +51,7 @@ public:
 	void			HandleAllNotesOff( int ch, int inFrame );
 	void			HandleAllSoundOff( int ch, int inFrame );
 	
-	Chip700Generator	*GetGenerator() { return &mGenerator; }
+	C700Generator	*GetGenerator() { return &mGenerator; }
 	
 	void			SetPropertyNotifyFunc( void (*func) (int propID, void* userData), void* userData );
 	void			SetParameterSetFunc( void (*func) (int paramID, float value, void* userData) , void* userData );
@@ -77,5 +77,5 @@ private:
 	// ÉGÉRÅ[
 	float				mFilterBand[5];
 	
-	Chip700Generator	mGenerator;	
+	C700Generator	mGenerator;	
 };

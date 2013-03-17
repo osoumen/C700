@@ -1,6 +1,6 @@
 /*
  *  XIFile.h
- *  Chip700
+ *  C700
  *
  *  Created by osoumen on 12/10/10.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
@@ -11,7 +11,7 @@
 
 #include "FileAccess.h"
 #include "DataBuffer.h"
-#include "Chip700Generator.h"
+#include "C700Generator.h"
 
 class XIFile : public FileAccess, public DataBuffer {
 public:
@@ -25,7 +25,7 @@ public:
 	CFDataRef			GetCFData() const;
 #endif
 	
-	bool				SetDataFromChip( const Chip700Generator *chip, int targetProgram, double tempo );
+	bool				SetDataFromChip( const C700Generator *chip, int targetProgram, double tempo );
 	
 private:
 	

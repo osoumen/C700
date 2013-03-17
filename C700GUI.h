@@ -1,6 +1,6 @@
 /*
  *  C700GUI.h
- *  Chip700
+ *  C700
  *
  *  Created by osoumen on 12/10/01.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
@@ -10,7 +10,7 @@
 #pragma once
 
 #include "vstgui.h"
-#include "Chip700defines.h"
+#include "C700defines.h"
 #include "ControlInstances.h"
 #include "EfxAccess.h"
 

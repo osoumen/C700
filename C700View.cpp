@@ -1,6 +1,6 @@
 /*
- *  Chip700View.cpp
- *  Chip700
+ *  C700View.cpp
+ *  C700
  *
  *  Created by on 06/11/30.
  *  Copyright 2006 __MyCompanyName__. All rights reserved.
@@ -8,7 +8,7 @@
  */
 
 #include <AudioToolbox/AudioToolbox.h>
-#include "Chip700View.h"
+#include "C700View.h"
 #include "brrcodec.h"
 #include "czt.h"
 #include "TDragTextControl.h"
@@ -28,9 +28,9 @@ bool DragItemsAreAcceptable(DragReference theDrag);
 
 //short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst);
 
-COMPONENT_ENTRY(Chip700View)
+COMPONENT_ENTRY(C700View)
 
-void Chip700View::InitWindow(CFBundleRef sBundle)
+void C700View::InitWindow(CFBundleRef sBundle)
 {
 	CAUCarbonViewNib::InitWindow(sBundle);
     
@@ -58,7 +58,7 @@ typedef struct {
 } WAV_smpl;
 
 // ウィンドウの初回生成後
-void Chip700View::FinishWindow(CFBundleRef sBundle)
+void C700View::FinishWindow(CFBundleRef sBundle)
 {
 	int	cntlcmdId = kControlCommandsFirst;
 	HIViewRef	viewIte = HIViewGetFirstSubview(mRootUserPane);
@@ -389,14 +389,14 @@ void Chip700View::FinishWindow(CFBundleRef sBundle)
 	}
 }
 
-Chip700View::~Chip700View()
+C700View::~C700View()
 {
 	RemoveTrackingHandler((DragTrackingHandlerUPP)MyTrackingHandler, mCarbonWindow);
 	RemoveReceiveHandler((DragReceiveHandlerUPP)MyReceiveHandler, mCarbonWindow);
 }
 
 // Commandを持つボタンコントロールが押されたときの動作
-bool Chip700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
+bool C700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
 {
 	switch (cmd.commandID) {
 		case 'emph':	//emphasise on/off
@@ -523,21 +523,21 @@ bool Chip700View::HandleCommand(EventRef inEvent, HICommandExtended &cmd)
 	return false;
 }
 
-void Chip700View::changeEditingChannel( int ch )
+void C700View::changeEditingChannel( int ch )
 {
 	int intValue = ch;
 	AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_EditingChannel,
 						 kAudioUnitScope_Global,0,&intValue,sizeof(int));
 }
 
-void Chip700View::changeBank( int bank )
+void C700View::changeBank( int bank )
 {
 	int intValue = bank;
 	AudioUnitSetProperty(mEditAudioUnit,kAudioUnitCustomProperty_Bank,
 						 kAudioUnitScope_Global,0,&intValue,sizeof(int));
 }
 
-CFStringRef Chip700View::CreateXMSNESText()
+CFStringRef C700View::CreateXMSNESText()
 {
 	CFStringRef	param_str;
 	
@@ -602,7 +602,7 @@ CFStringRef Chip700View::CreateXMSNESText()
 
 // View上のコントロールをユーザーが操作されたときに呼ばれる。
 // Parameter変更コントロール以外は手動でAU側に反映させる必要あり。
-bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
+bool C700View::HandleEventForView(EventRef event, HIViewRef view)
 {
 	TCarbonEvent theEvent = event;
     UInt32 eclass = theEvent.GetClass();
@@ -723,7 +723,7 @@ bool Chip700View::HandleEventForView(EventRef event, HIViewRef view)
 }
 
 // テキストボックスの変更内容をAudioUnit側に反映させる
-void Chip700View::applyEditTextProp(ControlRef control)
+void C700View::applyEditTextProp(ControlRef control)
 {
 	HIViewID	id;
 	CFStringRef	cstr;
@@ -766,7 +766,7 @@ void Chip700View::applyEditTextProp(ControlRef control)
 }
 
 // プロパティが変更されたときに呼ばれ、表示内容を変更する処理を行う
-void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnitScope inScope,  
+void C700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnitScope inScope,  
 						AudioUnitElement inElement)
 {
 	OSStatus	result;
@@ -1079,7 +1079,7 @@ void Chip700View::PropertyHasChanged(AudioUnitPropertyID inPropertyID, AudioUnit
 	mEventDisable = false;
 }
 
-void Chip700View::ChangeTrackSelectorValue( int track )
+void C700View::ChangeTrackSelectorValue( int track )
 {
 	static const int BEGIN_TRACKSELECTOR_ID = 3000;
 	static const int NUM_TRACKSELECTOR = 16;
@@ -1102,7 +1102,7 @@ void Chip700View::ChangeTrackSelectorValue( int track )
 	}
 }
 
-void Chip700View::ChangeBankSelectorValue( int bank )
+void C700View::ChangeBankSelectorValue( int bank )
 {
 	static const int BEGIN_BANKSELECTOR_ID = 0;
 	
@@ -1128,12 +1128,12 @@ void Chip700View::ChangeBankSelectorValue( int bank )
 // internal function
 //
 
-pascal ControlKeyFilterResult Chip700View::StdKeyFilterCallback(ControlRef theControl, 
+pascal ControlKeyFilterResult C700View::StdKeyFilterCallback(ControlRef theControl, 
 																		  SInt16 *keyCode, SInt16 *charCode, 
 																		  EventModifiers *modifiers)
 {
 	SInt16 c = *charCode;
-	Chip700View *This = (Chip700View*)GetControlReference(theControl);
+	C700View *This = (C700View*)GetControlReference(theControl);
 	if (c >= ' ' || c == '\b' || c == 0x7F || (c >= 0x1c && c <= 0x1f) || c == '\t')
 		return kControlKeyFilterPassKey;
 	if (c == '\r' || c == 3) {	// return or Enter
@@ -1144,12 +1144,12 @@ pascal ControlKeyFilterResult Chip700View::StdKeyFilterCallback(ControlRef theCo
 	return kControlKeyFilterBlockKey;
 }
 
-pascal ControlKeyFilterResult Chip700View::NumericKeyFilterCallback(ControlRef theControl, 
+pascal ControlKeyFilterResult C700View::NumericKeyFilterCallback(ControlRef theControl, 
 																			  SInt16 *keyCode, SInt16 *charCode, 
 																			  EventModifiers *modifiers)
 {
 	SInt16 c = *charCode;
-	Chip700View *This = (Chip700View*)GetControlReference(theControl);
+	C700View *This = (C700View*)GetControlReference(theControl);
 	if (isdigit(c) || c == '+' || c == '-' || c == '.' || c == '\b' || c == 0x7F || (c >= 0x1c && c <= 0x1f)
 		|| c == '\t')
 		return kControlKeyFilterPassKey;
@@ -1162,7 +1162,7 @@ pascal ControlKeyFilterResult Chip700View::NumericKeyFilterCallback(ControlRef t
 }
 
 //波形表示をbrrデータで更新する
-void Chip700View::setBRRData(UInt8 *data, UInt32 length)
+void C700View::setBRRData(UInt8 *data, UInt32 length)
 {
 	HIRect	bounds;
 	long	start,viewlength;
@@ -1191,7 +1191,7 @@ void Chip700View::setBRRData(UInt8 *data, UInt32 length)
 }
 
 // ループポイント表示を更新する
-void Chip700View::setLoopoint(UInt32 lp)
+void C700View::setLoopoint(UInt32 lp)
 {
 	short	*wavedata;
 	long	numSamples;
@@ -1219,7 +1219,7 @@ void Chip700View::setLoopoint(UInt32 lp)
 }
 
 // 波形のサンプリングレートを検出
-void Chip700View::correctSampleRateSelected(void)
+void C700View::correctSampleRateSelected(void)
 {
 	int		looppoint, key;
 	double	samplerate;
@@ -1253,7 +1253,7 @@ void Chip700View::correctSampleRateSelected(void)
 }
 
 // 波形の基本ノートを検出
-void Chip700View::correctBaseKeySelected(void)
+void C700View::correctBaseKeySelected(void)
 {
 	int		looppoint, key;
 	double	samplerate, freq;
@@ -1286,7 +1286,7 @@ void Chip700View::correctBaseKeySelected(void)
 	delete[] buffer;
 }
 
-void Chip700View::loadSelected(void)
+void C700View::loadSelected(void)
 {
 	FSRef	ref;
 	
@@ -1295,7 +1295,7 @@ void Chip700View::loadSelected(void)
 	enqueueFile(&ref);
 }
 
-void Chip700View::saveSelected(void)
+void C700View::saveSelected(void)
 {
 	UInt32		size;
 	int			intValue;
@@ -1331,7 +1331,7 @@ void Chip700View::saveSelected(void)
 	CFRelease(savefile);
 }
 
-void Chip700View::saveSelectedXI(void)
+void C700View::saveSelectedXI(void)
 {
 	UInt32		size;
 	int			intValue;
@@ -1393,7 +1393,7 @@ void Chip700View::saveSelectedXI(void)
 	CFRelease(savefile);
 }
 
-bool Chip700View::dragStart(ControlRef cont, EventRecord *event)
+bool C700View::dragStart(ControlRef cont, EventRecord *event)
 {
 	//StandardDropLocation	loc;
 	DragSendDataUPP	fptr;
@@ -1462,7 +1462,7 @@ bool Chip700View::dragStart(ControlRef cont, EventRecord *event)
 	return true;
 }
 
-void Chip700View::saveToFile(CFURLRef savefile)
+void C700View::saveToFile(CFURLRef savefile)
 {
 	//Dictionaryデータを取得する
 	CFDictionaryRef	propertydata;
@@ -1480,7 +1480,7 @@ void Chip700View::saveToFile(CFURLRef savefile)
 	CFRelease(propertydata);
 }
 
-void Chip700View::saveToXIFile(CFURLRef savefile)
+void C700View::saveToXIFile(CFURLRef savefile)
 {
 	//データを取得する
 	CFDataRef	propertydata;
@@ -1497,7 +1497,7 @@ void Chip700View::saveToXIFile(CFURLRef savefile)
 	CFRelease(propertydata);
 }
 
-int Chip700View::getLoadFile(FSRef *ref, CFStringRef window_title)
+int C700View::getLoadFile(FSRef *ref, CFStringRef window_title)
 {
 	OSStatus	status;
 	NavDialogCreationOptions	myDialogOptions;
@@ -1571,7 +1571,7 @@ static Boolean MyFileSelectFilterProc(AEDesc *theItem, void *info, void *callBac
 	return display;
 }
 
-CFURLRef Chip700View::getSaveFile(CFStringRef defaultName)
+CFURLRef C700View::getSaveFile(CFStringRef defaultName)
 {
 	OSStatus	status;
 	NavDialogCreationOptions	myDialogOptions;
@@ -1617,14 +1617,14 @@ CFURLRef Chip700View::getSaveFile(CFStringRef defaultName)
 	return savepath;
 }
 
-void Chip700View::loadFile(CFURLRef path)
+void C700View::loadFile(CFURLRef path)
 {
 	FSRef	ref;
 	if (CFURLGetFSRef(path,&ref))
 		loadFile(&ref);
 }
 
-void Chip700View::loadFile(FSRef *ref)
+void C700View::loadFile(FSRef *ref)
 {
 	CFURLRef	path=CFURLCreateFromFSRef(NULL,ref);
 	CFStringRef	ext=CFURLCopyPathExtension(path);
@@ -1942,7 +1942,7 @@ short* loadPCMFile(FSRef *ref, long *numSamples, InstData *inst)
 }
 #endif
 
-int Chip700View::loadSPCFile(CFURLRef path)
+int C700View::loadSPCFile(CFURLRef path)
 {
 	CFReadStreamRef	filestream=CFReadStreamCreateWithFile(NULL,path);
 	if (CFReadStreamOpen(filestream) == false)
@@ -2147,7 +2147,7 @@ static OSErr MyReceiveHandler(WindowRef win, void *handlerRefCon, DragRef theDra
 	unsigned short	totalItems;
 	HFSFlavor		theHFSFlavor;
 	OSErr			err=noErr;
-	Chip700View		*This=(Chip700View*)handlerRefCon;
+	C700View		*This=(C700View*)handlerRefCon;
 	
 	if (!dragAccepted)
 		return dragNotAcceptedErr;
@@ -2187,7 +2187,7 @@ static OSErr MyDragSendDataFunction(FlavorType theType, void *dragSendRefCon,
 	FSRef	*fs;
 	long	size;
 	PromiseHFSFlavor	ff1;
-	Chip700View		*This=(Chip700View*)dragSendRefCon;
+	C700View		*This=(C700View*)dragSendRefCon;
 	
 	size=sizeof(PromiseHFSFlavor);
 	if (GetFlavorData(theDrag,theItemRef,flavorTypePromiseHFS,&ff1,&size,0))
@@ -2263,7 +2263,7 @@ static OSErr MyDragSendDataFunction(FlavorType theType, void *dragSendRefCon,
 	return 0;
 }
 
-void Chip700View::enqueueFile(FSRef *ref)
+void C700View::enqueueFile(FSRef *ref)
 {
 	if (!shouldload) {
 		CFURLRef path=CFURLCreateFromFSRef(NULL,ref);
@@ -2287,7 +2287,7 @@ void Chip700View::enqueueFile(FSRef *ref)
 }
 
 
-void Chip700View::Idle()
+void C700View::Idle()
 {
 	if (shouldload) {
 		loadFile(&queingfile);

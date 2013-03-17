@@ -1,6 +1,6 @@
 /*
- *  Chip700Generator.h
- *  Chip700
+ *  C700Generator.h
+ *  C700
  *
  *  Created by osoumen on 06/09/06.
  *  Copyright 2006 Vermicelli Magic. All rights reserved.
@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Chip700defines.h"
+#include "C700defines.h"
 #include "EchoKernel.h"
 #include <list>
 
@@ -32,11 +32,11 @@ typedef enum
 } velocity_mode;
 
 //-----------------------------------------------------------------------------
-class Chip700Generator
+class C700Generator
 {
 public:
-	Chip700Generator();
-	virtual				~Chip700Generator() {}
+	C700Generator();
+	virtual				~C700Generator() {}
 	
 	virtual void		Reset();
 

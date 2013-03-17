@@ -1,5 +1,5 @@
 #include <AudioToolbox/AudioToolbox.h>
-#include "Chip700.h"
+#include "C700.h"
 #include "brrcodec.h"
 #include "AudioFile.h"
 #include "XIFile.h"
@@ -26,12 +26,12 @@ static CFStringRef kSaveKey_SourceFile = CFSTR("srcfile");
 
 //-----------------------------------------------------------------------------
 
-COMPONENT_ENTRY(Chip700)
+COMPONENT_ENTRY(C700)
 
 //-----------------------------------------------------------------------------
-//	Chip700::Chip700
+//	C700::C700
 //-----------------------------------------------------------------------------
-Chip700::Chip700(AudioUnit component)
+C700::C700(AudioUnit component)
 : AUInstrumentBase(component, 0, 1)
 , mEfx(NULL)
 {
@@ -64,7 +64,7 @@ Chip700::Chip700(AudioUnit component)
 }
 
 //-----------------------------------------------------------------------------
-Chip700::~Chip700()
+C700::~C700()
 {
 	for (int i = 0; i < NUM_PRESETS; ++i) {
 		CFRelease(mPresets[i].presetName);
@@ -80,16 +80,16 @@ Chip700::~Chip700()
 }
 
 //-----------------------------------------------------------------------------
-void Chip700::PropertyNotifyFunc(int propID, void* userData)
+void C700::PropertyNotifyFunc(int propID, void* userData)
 {
-	Chip700	*This = reinterpret_cast<Chip700*> (userData);
+	C700	*This = reinterpret_cast<C700*> (userData);
 	This->PropertyChanged(propID, kAudioUnitScope_Global, 0);
 }
 
 //-----------------------------------------------------------------------------
-void Chip700::ParameterSetFunc(int paramID, float value, void* userData)
+void C700::ParameterSetFunc(int paramID, float value, void* userData)
 {
-	Chip700	*This = reinterpret_cast<Chip700*> (userData);
+	C700	*This = reinterpret_cast<C700*> (userData);
 	This->Globals()->SetParameter(paramID, value);
 	AudioUnitEvent auEvent;
 	auEvent.mEventType = kAudioUnitEvent_ParameterValueChange;
@@ -101,19 +101,19 @@ void Chip700::ParameterSetFunc(int paramID, float value, void* userData)
 }
 
 //-----------------------------------------------------------------------------
-ComponentResult Chip700::Initialize()
+ComponentResult C700::Initialize()
 {	
 	AUInstrumentBase::Initialize();
 	return noErr;
 }
 
 //-----------------------------------------------------------------------------
-void Chip700::Cleanup()
+void C700::Cleanup()
 {
 }
 
 //-----------------------------------------------------------------------------
-ComponentResult Chip700::Reset(	AudioUnitScope 		inScope,
+ComponentResult C700::Reset(	AudioUnitScope 		inScope,
 							   AudioUnitElement 	inElement)
 {
 //	if (inScope == kAudioUnitScope_Global) {
@@ -123,7 +123,7 @@ ComponentResult Chip700::Reset(	AudioUnitScope 		inScope,
 }
 
 //-----------------------------------------------------------------------------
-OSStatus	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
+OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 												const AudioTimeStamp &			inTimeStamp,
 												UInt32							inNumberFrames)
 {
@@ -153,9 +153,9 @@ OSStatus	Chip700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 }
 
 //-----------------------------------------------------------------------------
-//	Chip700::SetParameter
+//	C700::SetParameter
 //-----------------------------------------------------------------------------
-OSStatus Chip700::SetParameter(	AudioUnitParameterID			inID,
+OSStatus C700::SetParameter(	AudioUnitParameterID			inID,
 								 AudioUnitScope 				inScope,
 								 AudioUnitElement 				inElement,
 								 Float32						inValue,
@@ -269,9 +269,9 @@ AudioUnitParameterUnit getParameterUnit( int id )
 	}
 }
 //-----------------------------------------------------------------------------
-//	Chip700::GetParameterInfo
+//	C700::GetParameterInfo
 //-----------------------------------------------------------------------------
-ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
+ComponentResult		C700::GetParameterInfo(AudioUnitScope		inScope,
 											  AudioUnitParameterID	inParameterID,
 											  AudioUnitParameterInfo	&outParameterInfo )
 {
@@ -301,9 +301,9 @@ ComponentResult		Chip700::GetParameterInfo(AudioUnitScope		inScope,
 }
 
 //-----------------------------------------------------------------------------
-//	Chip700::GetPropertyInfo
+//	C700::GetPropertyInfo
 //-----------------------------------------------------------------------------
-ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
+ComponentResult		C700::GetPropertyInfo (AudioUnitPropertyID	inID,
 											  AudioUnitScope		inScope,
 											  AudioUnitElement	inElement,
 											  UInt32 &		outDataSize,
@@ -448,9 +448,9 @@ ComponentResult		Chip700::GetPropertyInfo (AudioUnitPropertyID	inID,
 }
 
 //-----------------------------------------------------------------------------
-//	Chip700::GetProperty
+//	C700::GetProperty
 //-----------------------------------------------------------------------------
-ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
+ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 											AudioUnitScope 		inScope,
 											AudioUnitElement 	inElement,
 											void *			outData )
@@ -603,9 +603,9 @@ ComponentResult		Chip700::GetProperty(	AudioUnitPropertyID inID,
 }
 
 //-----------------------------------------------------------------------------
-//	Chip700::SetProperty
+//	C700::SetProperty
 //-----------------------------------------------------------------------------
-ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
+ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 											AudioUnitScope 		inScope,
 											AudioUnitElement 	inElement,
 											const void *		inData,
@@ -729,9 +729,9 @@ ComponentResult		Chip700::SetProperty(	AudioUnitPropertyID inID,
 }
 
 //-----------------------------------------------------------------------------
-//	Chip700::GetPresets
+//	C700::GetPresets
 //-----------------------------------------------------------------------------
-ComponentResult Chip700::GetPresets(CFArrayRef *outData) const
+ComponentResult C700::GetPresets(CFArrayRef *outData) const
 {	
 	if (outData == NULL) return noErr;
 	
@@ -745,7 +745,7 @@ ComponentResult Chip700::GetPresets(CFArrayRef *outData) const
 }
 
 //-----------------------------------------------------------------------------
-OSStatus Chip700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
+OSStatus C700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 {
 	UInt32 chosenPreset = inNewFactoryPreset.presetNumber;
 	if ( chosenPreset < (UInt32)NUM_PRESETS ) {
@@ -783,9 +783,9 @@ static void AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key,
 }
 
 //-----------------------------------------------------------------------------
-//	Chip700::SaveState
+//	C700::SaveState
 //-----------------------------------------------------------------------------
-ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
+ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 {
 	ComponentResult result;
 	result = AUInstrumentBase::SaveState(outData);
@@ -820,9 +820,9 @@ ComponentResult	Chip700::SaveState(CFPropertyListRef *outData)
 }
 
 //-----------------------------------------------------------------------------
-//	Chip700::RestoreState
+//	C700::RestoreState
 //-----------------------------------------------------------------------------
-ComponentResult	Chip700::RestoreState(CFPropertyListRef plist)
+ComponentResult	C700::RestoreState(CFPropertyListRef plist)
 {
 	ComponentResult result;
 	result = AUInstrumentBase::RestoreState(plist);
@@ -861,7 +861,7 @@ ComponentResult	Chip700::RestoreState(CFPropertyListRef plist)
 }
 
 //-----------------------------------------------------------------------------
-int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
+int C700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 {
 	CFMutableDictionaryRef dict = CFDictionaryCreateMutable	(NULL, 0, 
 								&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
@@ -917,7 +917,7 @@ int Chip700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 }
 
 //-----------------------------------------------------------------------------
-void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
+void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 {
 	int editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
 	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, pgnum);
@@ -1071,7 +1071,7 @@ void Chip700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	mEfx->GetGenerator()->RefreshKeyMap();
 }
 //-----------------------------------------------------------------------------
-ComponentResult Chip700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
+ComponentResult C700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
 											NoteInstanceID 				inNoteInstanceID, 
 											UInt32 						inOffsetSampleFrame, 
 											const MusicDeviceNoteParams &inParams)
@@ -1084,7 +1084,7 @@ ComponentResult Chip700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
 }
 
 //-----------------------------------------------------------------------------
-ComponentResult Chip700::RealTimeStopNote( MusicDeviceGroupID 			inGroup, 
+ComponentResult C700::RealTimeStopNote( MusicDeviceGroupID 			inGroup, 
 										   NoteInstanceID 				inNoteInstanceID, 
 										   UInt32 						inOffsetSampleFrame)
 {
@@ -1097,7 +1097,7 @@ ComponentResult Chip700::RealTimeStopNote( MusicDeviceGroupID 			inGroup,
 }
 
 //-----------------------------------------------------------------------------
-OSStatus Chip700::HandlePitchWheel(	UInt8 	inChannel,
+OSStatus C700::HandlePitchWheel(	UInt8 	inChannel,
 							   UInt8 	inPitch1,
 							   UInt8 	inPitch2,
 							   UInt32	inStartFrame)
@@ -1107,9 +1107,9 @@ OSStatus Chip700::HandlePitchWheel(	UInt8 	inChannel,
 }
 
 //-----------------------------------------------------------------------------
-//	Chip700::HandleControlChange
+//	C700::HandleControlChange
 //-----------------------------------------------------------------------------
-OSStatus Chip700::HandleControlChange(	UInt8 	inChannel,
+OSStatus C700::HandleControlChange(	UInt8 	inChannel,
 									UInt8 	inController,
 									UInt8 	inValue,
 									UInt32	inStartFrame)
@@ -1119,9 +1119,9 @@ OSStatus Chip700::HandleControlChange(	UInt8 	inChannel,
 }
 
 //-----------------------------------------------------------------------------
-//	Chip700::HandleProgramChange
+//	C700::HandleProgramChange
 //-----------------------------------------------------------------------------
-OSStatus Chip700::HandleProgramChange(	UInt8	inChannel,
+OSStatus C700::HandleProgramChange(	UInt8	inChannel,
 										UInt8	inValue)
 {
 	mEfx->HandleProgramChange(inChannel, inValue, 0);
@@ -1129,21 +1129,21 @@ OSStatus Chip700::HandleProgramChange(	UInt8	inChannel,
 }
 
 //-----------------------------------------------------------------------------
-OSStatus Chip700::HandleResetAllControllers( UInt8 	inChannel)
+OSStatus C700::HandleResetAllControllers( UInt8 	inChannel)
 {
 	mEfx->HandleResetAllControllers(inChannel, 0);
 	return AUInstrumentBase::HandleResetAllControllers( inChannel);
 }
 
 //-----------------------------------------------------------------------------
-OSStatus Chip700::HandleAllNotesOff( UInt8 inChannel )
+OSStatus C700::HandleAllNotesOff( UInt8 inChannel )
 {
 	mEfx->HandleAllNotesOff(inChannel, 0);
 	return AUInstrumentBase::HandleAllNotesOff( inChannel);
 }
 
 //-----------------------------------------------------------------------------
-OSStatus Chip700::HandleAllSoundOff( UInt8 inChannel )
+OSStatus C700::HandleAllSoundOff( UInt8 inChannel )
 {
 	mEfx->HandleAllSoundOff(inChannel, 0);
 	return AUInstrumentBase::HandleAllSoundOff( inChannel);

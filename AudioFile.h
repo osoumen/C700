@@ -1,6 +1,6 @@
 /*
  *  AudioFile.h
- *  Chip700
+ *  C700
  *
  *  Created by osoumen on 12/10/10.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Chip700defines.h"
+#include "C700defines.h"
 #include "FileAccess.h"
 
 class AudioFile : public FileAccess {

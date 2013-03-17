@@ -1,33 +1,33 @@
 /*
- *  Chip700View.h
- *  Chip700
+ *  C700View.h
+ *  C700
  *
  *  Created by 開発用 on 06/11/30.
  *  Copyright 2006 __MyCompanyName__. All rights reserved.
  *
  */
 
-#ifndef __Chip700View__H_
-#define __Chip700View__H_
+#ifndef __C700View__H_
+#define __C700View__H_
 
-#include "Chip700Version.h"
+#include "C700Version.h"
 #include "AUCarbonViewNib.h"
-#include "Chip700defines.h"
+#include "C700defines.h"
 
 static OSErr MyDragSendDataFunction(FlavorType theType, void *dragSendRefCon,
 									DragItemRef theItemRef, DragRef theDrag);
 
-class Chip700View: public CAUCarbonViewNib
+class C700View: public CAUCarbonViewNib
 {
 public:
     // Construction ------------------------------
-    Chip700View(AudioUnitCarbonView inInstance): CAUCarbonViewNib(inInstance)
+    C700View(AudioUnitCarbonView inInstance): CAUCarbonViewNib(inInstance)
 	{
 		mEventDisable=false;
 		preemphasis=true;
 		shouldload=false;
 	};
-	~Chip700View();
+	~C700View();
     // Baseclass overrides -----------------------
     CFStringRef GetBundleID() { return CFSTR("com.VeMa.audiounit.Chip700"); };  // my Bundle ID 
     void InitWindow(CFBundleRef sBundle);

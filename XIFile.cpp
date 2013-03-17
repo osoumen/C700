@@ -1,13 +1,13 @@
 /*
  *  XIFile.cpp
- *  Chip700
+ *  C700
  *
  *  Created by osoumen on 12/10/10.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
  *
  */
 
-#include "Chip700defines.h"
+#include "C700defines.h"
 #include "XIFile.h"
 #include "AudioFile.h"
 #include "brrcodec.h"
@@ -40,7 +40,7 @@ XIFile::~XIFile()
 }
 
 //-----------------------------------------------------------------------------
-bool XIFile::SetDataFromChip( const Chip700Generator *chip, int targetProgram, double tempo )
+bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, double tempo )
 {
 	mDataPos = 0;
 	mDataUsed = 0;

@@ -1,6 +1,6 @@
 /*
- *  Chip700defines.h
- *  Chip700
+ *  C700defines.h
+ *  C700
  *
  *  Created by osoumen on 06/10/12.
  *  Copyright 2006 ppse All rights reserved.

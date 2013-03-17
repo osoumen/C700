@@ -1,6 +1,6 @@
 /*
  *  C700Edit.h
- *  Chip700
+ *  C700
  *
  *  Created by osoumen on 12/10/01.
  *  Copyright 2012 __MyCompanyName__. All rights reserved.
@@ -19,7 +19,7 @@
 
 #include "vstgui.h"
 #include "C700GUI.h"
-#include "Chip700defines.h"
+#include "C700defines.h"
 #include "EfxAccess.h"
 
 class C700Edit : public AEffGUIEditor, CControlListener
