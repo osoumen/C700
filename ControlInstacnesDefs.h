@@ -566,7 +566,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		427, 8, 44, 11,	//x,y,w,h
+		426, 8, 49, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
