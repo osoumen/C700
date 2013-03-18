@@ -29,7 +29,7 @@ public:
 	};
 	~C700View();
     // Baseclass overrides -----------------------
-    CFStringRef GetBundleID() { return CFSTR("com.VeMa.audiounit.Chip700"); };  // my Bundle ID 
+    CFStringRef GetBundleID() { return CFSTR("com.picopicose.audiounit.C700"); };  // my Bundle ID 
     void InitWindow(CFBundleRef sBundle);
 	virtual void FinishWindow(CFBundleRef sBundle);
 	virtual bool HandleCommand(EventRef	inEvent, HICommandExtended &cmd);

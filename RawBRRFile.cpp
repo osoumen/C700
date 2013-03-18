@@ -133,7 +133,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	}
 	
 	//エンドフラグの位置がループポイントより前だとエラー
-	if ( endflag_pos <= mInst.lp ) {
+	if ( endflag_pos < mInst.lp ) {
 		return false;
 	}
 	

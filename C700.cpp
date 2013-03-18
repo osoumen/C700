@@ -461,7 +461,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitProperty_CocoaUI:
 			{
 				// Look for a resource in the main bundle by name and type.
-				CFBundleRef bundle = CFBundleGetBundleWithIdentifier( CFSTR("com.VeMa.audiounit.Chip700") );
+				CFBundleRef bundle = CFBundleGetBundleWithIdentifier( CFSTR("com.picopicose.audiounit.C700") );
 				
 				if (bundle == NULL) return fnfErr;
 
