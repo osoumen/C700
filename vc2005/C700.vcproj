@@ -430,6 +430,18 @@
 					>
 				</File>
 				<File
+					RelativePath="..\C700defines.h"
+					>
+				</File>
+				<File
+					RelativePath="..\C700Generator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\C700Generator.h"
+					>
+				</File>
+				<File
 					RelativePath="..\C700Kernel.cpp"
 					>
 				</File>
@@ -443,18 +455,6 @@
 				</File>
 				<File
 					RelativePath="..\C700Parameters.h"
-					>
-				</File>
-				<File
-					RelativePath="..\C700defines.h"
-					>
-				</File>
-				<File
-					RelativePath="..\C700Generator.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\C700Generator.h"
 					>
 				</File>
 				<File
