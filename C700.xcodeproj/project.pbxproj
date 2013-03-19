@@ -644,6 +644,8 @@
 		F597AD42160B67860003E710 /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD34160B67860003E710 /* vstgui.cpp */; };
 		F597AD43160B67860003E710 /* vstgui.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD35160B67860003E710 /* vstgui.h */; };
 		F597AD58160B68950003E710 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F597AD57160B68950003E710 /* Cocoa.framework */; };
+		F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
+		F5C1B32316F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1046,6 +1048,7 @@
 		F597AD34160B67860003E710 /* vstgui.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = vstgui.cpp; sourceTree = "<group>"; };
 		F597AD35160B67860003E710 /* vstgui.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = vstgui.h; sourceTree = "<group>"; };
 		F597AD57160B68950003E710 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstacnesDefs.h; sourceTree = "<group>"; };
 		F5DFB749155E851500BC9F4A /* bt_multi_bank_a0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_multi_bank_a0.png; sourceTree = "<group>"; };
 		F5DFB74A155E851500BC9F4A /* bt_multi_bank_a1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_multi_bank_a1.png; sourceTree = "<group>"; };
 		F5DFB74B155E851500BC9F4A /* bt_multi_bank_b0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bt_multi_bank_b0.png; sourceTree = "<group>"; };
@@ -1671,6 +1674,7 @@
 			isa = PBXGroup;
 			children = (
 				F55D6447161D7A94001CF9AB /* ControlInstances.h */,
+				F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */,
 				F569BEC01622B5F8006C91AD /* EfxAccess.h */,
 				F569BEC11622B5F8006C91AD /* EfxAccess.cpp */,
 				F569A40316195488006C91AD /* C700Edit.h */,
@@ -1803,6 +1807,7 @@
 				F5432F311628117D00863A0B /* C700Kernel.h in Headers */,
 				F5432FF3162915F900863A0B /* C700Parameters.h in Headers */,
 				F510B706163266CB00A844B4 /* FileAccess.h in Headers */,
+				F5C1B32316F803A10034F320 /* ControlInstacnesDefs.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1854,6 +1859,7 @@
 				F54338DA1629759600863A0B /* C700VST.h in Headers */,
 				F5710731162EB3D40043EF00 /* PGChunk.h in Headers */,
 				F510B704163266CB00A844B4 /* FileAccess.h in Headers */,
+				F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
