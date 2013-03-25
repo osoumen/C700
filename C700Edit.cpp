@@ -173,6 +173,7 @@ void C700Edit::setParameter(int index, float value)
 	cntl = m_pUIView->FindControlByTag(tag);
 	while (cntl)
 	{
+		cntl->invalid();
 		cntl->setValue(value);
 		//printf("tag=%d, value=%f\n",tag,value);
 		
@@ -262,6 +263,7 @@ void C700Edit::SetProgramName( const char *pgname )
 	if ( cntl ) {
 		if ( cntl->isTypeOf("CMyTextEdit") ) {
 			CMyTextEdit	*textbox = reinterpret_cast<CMyTextEdit*> (cntl);
+			textbox->invalid();		//Windows‚Å‚Í‚±‚ê‚ª–³‚¢‚Æ‚È‚º‚©XV‚³‚ê‚È‚¢
 			textbox->setText(pgname);
 		}
 	}

@@ -452,7 +452,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 			// 表示更新が必要なプロパティの変更を通知する
 			if ( propertyNotifyFunc ) {
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_Bank; i++) {
+				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
 					propertyNotifyFunc( i, propNotifyUserData );
 				}
 			}
@@ -476,7 +476,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 			// 表示更新が必要なプロパティの変更を通知する
 			if ( propertyNotifyFunc ) {
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<=kAudioUnitCustomProperty_EditingProgram; i++) {
+				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
 					propertyNotifyFunc( i, propNotifyUserData );
 				}
 			}
@@ -630,6 +630,9 @@ const BRRData *C700Kernel::GetBRRData(int prog)
 
 bool C700Kernel::SetBRRData( const BRRData *brr )
 {
+	//発音を停止する
+	Reset();
+
 	//brrデータをこちら側に移動する
 	if (brr->data) {
 		if ( mVPset[mEditProg].brr.data ) {

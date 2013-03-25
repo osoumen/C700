@@ -86,6 +86,20 @@ C700Generator::C700Generator()
 		}
 	}
 	Reset();
+
+	//Initialize
+	mVoiceLimit = 8;
+	mMainVolume_L = 127;
+	mMainVolume_R = 127;
+	mVibfreq = 0.00137445;
+	mVibdepth = 0.5;
+	mPbrange = 1.0;
+	
+	for (int i=0; i<16; i++) {
+		mChProgram[i] = 0;
+		mChPitchBend[i] = 0;
+		mChVibDepth[i] = 0;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -124,13 +138,6 @@ void C700Generator::VoiceState::Reset()
 //-----------------------------------------------------------------------------
 void C700Generator::Reset()
 {
-	mVoiceLimit = 8;
-	mMainVolume_L = 127;
-	mMainVolume_R = 127;
-	mVibfreq = 0.00137445;
-	mVibdepth = 0.5;
-	mPbrange = 1.0;
-	
 	for (int i=0; i<16; i++) {
 		mProcessbuf[0][i]=0;
 		mProcessbuf[1][i]=0;
@@ -148,12 +155,6 @@ void C700Generator::Reset()
 	mWaitVo.clear();
 	for(int i=0;i<mVoiceLimit;i++){
 		mWaitVo.push_back(i);
-	}
-	
-	for (int i=0; i<16; i++) {
-		mChProgram[i] = 0;
-		mChPitchBend[i] = 0;
-		mChVibDepth[i] = 0;
 	}
 	
 	mEcho[0].Reset();
