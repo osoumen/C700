@@ -316,6 +316,8 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 			}
 		}
 		totalSize += (sizeof(PGChunk::MyChunkHead) + sizeof(int))*3;	//プログラム定義数
+		//パラメータ設定値のサイズの追加
+		totalSize += (sizeof(PGChunk::MyChunkHead) + sizeof(float)) * kNumberOfParameters;
 	}
 	
 	
@@ -327,6 +329,12 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 	PGChunk		*saveChunk;
 	saveChunk = new PGChunk( totalSize );
 	if ( !isPreset ) {
+		//パラメータの書き込み
+		for ( int i=0; i<kNumberOfParameters; i++ ) {
+			float	param;
+			param = getParameter(i);
+			saveChunk->writeChunk(i, &param, sizeof(float));
+		}
 		saveChunk->writeChunk(CKID_PROGRAM_TOTAL, &totalProgs, sizeof(int));
 		saveChunk->writeChunk(kAudioUnitCustomProperty_EditingProgram, &editProg, sizeof(int));
 		saveChunk->writeChunk(kAudioUnitCustomProperty_EditingChannel, &editChan, sizeof(int));
@@ -381,7 +389,13 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 		
 		//保存されているプログラム数
 		
-		if ( ckType == CKID_PROGRAM_TOTAL ) {
+		if ( ckType < kNumberOfParameters && isPreset == false ) {
+			//パラメータ読み込み
+			float	param;
+			saveChunk->readData( &param, sizeof(float), &ckSize );
+			setParameter(ckType, param);
+		}
+		else if ( ckType == CKID_PROGRAM_TOTAL ) {
 			saveChunk->readData( &totalProgs, sizeof(int), &ckSize );
 		}
 		else if ( ckType == kAudioUnitCustomProperty_EditingProgram && isPreset == false ) {
