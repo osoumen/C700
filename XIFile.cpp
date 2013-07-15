@@ -153,7 +153,7 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 	xih.ploope = 0;
 	xih.vtype = 3;	//ENV_VOLUME + ENV_VOLSUSTAIN
 	xih.ptype = 0;
-	xih.volfade = EndianU16_NtoL( 5000 );
+	xih.volfade = EndianU16_NtoL( 32767 );
 	xih.reserved2 = EndianU16_NtoL( nsamples );
 	if ( writeData( &xih, sizeof(xih),NULL ) == false ) {
 		return false;
