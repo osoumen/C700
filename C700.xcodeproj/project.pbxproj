@@ -625,7 +625,6 @@
 		F569CA571626D130006C91AD /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05B01072074F900365D66 /* CoreServices.framework */; };
 		F569CA581626D130006C91AD /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2134090B199D8500DC9811 /* Accelerate.framework */; };
 		F569CA591626D130006C91AD /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ACF4CE40B21489800EC1825 /* Carbon.framework */; };
-		F569CA5A1626D130006C91AD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F597AD57160B68950003E710 /* Cocoa.framework */; };
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
@@ -1093,7 +1092,6 @@
 				F569CA571626D130006C91AD /* CoreServices.framework in Frameworks */,
 				F569CA581626D130006C91AD /* Accelerate.framework in Frameworks */,
 				F569CA591626D130006C91AD /* Carbon.framework in Frameworks */,
-				F569CA5A1626D130006C91AD /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

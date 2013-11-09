@@ -85,8 +85,6 @@ C700Generator::C700Generator()
 			mKeyMap[bnk][i] = 0;
 		}
 	}
-	Reset();
-
 	//Initialize
 	mVoiceLimit = 8;
 	mMainVolume_L = 127;
@@ -100,6 +98,7 @@ C700Generator::C700Generator()
 		mChPitchBend[i] = 0;
 		mChVibDepth[i] = 0;
 	}
+	Reset();
 }
 
 //-----------------------------------------------------------------------------
