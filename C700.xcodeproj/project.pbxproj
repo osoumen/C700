@@ -1495,7 +1495,7 @@
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 				ZERO_LINK = YES;
 			};
 			name = Development;
@@ -1513,7 +1513,7 @@
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
-				SDKROOT = macosx10.5;
+				SDKROOT = macosx10.6;
 			};
 			name = Deployment;
 		};
