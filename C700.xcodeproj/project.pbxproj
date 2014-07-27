@@ -41,7 +41,6 @@
 		8ACF4CD80B2145CB00EC1825 /* CarbonEventHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CCF0B2145CB00EC1825 /* CarbonEventHandler.cpp */; };
 		8ACF4CD90B2145CB00EC1825 /* CarbonEventHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CD00B2145CB00EC1825 /* CarbonEventHandler.h */; };
 		8ACF4CDC0B2145E800EC1825 /* AUViewLocalizedStringKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ACF4CDB0B2145E800EC1825 /* AUViewLocalizedStringKeys.h */; };
-		8ACF4CE50B21489800EC1825 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ACF4CE40B21489800EC1825 /* Carbon.framework */; };
 		8ACF4CEA0B2148CF00EC1825 /* CACFArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE60B2148CF00EC1825 /* CACFArray.cpp */; };
 		8ACF4CEB0B2148CF00EC1825 /* CACFDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE70B2148CF00EC1825 /* CACFDictionary.cpp */; };
 		8ACF4CEC0B2148CF00EC1825 /* CACFNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8ACF4CE80B2148CF00EC1825 /* CACFNumber.cpp */; };
@@ -86,6 +85,19 @@
 		F510B705163266CB00A844B4 /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510B703163266CB00A844B4 /* FileAccess.cpp */; };
 		F510B706163266CB00A844B4 /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F510B702163266CB00A844B4 /* FileAccess.h */; };
 		F510B707163266CB00A844B4 /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510B703163266CB00A844B4 /* FileAccess.cpp */; };
+		F53602A11984CEC60079A9BE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602A01984CEC60079A9BE /* Cocoa.framework */; };
+		F53602A21984CEC60079A9BE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602A01984CEC60079A9BE /* Cocoa.framework */; };
+		F53602A71984CF600079A9BE /* aeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602A31984CF600079A9BE /* aeffect.h */; };
+		F53602A91984CF600079A9BE /* aeffectx.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602A41984CF600079A9BE /* aeffectx.h */; };
+		F53602AB1984CF600079A9BE /* vstfxstore.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602A51984CF600079A9BE /* vstfxstore.h */; };
+		F53602B31984CF7D0079A9BE /* aeffeditor.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602AC1984CF7D0079A9BE /* aeffeditor.h */; };
+		F53602B51984CF7D0079A9BE /* audioeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F53602AD1984CF7D0079A9BE /* audioeffect.cpp */; };
+		F53602B71984CF7D0079A9BE /* audioeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602AE1984CF7D0079A9BE /* audioeffect.h */; };
+		F53602B91984CF7D0079A9BE /* audioeffectx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F53602AF1984CF7D0079A9BE /* audioeffectx.cpp */; };
+		F53602BB1984CF7D0079A9BE /* audioeffectx.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602B01984CF7D0079A9BE /* audioeffectx.h */; };
+		F53602BD1984CF7D0079A9BE /* vstplugmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F53602B11984CF7D0079A9BE /* vstplugmain.cpp */; };
+		F53602BF1984CFF80079A9BE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602BE1984CFF80079A9BE /* Foundation.framework */; };
+		F53602C01984CFF80079A9BE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602BE1984CFF80079A9BE /* Foundation.framework */; };
 		F5432C261627AE4200863A0B /* EchoKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432C241627AE4200863A0B /* EchoKernel.h */; };
 		F5432C271627AE4200863A0B /* EchoKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432C251627AE4200863A0B /* EchoKernel.cpp */; };
 		F5432F311628117D00863A0B /* C700Kernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432F2D1628117D00863A0B /* C700Kernel.h */; };
@@ -190,17 +202,6 @@
 		F543321916296E0200863A0B /* C700Kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432F2E1628117D00863A0B /* C700Kernel.cpp */; };
 		F543321A16296E0200863A0B /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
 		F543321F16296E0200863A0B /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2134090B199D8500DC9811 /* Accelerate.framework */; };
-		F543322016296E0200863A0B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8ACF4CE40B21489800EC1825 /* Carbon.framework */; };
-		F543322116296E0200863A0B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F597AD57160B68950003E710 /* Cocoa.framework */; };
-		F543389E162973D900863A0B /* aeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F543389B162973D900863A0B /* aeffect.h */; };
-		F543389F162973D900863A0B /* aeffectx.h in Headers */ = {isa = PBXBuildFile; fileRef = F543389C162973D900863A0B /* aeffectx.h */; };
-		F54338A0162973D900863A0B /* vstfxstore.h in Headers */ = {isa = PBXBuildFile; fileRef = F543389D162973D900863A0B /* vstfxstore.h */; };
-		F54338A7162973E600863A0B /* aeffeditor.h in Headers */ = {isa = PBXBuildFile; fileRef = F54338A1162973E600863A0B /* aeffeditor.h */; };
-		F54338A8162973E600863A0B /* audioeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338A2162973E600863A0B /* audioeffect.cpp */; };
-		F54338A9162973E600863A0B /* audioeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F54338A3162973E600863A0B /* audioeffect.h */; };
-		F54338AA162973E600863A0B /* audioeffectx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338A4162973E600863A0B /* audioeffectx.cpp */; };
-		F54338AB162973E600863A0B /* audioeffectx.h in Headers */ = {isa = PBXBuildFile; fileRef = F54338A5162973E600863A0B /* audioeffectx.h */; };
-		F54338AC162973E600863A0B /* vstplugmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338A6162973E600863A0B /* vstplugmain.cpp */; };
 		F54338BE1629748300863A0B /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05AF9072074E100365D66 /* AudioToolbox.framework */; };
 		F54338C31629749600863A0B /* aeffguieditor.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2F160B67860003E710 /* aeffguieditor.h */; };
 		F54338C41629749600863A0B /* aeffguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2E160B67860003E710 /* aeffguieditor.cpp */; };
@@ -282,6 +283,8 @@
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
 		F5710731162EB3D40043EF00 /* PGChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = F571072F162EB3D40043EF00 /* PGChunk.h */; };
 		F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5710730162EB3D40043EF00 /* PGChunk.cpp */; };
+		F57D96C61984D1E900F2FE06 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D96C51984D1E900F2FE06 /* Carbon.framework */; };
+		F57D96C71984D1E900F2FE06 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D96C51984D1E900F2FE06 /* Carbon.framework */; };
 		F597AD36160B67860003E710 /* cocoasupport.mm in Sources */ = {isa = PBXBuildFile; fileRef = F597AD28160B67860003E710 /* cocoasupport.mm */; };
 		F597AD37160B67860003E710 /* getpluginbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD29160B67860003E710 /* getpluginbundle.h */; };
 		F597AD38160B67860003E710 /* plugguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2A160B67860003E710 /* plugguieditor.cpp */; };
@@ -294,7 +297,6 @@
 		F597AD41160B67860003E710 /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD33160B67860003E710 /* vstcontrols.cpp */; };
 		F597AD42160B67860003E710 /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD34160B67860003E710 /* vstgui.cpp */; };
 		F597AD43160B67860003E710 /* vstgui.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD35160B67860003E710 /* vstgui.h */; };
-		F597AD58160B68950003E710 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F597AD57160B68950003E710 /* Cocoa.framework */; };
 		F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
 		F5C1B32316F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
 /* End PBXBuildFile section */
@@ -333,7 +335,6 @@
 		8ACF4CCF0B2145CB00EC1825 /* CarbonEventHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; path = CarbonEventHandler.cpp; sourceTree = "<group>"; };
 		8ACF4CD00B2145CB00EC1825 /* CarbonEventHandler.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = CarbonEventHandler.h; sourceTree = "<group>"; };
 		8ACF4CDB0B2145E800EC1825 /* AUViewLocalizedStringKeys.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = AUViewLocalizedStringKeys.h; sourceTree = "<group>"; };
-		8ACF4CE40B21489800EC1825 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8ACF4CE60B2148CF00EC1825 /* CACFArray.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; path = CACFArray.cpp; sourceTree = "<group>"; };
 		8ACF4CE70B2148CF00EC1825 /* CACFDictionary.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; path = CACFDictionary.cpp; sourceTree = "<group>"; };
 		8ACF4CE80B2148CF00EC1825 /* CACFNumber.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; path = CACFNumber.cpp; sourceTree = "<group>"; };
@@ -384,6 +385,17 @@
 		8D01CCD20486CAD60068D4B7 /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		F510B702163266CB00A844B4 /* FileAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileAccess.h; sourceTree = "<group>"; };
 		F510B703163266CB00A844B4 /* FileAccess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileAccess.cpp; sourceTree = "<group>"; };
+		F53602A01984CEC60079A9BE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		F53602A31984CF600079A9BE /* aeffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aeffect.h; path = pluginterfaces/vst2.x/aeffect.h; sourceTree = "<group>"; };
+		F53602A41984CF600079A9BE /* aeffectx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aeffectx.h; path = pluginterfaces/vst2.x/aeffectx.h; sourceTree = "<group>"; };
+		F53602A51984CF600079A9BE /* vstfxstore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vstfxstore.h; path = pluginterfaces/vst2.x/vstfxstore.h; sourceTree = "<group>"; };
+		F53602AC1984CF7D0079A9BE /* aeffeditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aeffeditor.h; path = public.sdk/source/vst2.x/aeffeditor.h; sourceTree = "<group>"; };
+		F53602AD1984CF7D0079A9BE /* audioeffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = audioeffect.cpp; path = public.sdk/source/vst2.x/audioeffect.cpp; sourceTree = "<group>"; };
+		F53602AE1984CF7D0079A9BE /* audioeffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = audioeffect.h; path = public.sdk/source/vst2.x/audioeffect.h; sourceTree = "<group>"; };
+		F53602AF1984CF7D0079A9BE /* audioeffectx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = audioeffectx.cpp; path = public.sdk/source/vst2.x/audioeffectx.cpp; sourceTree = "<group>"; };
+		F53602B01984CF7D0079A9BE /* audioeffectx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = audioeffectx.h; path = public.sdk/source/vst2.x/audioeffectx.h; sourceTree = "<group>"; };
+		F53602B11984CF7D0079A9BE /* vstplugmain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vstplugmain.cpp; path = public.sdk/source/vst2.x/vstplugmain.cpp; sourceTree = "<group>"; };
+		F53602BE1984CFF80079A9BE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		F5432C241627AE4200863A0B /* EchoKernel.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = EchoKernel.h; sourceTree = "<group>"; };
 		F5432C251627AE4200863A0B /* EchoKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = EchoKernel.cpp; sourceTree = "<group>"; };
 		F5432F2D1628117D00863A0B /* C700Kernel.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Kernel.h; sourceTree = "<group>"; };
@@ -393,15 +405,6 @@
 		F543322816296E0200863A0B /* C700.vst */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.vst; sourceTree = BUILT_PRODUCTS_DIR; };
 		F543322916296E0200863A0B /* Info_vst.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info_vst.plist; sourceTree = "<group>"; };
 		F543325E16296FB600863A0B /* C700_Prefix_VST.pch */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700_Prefix_VST.pch; sourceTree = "<group>"; };
-		F543389B162973D900863A0B /* aeffect.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = aeffect.h; path = Extras/vstsdk2.4/pluginterfaces/vst2.x/aeffect.h; sourceTree = DEVELOPER_DIR; };
-		F543389C162973D900863A0B /* aeffectx.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = aeffectx.h; path = Extras/vstsdk2.4/pluginterfaces/vst2.x/aeffectx.h; sourceTree = DEVELOPER_DIR; };
-		F543389D162973D900863A0B /* vstfxstore.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = vstfxstore.h; path = Extras/vstsdk2.4/pluginterfaces/vst2.x/vstfxstore.h; sourceTree = DEVELOPER_DIR; };
-		F54338A1162973E600863A0B /* aeffeditor.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = aeffeditor.h; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/aeffeditor.h; sourceTree = DEVELOPER_DIR; };
-		F54338A2162973E600863A0B /* audioeffect.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = audioeffect.cpp; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/audioeffect.cpp; sourceTree = DEVELOPER_DIR; };
-		F54338A3162973E600863A0B /* audioeffect.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = audioeffect.h; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/audioeffect.h; sourceTree = DEVELOPER_DIR; };
-		F54338A4162973E600863A0B /* audioeffectx.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = audioeffectx.cpp; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/audioeffectx.cpp; sourceTree = DEVELOPER_DIR; };
-		F54338A5162973E600863A0B /* audioeffectx.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = audioeffectx.h; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/audioeffectx.h; sourceTree = DEVELOPER_DIR; };
-		F54338A6162973E600863A0B /* vstplugmain.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = vstplugmain.cpp; path = Extras/vstsdk2.4/public.sdk/source/vst2.x/vstplugmain.cpp; sourceTree = DEVELOPER_DIR; };
 		F54338D81629759600863A0B /* C700VST.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700VST.h; sourceTree = "<group>"; };
 		F54338D91629759600863A0B /* C700VST.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700VST.cpp; sourceTree = "<group>"; };
 		F543D0AA147D285F00DC53A3 /* C700Generator.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Generator.cpp; sourceTree = "<group>"; };
@@ -449,8 +452,8 @@
 		F569A40416195488006C91AD /* C700Edit.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Edit.cpp; sourceTree = "<group>"; };
 		F569A484161964FD006C91AD /* C700GUI.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700GUI.h; sourceTree = "<group>"; };
 		F569A485161964FD006C91AD /* C700GUI.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700GUI.cpp; sourceTree = "<group>"; };
-		F569A8011619DEA6006C91AD /* ctooltipsupport.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = ctooltipsupport.cpp; path = "Extras/VST3 SDK/vstgui.sf/vstgui/ctooltipsupport.cpp"; sourceTree = DEVELOPER_DIR; };
-		F569A8021619DEA6006C91AD /* ctooltipsupport.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = ctooltipsupport.h; path = "Extras/VST3 SDK/vstgui.sf/vstgui/ctooltipsupport.h"; sourceTree = DEVELOPER_DIR; };
+		F569A8011619DEA6006C91AD /* ctooltipsupport.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = ctooltipsupport.cpp; sourceTree = "<group>"; };
+		F569A8021619DEA6006C91AD /* ctooltipsupport.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ctooltipsupport.h; sourceTree = "<group>"; };
 		F569A94D161AB0F1006C91AD /* MyKnob.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = MyKnob.h; sourceTree = "<group>"; };
 		F569A94E161AB0F1006C91AD /* MyKnob.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = MyKnob.cpp; sourceTree = "<group>"; };
 		F569AA24161AD9F4006C91AD /* MySlider.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = MySlider.h; sourceTree = "<group>"; };
@@ -481,6 +484,7 @@
 		F56D35A1156A185D00038960 /* MiniAiff.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = MiniAiff.h; path = encodetest/MiniAiff.h; sourceTree = "<group>"; };
 		F571072F162EB3D40043EF00 /* PGChunk.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = PGChunk.h; sourceTree = "<group>"; };
 		F5710730162EB3D40043EF00 /* PGChunk.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = PGChunk.cpp; sourceTree = "<group>"; };
+		F57D96C51984D1E900F2FE06 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		F597AD28160B67860003E710 /* cocoasupport.mm */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.objcpp; name = cocoasupport.mm; path = vstgui_diff/cocoasupport.mm; sourceTree = SOURCE_ROOT; };
 		F597AD29160B67860003E710 /* getpluginbundle.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = getpluginbundle.h; path = vstgui_diff/getpluginbundle.h; sourceTree = SOURCE_ROOT; };
 		F597AD2A160B67860003E710 /* plugguieditor.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = plugguieditor.cpp; path = vstgui_diff/plugguieditor.cpp; sourceTree = SOURCE_ROOT; };
@@ -495,7 +499,6 @@
 		F597AD33160B67860003E710 /* vstcontrols.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = vstcontrols.cpp; sourceTree = "<group>"; };
 		F597AD34160B67860003E710 /* vstgui.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = vstgui.cpp; sourceTree = "<group>"; };
 		F597AD35160B67860003E710 /* vstgui.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = vstgui.h; sourceTree = "<group>"; };
-		F597AD57160B68950003E710 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstacnesDefs.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -504,12 +507,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F57D96C61984D1E900F2FE06 /* Carbon.framework in Frameworks */,
 				8BA05AFC072074E100365D66 /* AudioToolbox.framework in Frameworks */,
+				F53602BF1984CFF80079A9BE /* Foundation.framework in Frameworks */,
+				F53602A11984CEC60079A9BE /* Cocoa.framework in Frameworks */,
 				8BA05AFD072074E100365D66 /* AudioUnit.framework in Frameworks */,
 				8BA05B02072074F900365D66 /* CoreServices.framework in Frameworks */,
 				8A21340B0B199D8500DC9811 /* Accelerate.framework in Frameworks */,
-				8ACF4CE50B21489800EC1825 /* Carbon.framework in Frameworks */,
-				F597AD58160B68950003E710 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -518,9 +522,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				F543321F16296E0200863A0B /* Accelerate.framework in Frameworks */,
-				F543322016296E0200863A0B /* Carbon.framework in Frameworks */,
-				F543322116296E0200863A0B /* Cocoa.framework in Frameworks */,
 				F54338BE1629748300863A0B /* AudioToolbox.framework in Frameworks */,
+				F53602A21984CEC60079A9BE /* Cocoa.framework in Frameworks */,
+				F57D96C71984D1E900F2FE06 /* Carbon.framework in Frameworks */,
+				F53602C01984CFF80079A9BE /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,14 +554,15 @@
 		089C1671FE841209C02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				F57D96C51984D1E900F2FE06 /* Carbon.framework */,
 				F56D359F156A185300038960 /* libMiniAiff.a */,
-				8ACF4CE40B21489800EC1825 /* Carbon.framework */,
 				8A2134090B199D8500DC9811 /* Accelerate.framework */,
 				8BA05B01072074F900365D66 /* CoreServices.framework */,
 				8BA05AF9072074E100365D66 /* AudioToolbox.framework */,
+				F53602BE1984CFF80079A9BE /* Foundation.framework */,
 				8BA05AFA072074E100365D66 /* AudioUnit.framework */,
 				8BA05AFB072074E100365D66 /* CoreAudio.framework */,
-				F597AD57160B68950003E710 /* Cocoa.framework */,
+				F53602A01984CEC60079A9BE /* Cocoa.framework */,
 			);
 			name = "External Frameworks and Libraries";
 			sourceTree = "<group>";
@@ -692,8 +698,8 @@
 				8BA05AA6072073D200365D66 /* Utility */,
 			);
 			name = AUPublic;
-			path = Extras/CoreAudio/AudioUnits/AUPublic;
-			sourceTree = DEVELOPER_DIR;
+			path = CoreAudio/AudioUnits/AUPublic;
+			sourceTree = SOURCE_ROOT;
 		};
 		8BA05A7E072073D200365D66 /* AUBase */ = {
 			isa = PBXGroup;
@@ -764,8 +770,8 @@
 				8BA05AE40720742100365D66 /* CAStreamBasicDescription.h */,
 			);
 			name = PublicUtility;
-			path = Extras/CoreAudio/PublicUtility;
-			sourceTree = DEVELOPER_DIR;
+			path = CoreAudio/PublicUtility;
+			sourceTree = "<group>";
 		};
 		F54331441629649D00863A0B /* Common Source */ = {
 			isa = PBXGroup;
@@ -806,15 +812,15 @@
 		F54332741629730F00863A0B /* vstsdk2.4 */ = {
 			isa = PBXGroup;
 			children = (
-				F543389B162973D900863A0B /* aeffect.h */,
-				F543389C162973D900863A0B /* aeffectx.h */,
-				F543389D162973D900863A0B /* vstfxstore.h */,
-				F54338A1162973E600863A0B /* aeffeditor.h */,
-				F54338A2162973E600863A0B /* audioeffect.cpp */,
-				F54338A3162973E600863A0B /* audioeffect.h */,
-				F54338A4162973E600863A0B /* audioeffectx.cpp */,
-				F54338A5162973E600863A0B /* audioeffectx.h */,
-				F54338A6162973E600863A0B /* vstplugmain.cpp */,
+				F53602A31984CF600079A9BE /* aeffect.h */,
+				F53602A41984CF600079A9BE /* aeffectx.h */,
+				F53602A51984CF600079A9BE /* vstfxstore.h */,
+				F53602AC1984CF7D0079A9BE /* aeffeditor.h */,
+				F53602AD1984CF7D0079A9BE /* audioeffect.cpp */,
+				F53602AE1984CF7D0079A9BE /* audioeffect.h */,
+				F53602AF1984CF7D0079A9BE /* audioeffectx.cpp */,
+				F53602B01984CF7D0079A9BE /* audioeffectx.h */,
+				F53602B11984CF7D0079A9BE /* vstplugmain.cpp */,
 			);
 			path = vstsdk2.4;
 			sourceTree = SOURCE_ROOT;
@@ -981,6 +987,7 @@
 				F543319916296E0200863A0B /* gauss.h in Headers */,
 				F543319C16296E0200863A0B /* czt.h in Headers */,
 				F543319D16296E0200863A0B /* brrcodec.h in Headers */,
+				F53602BB1984CF7D0079A9BE /* audioeffectx.h in Headers */,
 				F543319E16296E0200863A0B /* C700Generator.h in Headers */,
 				F543319F16296E0200863A0B /* getpluginbundle.h in Headers */,
 				F54331A016296E0200863A0B /* vstkeycode.h in Headers */,
@@ -988,17 +995,20 @@
 				F54331A216296E0200863A0B /* cfileselector.h in Headers */,
 				F54331A416296E0200863A0B /* vstgui.h in Headers */,
 				F54331A616296E0200863A0B /* C700Edit.h in Headers */,
+				F53602A71984CF600079A9BE /* aeffect.h in Headers */,
 				F54331A716296E0200863A0B /* C700GUI.h in Headers */,
 				F54331A816296E0200863A0B /* ctooltipsupport.h in Headers */,
 				F54331A916296E0200863A0B /* MyKnob.h in Headers */,
 				F54331AA16296E0200863A0B /* MySlider.h in Headers */,
 				F54331AB16296E0200863A0B /* LabelOnOffButton.h in Headers */,
 				F54331AC16296E0200863A0B /* WaveView.h in Headers */,
+				F53602A91984CF600079A9BE /* aeffectx.h in Headers */,
 				F54331AD16296E0200863A0B /* DummyCntl.h in Headers */,
 				F54331AE16296E0200863A0B /* ControlInstances.h in Headers */,
 				F54331AF16296E0200863A0B /* SeparatorLine.h in Headers */,
 				F54331B016296E0200863A0B /* MyParamDisplay.h in Headers */,
 				F54331B116296E0200863A0B /* MyTextEdit.h in Headers */,
+				F53602AB1984CF600079A9BE /* vstfxstore.h in Headers */,
 				F54331B216296E0200863A0B /* EfxAccess.h in Headers */,
 				F54331B316296E0200863A0B /* DataBuffer.h in Headers */,
 				F54331B416296E0200863A0B /* AudioFile.h in Headers */,
@@ -1009,16 +1019,12 @@
 				F54331B916296E0200863A0B /* EchoKernel.h in Headers */,
 				F54331BB16296E0200863A0B /* C700Kernel.h in Headers */,
 				F54331BC16296E0200863A0B /* C700Parameters.h in Headers */,
-				F543389E162973D900863A0B /* aeffect.h in Headers */,
-				F543389F162973D900863A0B /* aeffectx.h in Headers */,
-				F54338A0162973D900863A0B /* vstfxstore.h in Headers */,
-				F54338A7162973E600863A0B /* aeffeditor.h in Headers */,
-				F54338A9162973E600863A0B /* audioeffect.h in Headers */,
-				F54338AB162973E600863A0B /* audioeffectx.h in Headers */,
+				F53602B31984CF7D0079A9BE /* aeffeditor.h in Headers */,
 				F54338C31629749600863A0B /* aeffguieditor.h in Headers */,
 				F54338DA1629759600863A0B /* C700VST.h in Headers */,
 				F5710731162EB3D40043EF00 /* PGChunk.h in Headers */,
 				F510B704163266CB00A844B4 /* FileAccess.h in Headers */,
+				F53602B71984CF7D0079A9BE /* audioeffect.h in Headers */,
 				F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1089,6 +1095,8 @@
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 3E0BED060898391C00E1F0F7 /* Build configuration list for PBXProject "C700" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -1327,12 +1335,14 @@
 				F543320916296E0200863A0B /* MyKnob.cpp in Sources */,
 				F543320A16296E0200863A0B /* MySlider.cpp in Sources */,
 				F543320B16296E0200863A0B /* LabelOnOffButton.cpp in Sources */,
+				F53602B91984CF7D0079A9BE /* audioeffectx.cpp in Sources */,
 				F543320C16296E0200863A0B /* WaveView.cpp in Sources */,
 				F543320D16296E0200863A0B /* DummyCntl.cpp in Sources */,
 				F543320E16296E0200863A0B /* SeparatorLine.cpp in Sources */,
 				F543320F16296E0200863A0B /* MyParamDisplay.cpp in Sources */,
 				F543321016296E0200863A0B /* MyTextEdit.cpp in Sources */,
 				F543321116296E0200863A0B /* EfxAccess.cpp in Sources */,
+				F53602BD1984CF7D0079A9BE /* vstplugmain.cpp in Sources */,
 				F543321216296E0200863A0B /* DataBuffer.cpp in Sources */,
 				F543321316296E0200863A0B /* AudioFile.cpp in Sources */,
 				F543321416296E0200863A0B /* SPCFile.cpp in Sources */,
@@ -1340,11 +1350,9 @@
 				F543321616296E0200863A0B /* XIFile.cpp in Sources */,
 				F543321716296E0200863A0B /* PlistBRRFile.cpp in Sources */,
 				F543321816296E0200863A0B /* EchoKernel.cpp in Sources */,
+				F53602B51984CF7D0079A9BE /* audioeffect.cpp in Sources */,
 				F543321916296E0200863A0B /* C700Kernel.cpp in Sources */,
 				F543321A16296E0200863A0B /* C700Parameters.cpp in Sources */,
-				F54338A8162973E600863A0B /* audioeffect.cpp in Sources */,
-				F54338AA162973E600863A0B /* audioeffectx.cpp in Sources */,
-				F54338AC162973E600863A0B /* vstplugmain.cpp in Sources */,
 				F54338C41629749600863A0B /* aeffguieditor.cpp in Sources */,
 				F54338DB1629759600863A0B /* C700VST.cpp in Sources */,
 				F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */,
@@ -1480,11 +1488,12 @@
 		3E0BED070898391C00E1F0F7 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_LINK_OBJC_RUNTIME = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
 				SDKROOT = macosx10.5;
 				ZERO_LINK = YES;
@@ -1498,10 +1507,11 @@
 					ppc,
 					i386,
 				);
+				CLANG_LINK_OBJC_RUNTIME = NO;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
 				SDKROOT = macosx10.5;
 			};
@@ -1524,7 +1534,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = C700_Prefix_VST.pch;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
@@ -1580,7 +1590,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = C700_Prefix_VST.pch;
 				GCC_UNROLL_LOOPS = NO;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
