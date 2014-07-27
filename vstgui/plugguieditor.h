@@ -60,7 +60,7 @@ public :
 	virtual ~PluginGUIEditor ();
 
 	virtual void setParameter (long index, float value) {} 
-	virtual long getRect (ERect **ppRect);
+	virtual bool getRect (ERect **ppRect);
 	virtual bool open (void *ptr);
 	virtual void close () { systemWindow = 0; }
 	virtual void idle ();
