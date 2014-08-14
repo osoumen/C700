@@ -91,6 +91,9 @@ bool PGChunk::AppendDataFromVP( InstParams *vp )
 	if ( vp->sourceFile[0] ) {
 		writeChunk(kAudioUnitCustomProperty_SourceFileRef, vp->sourceFile, PATH_LEN_MAX);
 	}
+    
+    intValue = vp->sustainMode ? 1:0;
+    writeChunk(kAudioUnitCustomProperty_SustainMode, &intValue, sizeof(int));
 	
 	mNumPrograms++;
 	
@@ -102,8 +105,8 @@ int PGChunk::getPGChunkSize( const InstParams *vp )
 {
 	int cksize = 0;
 	if ( vp->brr.data ) {
-		cksize += sizeof( MyChunkHead ) * 17;
-		cksize += sizeof( int ) * 13;	//intŒ^ƒf[ƒ^~13
+		cksize += sizeof( MyChunkHead ) * 18;
+		cksize += sizeof( int ) * 14;	//intŒ^ƒf[ƒ^~14
 		cksize += sizeof(double);		//doubleŒ^ƒf[ƒ^‚P‚Â
 		cksize += PROGRAMNAME_MAX_LEN;
 		cksize += PATH_LEN_MAX;
@@ -164,6 +167,14 @@ bool PGChunk::ReadDataToVP( InstParams *vp )
 				readData(&vp->sr, ckSize, NULL);
 				break;
 
+            case kAudioUnitCustomProperty_SustainMode:
+			{
+				int value;
+				readData(&value, ckSize, NULL);
+				vp->sustainMode = value ? true:false;
+				break;
+			}
+            
 			case kAudioUnitCustomProperty_VolL:
 				readData(&vp->volL, ckSize, NULL);
 				break;

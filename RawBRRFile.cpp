@@ -148,6 +148,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	mInst.dr = kDefaultValue_DR;
 	mInst.sl = kDefaultValue_SL;
 	mInst.sr = kDefaultValue_SR;
+    mInst.sustainMode = true;
 	mInst.volL = 100;
 	mInst.volR	= 100;
 	mInst.echo = false;
@@ -233,6 +234,12 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 			mInst.isEmphasized = val?true:false;
 			mHasData |= HAS_ISEMPHASIZED;
 		}
+		else if ( strcmp(buf, "sustainMode")==0 ) {
+			int	val;
+			fscanf(fp, "%d", &val );
+			mInst.sustainMode = val?true:false;
+			mHasData |= HAS_SUSTAINMODE;
+		}
 		else if ( strcmp(buf, "srcfile")==0 ) {
 			fscanf(fp, "%[^\n]s", buf);
 			strncpy(mInst.sourceFile, buf, PATH_LEN_MAX);
@@ -279,6 +286,7 @@ bool RawBRRFile::Write()
 	fprintf(fp, "dr=%d\n",mInst.dr);
 	fprintf(fp, "sl=%d\n",mInst.sl);
 	fprintf(fp, "sr=%d\n",mInst.sr);
+    fprintf(fp, "sustainMode=%d\n",mInst.sustainMode?1:0);
 	fprintf(fp, "volL=%d\n",mInst.volL);
 	fprintf(fp, "volR=%d\n",mInst.volR);
 	fprintf(fp, "echo=%d\n",mInst.echo?1:0);

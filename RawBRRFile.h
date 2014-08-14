@@ -28,6 +28,7 @@ public:
 	static const int	HAS_BANK = 1 << 12;
 	static const int	HAS_ISEMPHASIZED = 1 << 13;
 	static const int	HAS_SOURCEFILE = 1 << 14;
+    static const int    HAS_SUSTAINMODE = 1 << 15;
 	
 	RawBRRFile( const char *path, bool isWriteable=true );
 	virtual ~RawBRRFile();

@@ -149,6 +149,8 @@ enum
 	
 	kAudioUnitCustomProperty_SourceFileRef,
 	kAudioUnitCustomProperty_IsEmaphasized,
+    
+    kAudioUnitCustomProperty_SustainMode,
 	
 	kAudioUnitCustomProperty_End,
 	kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
@@ -211,6 +213,8 @@ static const int kDefaultValue_DR = 7;
 static const int kDefaultValue_SL = 7;
 static const int kDefaultValue_SR = 31;
 
+static const bool kDefaultValue_SustainMode = true;
+
 typedef struct {
 	int				size;
 	unsigned char	*data;
@@ -229,6 +233,7 @@ typedef struct {
 	BRRData		brr;
 	char		sourceFile[PATH_LEN_MAX];
 	bool		isEmphasized;
+    bool        sustainMode;
 } InstParams;
 
 float ConvertToVSTValue( float value, float min, float max );

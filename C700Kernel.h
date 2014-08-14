@@ -17,7 +17,7 @@ class C700Kernel : public C700Parameters
 {
 public:
 	C700Kernel();
-	~C700Kernel();
+	virtual ~C700Kernel();
 	
 	void			Reset();
 	

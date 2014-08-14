@@ -2646,5 +2646,22 @@ ControlInstances	sCntl[] = {
 		kCenterText,	//fontalign
 		0,	//style
 		0	//future use
-	}
+	},
+	{
+		'airy',	//sig
+		'cbtn',	//kind
+		"SustainMode",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_SustainMode,	//id
+		0,	//command
+		470, 164, 64, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
 };

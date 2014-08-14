@@ -13,10 +13,10 @@ static const float kMinimumValue_n128 = -128;
 static const float kMinimumValue_0 = 0;
 static const float kMinimumValue_1 = 1;
 
-static const float kMaximumValue_3 = 3;
-static const float kMaximumValue_7 = 7;
+//static const float kMaximumValue_3 = 3;
+//static const float kMaximumValue_7 = 7;
 static const float kMaximumValue_15 = 15;
-static const float kMaximumValue_31 = 31;
+//static const float kMaximumValue_31 = 31;
 static const float kMaximumValue_127 = 127;
 
 

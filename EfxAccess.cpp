@@ -51,6 +51,7 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 	inst.echo = GetPropertyValue(kAudioUnitCustomProperty_Echo)!=0?true:false;
 	inst.bank = GetPropertyValue(kAudioUnitCustomProperty_Bank);
 	inst.isEmphasized = GetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized)!=0?true:false;
+    inst.sustainMode = GetPropertyValue(kAudioUnitCustomProperty_SustainMode)!=0?true:false;
 	GetSourceFilePath(inst.sourceFile,PATH_LEN_MAX);
 	
 	RawBRRFile	*file = new RawBRRFile(NULL,true);
@@ -485,6 +486,11 @@ void EfxAccess::SetPropertyValue( int propertyID, float value )
 			outDataSize	= sizeof(int);
 			outDataPtr	= (void*)&intData;
 			break;
+            
+        case kAudioUnitCustomProperty_SustainMode:
+            outDataSize = sizeof(bool);
+            outDataPtr = (void*)&boolData;
+            break;
 			
 		case kAudioUnitCustomProperty_Rate:
 			outDataSize = sizeof(double);
