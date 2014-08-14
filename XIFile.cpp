@@ -47,7 +47,8 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 	
 	int start_prg;
 	int end_prg;
-	int	selectBank = chip->getVP(targetProgram)->bank;
+    const InstParams  *vp = chip->getVP(targetProgram);
+	int	selectBank = vp->bank;
 	bool multisample = chip->GetMultiMode(selectBank);
 	
 	
@@ -78,10 +79,10 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 	}
 	else {
 		bool	noname = false;
-		if ( chip->getVP(targetProgram)->pgname[0] == 0 ) {
+		if ( vp->pgname[0] == 0 ) {
 			noname = true;
 		}
-		strncpy(xfh.name, chip->getVP(targetProgram)->pgname, 22);
+		strncpy(xfh.name, vp->pgname, 22);
 		if ( noname ) {
 			memcpy(xfh.name, "Inst", 22);
 		}
@@ -109,7 +110,7 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 			xih.snum[i] = 0;
 		}
 		nsamples = 1;
-		vol = (int)( abs(chip->getVP(targetProgram)->volL) + abs(chip->getVP(targetProgram)->volR) ) / 4;
+		vol = (int)( abs(vp->volL) + abs(vp->volR) ) / 4;
 	}
 	
 	//エンベロープの近似
@@ -123,24 +124,24 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 	}
 	else {
 		xih.venv[0] = 0;
-		if ( chip->getVP(targetProgram)->ar == 15 ) {
+		if ( vp->ar == 15 ) {
 			xih.venv[1] = EndianU16_NtoL( vol );
 		}
 		else {
 			xih.venv[1] = 0;
 		}
-		xih.venv[2] = EndianU16_NtoL( GetARTicks( chip->getVP(targetProgram)->ar, tempo ) );	//tick数値はテンポ値に依存する
+		xih.venv[2] = EndianU16_NtoL( GetARTicks( vp->ar, tempo ) );	//tick数値はテンポ値に依存する
 		xih.venv[3] = EndianU16_NtoL( vol );
-		xih.venv[4] = EndianU16_NtoL( xih.venv[2] + GetDRTicks( chip->getVP(targetProgram)->dr, tempo ) );
-		xih.venv[5] = EndianU16_NtoL( vol * (chip->getVP(targetProgram)->sl + 1) / 8 );
-		//if (chip->getVP(targetProgram)->sr == 0) {
+		xih.venv[4] = EndianU16_NtoL( xih.venv[2] + GetDRTicks( vp->dr, tempo ) );
+		xih.venv[5] = EndianU16_NtoL( vol * (vp->sl + 1) / 8 );
+		if ((vp->sr == 0) || vp->sustainMode) {
 			xih.venv[6] = EndianU16_NtoL( xih.venv[4]+1 );
 			xih.venv[7] = EndianU16_NtoL( xih.venv[5] );
-		//}
-		//else {
-		//	xih.venv[6] = EndianU16_NtoL( xih.venv[4] + GetSRTicks( chip->getVP(targetProgram)->sr, tempo ) );
-		//	xih.venv[7] = EndianU16_NtoL( vol / 10 );
-		//}
+		}
+		else {
+			xih.venv[6] = EndianU16_NtoL( xih.venv[4] + GetSRTicks( vp->sr, tempo ) );
+			xih.venv[7] = EndianU16_NtoL( vol / 10 );
+		}
 	}
 	
 	xih.vnum = 4;
