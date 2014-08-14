@@ -812,7 +812,7 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 	if ( hasFlg & RawBRRFile::HAS_RATE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate,		inst.rate);
 	else {
 		if ( inst.loop ) {
-			double	samplerate;
+			double	samplerate = 32000.0;
 			short	*buffer;
 			int		pitch;
 			int		length;
@@ -846,6 +846,7 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 			efxAcc->SetSourceFilePath( inst.sourceFile );
 		}
 	}
+    if ( hasFlg & RawBRRFile::HAS_SUSTAINMODE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SustainMode,inst.sustainMode ? 1.0f:.0f);
 	
 	return true;
 }

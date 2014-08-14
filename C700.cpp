@@ -23,6 +23,7 @@ static CFStringRef kSaveKey_echo = CFSTR("echo");
 static CFStringRef kSaveKey_bank = CFSTR("bank");
 static CFStringRef kSaveKey_IsEmphasized = CFSTR("isemph");
 static CFStringRef kSaveKey_SourceFile = CFSTR("srcfile");
+static CFStringRef kSaveKey_sustainMode = CFSTR("sustainMode");
 
 //-----------------------------------------------------------------------------
 
@@ -281,7 +282,7 @@ ComponentResult		C700::GetParameterInfo(AudioUnitScope		inScope,
 		|		kAudioUnitParameterFlag_IsReadable;
     
     if (inScope == kAudioUnitScope_Global) {
-		if ( inParameterID >= 0 && inParameterID < kNumberOfParameters ) {
+		if ( /*inParameterID >= 0 &&*/ inParameterID < kNumberOfParameters ) {
 			CFStringRef	cfName = CFStringCreateWithCString(NULL, mEfx->GetParameterName(inParameterID), kCFStringEncodingUTF8);
 			AUBase::FillInParameterName(outParameterInfo, cfName, true);
 			outParameterInfo.unit = getParameterUnit( inParameterID );
@@ -440,6 +441,11 @@ ComponentResult		C700::GetPropertyInfo (AudioUnitPropertyID	inID,
 				outDataSize = sizeof(bool);
 				outWritable = false;
 				return noErr;
+                
+            case kAudioUnitCustomProperty_SustainMode:
+                outDataSize = sizeof(bool);
+                outWritable = false;
+                return noErr;
 								
 		}
 	}
@@ -534,6 +540,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_Loop:
 			case kAudioUnitCustomProperty_Echo:
 			case kAudioUnitCustomProperty_IsEmaphasized:
+            case kAudioUnitCustomProperty_SustainMode:
 				*((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
 				return noErr;
 				
@@ -660,6 +667,7 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_Loop:
 			case kAudioUnitCustomProperty_Echo:
 			case kAudioUnitCustomProperty_IsEmaphasized:
+            case kAudioUnitCustomProperty_SustainMode:
 				mEfx->SetPropertyValue(inID, *((bool*)inData) ? 1.0f:.0f );
 				return noErr;
 				
@@ -888,6 +896,7 @@ int C700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 	AddNumToDictionary(dict, kSaveKey_dr, vpSet[pgnum].dr);
 	AddNumToDictionary(dict, kSaveKey_sl, vpSet[pgnum].sl);
 	AddNumToDictionary(dict, kSaveKey_sr, vpSet[pgnum].sr);
+    AddBooleanToDictionary(dict, kSaveKey_sustainMode, vpSet[pgnum].sustainMode);
 	AddNumToDictionary(dict, kSaveKey_volL, vpSet[pgnum].volL);
 	AddNumToDictionary(dict, kSaveKey_volR, vpSet[pgnum].volR);
 	AddBooleanToDictionary(dict, kSaveKey_echo, vpSet[pgnum].echo);
@@ -998,7 +1007,15 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SR, value);
 	}
 	
-	if (CFDictionaryContainsKey(dict, kSaveKey_volL)) {
+    if (CFDictionaryContainsKey(dict, kSaveKey_sustainMode)) {
+		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_sustainMode));
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
+	}
+	else {
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
+	}
+	
+    if (CFDictionaryContainsKey(dict, kSaveKey_volL)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volL));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolL, value);

@@ -40,7 +40,7 @@ void CLabelOnOffButton::freeText()
 //-----------------------------------------------------------------------------
 void CLabelOnOffButton::setText(const char* txt)
 {
-	if (!text && !txt || (text && txt && strcmp(text, txt) == 0))
+	if ((!text && !txt) || (text && txt && strcmp(text, txt) == 0))
 	{
 		return;
 	}

@@ -39,7 +39,7 @@ public:
 	virtual void getParameterDisplay(VstInt32 index, char *text);
 	virtual void getParameterName(VstInt32 index, char *text);
 	virtual void setSampleRate(float sampleRate);
-	virtual void setBlockSize(long blockSize);
+	virtual void setBlockSize(VstInt32 blockSize);
 	
 	virtual bool getOutputProperties (VstInt32 index, VstPinProperties* properties);
 	//	virtual bool getProgramNameIndexed (long category, VstInt32 index, char* text);

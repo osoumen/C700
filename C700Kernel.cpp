@@ -61,6 +61,8 @@ C700Kernel::C700Kernel()
 		mVPset[i].dr = kDefaultValue_DR;
 		mVPset[i].sl = kDefaultValue_SL;
 		mVPset[i].sr = kDefaultValue_SR;
+        
+        mVPset[i].sustainMode = kDefaultValue_SustainMode;
 	}
 	
 	// ‰¹Œ¹‚ÉƒvƒƒOƒ‰ƒ€‚Ìƒƒ‚ƒŠ‚ğ“n‚·
@@ -354,6 +356,9 @@ float C700Kernel::GetPropertyValue( int inID )
 			
 		case kAudioUnitCustomProperty_IsEmaphasized:
 			return mVPset[mEditProg].isEmphasized ? 1.0f:.0f;
+            
+        case kAudioUnitCustomProperty_SustainMode:
+            return mVPset[mEditProg].sustainMode ? 1.0f:.0f;
 			
 		case kAudioUnitCustomProperty_SourceFileRef:
 		case kAudioUnitCustomProperty_BRRData:
@@ -455,6 +460,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
 					propertyNotifyFunc( i, propNotifyUserData );
 				}
+                propertyNotifyFunc( kAudioUnitCustomProperty_SustainMode, propNotifyUserData );
 			}
 			return true;
 		}
@@ -479,6 +485,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
 					propertyNotifyFunc( i, propNotifyUserData );
 				}
+                propertyNotifyFunc( kAudioUnitCustomProperty_SustainMode, propNotifyUserData );
 			}
 			return true;
 		}
@@ -543,6 +550,10 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			mVPset[mEditProg].isEmphasized = boolData;
 			return true;
 			
+        case kAudioUnitCustomProperty_SustainMode:
+            mVPset[mEditProg].sustainMode = boolData;
+            return true;
+            
 		case kAudioUnitCustomProperty_SourceFileRef:
 		case kAudioUnitCustomProperty_BRRData:
 		case kAudioUnitCustomProperty_ProgramName:

@@ -94,6 +94,7 @@ AudioUnitParameterValue		inParameterValue
 			case kAudioUnitCustomProperty_Loop:
 			case kAudioUnitCustomProperty_Echo:
 			case kAudioUnitCustomProperty_IsEmaphasized:
+            case kAudioUnitCustomProperty_SustainMode:
 				value = *((bool*)outDataPtr);
 				break;
 								

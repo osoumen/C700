@@ -392,13 +392,17 @@ int C700Generator::StopPlayingVoice( const NoteEvt *evt )
 		int	vo = *it;
 		
 		if ( mVoice[vo].uniqueID == evt->uniqueID ) {
-			//mVoice[i].envstate = RELEASE;
-			//キーオフさせずにsrを変更する
 			InstParams		*vp;
-			vp = getVP(mChProgram[evt->ch]);
-			mVoice[vo].dr = 7;
-			mVoice[vo].sr = vp->sr;
-			if ( vo < mVoiceLimit ) { 
+            vp = getVP(mChProgram[evt->ch]);
+            if (vp->sustainMode) {
+                //キーオフさせずにsrを変更する
+                mVoice[vo].dr = 7;
+                mVoice[vo].sr = vp->sr;
+            }
+            else {
+                mVoice[vo].envstate = RELEASE;
+            }
+			if ( vo < mVoiceLimit ) {
 				mWaitVo.push_back(vo);
 			}
 			it = mPlayVo.erase(it);
@@ -462,8 +466,12 @@ void C700Generator::DoKeyOn(NoteEvt *evt)
 	mVoice[v].ar=vp->ar;
 	mVoice[v].dr=vp->dr;
 	mVoice[v].sl=vp->sl;
-//	mVoice[v].sr=vp->sr;
-	mVoice[v].sr=0;		//ノートオフ時に設定値になる
+    if (vp->sustainMode) {
+        mVoice[v].sr=0;		//ノートオフ時に設定値になる
+    }
+    else {
+        mVoice[v].sr=vp->sr;
+    }
 	
 	mVoice[v].memPtr = 0;
 	mVoice[v].headerCnt = 0;

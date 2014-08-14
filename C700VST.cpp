@@ -275,7 +275,7 @@ bool C700VST::getProductString(char* text)
 VstInt32 C700VST::canDo(char* text)
 {
 #if DEBUG
-	DebugPrint("exec VOPM::canDo [%s] ",text);
+	DebugPrint("exec C700::canDo [%s] ",text);
 #endif	
 	if (!strcmp (text, "receiveVstEvents")) {
 		return 1;
@@ -442,7 +442,7 @@ void C700VST::setSampleRate(float sampleRate)
 }
 
 //-----------------------------------------------------------------------------------------
-void C700VST::setBlockSize(long blockSize)
+void C700VST::setBlockSize(VstInt32 blockSize)
 {
 	AudioEffectX::setBlockSize(blockSize);
 	// you may need to have to do something here...
