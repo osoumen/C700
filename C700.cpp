@@ -105,6 +105,9 @@ void C700::ParameterSetFunc(int paramID, float value, void* userData)
 ComponentResult C700::Initialize()
 {	
 	AUInstrumentBase::Initialize();
+    for (int i=0; i<kNumberOfParameters; i++) {
+        mParameterHasChanged[i] = true;
+    }
 	return noErr;
 }
 
@@ -119,7 +122,7 @@ ComponentResult C700::Reset(	AudioUnitScope 		inScope,
 {
 //	if (inScope == kAudioUnitScope_Global) {
 		mEfx->Reset();
-//	}	
+//	}
 	return AUInstrumentBase::Reset(inScope, inElement);
 }
 
@@ -143,7 +146,10 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 
 	//ƒpƒ‰ƒ[ƒ^‚Ì”½‰f
 	for ( int i=0; i<kNumberOfParameters; i++ ) {
-		mEfx->SetParameter(i, Globals()->GetParameter(i));
+        if (mParameterHasChanged[i]) {
+            mEfx->SetParameter(i, Globals()->GetParameter(i));
+            mParameterHasChanged[i] = false;
+        }
 	}
 	
 	mEfx->SetSampleRate( GetOutput(0)->GetStreamFormat().mSampleRate );
@@ -165,6 +171,9 @@ OSStatus C700::SetParameter(	AudioUnitParameterID			inID,
 	OSStatus result = AUInstrumentBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
 	if ( inScope == kAudioUnitScope_Global ) {
 		//mEfx->SetParameter(inID, inValue);
+        if (inID < kNumberOfParameters) {
+            mParameterHasChanged[inID] = true;
+        }
 		switch ( inID ) {
 			case kParam_echodelay:
 				PropertyChanged(kAudioUnitCustomProperty_TotalRAM, kAudioUnitScope_Global, 0);

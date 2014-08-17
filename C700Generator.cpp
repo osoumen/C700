@@ -527,7 +527,12 @@ InstParams C700Generator::getChannelVP(int ch, int note)
 void C700Generator::Expression( int ch, int value, int inFrame )
 {
     mChStat[ch].expression = value;
-    // TODO: 発音中のボイスに反映
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].expression = mChStat[ch].expression;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -535,7 +540,6 @@ void C700Generator::ChangeChRate(int ch, double rate, int inFrame)
 {
     mChStat[ch].changedVP.rate = rate;
     mChStat[ch].changeFlg |= HAS_RATE;
-    // TODO: 発音中のボイスに反映
 }
 
 //-----------------------------------------------------------------------------
@@ -543,7 +547,6 @@ void C700Generator::ChangeChBasekey(int ch, int basekey, int inFrame)
 {
     mChStat[ch].changedVP.basekey = basekey;
     mChStat[ch].changeFlg |= HAS_BASEKEY;
-    // TODO: 発音中のボイスに反映
 }
 
 //-----------------------------------------------------------------------------
@@ -551,7 +554,6 @@ void C700Generator::ChangeChLowkey(int ch, int lowkey, int inFrame)
 {
     mChStat[ch].changedVP.lowkey = lowkey;
     mChStat[ch].changeFlg |= HAS_LOWKEY;
-    // TODO: 発音中のボイスに反映
 }
 
 //-----------------------------------------------------------------------------
@@ -559,7 +561,6 @@ void C700Generator::ChangeChHighkey(int ch, int highkey, int inFrame)
 {
     mChStat[ch].changedVP.highkey = highkey;
     mChStat[ch].changeFlg |= HAS_HIGHKEY;
-    // TODO: 発音中のボイスに反映
 }
 
 //-----------------------------------------------------------------------------
@@ -567,7 +568,12 @@ void C700Generator::ChangeChAR(int ch, int ar, int inFrame)
 {
     mChStat[ch].changedVP.ar = ar & 0x0f;
     mChStat[ch].changeFlg |= HAS_AR;
-    // TODO: 発音中のボイスに反映
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].ar = mChStat[ch].changedVP.ar;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -575,7 +581,12 @@ void C700Generator::ChangeChDR(int ch, int dr, int inFrame)
 {
     mChStat[ch].changedVP.dr = dr & 0x07;
     mChStat[ch].changeFlg |= HAS_DR;
-    // TODO: 発音中のボイスに反映
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].dr = mChStat[ch].changedVP.dr;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -583,7 +594,12 @@ void C700Generator::ChangeChSL(int ch, int sl, int inFrame)
 {
     mChStat[ch].changedVP.sl = sl & 0x07;
     mChStat[ch].changeFlg |= HAS_SL;
-    // TODO: 発音中のボイスに反映
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].sl = mChStat[ch].changedVP.sl;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -591,7 +607,12 @@ void C700Generator::ChangeChSR(int ch, int sr, int inFrame)
 {
     mChStat[ch].changedVP.sr = sr & 0x1f;
     mChStat[ch].changeFlg |= HAS_SR;
-    // TODO: 発音中のボイスに反映
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].sr = mChStat[ch].changedVP.sr;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -599,7 +620,12 @@ void C700Generator::ChangeChVolL(int ch, int voll, int inFrame)
 {
     mChStat[ch].changedVP.volL = voll;
     mChStat[ch].changeFlg |= HAS_VOLL;
-    // TODO: 発音中のボイスに反映
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].vol_l = mChStat[ch].changedVP.volL;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -607,7 +633,12 @@ void C700Generator::ChangeChVolR(int ch, int volr, int inFrame)
 {
     mChStat[ch].changedVP.volR = volr;
     mChStat[ch].changeFlg |= HAS_VOLR;
-    // TODO: 発音中のボイスに反映
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].vol_r = mChStat[ch].changedVP.volR;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -615,7 +646,12 @@ void C700Generator::ChangeChEcho(int ch, int echo, int inFrame)
 {
     mChStat[ch].changedVP.echo = echo ? true:false;
     mChStat[ch].changeFlg |= HAS_ECHO;
-    // TODO: 発音中のボイスに反映
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].echoOn = mChStat[ch].changedVP.echo;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -623,7 +659,6 @@ void C700Generator::ChangeChBank(int ch, int bank, int inFrame)
 {
     mChStat[ch].changedVP.bank = bank & 0x03;
     mChStat[ch].changeFlg |= HAS_BANK;
-    // TODO: 発音中のボイスに反映
 }
 
 //-----------------------------------------------------------------------------
@@ -631,7 +666,6 @@ void C700Generator::ChangeChSustainMode(int ch, int sustainMode, int inFrame)
 {
     mChStat[ch].changedVP.sustainMode = sustainMode ? true:false;
     mChStat[ch].changeFlg |= HAS_SUSTAINMODE;
-    // TODO: 発音中のボイスに反映
 }
 
 //-----------------------------------------------------------------------------
