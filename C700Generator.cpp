@@ -98,6 +98,7 @@ C700Generator::C700Generator()
         mChStat[i].pitchBend = 0;
         mChStat[i].vibDepth = 0;
         mChStat[i].pbRange = 2.0;
+        mChStat[i].expression = 127;
 	}
 	Reset();
 }
@@ -216,6 +217,7 @@ void C700Generator::ResetAllControllers()
         mChStat[i].pitchBend = 0;
         mChStat[i].vibDepth = 0;
         mChStat[i].pbRange = 2.0f;
+        mChStat[i].expression = 127;
 	}
 }
 
@@ -909,6 +911,10 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				//ボリューム値の反映
 				vl = ( mVoice[v].vol_l * outx ) >> 7;
 				vr = ( mVoice[v].vol_r * outx ) >> 7;
+                
+                // エクスプレッションの反映
+				vl = ( mVoice[v].expression * vl ) >> 7;
+				vr = ( mVoice[v].expression * vr ) >> 7;
 				
 				//エコー処理
 				if ( mVoice[v].echoOn ) {
