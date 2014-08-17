@@ -91,12 +91,13 @@ C700Generator::C700Generator()
 	mMainVolume_R = 127;
 	mVibfreq = 0.00137445;
 	mVibdepth = 0.5;
-	mPbrange = 1.0;
 	
 	for (int i=0; i<16; i++) {
-		mChProgram[i] = 0;
-		mChPitchBend[i] = 0;
-		mChVibDepth[i] = 0;
+        mChStat[i].changeFlg = 0;
+        mChStat[i].prog = 0;
+        mChStat[i].pitchBend = 0;
+        mChStat[i].vibDepth = 0;
+        mChStat[i].pbRange = 2.0;
 	}
 	Reset();
 }
@@ -210,21 +211,28 @@ void C700Generator::AllSoundOff()
 void C700Generator::ResetAllControllers()
 {
 	for (int i=0; i<16; i++) {
-		mChPitchBend[i] = 0;
-		mChVibDepth[i] = 0;
-	}	
+        mChStat[i].changeFlg = 0;
+        mChStat[i].changedVP = mVPset[mChStat[i].prog];
+        mChStat[i].pitchBend = 0;
+        mChStat[i].vibDepth = 0;
+        mChStat[i].pbRange = 2.0f;
+	}
 }
 
 //-----------------------------------------------------------------------------
 void C700Generator::ProgramChange( int ch, int pgnum, int inFrame )
 {
-	mChProgram[ch] = pgnum;
+	mChStat[ch].prog = pgnum;
+    if (mVPset) {
+        mChStat[ch].changeFlg = 0;
+        mChStat[ch].changedVP = mVPset[mChStat[ch].prog];
+    }
 }
 
 //-----------------------------------------------------------------------------
-int C700Generator::CalcPBValue( float pitchBend, int basePitch )
+int C700Generator::CalcPBValue( int ch, float pitchBend, int basePitch )
 {
-	return (int)((pow(2., (pitchBend*mPbrange) / 12.) - 1.0)*basePitch);
+	return (int)((pow(2., (pitchBend * mChStat[ch].pbRange) / 12.) - 1.0)*basePitch);
 }
 
 //-----------------------------------------------------------------------------
@@ -232,10 +240,10 @@ void C700Generator::PitchBend( int ch, int value, int inFrame )
 {
 	float pb_value = value / 8192.0;
 	
-	mChPitchBend[ch] = pb_value;
+    mChStat[ch].pitchBend = pb_value;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		if ( mVoice[i].midi_ch == ch ) {
-			mVoice[i].pb = CalcPBValue( pb_value, mVoice[i].pitch );
+			mVoice[i].pb = CalcPBValue( ch, pb_value, mVoice[i].pitch );
 		}
 	}
 }
@@ -243,7 +251,7 @@ void C700Generator::PitchBend( int ch, int value, int inFrame )
 //-----------------------------------------------------------------------------
 void C700Generator::ModWheel( int ch, int value, int inFrame )
 {
-	mChVibDepth[ch] = value;
+    mChStat[ch].vibDepth = value;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		if ( mVoice[i].midi_ch == ch ) {
 			mVoice[i].vibdepth = value;
@@ -278,7 +286,14 @@ void C700Generator::SetVoiceLimit( int value )
 //-----------------------------------------------------------------------------
 void C700Generator::SetPBRange( float value )
 {
-	mPbrange = value;
+    for (int i=0; i<16; i++) {
+        mChStat[i].pbRange = value;
+    }
+}
+//-----------------------------------------------------------------------------
+void C700Generator::SetPBRange( int ch, float value )
+{
+	mChStat[ch].pbRange = value;
 }
 
 //-----------------------------------------------------------------------------
@@ -392,12 +407,11 @@ int C700Generator::StopPlayingVoice( const NoteEvt *evt )
 		int	vo = *it;
 		
 		if ( mVoice[vo].uniqueID == evt->uniqueID ) {
-			InstParams		*vp;
-            vp = getVP(mChProgram[evt->ch]);
-            if (vp->sustainMode) {
+			InstParams		vp = getChannelVP(evt->ch, evt->note);
+            if (vp.sustainMode) {
                 //キーオフさせずにsrを変更する
                 mVoice[vo].dr = 7;
-                mVoice[vo].sr = vp->sr;
+                mVoice[vo].sr = vp.sr;
             }
             else {
                 mVoice[vo].envstate = RELEASE;
@@ -417,16 +431,10 @@ int C700Generator::StopPlayingVoice( const NoteEvt *evt )
 //-----------------------------------------------------------------------------
 void C700Generator::DoKeyOn(NoteEvt *evt)
 {
-	InstParams		*vp;
-	
-	//波形アドレスの取得
-	vp = getVP(mChProgram[evt->ch]);
-	if ( mDrumMode[vp->bank]) {
-		vp = getMappedVP(vp->bank, evt->note);
-	}
+	InstParams		vp = getChannelVP(evt->ch, evt->note);
 	
 	//波形データが存在しない場合は、ここで中断
-	if (vp->brr.data == NULL) {
+	if (vp.brr.data == NULL) {
 		return;
 	}
 	
@@ -447,30 +455,31 @@ void C700Generator::DoKeyOn(NoteEvt *evt)
 	else {
 		mVoice[v].velo=VELOCITY_CURB[127];
 	}
+    mVoice[v].expression = mChStat[evt->ch].expression;
 	
-	mVoice[v].brrdata = vp->brr.data;
-	mVoice[v].loopPoint = vp->lp;
-	mVoice[v].loop = vp->loop;
-	mVoice[v].echoOn = vp->echo;
+	mVoice[v].brrdata = vp.brr.data;
+	mVoice[v].loopPoint = vp.lp;
+	mVoice[v].loop = vp.loop;
+	mVoice[v].echoOn = vp.echo;
 	
 	//中心周波数の算出
-	mVoice[v].pitch = pow(2., (evt->note - vp->basekey) / 12.)/INTERNAL_CLOCK*vp->rate*4096 + 0.5;
+	mVoice[v].pitch = pow(2., (evt->note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
 	
-	mVoice[v].pb = CalcPBValue( mChPitchBend[evt->ch], mVoice[v].pitch );
-	mVoice[v].vibdepth = mChVibDepth[evt->ch];
+	mVoice[v].pb = CalcPBValue( evt->ch, mChStat[evt->ch].pitchBend, mVoice[v].pitch );
+	mVoice[v].vibdepth = mChStat[evt->ch].vibDepth;
 	mVoice[v].reg_pmod = mVoice[v].vibdepth>0 ? true:false;
 	mVoice[v].vibPhase = 0.0f;
 	
-	mVoice[v].vol_l=vp->volL;
-	mVoice[v].vol_r=vp->volR;
-	mVoice[v].ar=vp->ar;
-	mVoice[v].dr=vp->dr;
-	mVoice[v].sl=vp->sl;
-    if (vp->sustainMode) {
+	mVoice[v].vol_l=vp.volL;
+	mVoice[v].vol_r=vp.volR;
+	mVoice[v].ar=vp.ar;
+	mVoice[v].dr=vp.dr;
+	mVoice[v].sl=vp.sl;
+    if (vp.sustainMode) {
         mVoice[v].sr=0;		//ノートオフ時に設定値になる
     }
     else {
-        mVoice[v].sr=vp->sr;
+        mVoice[v].sr=vp.sr;
     }
 	
 	mVoice[v].memPtr = 0;
@@ -482,6 +491,147 @@ void C700Generator::DoKeyOn(NoteEvt *evt)
 	mVoice[v].mixfrac = 3 * 4096;
 	mVoice[v].envcnt = CNT_INIT;
 	mVoice[v].envstate = ATTACK;
+}
+
+//-----------------------------------------------------------------------------
+InstParams C700Generator::getChannelVP(int ch, int note)
+{
+    InstParams  *pgVP = &mVPset[mChStat[ch].prog];
+    if (mDrumMode[pgVP->bank]) {
+        return *(getMappedVP(pgVP->bank, note));
+    }
+    else {
+        InstParams  mergedVP;
+        mergedVP = *pgVP;
+        //if (mChStat[ch].changeFlg & HAS_PGNAME) mergedVP.pgname = mChStat[ch].changedVP.pgname;
+        if (mChStat[ch].changeFlg & HAS_RATE) mergedVP.rate = mChStat[ch].changedVP.rate;
+        if (mChStat[ch].changeFlg & HAS_BASEKEY) mergedVP.basekey = mChStat[ch].changedVP.basekey;
+        if (mChStat[ch].changeFlg & HAS_LOWKEY) mergedVP.lowkey = mChStat[ch].changedVP.lowkey;
+        if (mChStat[ch].changeFlg & HAS_HIGHKEY) mergedVP.highkey = mChStat[ch].changedVP.highkey;
+        if (mChStat[ch].changeFlg & HAS_AR) mergedVP.ar = mChStat[ch].changedVP.ar;
+        if (mChStat[ch].changeFlg & HAS_DR) mergedVP.dr = mChStat[ch].changedVP.dr;
+        if (mChStat[ch].changeFlg & HAS_SL) mergedVP.sl = mChStat[ch].changedVP.sl;
+        if (mChStat[ch].changeFlg & HAS_SR) mergedVP.sr = mChStat[ch].changedVP.sr;
+        if (mChStat[ch].changeFlg & HAS_VOLL) mergedVP.volL = mChStat[ch].changedVP.volL;
+        if (mChStat[ch].changeFlg & HAS_VOLR) mergedVP.volR = mChStat[ch].changedVP.volR;
+        if (mChStat[ch].changeFlg & HAS_ECHO) mergedVP.echo = mChStat[ch].changedVP.echo;
+        if (mChStat[ch].changeFlg & HAS_BANK) mergedVP.bank = mChStat[ch].changedVP.bank;
+//        if (mChStat[ch].changeFlg & HAS_ISEMPHASIZED) mergedVP.isEmphasized = mChStat[ch].changedVP.isEmphasized;
+//        if (mChStat[ch].changeFlg & HAS_SOURCEFILE) mergedVP.sourceFile = mChStat[ch].changedVP.sourceFile;
+        if (mChStat[ch].changeFlg & HAS_SUSTAINMODE) mergedVP.sustainMode = mChStat[ch].changedVP.sourceFile;
+        return mergedVP;
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::Expression( int ch, int value, int inFrame )
+{
+    mChStat[ch].expression = value;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChRate(int ch, double rate, int inFrame)
+{
+    mChStat[ch].changedVP.rate = rate;
+    mChStat[ch].changeFlg |= HAS_RATE;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChBasekey(int ch, int basekey, int inFrame)
+{
+    mChStat[ch].changedVP.basekey = basekey;
+    mChStat[ch].changeFlg |= HAS_BASEKEY;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChLowkey(int ch, int lowkey, int inFrame)
+{
+    mChStat[ch].changedVP.lowkey = lowkey;
+    mChStat[ch].changeFlg |= HAS_LOWKEY;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChHighkey(int ch, int highkey, int inFrame)
+{
+    mChStat[ch].changedVP.highkey = highkey;
+    mChStat[ch].changeFlg |= HAS_HIGHKEY;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChAR(int ch, int ar, int inFrame)
+{
+    mChStat[ch].changedVP.ar = ar & 0x0f;
+    mChStat[ch].changeFlg |= HAS_AR;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChDR(int ch, int dr, int inFrame)
+{
+    mChStat[ch].changedVP.dr = dr & 0x07;
+    mChStat[ch].changeFlg |= HAS_DR;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChSL(int ch, int sl, int inFrame)
+{
+    mChStat[ch].changedVP.sl = sl & 0x07;
+    mChStat[ch].changeFlg |= HAS_SL;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChSR(int ch, int sr, int inFrame)
+{
+    mChStat[ch].changedVP.sr = sr & 0x1f;
+    mChStat[ch].changeFlg |= HAS_SR;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChVolL(int ch, int voll, int inFrame)
+{
+    mChStat[ch].changedVP.volL = voll;
+    mChStat[ch].changeFlg |= HAS_VOLL;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChVolR(int ch, int volr, int inFrame)
+{
+    mChStat[ch].changedVP.volR = volr;
+    mChStat[ch].changeFlg |= HAS_VOLR;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChEcho(int ch, int echo, int inFrame)
+{
+    mChStat[ch].changedVP.echo = echo ? true:false;
+    mChStat[ch].changeFlg |= HAS_ECHO;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChBank(int ch, int bank, int inFrame)
+{
+    mChStat[ch].changedVP.bank = bank & 0x03;
+    mChStat[ch].changeFlg |= HAS_BANK;
+    // TODO: 発音中のボイスに反映
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::ChangeChSustainMode(int ch, int sustainMode, int inFrame)
+{
+    mChStat[ch].changedVP.sustainMode = sustainMode ? true:false;
+    mChStat[ch].changeFlg |= HAS_SUSTAINMODE;
+    // TODO: 発音中のボイスに反映
 }
 
 //-----------------------------------------------------------------------------
@@ -796,4 +946,14 @@ void C700Generator::RefreshKeyMap(void)
 			}
 		}
 	}
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::SetVPSet( InstParams *vp )
+{
+    mVPset = vp;
+    for (int i=0; i<16; i++) {
+        mChStat[i].changeFlg = 0;
+        mChStat[i].changedVP = vp[0];
+    }
 }

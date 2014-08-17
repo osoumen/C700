@@ -76,6 +76,21 @@ private:
 	InstParams			mVPset[128];
 	// ÉGÉRÅ[
 	float				mFilterBand[5];
+    
+    // RPN, NRPN
+    int                 mDataEntryValue[16];
+    int                 mIsSettingNRPN[16];
+    int                 mRPN[16];
+    int                 mNRPN[16];
 	
-	C700Generator	mGenerator;	
+	C700Generator	mGenerator;
+    
+    void            setRPNLSB(int ch, int value);
+    void            setRPNMSB(int ch, int value);
+    void            setNRPNLSB(int ch, int value);
+    void            setNRPNMSB(int ch, int value);
+    void            setDataEntryLSB(int ch, int value);
+    void            setDataEntryMSB(int ch, int value);
+    void            sendDataEntryValue(int ch);
+
 };

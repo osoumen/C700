@@ -490,19 +490,20 @@ VstInt32 C700VST::processEvents(VstEvents* ev)
 				break;
 			case 0xb0:
 				switch (note) {
-					case 0x01://Modulation Wheel
-						mEfx->HandleControlChange(MidiCh, note, velocity, inFrames);
-						break;
-					case 0x78://Force off
+					case 120://Force off
 						mEfx->HandleAllSoundOff(MidiCh, inFrames);
 						break;
-					case 0x7B://All Note Off
+                    case 121:
+                        mEfx->HandleResetAllControllers(MidiCh, inFrames);
+                        break;
+					case 123://All Note Off
 						mEfx->HandleAllNotesOff(MidiCh, inFrames);
 						break;
-					case 0x7E://Mono
-					case 0x7F://Poly
+					case 126://Mono
+					case 127://Poly
 					default:
-						;
+                        mEfx->HandleControlChange(MidiCh, note, velocity, inFrames);
+						break;
 				}
 				break;
 			case 0xc0:

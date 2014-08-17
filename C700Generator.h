@@ -35,6 +35,16 @@ typedef enum
 class C700Generator
 {
 public:
+    typedef struct {
+        int         prog;
+        float		pitchBend;
+        int			vibDepth;
+        int         expression;
+        float       pbRange;
+        uint32_t    changeFlg;
+        InstParams  changedVP;
+    } ChannelStatus;
+    
 	C700Generator();
 	virtual				~C700Generator() {}
 	
@@ -50,9 +60,24 @@ public:
 	void		PitchBend( int ch, int value, int inFrame );
 	void		ModWheel( int ch, int value, int inFrame );
 	void		Damper( int ch, int value, int inFrame );
-	
+    void        Expression( int ch, int value, int inFrame );
+    void        ChangeChRate(int ch, double rate, int inFrame);
+    void        ChangeChBasekey(int ch, int basekey, int inFrame);
+    void        ChangeChLowkey(int ch, int lowkey, int inFrame);
+    void        ChangeChHighkey(int ch, int highkey, int inFrame);
+    void        ChangeChAR(int ch, int ar, int inFrame);
+    void        ChangeChDR(int ch, int dr, int inFrame);
+    void        ChangeChSL(int ch, int sl, int inFrame);
+    void        ChangeChSR(int ch, int sr, int inFrame);
+    void        ChangeChVolL(int ch, int voll, int inFrame);
+    void        ChangeChVolR(int ch, int volr, int inFrame);
+    void        ChangeChEcho(int ch, int echo, int inFrame);
+    void        ChangeChBank(int ch, int bank, int inFrame);
+    void        ChangeChSustainMode(int ch, int sustainMode, int inFrame);
+
 	void		SetVoiceLimit( int value );
 	void		SetPBRange( float value );
+	void		SetPBRange( int ch, float value );
 	void		SetClipper( bool value );
 	void		SetMultiMode( int bank, bool value );
 	bool		GetMultiMode( int bank ) const;
@@ -70,12 +95,12 @@ public:
 	void		SetFIRTap( int tap, int value );
 	
 	void		SetSampleRate( double samplerate ) { mSampleRate = samplerate; }
-	
+    
 	void		Process( unsigned int frames, float *output[2] );
 	int			GetKeyMap( int bank, int key ) const { return mKeyMap[bank][key]; }
 	InstParams	*getVP(int pg) const { return &mVPset[pg]; }
 	InstParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
-	void		SetVPSet( InstParams *vp ) { mVPset = vp; }
+	void		SetVPSet( InstParams *vp );
 	
 	void		RefreshKeyMap(void);
 	
@@ -126,6 +151,7 @@ private:
 		int				ar,dr,sl,sr,vol_l,vol_r;
 		
 		int				velo;
+        int             expression;
 		unsigned int	loopPoint;
 		bool			loop;
 	
@@ -153,13 +179,11 @@ private:
 	int				mMainVolume_R;
 	float			mVibfreq;
 	float			mVibdepth;
-	float			mPbrange;
+	//float			mPbrange;
 	bool			mClipper;
 	bool			mDrumMode[NUM_BANKS];
 	velocity_mode	mVelocityMode;
-	int				mChProgram[16];
-	float			mChPitchBend[16];
-	int				mChVibDepth[16];
+    ChannelStatus   mChStat[16];
 	
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
 	InstParams		*mVPset;
@@ -168,5 +192,6 @@ private:
 	int		StopPlayingVoice( const NoteEvt *evt );
 	void	DoKeyOn(NoteEvt *evt);
 	float	VibratoWave(float phase);
-	int		CalcPBValue(float pitchBend, int basePitch);
+	int		CalcPBValue(int ch, float pitchBend, int basePitch);
+    InstParams getChannelVP(int ch, int note);
 };

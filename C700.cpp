@@ -1131,7 +1131,7 @@ OSStatus C700::HandleControlChange(	UInt8 	inChannel,
 									UInt8 	inValue,
 									UInt32	inStartFrame)
 {
-	mEfx->HandleControlChange(inChannel, inController, inValue, inStartFrame);	//モジュレーションホイール
+	mEfx->HandleControlChange(inChannel, inController, inValue, inStartFrame);
 	return AUInstrumentBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
 }
 

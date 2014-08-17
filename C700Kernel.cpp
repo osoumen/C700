@@ -66,7 +66,7 @@ C700Kernel::C700Kernel()
 	}
 	
 	// 音源にプログラムのメモリを渡す
-	mGenerator.SetVPSet(mVPset);	
+	mGenerator.SetVPSet(mVPset);
 }
 
 //-----------------------------------------------------------------------------
@@ -88,8 +88,14 @@ void C700Kernel::Reset()
 	//音源リセット
 	mGenerator.Reset();
 	
-	// MIDIインジケータをリセット
 	for ( int i=0; i<16; i++ ) {
+        //プラグイン状態のリセット
+        mDataEntryValue[i] = 0;
+        mRPN[i] = 0x7f7f;
+        mNRPN[i] = 0x7f7f;
+        mIsSettingNRPN[i] = false;
+
+        // MIDIインジケータをリセット
 		mOnNotes[i] = 0;
 		mMaxNote[i] = 0;
 		if ( propertyNotifyFunc ) {
@@ -868,16 +874,169 @@ void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
 
 void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inFrame )
 {
-	//モジュレーションホイール
-	if (controlNum == 1/*kMidiController_ModWheel*/) {
-		int	paramID = kParam_vibdepth;
-		if ( ch > 0 ) {
-			paramID = kParam_vibdepth_2 - 1 + ch;
-		}
-		if ( parameterSetFunc ) {
-			parameterSetFunc( paramID, value, paramSetUserData );
-		}
-	}
+    switch (controlNum) {
+        case 1:
+        {
+            //モジュレーションホイール
+            int	paramID = kParam_vibdepth;
+            if ( ch > 0 ) {
+                paramID = kParam_vibdepth_2 - 1 + ch;
+            }
+            if ( parameterSetFunc ) {
+                parameterSetFunc( paramID, value, paramSetUserData );
+            }
+            break;
+        }
+            
+        case 5:
+            // ポルタメントタイム
+            break;
+            
+        case 6:
+            //データ・エントリー(LSB)
+            setDataEntryLSB(ch, value);
+            break;
+            
+        case 38:
+            // データ・エントリー(MSB)
+            setDataEntryMSB(ch, value);
+            break;
+            
+        case 10:
+            // パン
+            break;
+            
+        case 11:
+            // エクスプレッション
+            mGenerator.Expression(ch, value & 0x7f, inFrame);
+            break;
+            
+        case 64:
+            // ホールド１（ダンパー）
+            break;
+            
+        case 65:
+            // ポルタメント・オン・オフ
+            break;
+            
+        case 72:
+            // SR
+            mGenerator.ChangeChSR(ch, value >> 2, inFrame);
+            break;
+            
+        case 73:
+            // AR
+            mGenerator.ChangeChAR(ch, value >> 3, inFrame);
+            break;
+            
+        case 74:
+            // SL
+            mGenerator.ChangeChSL(ch, value >> 4, inFrame);
+            break;
+            
+        case 75:
+            // DR
+            mGenerator.ChangeChDR(ch, value >> 4, inFrame);
+            break;
+            
+        case 76:
+            // ビブラート・レート
+            mGenerator.SetVibFreq((35.0f * value) / 127);
+            break;
+            
+        case 77:
+            // ビブラート・デプス
+            mGenerator.SetVibDepth((15.0f * value) / 127);
+            break;
+            
+        case 91:
+            // ECEN ON/OFF
+            mGenerator.ChangeChEcho(ch, (value > 0)?127:0, inFrame);
+            break;
+            
+        case 98:
+            // NRPN (LSB)
+            setNRPNLSB(ch, value);
+            break;
+            
+        case 99:
+            // NRPN (MSB)
+            setNRPNMSB(ch, value);
+            break;
+            
+        case 100:
+            // RPN (LSB)
+            setRPNLSB(ch, value);
+            break;
+            
+        case 101:
+            // RPN (MSB)
+            setRPNMSB(ch, value);
+            break;
+            
+        default:
+            break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::setRPNLSB(int ch, int value)
+{
+    mRPN[ch] &= 0xff00;
+    mRPN[ch] |= value & 0x7f;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::setRPNMSB(int ch, int value)
+{
+    mRPN[ch] &= 0x00ff;
+    mRPN[ch] |= (value & 0x7f) << 8;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::setNRPNLSB(int ch, int value)
+{
+    mNRPN[ch] &= 0xff00;
+    mNRPN[ch] |= value & 0x7f;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::setNRPNMSB(int ch, int value)
+{
+    mNRPN[ch] &= 0x00ff;
+    mNRPN[ch] |= (value & 0x7f) << 8;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::setDataEntryLSB(int ch, int value)
+{
+    mDataEntryValue[ch] &= 0xff00;
+    mDataEntryValue[ch] |= value & 0x7f;
+    sendDataEntryValue(ch);
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::setDataEntryMSB(int ch, int value)
+{
+    mDataEntryValue[ch] &= 0x00ff;
+    mDataEntryValue[ch] |= (value & 0x7f) << 8;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::sendDataEntryValue(int ch)
+{
+    if (mIsSettingNRPN) {
+    }
+    else  {
+        switch (mRPN[ch]) {
+            case 0x0000:
+                mGenerator.SetPBRange(ch, mDataEntryValue[ch]);
+                break;
+                
+            default:
+                break;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
