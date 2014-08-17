@@ -120,6 +120,7 @@ private:
 	
 	C700Kernel			*mEfx;
 	AUPreset			*mPresets;
+    bool                mParameterHasChanged[kNumberOfParameters];
 	
 	int			CreatePGDataDic(CFDictionaryRef *data, int pgnum);
 	void		RestorePGDataDic(CFPropertyListRef data, int pgnum);
