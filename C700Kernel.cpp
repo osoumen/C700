@@ -900,6 +900,7 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             
         case 7:
             // ƒ{ƒŠƒ…[ƒ€
+            mGenerator.Volume(ch, value, inFrame);
             break;
             
         case 38:

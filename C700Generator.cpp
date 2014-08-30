@@ -101,6 +101,7 @@ C700Generator::C700Generator()
         mChStat[i].portaOn = false;
         mChStat[i].portaTc = 1.0f;
         mChStat[i].portaStartPitch = 0;
+        mChStat[i].volume = VOLUME_DEFAULT;
         mChStat[i].expression = EXPRESSION_DEFAULT;
         mChStat[i].pan = 64;
         mChStat[i].lastNote = 0;
@@ -487,6 +488,7 @@ void C700Generator::DoKeyOn(NoteEvt *evt)
 	else {
 		mVoice[v].velo=VELOCITY_CURB[127];
 	}
+    mVoice[v].volume = mChStat[evt->ch].volume;
     mVoice[v].expression = mChStat[evt->ch].expression;
 	
 	mVoice[v].brrdata = vp.brr.data;
@@ -556,6 +558,18 @@ InstParams C700Generator::getChannelVP(int ch, int note)
 //        if (mChStat[ch].changeFlg & HAS_SOURCEFILE) mergedVP.sourceFile = mChStat[ch].changedVP.sourceFile;
         if (mChStat[ch].changeFlg & HAS_SUSTAINMODE) mergedVP.sustainMode = mChStat[ch].changedVP.sourceFile;
         return mergedVP;
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::Volume( int ch, int value, int inFrame )
+{
+    mChStat[ch].volume = value;
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].volume = mChStat[ch].volume;
+        }
     }
 }
 
@@ -986,13 +1000,17 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
                 calcPanVolume(mVoice[v].pan, &volL, &volR);
                 
 				//ボリューム値の反映
+				volL = ( volL * mVoice[v].volume ) / 127;
+				volR = ( volR * mVoice[v].volume ) / 127;
+                
+                // エクスプレッションの反映
+				volL = ( volL * mVoice[v].expression ) / 127;
+				volR = ( volR * mVoice[v].expression ) / 127;
+				
+				//ゲイン値の反映
 				vl = ( volL * outx ) >> 7;
 				vr = ( volR * outx ) >> 7;
                 
-                // エクスプレッションの反映
-				vl = ( mVoice[v].expression * vl ) >> 7;
-				vr = ( mVoice[v].expression * vr ) >> 7;
-				
 				//エコー処理
 				if ( mVoice[v].echoOn ) {
 					mEcho[0].Input(vl);

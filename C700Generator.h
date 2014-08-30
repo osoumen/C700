@@ -39,6 +39,7 @@ public:
         int         prog;
         float		pitchBend;
         int			vibDepth;
+        int         volume;
         int         expression;
         int         pan;
         float       pbRange;
@@ -65,6 +66,7 @@ public:
 	void		PitchBend( int ch, int value, int inFrame );
 	void		ModWheel( int ch, int value, int inFrame );
 	void		Damper( int ch, int value, int inFrame );
+    void        Volume( int ch, int value, int inFrame );
     void        Expression( int ch, int value, int inFrame );
     void        Panpot( int ch, int value, int inFrame );
     void        ChangeChRate(int ch, double rate, int inFrame);
@@ -117,6 +119,7 @@ private:
 	static const int INTERNAL_CLOCK = 32000;
     static const int CYCLES_PER_SAMPLE = 21168;
     static const int PORTAMENT_CYCLE_SAMPLES = 32;  // ポルタメント処理を行うサンプル数(32kHz換算)
+    static const int VOLUME_DEFAULT = 100;
     static const int EXPRESSION_DEFAULT = 127;
     static const int DEFAULT_PBRANGE = 2;
 	
@@ -165,6 +168,7 @@ private:
 		int				ar,dr,sl,sr,vol_l,vol_r;
 		
 		int				velo;
+        int             volume;
         int             expression;
         int             pan;
 		unsigned int	loopPoint;
