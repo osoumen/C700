@@ -40,6 +40,7 @@ public:
         float		pitchBend;
         int			vibDepth;
         int         expression;
+        int         pan;
         float       pbRange;
         bool        portaOn;
         float       portaTc;
@@ -65,6 +66,7 @@ public:
 	void		ModWheel( int ch, int value, int inFrame );
 	void		Damper( int ch, int value, int inFrame );
     void        Expression( int ch, int value, int inFrame );
+    void        Panpot( int ch, int value, int inFrame );
     void        ChangeChRate(int ch, double rate, int inFrame);
     void        ChangeChBasekey(int ch, int basekey, int inFrame);
     void        ChangeChLowkey(int ch, int lowkey, int inFrame);
@@ -164,6 +166,7 @@ private:
 		
 		int				velo;
         int             expression;
+        int             pan;
 		unsigned int	loopPoint;
 		bool			loop;
 	
@@ -207,4 +210,5 @@ private:
 	int		CalcPBValue(int ch, float pitchBend, int basePitch);
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
+    void calcPanVolume(int value, int *volL, int *volR);
 };
