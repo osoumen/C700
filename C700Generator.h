@@ -41,6 +41,9 @@ public:
         int			vibDepth;
         int         expression;
         float       pbRange;
+        bool        portaOn;
+        float       portaTc;
+        int         portaStartPitch;
         uint32_t    changeFlg;
         InstParams  changedVP;
     } ChannelStatus;
@@ -84,6 +87,8 @@ public:
 	void		SetVelocityMode( velocity_mode value );
 	void		SetVibFreq( float value );
 	void		SetVibDepth( float value );
+    void        SetPortamentOn( int ch, bool on );
+    void        SetPortamentTime( int ch, float secs );
 	
 	void		SetMainVol_L( int value );
 	void		SetMainVol_R( int value );
@@ -106,6 +111,10 @@ public:
 	
 private:
 	static const int INTERNAL_CLOCK = 32000;
+    static const int CYCLES_PER_SAMPLE = 21168;
+    static const int PORTAMENT_CYCLE_SAMPLES = 32;  // ポルタメント処理を行うサンプル数(32kHz換算)
+    static const int EXPRESSION_DEFAULT = 127;
+    static const int DEFAULT_PBRANGE = 2;
 	
 	enum EvtType {
 		NOTE_ON = 0,
@@ -147,6 +156,7 @@ private:
 		int				vibdepth;
 		bool			reg_pmod;
 		float			vibPhase;
+        int             portaPitch;
 		
 		int				ar,dr,sl,sr,vol_l,vol_r;
 		
@@ -179,11 +189,11 @@ private:
 	int				mMainVolume_R;
 	float			mVibfreq;
 	float			mVibdepth;
-	//float			mPbrange;
 	bool			mClipper;
 	bool			mDrumMode[NUM_BANKS];
 	velocity_mode	mVelocityMode;
     ChannelStatus   mChStat[16];
+    int             mPortamentCount;        // DSP処理が1サンプル出力される毎にカウントされ、ポルタメント処理されるとPORTAMENT_CYCLE_SAMPLES 減らす
 	
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
 	InstParams		*mVPset;
@@ -194,4 +204,5 @@ private:
 	float	VibratoWave(float phase);
 	int		CalcPBValue(int ch, float pitchBend, int basePitch);
     InstParams getChannelVP(int ch, int note);
+    void processPortament(int vo);
 };

@@ -890,6 +890,7 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             
         case 5:
             // ポルタメントタイム
+            mGenerator.SetPortamentTime(ch, value / 100.0f);
             break;
             
         case 6:
@@ -917,6 +918,7 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             
         case 65:
             // ポルタメント・オン・オフ
+            mGenerator.SetPortamentOn(ch, value==0?false:true);
             break;
             
         case 72:
