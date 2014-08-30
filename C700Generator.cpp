@@ -123,7 +123,7 @@ void C700Generator::VoiceState::Reset()
 	reg_pmod = 0;
 	vibdepth = 0;
 	vibPhase = 0.0f;
-    portaPitch = 0;
+    portaPitch = .0f;
 	
 	brrdata = silence_brr;
 	loopPoint = 0;
@@ -396,7 +396,7 @@ void C700Generator::SetPortamentOn( int ch, bool on )
 //-----------------------------------------------------------------------------
 void C700Generator::SetPortamentTime( int ch, float secs )
 {
-    mChStat[ch].portaTc = secs / PORTAMENT_CYCLE_SAMPLES;
+    mChStat[ch].portaTc = expf(-2.0f / ((INTERNAL_CLOCK / PORTAMENT_CYCLE_SAMPLES) * secs));
 }
 
 //-----------------------------------------------------------------------------
@@ -705,13 +705,13 @@ float C700Generator::VibratoWave(float phase)
 //-----------------------------------------------------------------------------
 void C700Generator::processPortament(int vo)
 {
-    if ( mVoice[vo].portaPitch == mVoice[vo].pitch ) return;
+    //if ( mVoice[vo].portaPitch == mVoice[vo].pitch ) return;
     
     float   newPitch;
     float   tc = mChStat[ mVoice[vo].midi_ch ].portaTc;
     float   tcInv = 1.0f - tc;
-    newPitch = mVoice[vo].portaPitch * tcInv + mVoice[vo].pitch * tc;
-    mVoice[vo].portaPitch = static_cast<int>(newPitch + 0.5f);
+    newPitch = mVoice[vo].pitch * tcInv + mVoice[vo].portaPitch * tc;
+    mVoice[vo].portaPitch = newPitch;
     mChStat[ mVoice[vo].midi_ch ].portaStartPitch = mVoice[vo].portaPitch;
 }
 
@@ -748,8 +748,11 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
         
         while (mPortamentCount >= 0) {
             // ポルタメント処理
-            for (int i=0; i<kMaximumVoices; i++) {
-                processPortament(i);
+            std::list<int>::iterator	it = mPlayVo.begin();
+            while (it != mPlayVo.end()) {
+                int	vo = *it;
+                processPortament(vo);
+                it++;
             }
             mPortamentCount -= PORTAMENT_CYCLE_SAMPLES;
         }
@@ -823,7 +826,8 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				}
 				
 				//ピッチの算出
-                int voicePitch = mChStat[mVoice[v].midi_ch].portaOn ? mVoice[v].portaPitch:mVoice[v].pitch;
+                int voicePitch = mChStat[mVoice[v].midi_ch].portaOn ?
+                static_cast<int>(mVoice[v].portaPitch + 0.5f):mVoice[v].pitch;
 
 				pitch = (voicePitch + mVoice[v].pb) & 0x3fff;
 				

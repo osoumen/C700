@@ -43,7 +43,7 @@ public:
         float       pbRange;
         bool        portaOn;
         float       portaTc;
-        int         portaStartPitch;
+        float       portaStartPitch;
         uint32_t    changeFlg;
         InstParams  changedVP;
     } ChannelStatus;
@@ -156,7 +156,7 @@ private:
 		int				vibdepth;
 		bool			reg_pmod;
 		float			vibPhase;
-        int             portaPitch;
+        float           portaPitch;
 		
 		int				ar,dr,sl,sr,vol_l,vol_r;
 		
