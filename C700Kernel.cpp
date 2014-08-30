@@ -898,6 +898,10 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             setDataEntryLSB(ch, value);
             break;
             
+        case 7:
+            // ボリューム
+            break;
+            
         case 38:
             // データ・エントリー(MSB)
             setDataEntryMSB(ch, value);
@@ -905,6 +909,7 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             
         case 10:
             // パン
+            mGenerator.Panpot(ch, value, inFrame);
             break;
             
         case 11:

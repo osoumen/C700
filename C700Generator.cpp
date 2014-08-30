@@ -102,6 +102,7 @@ C700Generator::C700Generator()
         mChStat[i].portaTc = 1.0f;
         mChStat[i].portaStartPitch = 0;
         mChStat[i].expression = EXPRESSION_DEFAULT;
+        mChStat[i].pan = 64;
         mChStat[i].lastNote = 0;
 	}
 	Reset();
@@ -125,6 +126,7 @@ void C700Generator::VoiceState::Reset()
 	vibdepth = 0;
 	vibPhase = 0.0f;
     portaPitch = .0f;
+    pan = 64;
 	
 	brrdata = silence_brr;
 	loopPoint = 0;
@@ -224,6 +226,7 @@ void C700Generator::ResetAllControllers()
         mChStat[i].vibDepth = 0;
         mChStat[i].pbRange = static_cast<float>(DEFAULT_PBRANGE);
         mChStat[i].expression = EXPRESSION_DEFAULT;
+        mChStat[i].pan = 64;
         mChStat[i].portaOn = false;
         mChStat[i].portaTc = 1.0f;
         mChStat[i].portaStartPitch = 0;
@@ -564,6 +567,18 @@ void C700Generator::Expression( int ch, int value, int inFrame )
     for (int i=0; i<kMaximumVoices; i++) {
         if (mVoice[i].midi_ch == ch) {
             mVoice[i].expression = mChStat[ch].expression;
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::Panpot( int ch, int value, int inFrame )
+{
+    mChStat[ch].pan = value;
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoice[i].midi_ch == ch) {
+            mVoice[i].pan = mChStat[ch].pan;
         }
     }
 }
@@ -965,9 +980,14 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				outx = ( ( outx * mVoice[v].envx ) >> 11 ) & ~1;
 				outx = ( outx * mVoice[v].velo ) >> 11;
 				
+                //パンのボリューム値への反映
+                int volL = mVoice[v].vol_l;
+                int volR = mVoice[v].vol_r;
+                calcPanVolume(mVoice[v].pan, &volL, &volR);
+                
 				//ボリューム値の反映
-				vl = ( mVoice[v].vol_l * outx ) >> 7;
-				vr = ( mVoice[v].vol_r * outx ) >> 7;
+				vl = ( volL * outx ) >> 7;
+				vr = ( volR * outx ) >> 7;
                 
                 // エクスプレッションの反映
 				vl = ( mVoice[v].expression * vl ) >> 7;
@@ -1020,7 +1040,33 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 		mProcessFrac += procstep;
 	}
 }
-					  
+
+//-----------------------------------------------------------------------------
+void C700Generator::calcPanVolume(int value, int *volL, int *volR)
+{
+    int     absL = (*volL > 0)?(*volL):-(*volL);
+    int     absR = (*volR > 0)?(*volR):-(*volR);
+    int     center =(absR + absL) / 2;
+    int     diffRL = absR - absL;
+    diffRL += value * 4 - 256;
+    absL = center - diffRL / 2;
+    absR = center + diffRL / 2;
+    if (absL > 127) {
+        absL = 127;
+    }
+    if (absL < 0) {
+        absL = 0;
+    }
+    if (absR > 127) {
+        absR = 127;
+    }
+    if (absR < 0) {
+        absR = 0;
+    }
+    *volL = (*volL)>0 ? absL:-absL;
+    *volR = (*volR)>0 ? absR:-absR;
+}
+
 //-----------------------------------------------------------------------------
 void C700Generator::RefreshKeyMap(void)
 {
