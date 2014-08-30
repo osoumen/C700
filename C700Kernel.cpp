@@ -890,7 +890,7 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             
         case 5:
             // ポルタメントタイム
-            mGenerator.SetPortamentTime(ch, value / 100.0f);
+            mGenerator.SetPortamentTime(ch, value / 100.0f);    // 10ms単位
             break;
             
         case 6:
@@ -949,6 +949,11 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
         case 77:
             // ビブラート・デプス
             mGenerator.SetVibDepth((15.0f * value) / 127);
+            break;
+            
+        case 84:
+            // ポルタメント・コントロール
+            mGenerator.SetPortamentControl(ch, value);
             break;
             
         case 91:

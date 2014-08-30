@@ -44,6 +44,7 @@ public:
         bool        portaOn;
         float       portaTc;
         float       portaStartPitch;
+        int         lastNote;
         uint32_t    changeFlg;
         InstParams  changedVP;
     } ChannelStatus;
@@ -89,6 +90,7 @@ public:
 	void		SetVibDepth( float value );
     void        SetPortamentOn( int ch, bool on );
     void        SetPortamentTime( int ch, float secs );
+    void        SetPortamentControl( int ch, int note );
 	
 	void		SetMainVol_L( int value );
 	void		SetMainVol_R( int value );

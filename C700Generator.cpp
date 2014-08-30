@@ -102,6 +102,7 @@ C700Generator::C700Generator()
         mChStat[i].portaTc = 1.0f;
         mChStat[i].portaStartPitch = 0;
         mChStat[i].expression = EXPRESSION_DEFAULT;
+        mChStat[i].lastNote = 0;
 	}
 	Reset();
 }
@@ -400,6 +401,13 @@ void C700Generator::SetPortamentTime( int ch, float secs )
 }
 
 //-----------------------------------------------------------------------------
+void C700Generator::SetPortamentControl( int ch, int note )
+{
+    InstParams		vp = getChannelVP(ch, mChStat[ch].lastNote);
+    mChStat[ch].portaStartPitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+}
+
+//-----------------------------------------------------------------------------
 int C700Generator::FindFreeVoice( const NoteEvt *evt )
 {
 	int	v=-1;
@@ -513,6 +521,9 @@ void C700Generator::DoKeyOn(NoteEvt *evt)
 	mVoice[v].mixfrac = 3 * 4096;
 	mVoice[v].envcnt = CNT_INIT;
 	mVoice[v].envstate = ATTACK;
+    
+    // ÅŒã‚É”­‰¹‚µ‚½ƒm[ƒg”Ô†‚ð•Û‘¶
+    mChStat[evt->ch].lastNote = evt->note;
 }
 
 //-----------------------------------------------------------------------------
