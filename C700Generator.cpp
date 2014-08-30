@@ -97,8 +97,11 @@ C700Generator::C700Generator()
         mChStat[i].prog = 0;
         mChStat[i].pitchBend = 0;
         mChStat[i].vibDepth = 0;
-        mChStat[i].pbRange = 2.0;
-        mChStat[i].expression = 127;
+        mChStat[i].pbRange = static_cast<float>(DEFAULT_PBRANGE);
+        mChStat[i].portaOn = false;
+        mChStat[i].portaTc = 1.0f;
+        mChStat[i].portaStartPitch = 0;
+        mChStat[i].expression = EXPRESSION_DEFAULT;
 	}
 	Reset();
 }
@@ -120,6 +123,7 @@ void C700Generator::VoiceState::Reset()
 	reg_pmod = 0;
 	vibdepth = 0;
 	vibPhase = 0.0f;
+    portaPitch = 0;
 	
 	brrdata = silence_brr;
 	loopPoint = 0;
@@ -145,6 +149,7 @@ void C700Generator::Reset()
 	}
 	mProcessFrac=0;
 	mProcessbufPtr=0;
+    mPortamentCount=0;
 	
 	mNoteEvt.clear();
 	
@@ -216,8 +221,11 @@ void C700Generator::ResetAllControllers()
         mChStat[i].changedVP = mVPset[mChStat[i].prog];
         mChStat[i].pitchBend = 0;
         mChStat[i].vibDepth = 0;
-        mChStat[i].pbRange = 2.0f;
-        mChStat[i].expression = 127;
+        mChStat[i].pbRange = static_cast<float>(DEFAULT_PBRANGE);
+        mChStat[i].expression = EXPRESSION_DEFAULT;
+        mChStat[i].portaOn = false;
+        mChStat[i].portaTc = 1.0f;
+        mChStat[i].portaStartPitch = 0;
 	}
 }
 
@@ -379,6 +387,17 @@ void C700Generator::SetFIRTap( int tap, int value )
 	mEcho[1].SetFIRTap(tap, value);
 }
 
+//-----------------------------------------------------------------------------
+void C700Generator::SetPortamentOn( int ch, bool on )
+{
+    mChStat[ch].portaOn = on;
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::SetPortamentTime( int ch, float secs )
+{
+    mChStat[ch].portaTc = secs / PORTAMENT_CYCLE_SAMPLES;
+}
 
 //-----------------------------------------------------------------------------
 int C700Generator::FindFreeVoice( const NoteEvt *evt )
@@ -466,6 +485,7 @@ void C700Generator::DoKeyOn(NoteEvt *evt)
 	
 	//中心周波数の算出
 	mVoice[v].pitch = pow(2., (evt->note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+    mVoice[v].portaPitch = mChStat[evt->ch].portaStartPitch;
 	
 	mVoice[v].pb = CalcPBValue( evt->ch, mChStat[evt->ch].pitchBend, mVoice[v].pitch );
 	mVoice[v].vibdepth = mChStat[evt->ch].vibDepth;
@@ -682,6 +702,18 @@ float C700Generator::VibratoWave(float phase)
 	vibwave *= phase;
 	return vibwave;
 }
+//-----------------------------------------------------------------------------
+void C700Generator::processPortament(int vo)
+{
+    if ( mVoice[vo].portaPitch == mVoice[vo].pitch ) return;
+    
+    float   newPitch;
+    float   tc = mChStat[ mVoice[vo].midi_ch ].portaTc;
+    float   tcInv = 1.0f - tc;
+    newPitch = mVoice[vo].portaPitch * tcInv + mVoice[vo].pitch * tc;
+    mVoice[vo].portaPitch = static_cast<int>(newPitch + 0.5f);
+    mChStat[ mVoice[vo].midi_ch ].portaStartPitch = mVoice[vo].portaPitch;
+}
 
 //-----------------------------------------------------------------------------
 void C700Generator::Process( unsigned int frames, float *output[2] )
@@ -689,7 +721,7 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 	int		outx;
 	int		vl, vr;
 	int		pitch;
-	int		procstep = (INTERNAL_CLOCK*21168) / mSampleRate;
+	int		procstep = (INTERNAL_CLOCK*CYCLES_PER_SAMPLE) / mSampleRate;    // CYCLES_PER_SAMPLE=1.0 とした固定小数
 	
 	//メイン処理
 	for (unsigned int frame=0; frame<frames; ++frame) {
@@ -713,8 +745,16 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				it++;
 			}
 		}
+        
+        while (mPortamentCount >= 0) {
+            // ポルタメント処理
+            for (int i=0; i<kMaximumVoices; i++) {
+                processPortament(i);
+            }
+            mPortamentCount -= PORTAMENT_CYCLE_SAMPLES;
+        }
 		
-		for ( ; mProcessFrac >= 0; mProcessFrac -= 21168 ) {
+		for ( ; mProcessFrac >= 0; mProcessFrac -= CYCLES_PER_SAMPLE ) {
 			int outl=0,outr=0;
 			for ( int v=0; v<kMaximumVoices; v++ ) {
 				outx = 0;
@@ -783,7 +823,9 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				}
 				
 				//ピッチの算出
-				pitch = (mVoice[v].pitch + mVoice[v].pb) & 0x3fff;
+                int voicePitch = mChStat[mVoice[v].midi_ch].portaOn ? mVoice[v].portaPitch:mVoice[v].pitch;
+
+				pitch = (voicePitch + mVoice[v].pb) & 0x3fff;
 				
 				if (mVoice[v].reg_pmod) {
 					mVoice[v].vibPhase += mVibfreq;
@@ -930,11 +972,13 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 			mProcessbuf[0][mProcessbufPtr] = outl;
 			mProcessbuf[1][mProcessbufPtr] = outr;
 			mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
+            
+            mPortamentCount++;
 		}
 		//--
 		//16pointSinc補間
 		for ( int ch=0; ch<2; ch++ ) {
-			int inputFrac = mProcessFrac+21168;
+			int inputFrac = mProcessFrac+CYCLES_PER_SAMPLE;
 			int tabidx1 = ( inputFrac/1764 ) << 4;
 			int tabidx2 = tabidx1 + 16;
 			int a1 = 0, a2 = 0;
