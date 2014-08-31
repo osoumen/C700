@@ -874,19 +874,6 @@ void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
 void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inFrame )
 {
     switch (controlNum) {
-        case 1:
-        {
-            //モジュレーションホイール
-            int	paramID = kParam_vibdepth;
-            if ( ch > 0 ) {
-                paramID = kParam_vibdepth_2 - 1 + ch;
-            }
-            if ( parameterSetFunc ) {
-                parameterSetFunc( paramID, value, paramSetUserData );
-            }
-            break;
-        }
-            
         case 6:
             //データ・エントリー(LSB)
             setDataEntryLSB(ch, value);
@@ -918,6 +905,21 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             break;
             
 
+        case 1:
+        {
+            //モジュレーションホイール
+#if 0
+            int	paramID = kParam_vibdepth;
+            if ( ch > 0 ) {
+                paramID = kParam_vibdepth_2 - 1 + ch;
+            }
+            if ( parameterSetFunc ) {
+                parameterSetFunc( paramID, value, paramSetUserData );
+            }
+            break;
+#endif
+        }
+            
         case 5:
             // ポルタメントタイム
         case 7:
@@ -1018,6 +1020,7 @@ void C700Kernel::sendDataEntryValue(int ch)
 
 void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
 {
+#if 0
 	int	paramID = kParam_program;
 	if ( ch > 0 ) {
 		paramID = kParam_program_2 - 1 + ch;
@@ -1025,6 +1028,8 @@ void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
 	if ( parameterSetFunc ) {
 		parameterSetFunc( paramID, pg, paramSetUserData );
 	}
+#endif
+    mGenerator.ProgramChange(ch, pg, inFrame);
 }
 
 //-----------------------------------------------------------------------------
