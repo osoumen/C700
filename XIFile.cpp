@@ -190,7 +190,7 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 			
 			double avr = ( abs(chip->getVP(ismp)->volL) + abs(chip->getVP(ismp)->volR) ) / 2;
 			double pan = (abs(chip->getVP(ismp)->volR) * 128) / avr;
-			if ( pan > 256 ) pan = 256;
+			if ( pan > 255 ) pan = 255;
 			xsh.vol = 64;	//ïœâªÇµÇ»Ç¢ÅH
 			xsh.pan = pan;
 			xsh.type = 0x10;	//CHN_16BIT
