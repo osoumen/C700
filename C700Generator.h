@@ -194,7 +194,7 @@ private:
 	int				mProcessbufPtr;			//リサンプリング用バッファ書き込み位置
 	EchoKernel		mEcho[2];
 	
-	std::list<MIDIEvt>	mNoteEvt;			//受け取ったイベントのキュー
+	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
 	
 	std::list<int>	mPlayVo;				//ノートオン状態のボイス
 	std::list<int>	mWaitVo;				//ノートオフ状態のボイス
@@ -215,7 +215,8 @@ private:
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
 	InstParams		*mVPset;
 	
-	int		FindFreeVoice( const MIDIEvt *evt );
+	int		FindFreeVoice();
+    int     StealOldestVoice();
 	int		StopPlayingVoice( const MIDIEvt *evt );
 	void	DoKeyOn(const MIDIEvt *evt);
 	float	VibratoWave(float phase);

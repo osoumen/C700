@@ -149,7 +149,7 @@ void C700Generator::Reset()
 	mProcessbufPtr=0;
     mPortamentCount=0;
 	
-	mNoteEvt.clear();
+	mMIDIEvt.clear();
 	
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mVoice[i].Reset();
@@ -175,7 +175,7 @@ void C700Generator::KeyOn( int ch, int note, int velo, unsigned int uniqueID, in
 	evt.velo = velo;
 	evt.uniqueID = uniqueID;
 	evt.remain_samples = inFrame;
-	mNoteEvt.push_back( evt );
+	mMIDIEvt.push_back( evt );
 }
 
 //-----------------------------------------------------------------------------
@@ -188,7 +188,7 @@ void C700Generator::KeyOff( int ch, int note, int velo, unsigned int uniqueID, i
 	evt.velo = velo;
 	evt.uniqueID = uniqueID;
 	evt.remain_samples = inFrame;
-	mNoteEvt.push_back( evt );
+	mMIDIEvt.push_back( evt );
 }
 
 
@@ -202,13 +202,13 @@ void C700Generator::ControlChange( int ch, int controlNum, int value, int inFram
 	evt.velo = value;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
-	mNoteEvt.push_back( evt );
+	mMIDIEvt.push_back( evt );
 }
 
 //-----------------------------------------------------------------------------
 void C700Generator::AllNotesOff()
 {
-	mNoteEvt.clear();
+	mMIDIEvt.clear();
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mVoice[i].Reset();
 	}
@@ -217,7 +217,7 @@ void C700Generator::AllNotesOff()
 //-----------------------------------------------------------------------------
 void C700Generator::AllSoundOff()
 {
-	mNoteEvt.clear();
+	mMIDIEvt.clear();
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mVoice[i].Reset();
 	}
@@ -252,7 +252,7 @@ void C700Generator::ProgramChange( int ch, int value, int inFrame )
 	evt.velo = 0;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
-	mNoteEvt.push_back( evt );
+	mMIDIEvt.push_back( evt );
 }
 //-----------------------------------------------------------------------------
 void C700Generator::doProgramChange( int ch, int value )
@@ -280,7 +280,7 @@ void C700Generator::PitchBend( int ch, int value1, int value2, int inFrame )
 	evt.velo = value2;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
-	mNoteEvt.push_back( evt );
+	mMIDIEvt.push_back( evt );
 }
 
 //-----------------------------------------------------------------------------
@@ -446,7 +446,7 @@ void C700Generator::SetPortamentControl( int ch, int note )
 }
 
 //-----------------------------------------------------------------------------
-int C700Generator::FindFreeVoice( const MIDIEvt *evt )
+int C700Generator::FindFreeVoice()
 {
 	int	v=-1;
 
@@ -455,12 +455,20 @@ int C700Generator::FindFreeVoice( const MIDIEvt *evt )
 		v = mWaitVo.front();
 		mWaitVo.pop_front();
 	}
-	else {
+    return v;
+}
+
+//-----------------------------------------------------------------------------
+int C700Generator::StealOldestVoice()
+{
+    int	v=-1;
+    
+	if ( mPlayVo.size() > 0 ) {
 		//空きボイスが無かった場合一番古い発音を停止させる
 		v = mPlayVo.front();
 		mPlayVo.pop_front();
+        mVoice[v].envstate = RELEASE;
 	}
-	mPlayVo.push_back(v);
 	return v;
 }
 
@@ -506,7 +514,14 @@ void C700Generator::DoKeyOn(const MIDIEvt *evt)
 	}
 	
 	//空きボイスを取得
-	int	v = FindFreeVoice( evt );
+	int	v = FindFreeVoice();
+    if (v == -1) {
+        v = StealOldestVoice();
+        if (v == -1) {
+            return;
+        }
+    }
+    mPlayVo.push_back(v);
 	
 	//MIDIチャンネルを設定
 	mVoice[v].midi_ch = evt->ch;
@@ -911,14 +926,14 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 	//メイン処理
 	for (unsigned int frame=0; frame<frames; ++frame) {
 		//イベント処理
-		if ( !mNoteEvt.empty() ) {
-			std::list<MIDIEvt>::iterator	it = mNoteEvt.begin();
-			while ( it != mNoteEvt.end() ) {
+		if ( !mMIDIEvt.empty() ) {
+			std::list<MIDIEvt>::iterator	it = mMIDIEvt.begin();
+			while ( it != mMIDIEvt.end() ) {
 				if ( it->remain_samples >= 0 ) {
 					it->remain_samples--;
 					if ( it->remain_samples < 0 ) {
                         doEvents(&(*it));
-						it = mNoteEvt.erase( it );
+						it = mMIDIEvt.erase( it );
 						continue;
 					}
 				}
