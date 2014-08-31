@@ -109,7 +109,10 @@ public:
 	int			GetDelayTime();
 	void		SetFIRTap( int tap, int value );
 	
-	void		SetSampleRate( double samplerate ) { mSampleRate = samplerate; }
+	void		SetSampleRate( double samplerate ) {
+        mSampleRate = samplerate;
+        mEventDelaySamples = (EVENT_DELAY_SAMPLES * mSampleRate) / 32000;
+    }
     
 	void		Process( unsigned int frames, float *output[2] );
 	int			GetKeyMap( int bank, int key ) const { return mKeyMap[bank][key]; }
@@ -123,6 +126,7 @@ private:
 	static const int INTERNAL_CLOCK = 32000;
     static const int CYCLES_PER_SAMPLE = 21168;
     static const int PORTAMENT_CYCLE_SAMPLES = 32;  // ポルタメント処理を行うサンプル数(32kHz換算)
+    static const int EVENT_DELAY_SAMPLES = 256;
     
     static const int VOLUME_DEFAULT = 100;
     static const int EXPRESSION_DEFAULT = 127;
@@ -195,8 +199,10 @@ private:
 	EchoKernel		mEcho[2];
 	
 	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
+	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
 	
 	std::list<int>	mPlayVo;				//ノートオン状態のボイス
+	std::list<int>	mAllocedVo;             //確保されたが未発音状態のボイス
 	std::list<int>	mWaitVo;				//ノートオフ状態のボイス
 	
 	VoiceState		mVoice[kMaximumVoices];		//ボイスの状況
@@ -211,12 +217,14 @@ private:
 	velocity_mode	mVelocityMode;
     ChannelStatus   mChStat[16];
     int             mPortamentCount;        // DSP処理が1サンプル出力される毎にカウントされ、ポルタメント処理されるとPORTAMENT_CYCLE_SAMPLES 減らす
+    int             mEventDelaySamples;     // 動作遅延サンプル
 	
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
 	InstParams		*mVPset;
 	
 	int		FindFreeVoice();
-    int     StealOldestVoice();
+    int     GetAllocedVoice();
+    int     StealVoice();
 	int		StopPlayingVoice( const MIDIEvt *evt );
 	void	DoKeyOn(const MIDIEvt *evt);
 	float	VibratoWave(float phase);
@@ -224,5 +232,5 @@ private:
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
     void calcPanVolume(int value, int *volL, int *volR);
-    bool doEvents( const MIDIEvt *evt );
+    bool doEvents( const MIDIEvt *evt, bool isDelayed );
 };
