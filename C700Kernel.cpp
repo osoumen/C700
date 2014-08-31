@@ -131,15 +131,15 @@ bool C700Kernel::SetParameter( int id, float value )
 			break;
 			
 		case kParam_vibdepth:
-			mGenerator.ModWheel(0, value, 0);
+			mGenerator.ModWheel(0, value);
 			break;
 			
 		case kParam_vibrate:
-			mGenerator.SetVibFreq(value);
+			mGenerator.SetVibFreq(-1, value);   // -1が全チャンネルを表す
 			break;
 			
 		case kParam_vibdepth2:
-			mGenerator.SetVibDepth(value);
+			mGenerator.SetVibDepth(-1, value);  // -1は全チャンネルを表す
 			break;
 			
 		case kParam_velocity:
@@ -208,7 +208,7 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_vibdepth_14:
 		case kParam_vibdepth_15:
 		case kParam_vibdepth_16:
-			mGenerator.ModWheel( id - kParam_vibdepth_2 + 1, value, 0 );
+			mGenerator.ModWheel( id - kParam_vibdepth_2 + 1, value);
 			break;
 			
 		case kParam_echovol_L:
@@ -866,8 +866,7 @@ void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 
 void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
 {
-	int pitchBend = (pitch2 << 7) | pitch1;
-	mGenerator.PitchBend(ch, pitchBend - 8192, inFrame);
+	mGenerator.PitchBend(ch, pitch1, pitch2, inFrame);
 }
 
 //-----------------------------------------------------------------------------
@@ -888,83 +887,14 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             break;
         }
             
-        case 5:
-            // ポルタメントタイム
-            mGenerator.SetPortamentTime(ch, value / 100.0f);    // 10ms単位
-            break;
-            
         case 6:
             //データ・エントリー(LSB)
             setDataEntryLSB(ch, value);
             break;
             
-        case 7:
-            // ボリューム
-            mGenerator.Volume(ch, value, inFrame);
-            break;
-            
         case 38:
             // データ・エントリー(MSB)
             setDataEntryMSB(ch, value);
-            break;
-            
-        case 10:
-            // パン
-            mGenerator.Panpot(ch, value, inFrame);
-            break;
-            
-        case 11:
-            // エクスプレッション
-            mGenerator.Expression(ch, value & 0x7f, inFrame);
-            break;
-            
-        case 64:
-            // ホールド１（ダンパー）
-            break;
-            
-        case 65:
-            // ポルタメント・オン・オフ
-            mGenerator.SetPortamentOn(ch, value==0?false:true);
-            break;
-            
-        case 72:
-            // SR
-            mGenerator.ChangeChSR(ch, value >> 2, inFrame);
-            break;
-            
-        case 73:
-            // AR
-            mGenerator.ChangeChAR(ch, value >> 3, inFrame);
-            break;
-            
-        case 74:
-            // SL
-            mGenerator.ChangeChSL(ch, value >> 4, inFrame);
-            break;
-            
-        case 75:
-            // DR
-            mGenerator.ChangeChDR(ch, value >> 4, inFrame);
-            break;
-            
-        case 76:
-            // ビブラート・レート
-            mGenerator.SetVibFreq((35.0f * value) / 127);
-            break;
-            
-        case 77:
-            // ビブラート・デプス
-            mGenerator.SetVibDepth((15.0f * value) / 127);
-            break;
-            
-        case 84:
-            // ポルタメント・コントロール
-            mGenerator.SetPortamentControl(ch, value);
-            break;
-            
-        case 91:
-            // ECEN ON/OFF
-            mGenerator.ChangeChEcho(ch, (value > 0)?127:0, inFrame);
             break;
             
         case 98:
@@ -985,6 +915,38 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
         case 101:
             // RPN (MSB)
             setRPNMSB(ch, value);
+            break;
+            
+
+        case 5:
+            // ポルタメントタイム
+        case 7:
+            // ボリューム
+        case 10:
+            // パン
+        case 11:
+            // エクスプレッション
+        case 64:
+            // ホールド１（ダンパー）
+        case 65:
+            // ポルタメント・オン・オフ
+        case 72:
+            // SR
+        case 73:
+            // AR
+        case 80:
+            // SL
+        case 75:
+            // DR
+        case 76:
+            // ビブラート・レート
+        case 77:
+            // ビブラート・デプス
+        case 84:
+            // ポルタメント・コントロール
+        case 91:
+            // ECEN ON/OFF
+            mGenerator.ControlChange( ch, controlNum, value, inFrame);
             break;
             
         default:

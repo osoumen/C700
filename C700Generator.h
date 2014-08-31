@@ -56,33 +56,41 @@ public:
 	
 	virtual void		Reset();
 
-	void		KeyOn( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame );
-	void		KeyOff( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame );
+	void		KeyOn( int ch, int note, int velo, unsigned int uniqueID, int inFrame );
+	void		KeyOff( int ch, int note, int velo, unsigned int uniqueID, int inFrame );
+	void		ProgramChange( int ch, int value, int inFrame );
+	void		PitchBend( int ch, int value1, int value2, int inFrame );
+    void        ControlChange( int ch, int controlNum, int value, int inFrame );
 	void		AllNotesOff();
 	void		AllSoundOff();
 	void		ResetAllControllers();
 	
-	void		ProgramChange( int ch, int pgnum, int inFrame );
-	void		PitchBend( int ch, int value, int inFrame );
-	void		ModWheel( int ch, int value, int inFrame );
-	void		Damper( int ch, int value, int inFrame );
-    void        Volume( int ch, int value, int inFrame );
-    void        Expression( int ch, int value, int inFrame );
-    void        Panpot( int ch, int value, int inFrame );
-    void        ChangeChRate(int ch, double rate, int inFrame);
-    void        ChangeChBasekey(int ch, int basekey, int inFrame);
-    void        ChangeChLowkey(int ch, int lowkey, int inFrame);
-    void        ChangeChHighkey(int ch, int highkey, int inFrame);
-    void        ChangeChAR(int ch, int ar, int inFrame);
-    void        ChangeChDR(int ch, int dr, int inFrame);
-    void        ChangeChSL(int ch, int sl, int inFrame);
-    void        ChangeChSR(int ch, int sr, int inFrame);
-    void        ChangeChVolL(int ch, int voll, int inFrame);
-    void        ChangeChVolR(int ch, int volr, int inFrame);
-    void        ChangeChEcho(int ch, int echo, int inFrame);
-    void        ChangeChBank(int ch, int bank, int inFrame);
-    void        ChangeChSustainMode(int ch, int sustainMode, int inFrame);
+    // channel params
+	void		doProgramChange( int ch, int value );
+	void		doPitchBend( int ch, int value1, int value2 );
+	void		ModWheel( int ch, int value );
+	void		Damper( int ch, int value );
+    void        Volume( int ch, int value );
+    void        Expression( int ch, int value );
+    void        Panpot( int ch, int value );
+    void        ChangeChRate(int ch, double rate);
+    void        ChangeChBasekey(int ch, int basekey);
+    void        ChangeChLowkey(int ch, int lowkey);
+    void        ChangeChHighkey(int ch, int highkey);
+    void        ChangeChAR(int ch, int ar);
+    void        ChangeChDR(int ch, int dr);
+    void        ChangeChSL(int ch, int sl);
+    void        ChangeChSR(int ch, int sr);
+    void        ChangeChVolL(int ch, int voll);
+    void        ChangeChVolR(int ch, int volr);
+    void        ChangeChEcho(int ch, int echo);
+    void        ChangeChBank(int ch, int bank);
+    void        ChangeChSustainMode(int ch, int sustainMode);
+    void        SetPortamentOn( int ch, bool on );
+    void        SetPortamentTime( int ch, float secs );
+    void        SetPortamentControl( int ch, int note );
 
+    // global params
 	void		SetVoiceLimit( int value );
 	void		SetPBRange( float value );
 	void		SetPBRange( int ch, float value );
@@ -90,12 +98,8 @@ public:
 	void		SetMultiMode( int bank, bool value );
 	bool		GetMultiMode( int bank ) const;
 	void		SetVelocityMode( velocity_mode value );
-	void		SetVibFreq( float value );
-	void		SetVibDepth( float value );
-    void        SetPortamentOn( int ch, bool on );
-    void        SetPortamentTime( int ch, float secs );
-    void        SetPortamentControl( int ch, int note );
-	
+	void		SetVibFreq( int ch, float value );
+	void		SetVibDepth( int ch, float value );
 	void		SetMainVol_L( int value );
 	void		SetMainVol_R( int value );
 	void		SetEchoVol_L( int value );
@@ -119,23 +123,27 @@ private:
 	static const int INTERNAL_CLOCK = 32000;
     static const int CYCLES_PER_SAMPLE = 21168;
     static const int PORTAMENT_CYCLE_SAMPLES = 32;  // ポルタメント処理を行うサンプル数(32kHz換算)
+    
     static const int VOLUME_DEFAULT = 100;
     static const int EXPRESSION_DEFAULT = 127;
     static const int DEFAULT_PBRANGE = 2;
 	
 	enum EvtType {
 		NOTE_ON = 0,
-		NOTE_OFF
+		NOTE_OFF,
+        PROGRAM_CHANGE,
+        PITCH_BEND,
+        CONTROL_CHANGE
 	};
 	
 	typedef struct {
-		unsigned char	type;
+		EvtType         type;
 		unsigned char	ch;
 		unsigned char	note;
 		unsigned char	velo;
 		unsigned int	uniqueID;
 		int				remain_samples;
-	} NoteEvt;
+	} MIDIEvt;
 	
 	struct VoiceState {
 		int				midi_ch;
@@ -186,7 +194,7 @@ private:
 	int				mProcessbufPtr;			//リサンプリング用バッファ書き込み位置
 	EchoKernel		mEcho[2];
 	
-	std::list<NoteEvt>	mNoteEvt;			//受け取ったイベントのキュー
+	std::list<MIDIEvt>	mNoteEvt;			//受け取ったイベントのキュー
 	
 	std::list<int>	mPlayVo;				//ノートオン状態のボイス
 	std::list<int>	mWaitVo;				//ノートオフ状態のボイス
@@ -207,12 +215,13 @@ private:
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
 	InstParams		*mVPset;
 	
-	int		FindFreeVoice( const NoteEvt *evt );
-	int		StopPlayingVoice( const NoteEvt *evt );
-	void	DoKeyOn(NoteEvt *evt);
+	int		FindFreeVoice( const MIDIEvt *evt );
+	int		StopPlayingVoice( const MIDIEvt *evt );
+	void	DoKeyOn(const MIDIEvt *evt);
 	float	VibratoWave(float phase);
 	int		CalcPBValue(int ch, float pitchBend, int basePitch);
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
     void calcPanVolume(int value, int *volL, int *volR);
+    bool doEvents( const MIDIEvt *evt );
 };
