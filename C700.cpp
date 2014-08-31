@@ -99,6 +99,7 @@ void C700::ParameterSetFunc(int paramID, float value, void* userData)
 	auEvent.mArgument.mParameter.mParameterID = paramID;
 	auEvent.mArgument.mParameter.mElement = 0;
 	AUEventListenerNotify(NULL, NULL, &auEvent);
+    This->mParameterHasChanged[paramID] = true;
 }
 
 //-----------------------------------------------------------------------------

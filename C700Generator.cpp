@@ -13,14 +13,8 @@
 #include "gauss.h"
 
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
-#define filter2(a1,a2)	(a1 \
-						 + ( ( -( a1 + ( a1 >> 1 ) ) ) >> 5 ) \
-						 - ( a2 >> 1 ) + ( a2 >> 5 ))
-#define filter3(a1,a2)	(a1 \
-						 + ( ( -( a1 + ( a1 << 2 ) \
-								  + ( a1 << 3 ) ) ) >> 7 ) \
-						 - ( a2 >> 1 ) \
-						 + ( ( a2 + ( a2 >> 1 ) ) >> 4 ))
+#define filter2(a1,a2)	(a1 + ( ( -( a1 + ( a1 >> 1 ) ) ) >> 5 ) - ( a2 >> 1 ) + ( a2 >> 5 ))
+#define filter3(a1,a2)	(a1  + ( ( -( a1 + ( a1 << 2 ) + ( a1 << 3 ) ) ) >> 7 )  - ( a2 >> 1 )  + ( ( a2 + ( a2 >> 1 ) ) >> 4 ))
 
 const float onepi = 3.14159265358979;
 
@@ -172,29 +166,43 @@ void C700Generator::Reset()
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::KeyOn( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame )
+void C700Generator::KeyOn( int ch, int note, int velo, unsigned int uniqueID, int inFrame )
 {
-	NoteEvt			mNoteOnEvt;
-	mNoteOnEvt.type = NOTE_ON;
-	mNoteOnEvt.note = note;
-	mNoteOnEvt.velo = velo;
-	mNoteOnEvt.ch = ch;
-	mNoteOnEvt.uniqueID = uniqueID;
-	mNoteOnEvt.remain_samples = inFrame;
-	mNoteEvt.push_back( mNoteOnEvt );
+	MIDIEvt			evt;
+	evt.type = NOTE_ON;
+	evt.ch = ch;
+	evt.note = note;
+	evt.velo = velo;
+	evt.uniqueID = uniqueID;
+	evt.remain_samples = inFrame;
+	mNoteEvt.push_back( evt );
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::KeyOff( unsigned char ch, unsigned char note, unsigned char velo, unsigned int uniqueID, int inFrame )
+void C700Generator::KeyOff( int ch, int note, int velo, unsigned int uniqueID, int inFrame )
 {
-	NoteEvt			mNoteOffEvt;
-	mNoteOffEvt.type = NOTE_OFF;
-	mNoteOffEvt.note = note;
-	mNoteOffEvt.velo = velo;
-	mNoteOffEvt.ch = ch;
-	mNoteOffEvt.uniqueID = uniqueID;
-	mNoteOffEvt.remain_samples = inFrame;
-	mNoteEvt.push_back( mNoteOffEvt );
+	MIDIEvt			evt;
+	evt.type = NOTE_OFF;
+	evt.ch = ch;
+	evt.note = note;
+	evt.velo = velo;
+	evt.uniqueID = uniqueID;
+	evt.remain_samples = inFrame;
+	mNoteEvt.push_back( evt );
+}
+
+
+//-----------------------------------------------------------------------------
+void C700Generator::ControlChange( int ch, int controlNum, int value, int inFrame )
+{
+    MIDIEvt			evt;
+	evt.type = CONTROL_CHANGE;
+	evt.ch = ch;
+	evt.note = controlNum;
+	evt.velo = value;
+	evt.uniqueID = 0;
+	evt.remain_samples = inFrame;
+	mNoteEvt.push_back( evt );
 }
 
 //-----------------------------------------------------------------------------
@@ -235,9 +243,21 @@ void C700Generator::ResetAllControllers()
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ProgramChange( int ch, int pgnum, int inFrame )
+void C700Generator::ProgramChange( int ch, int value, int inFrame )
 {
-	mChStat[ch].prog = pgnum;
+    MIDIEvt			evt;
+	evt.type = PROGRAM_CHANGE;
+	evt.ch = ch;
+	evt.note = value;
+	evt.velo = 0;
+	evt.uniqueID = 0;
+	evt.remain_samples = inFrame;
+	mNoteEvt.push_back( evt );
+}
+//-----------------------------------------------------------------------------
+void C700Generator::doProgramChange( int ch, int value )
+{
+	mChStat[ch].prog = value;
     if (mVPset) {
         mChStat[ch].changeFlg = 0;
         mChStat[ch].changedVP = mVPset[mChStat[ch].prog];
@@ -251,9 +271,23 @@ int C700Generator::CalcPBValue( int ch, float pitchBend, int basePitch )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::PitchBend( int ch, int value, int inFrame )
+void C700Generator::PitchBend( int ch, int value1, int value2, int inFrame )
 {
-	float pb_value = value / 8192.0;
+    MIDIEvt			evt;
+	evt.type = PITCH_BEND;
+	evt.ch = ch;
+	evt.note = value1;
+	evt.velo = value2;
+	evt.uniqueID = 0;
+	evt.remain_samples = inFrame;
+	mNoteEvt.push_back( evt );
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::doPitchBend( int ch, int value1, int value2 )
+{
+    int pitchBend = ((value2 << 7) | value1) - 8192;
+	float pb_value = pitchBend / 8192.0;
 	
     mChStat[ch].pitchBend = pb_value;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
@@ -264,7 +298,7 @@ void C700Generator::PitchBend( int ch, int value, int inFrame )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ModWheel( int ch, int value, int inFrame )
+void C700Generator::ModWheel( int ch, int value )
 {
     mChStat[ch].vibDepth = value;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
@@ -276,7 +310,7 @@ void C700Generator::ModWheel( int ch, int value, int inFrame )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::Damper( int ch, int value, int inFrame )
+void C700Generator::Damper( int ch, int value )
 {
 }
 
@@ -336,13 +370,13 @@ void C700Generator::SetVelocityMode( velocity_mode value )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::SetVibFreq( float value )
+void C700Generator::SetVibFreq( int ch, float value )
 {
 	mVibfreq = value*((onepi*2)/INTERNAL_CLOCK);
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::SetVibDepth( float value )
+void C700Generator::SetVibDepth( int ch, float value )
 {
 	mVibdepth = value / 2;
 }
@@ -412,7 +446,7 @@ void C700Generator::SetPortamentControl( int ch, int note )
 }
 
 //-----------------------------------------------------------------------------
-int C700Generator::FindFreeVoice( const NoteEvt *evt )
+int C700Generator::FindFreeVoice( const MIDIEvt *evt )
 {
 	int	v=-1;
 
@@ -431,7 +465,7 @@ int C700Generator::FindFreeVoice( const NoteEvt *evt )
 }
 
 //-----------------------------------------------------------------------------
-int C700Generator::StopPlayingVoice( const NoteEvt *evt )
+int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
 {
 	int	stops=0;
 
@@ -462,7 +496,7 @@ int C700Generator::StopPlayingVoice( const NoteEvt *evt )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::DoKeyOn(NoteEvt *evt)
+void C700Generator::DoKeyOn(const MIDIEvt *evt)
 {
 	InstParams		vp = getChannelVP(evt->ch, evt->note);
 	
@@ -562,7 +596,7 @@ InstParams C700Generator::getChannelVP(int ch, int note)
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::Volume( int ch, int value, int inFrame )
+void C700Generator::Volume( int ch, int value )
 {
     mChStat[ch].volume = value;
     // 発音中のボイスに反映
@@ -574,7 +608,7 @@ void C700Generator::Volume( int ch, int value, int inFrame )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::Expression( int ch, int value, int inFrame )
+void C700Generator::Expression( int ch, int value )
 {
     mChStat[ch].expression = value;
     // 発音中のボイスに反映
@@ -586,7 +620,7 @@ void C700Generator::Expression( int ch, int value, int inFrame )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::Panpot( int ch, int value, int inFrame )
+void C700Generator::Panpot( int ch, int value )
 {
     mChStat[ch].pan = value;
     // 発音中のボイスに反映
@@ -598,35 +632,35 @@ void C700Generator::Panpot( int ch, int value, int inFrame )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChRate(int ch, double rate, int inFrame)
+void C700Generator::ChangeChRate(int ch, double rate)
 {
     mChStat[ch].changedVP.rate = rate;
     mChStat[ch].changeFlg |= HAS_RATE;
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChBasekey(int ch, int basekey, int inFrame)
+void C700Generator::ChangeChBasekey(int ch, int basekey)
 {
     mChStat[ch].changedVP.basekey = basekey;
     mChStat[ch].changeFlg |= HAS_BASEKEY;
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChLowkey(int ch, int lowkey, int inFrame)
+void C700Generator::ChangeChLowkey(int ch, int lowkey)
 {
     mChStat[ch].changedVP.lowkey = lowkey;
     mChStat[ch].changeFlg |= HAS_LOWKEY;
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChHighkey(int ch, int highkey, int inFrame)
+void C700Generator::ChangeChHighkey(int ch, int highkey)
 {
     mChStat[ch].changedVP.highkey = highkey;
     mChStat[ch].changeFlg |= HAS_HIGHKEY;
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChAR(int ch, int ar, int inFrame)
+void C700Generator::ChangeChAR(int ch, int ar)
 {
     mChStat[ch].changedVP.ar = ar & 0x0f;
     mChStat[ch].changeFlg |= HAS_AR;
@@ -639,7 +673,7 @@ void C700Generator::ChangeChAR(int ch, int ar, int inFrame)
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChDR(int ch, int dr, int inFrame)
+void C700Generator::ChangeChDR(int ch, int dr)
 {
     mChStat[ch].changedVP.dr = dr & 0x07;
     mChStat[ch].changeFlg |= HAS_DR;
@@ -652,7 +686,7 @@ void C700Generator::ChangeChDR(int ch, int dr, int inFrame)
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChSL(int ch, int sl, int inFrame)
+void C700Generator::ChangeChSL(int ch, int sl)
 {
     mChStat[ch].changedVP.sl = sl & 0x07;
     mChStat[ch].changeFlg |= HAS_SL;
@@ -665,7 +699,7 @@ void C700Generator::ChangeChSL(int ch, int sl, int inFrame)
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChSR(int ch, int sr, int inFrame)
+void C700Generator::ChangeChSR(int ch, int sr)
 {
     mChStat[ch].changedVP.sr = sr & 0x1f;
     mChStat[ch].changeFlg |= HAS_SR;
@@ -678,7 +712,7 @@ void C700Generator::ChangeChSR(int ch, int sr, int inFrame)
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChVolL(int ch, int voll, int inFrame)
+void C700Generator::ChangeChVolL(int ch, int voll)
 {
     mChStat[ch].changedVP.volL = voll;
     mChStat[ch].changeFlg |= HAS_VOLL;
@@ -691,7 +725,7 @@ void C700Generator::ChangeChVolL(int ch, int voll, int inFrame)
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChVolR(int ch, int volr, int inFrame)
+void C700Generator::ChangeChVolR(int ch, int volr)
 {
     mChStat[ch].changedVP.volR = volr;
     mChStat[ch].changeFlg |= HAS_VOLR;
@@ -704,7 +738,7 @@ void C700Generator::ChangeChVolR(int ch, int volr, int inFrame)
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChEcho(int ch, int echo, int inFrame)
+void C700Generator::ChangeChEcho(int ch, int echo)
 {
     mChStat[ch].changedVP.echo = echo ? true:false;
     mChStat[ch].changeFlg |= HAS_ECHO;
@@ -717,14 +751,14 @@ void C700Generator::ChangeChEcho(int ch, int echo, int inFrame)
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChBank(int ch, int bank, int inFrame)
+void C700Generator::ChangeChBank(int ch, int bank)
 {
     mChStat[ch].changedVP.bank = bank & 0x03;
     mChStat[ch].changeFlg |= HAS_BANK;
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::ChangeChSustainMode(int ch, int sustainMode, int inFrame)
+void C700Generator::ChangeChSustainMode(int ch, int sustainMode)
 {
     mChStat[ch].changedVP.sustainMode = sustainMode ? true:false;
     mChStat[ch].changeFlg |= HAS_SUSTAINMODE;
@@ -756,6 +790,112 @@ void C700Generator::processPortament(int vo)
 }
 
 //-----------------------------------------------------------------------------
+bool C700Generator::doEvents( const MIDIEvt *evt )
+{
+    bool    handled = true;
+    
+    switch (evt->type) {
+        case NOTE_ON:
+            DoKeyOn( evt );
+            break;
+            
+        case NOTE_OFF:
+            StopPlayingVoice( evt );
+            break;
+            
+        case PROGRAM_CHANGE:
+            doProgramChange(evt->ch, evt->note);
+            break;
+            
+        case PITCH_BEND:
+            doPitchBend(evt->ch, evt->note, evt->velo);
+            break;
+            
+        case CONTROL_CHANGE:
+            switch (evt->note) {
+                case 5:
+                    // ポルタメントタイム
+                    SetPortamentTime(evt->ch, evt->velo / 100.0f);    // 10ms単位
+                    break;
+                    
+                case 7:
+                    // ボリューム
+                    Volume(evt->ch, evt->velo);
+                    break;
+                    
+                case 10:
+                    // パン
+                    Panpot(evt->ch, evt->velo);
+                    break;
+                    
+                case 11:
+                    // エクスプレッション
+                    Expression(evt->ch, evt->velo & 0x7f);
+                    break;
+                    
+                case 64:
+                    // ホールド１（ダンパー）
+                    break;
+                    
+                case 65:
+                    // ポルタメント・オン・オフ
+                    SetPortamentOn(evt->ch, evt->velo==0?false:true);
+                    break;
+                    
+                case 72:
+                    // SR
+                    ChangeChSR(evt->ch, evt->velo >> 2);
+                    break;
+                    
+                case 73:
+                    // AR
+                    ChangeChAR(evt->ch, evt->velo >> 3);
+                    break;
+                    
+                case 80:
+                    // SL
+                    ChangeChSL(evt->ch, evt->velo >> 4);
+                    break;
+                    
+                case 75:
+                    // DR
+                    ChangeChDR(evt->ch, evt->velo >> 4);
+                    break;
+                    
+                case 76:
+                    // ビブラート・レート
+                    SetVibFreq(evt->ch, (35.0f * evt->velo) / 127);
+                    break;
+                    
+                case 77:
+                    // ビブラート・デプス
+                    SetVibDepth(evt->ch, (15.0f * evt->velo) / 127);
+                    break;
+                    
+                case 84:
+                    // ポルタメント・コントロール
+                    SetPortamentControl(evt->ch, evt->velo);
+                    break;
+                    
+                case 91:
+                    // ECEN ON/OFF
+                    ChangeChEcho(evt->ch, (evt->velo > 0)?127:0);
+                    break;
+                    
+                default:
+                    handled = false;
+                    break;
+            }
+            break;
+            
+        default:
+            handled = false;
+            break;
+    }
+    return handled;
+}
+
+//-----------------------------------------------------------------------------
 void C700Generator::Process( unsigned int frames, float *output[2] )
 {
 	int		outx;
@@ -767,17 +907,12 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 	for (unsigned int frame=0; frame<frames; ++frame) {
 		//イベント処理
 		if ( !mNoteEvt.empty() ) {
-			std::list<NoteEvt>::iterator	it = mNoteEvt.begin();
+			std::list<MIDIEvt>::iterator	it = mNoteEvt.begin();
 			while ( it != mNoteEvt.end() ) {
 				if ( it->remain_samples >= 0 ) {
 					it->remain_samples--;
 					if ( it->remain_samples < 0 ) {
-						if ( it->type == NOTE_ON ) {
-							DoKeyOn( &(*it) );
-						}
-						else if ( it->type == NOTE_OFF ) {
-							StopPlayingVoice( &(*it) );
-						}
+                        doEvents(&(*it));
 						it = mNoteEvt.erase( it );
 						continue;
 					}
