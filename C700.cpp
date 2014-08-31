@@ -1149,10 +1149,11 @@ OSStatus C700::HandleControlChange(	UInt8 	inChannel,
 //	C700::HandleProgramChange
 //-----------------------------------------------------------------------------
 OSStatus C700::HandleProgramChange(	UInt8	inChannel,
-										UInt8	inValue)
+                                    UInt8	inValue,
+                                    UInt32  inStartFrame)
 {
 	mEfx->HandleProgramChange(inChannel, inValue, 0);
-	return AUInstrumentBase::HandleProgramChange(inChannel, inValue);
+	return AUInstrumentBase::HandleProgramChange(inChannel, inValue, inStartFrame);
 }
 
 //-----------------------------------------------------------------------------

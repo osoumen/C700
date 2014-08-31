@@ -540,7 +540,8 @@ OSStatus	AUInstrumentBase::HandleChannelPressure(UInt8 	inChannel,
 
 
 OSStatus	AUInstrumentBase::HandleProgramChange(	UInt8 	inChannel,
-													UInt8 	inValue)
+													UInt8 	inValue,
+                                                    UInt32	inStartFrame)
 {
 	GetControls(inChannel)->mMonoPressure = inValue;
 	return noErr;

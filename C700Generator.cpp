@@ -813,6 +813,11 @@ bool C700Generator::doEvents( const MIDIEvt *evt )
             
         case CONTROL_CHANGE:
             switch (evt->note) {
+                case 1:
+                    // モジュレーションホイール
+                    ModWheel(evt->ch, evt->velo);
+                    break;
+                    
                 case 5:
                     // ポルタメントタイム
                     SetPortamentTime(evt->ch, evt->velo / 100.0f);    // 10ms単位
