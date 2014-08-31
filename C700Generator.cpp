@@ -85,6 +85,7 @@ C700Generator::C700Generator()
 	mMainVolume_R = 127;
 	mVibfreq = 0.00137445;
 	mVibdepth = 0.5;
+    mEventDelaySamples = (EVENT_DELAY_SAMPLES * mSampleRate) / 32000;
 	
 	for (int i=0; i<16; i++) {
         mChStat[i].changeFlg = 0;
@@ -150,12 +151,14 @@ void C700Generator::Reset()
     mPortamentCount=0;
 	
 	mMIDIEvt.clear();
+    mDelayedEvt.clear();
 	
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mVoice[i].Reset();
 	}
 	
 	mPlayVo.clear();
+    mAllocedVo.clear();
 	mWaitVo.clear();
 	for(int i=0;i<mVoiceLimit;i++){
 		mWaitVo.push_back(i);
@@ -209,6 +212,7 @@ void C700Generator::ControlChange( int ch, int controlNum, int value, int inFram
 void C700Generator::AllNotesOff()
 {
 	mMIDIEvt.clear();
+    mDelayedEvt.clear();
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mVoice[i].Reset();
 	}
@@ -218,6 +222,7 @@ void C700Generator::AllNotesOff()
 void C700Generator::AllSoundOff()
 {
 	mMIDIEvt.clear();
+    mDelayedEvt.clear();
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mVoice[i].Reset();
 	}
@@ -451,7 +456,7 @@ int C700Generator::FindFreeVoice()
 	int	v=-1;
 
 	//空きボイスを探す
-	if ( mWaitVo.size() > 0 ) {
+    if ( mWaitVo.size() > 0 ) {
 		v = mWaitVo.front();
 		mWaitVo.pop_front();
 	}
@@ -459,7 +464,20 @@ int C700Generator::FindFreeVoice()
 }
 
 //-----------------------------------------------------------------------------
-int C700Generator::StealOldestVoice()
+int C700Generator::GetAllocedVoice()
+{
+	int	v=-1;
+    
+	//再生準備中ボイスを一番古いものから一つ取得
+    if ( mAllocedVo.size() > 0 ) {
+		v = mAllocedVo.front();
+		mAllocedVo.pop_front();
+	}
+    return v;
+}
+
+//-----------------------------------------------------------------------------
+int C700Generator::StealVoice()
 {
     int	v=-1;
     
@@ -467,8 +485,12 @@ int C700Generator::StealOldestVoice()
 		//空きボイスが無かった場合一番古い発音を停止させる
 		v = mPlayVo.front();
 		mPlayVo.pop_front();
-        mVoice[v].envstate = RELEASE;
 	}
+    else if ( mAllocedVo.size() > 0 ) {
+        //再生中ボイスが無く、残りも全て再生準備中の場合
+        v = mAllocedVo.front();
+        mAllocedVo.pop_front();
+    }
 	return v;
 }
 
@@ -514,13 +536,19 @@ void C700Generator::DoKeyOn(const MIDIEvt *evt)
 	}
 	
 	//空きボイスを取得
-	int	v = FindFreeVoice();
+	int	v = GetAllocedVoice();
+#if 0
     if (v == -1) {
-        v = StealOldestVoice();
+        v = StealVoice();
         if (v == -1) {
             return;
         }
     }
+#else
+    if (v == -1) {
+        return;
+    }
+#endif
     mPlayVo.push_back(v);
 	
 	//MIDIチャンネルを設定
@@ -805,112 +833,135 @@ void C700Generator::processPortament(int vo)
 }
 
 //-----------------------------------------------------------------------------
-bool C700Generator::doEvents( const MIDIEvt *evt )
+bool C700Generator::doEvents( const MIDIEvt *evt, bool isDelayed )
 {
     bool    handled = true;
     
-    switch (evt->type) {
-        case NOTE_ON:
-            DoKeyOn( evt );
-            break;
-            
-        case NOTE_OFF:
+    if (!isDelayed) {
+        if (evt->type == NOTE_OFF) {
             StopPlayingVoice( evt );
-            break;
-            
-        case PROGRAM_CHANGE:
-            doProgramChange(evt->ch, evt->note);
-            break;
-            
-        case PITCH_BEND:
-            doPitchBend(evt->ch, evt->note, evt->velo);
-            break;
-            
-        case CONTROL_CHANGE:
-            switch (evt->note) {
-                case 1:
-                    // モジュレーションホイール
-                    ModWheel(evt->ch, evt->velo);
-                    break;
-                    
-                case 5:
-                    // ポルタメントタイム
-                    SetPortamentTime(evt->ch, evt->velo / 100.0f);    // 10ms単位
-                    break;
-                    
-                case 7:
-                    // ボリューム
-                    Volume(evt->ch, evt->velo);
-                    break;
-                    
-                case 10:
-                    // パン
-                    Panpot(evt->ch, evt->velo);
-                    break;
-                    
-                case 11:
-                    // エクスプレッション
-                    Expression(evt->ch, evt->velo & 0x7f);
-                    break;
-                    
-                case 64:
-                    // ホールド１（ダンパー）
-                    break;
-                    
-                case 65:
-                    // ポルタメント・オン・オフ
-                    SetPortamentOn(evt->ch, evt->velo==0?false:true);
-                    break;
-                    
-                case 72:
-                    // SR
-                    ChangeChSR(evt->ch, evt->velo >> 2);
-                    break;
-                    
-                case 73:
-                    // AR
-                    ChangeChAR(evt->ch, evt->velo >> 3);
-                    break;
-                    
-                case 80:
-                    // SL
-                    ChangeChSL(evt->ch, evt->velo >> 4);
-                    break;
-                    
-                case 75:
-                    // DR
-                    ChangeChDR(evt->ch, evt->velo >> 4);
-                    break;
-                    
-                case 76:
-                    // ビブラート・レート
-                    SetVibFreq(evt->ch, (35.0f * evt->velo) / 127);
-                    break;
-                    
-                case 77:
-                    // ビブラート・デプス
-                    SetVibDepth(evt->ch, (15.0f * evt->velo) / 127);
-                    break;
-                    
-                case 84:
-                    // ポルタメント・コントロール
-                    SetPortamentControl(evt->ch, evt->velo);
-                    break;
-                    
-                case 91:
-                    // ECEN ON/OFF
-                    ChangeChEcho(evt->ch, (evt->velo > 0)?127:0);
-                    break;
-                    
-                default:
-                    handled = false;
-                    break;
+        }
+        else {
+            MIDIEvt dEvt = *evt;
+            dEvt.remain_samples = mEventDelaySamples;
+            mDelayedEvt.push_back(dEvt);
+            if (evt->type == NOTE_ON) {
+                //ボイスを確保して再生準備状態にする
+                int	v = FindFreeVoice();
+                if (v == -1) {
+                    v = StealVoice();
+                }
+                if (v != -1) {
+                    mVoice[v].envstate = RELEASE;
+                    mAllocedVo.push_back(v);
+                }
             }
-            break;
-            
-        default:
-            handled = false;
-            break;
+        }
+    }
+    else {
+        switch (evt->type) {
+            case NOTE_ON:
+                DoKeyOn( evt );
+                break;
+                
+            case NOTE_OFF:
+                //StopPlayingVoice( evt );
+                break;
+                
+            case PROGRAM_CHANGE:
+                doProgramChange(evt->ch, evt->note);
+                break;
+                
+            case PITCH_BEND:
+                doPitchBend(evt->ch, evt->note, evt->velo);
+                break;
+                
+            case CONTROL_CHANGE:
+                switch (evt->note) {
+                    case 1:
+                        // モジュレーションホイール
+                        ModWheel(evt->ch, evt->velo);
+                        break;
+                        
+                    case 5:
+                        // ポルタメントタイム
+                        SetPortamentTime(evt->ch, evt->velo / 100.0f);    // 10ms単位
+                        break;
+                        
+                    case 7:
+                        // ボリューム
+                        Volume(evt->ch, evt->velo);
+                        break;
+                        
+                    case 10:
+                        // パン
+                        Panpot(evt->ch, evt->velo);
+                        break;
+                        
+                    case 11:
+                        // エクスプレッション
+                        Expression(evt->ch, evt->velo & 0x7f);
+                        break;
+                        
+                    case 64:
+                        // ホールド１（ダンパー）
+                        break;
+                        
+                    case 65:
+                        // ポルタメント・オン・オフ
+                        SetPortamentOn(evt->ch, evt->velo==0?false:true);
+                        break;
+                        
+                    case 72:
+                        // SR
+                        ChangeChSR(evt->ch, evt->velo >> 2);
+                        break;
+                        
+                    case 73:
+                        // AR
+                        ChangeChAR(evt->ch, evt->velo >> 3);
+                        break;
+                        
+                    case 80:
+                        // SL
+                        ChangeChSL(evt->ch, evt->velo >> 4);
+                        break;
+                        
+                    case 75:
+                        // DR
+                        ChangeChDR(evt->ch, evt->velo >> 4);
+                        break;
+                        
+                    case 76:
+                        // ビブラート・レート
+                        SetVibFreq(evt->ch, (35.0f * evt->velo) / 127);
+                        break;
+                        
+                    case 77:
+                        // ビブラート・デプス
+                        SetVibDepth(evt->ch, (15.0f * evt->velo) / 127);
+                        break;
+                        
+                    case 84:
+                        // ポルタメント・コントロール
+                        SetPortamentControl(evt->ch, evt->velo);
+                        break;
+                        
+                    case 91:
+                        // ECEN ON/OFF
+                        ChangeChEcho(evt->ch, (evt->velo > 0)?127:0);
+                        break;
+                        
+                    default:
+                        handled = false;
+                        break;
+                }
+                break;
+                
+            default:
+                handled = false;
+                break;
+        }
     }
     return handled;
 }
@@ -932,8 +983,22 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				if ( it->remain_samples >= 0 ) {
 					it->remain_samples--;
 					if ( it->remain_samples < 0 ) {
-                        doEvents(&(*it));
+                        doEvents(&(*it), false);
 						it = mMIDIEvt.erase( it );
+						continue;
+					}
+				}
+				it++;
+			}
+		}
+        if ( !mDelayedEvt.empty() ) {
+			std::list<MIDIEvt>::iterator	it = mDelayedEvt.begin();
+			while ( it != mDelayedEvt.end() ) {
+				if ( it->remain_samples >= 0 ) {
+					it->remain_samples--;
+					if ( it->remain_samples < 0 ) {
+                        doEvents(&(*it), true);
+						it = mDelayedEvt.erase( it );
 						continue;
 					}
 				}
