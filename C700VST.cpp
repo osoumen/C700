@@ -211,6 +211,9 @@ void C700VST::setParameter(VstInt32 index, float value)
 		case kParam_echodelay:
 			PropertyNotifyFunc(kAudioUnitCustomProperty_TotalRAM, this);
 			break;
+        case kParam_alwaysDelayNote:
+            setInitialDelay(mEfx->GetProcessDelayTime() * sampleRate);
+            break;
 	}
 	if (editor) {
 		((AEffGUIEditor*)editor)->setParameter(index, realValue);
