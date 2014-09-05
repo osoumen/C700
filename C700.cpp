@@ -150,6 +150,10 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
         if (mParameterHasChanged[i]) {
             mEfx->SetParameter(i, Globals()->GetParameter(i));
             mParameterHasChanged[i] = false;
+            if (i == kParam_alwaysDelayNote) {
+                // 遅延時間の変更をホストに通知
+                PropertyChanged(kAudioUnitProperty_Latency, kAudioUnitScope_Global, 0);
+            }
         }
 	}
 	
