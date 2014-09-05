@@ -499,29 +499,49 @@ int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
 {
 	int	stops=0;
 
-	std::list<int>::iterator	it = mPlayVo.begin();
-	while (it != mPlayVo.end()) {
-		int	vo = *it;
-		
-		if ( mVoice[vo].uniqueID == evt->uniqueID ) {
-			InstParams		vp = getChannelVP(evt->ch, evt->note);
-            if (vp.sustainMode) {
-                //キーオフさせずにsrを変更する
-                mVoice[vo].dr = 7;
-                mVoice[vo].sr = vp.sr;
+    {
+        // まだ再生されていないならキャンセルする
+        std::list<MIDIEvt>::iterator	it = mDelayedEvt.begin();
+        while ( it != mDelayedEvt.end() ) {
+            if (it->uniqueID == evt->uniqueID) {
+                it = mDelayedEvt.erase( it );
+                int vo = GetAllocedVoice();
+                if ( vo < mVoiceLimit ) {
+                    mWaitVo.push_back(vo);
+                }
+                stops++;
+                continue;
             }
-            else {
-                mVoice[vo].envstate = RELEASE;
+            it++;
+        }
+    }
+    
+    {
+        // 再生中なら停止する
+        std::list<int>::iterator	it = mPlayVo.begin();
+        while (it != mPlayVo.end()) {
+            int	vo = *it;
+            
+            if ( mVoice[vo].uniqueID == evt->uniqueID ) {
+                InstParams		vp = getChannelVP(evt->ch, evt->note);
+                if (vp.sustainMode) {
+                    //キーオフさせずにsrを変更する
+                    mVoice[vo].dr = 7;
+                    mVoice[vo].sr = vp.sr;
+                }
+                else {
+                    mVoice[vo].envstate = RELEASE;
+                }
+                if ( vo < mVoiceLimit ) {
+                    mWaitVo.push_back(vo);
+                }
+                it = mPlayVo.erase(it);
+                stops++;
+                continue;
             }
-			if ( vo < mVoiceLimit ) {
-				mWaitVo.push_back(vo);
-			}
-			it = mPlayVo.erase(it);
-			stops++;
-			continue;
-		}
-		it++;
-	}
+            it++;
+        }
+    }
 	return stops;
 }
 
