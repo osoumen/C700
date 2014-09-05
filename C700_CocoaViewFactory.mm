@@ -275,15 +275,16 @@ AudioUnitParameterValue		inParameterValue
 		CAAUParameter tParam(mAU, i, kAudioUnitScope_Global, 0);
 		editor->SetParameterInfo( i, tParam.ParamInfo().minValue, tParam.ParamInfo().maxValue, tParam.ParamInfo().defaultValue );
 		
-		AudioUnitParameter parameter = { mAU, i, kAudioUnitScope_Global, 0 };
-        // only has global parameters
-        NSAssert (	AudioUnitGetParameter(mAU, parameter.mParameterID, kAudioUnitScope_Global, 0, &value) == noErr,
-				  @"[CocoaView synchronizeUIWithParameterValues] (x.1)");
-        NSAssert (	AUParameterSet (mEventListener, self, &parameter, value, 0) == noErr,
-				  @"[CocoaView synchronizeUIWithParameterValues] (x.2)");
-        NSAssert (	AUParameterListenerNotify (mEventListener, self, &parameter) == noErr,
-				  @"[CocoaView synchronizeUIWithParameterValues] (x.3)");
-		
+        if ((i != kParam_program) && ((i < kParam_program_2) && (i > kParam_program_16))) {
+            AudioUnitParameter parameter = { mAU, i, kAudioUnitScope_Global, 0 };
+            // only has global parameters
+            NSAssert (	AudioUnitGetParameter(mAU, parameter.mParameterID, kAudioUnitScope_Global, 0, &value) == noErr,
+                      @"[CocoaView synchronizeUIWithParameterValues] (x.1)");
+            NSAssert (	AUParameterSet (mEventListener, self, &parameter, value, 0) == noErr,
+                      @"[CocoaView synchronizeUIWithParameterValues] (x.2)");
+            NSAssert (	AUParameterListenerNotify (mEventListener, self, &parameter) == noErr,
+                      @"[CocoaView synchronizeUIWithParameterValues] (x.3)");
+		}
     }
 }
 

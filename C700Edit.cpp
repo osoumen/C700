@@ -104,7 +104,9 @@ bool C700Edit::open(void *ptr)
 	for (int i=0; i<kNumberOfParameters; i++) {
 		SetParameterInfo(i, C700Parameters::GetParameterMin(i),
 						 C700Parameters::GetParameterMax(i), C700Parameters::GetParameterDefault(i));
-		efx->ParameterSetFunc( i, efxAcc->GetParameter(i), effect );
+        if ((i != kParam_program) && ((i < kParam_program_2) || (i > kParam_program_16))) {
+            efx->ParameterSetFunc( i, efxAcc->GetParameter(i), effect );
+        }
 	}
 	//現在プロパティの反映
 	for (int i=kAudioUnitCustomProperty_Begin; i<kAudioUnitCustomProperty_End; i++) {
