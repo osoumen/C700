@@ -241,5 +241,5 @@ private:
     void processPortament(int vo);
     void calcPanVolume(int value, int *volL, int *volR);
     bool doEvents( const MIDIEvt *evt, bool isDelayed );
-    int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / 32000; }
+    int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }
 };

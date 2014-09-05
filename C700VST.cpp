@@ -439,6 +439,7 @@ void C700VST::setSampleRate(float sampleRate)
 {
 	AudioEffectX::setSampleRate(sampleRate);
 	mEfx->SetSampleRate(sampleRate);
+    setInitialDelay(mEfx->GetProcessDelayTime() * sampleRate);
 }
 
 //-----------------------------------------------------------------------------------------
@@ -451,6 +452,7 @@ void C700VST::setBlockSize(VstInt32 blockSize)
 //-----------------------------------------------------------------------------------------
 void C700VST::processReplacing(float **inputs, float **outputs, int sampleFrames)
 {
+    setInitialDelay(mEfx->GetProcessDelayTime() * sampleRate);
 	memset(outputs[0], 0, sampleFrames*sizeof(float));
 	memset(outputs[1], 0, sampleFrames*sizeof(float));
 	mEfx->Render(sampleFrames, outputs);

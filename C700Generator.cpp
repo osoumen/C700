@@ -1365,5 +1365,5 @@ void C700Generator::SetVPSet( InstParams *vp )
 //-----------------------------------------------------------------------------
 double C700Generator::GetProcessDelayTime()
 {
-    return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) + 8) / mSampleRate;    // 8ms + resample
+    return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) + 8) / static_cast<double>(INTERNAL_CLOCK);    // 8ms + resample
 }
