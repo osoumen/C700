@@ -85,7 +85,8 @@ C700Generator::C700Generator()
 	mMainVolume_R = 127;
 	mVibfreq = 0.00137445;
 	mVibdepth = 0.5;
-    mEventDelaySamples = (EVENT_DELAY_SAMPLES * mSampleRate) / 32000;
+    mEventDelayClocks = 8192;   // 8ms
+    mEventDelaySamples = calcEventDelaySamples();
 	
 	for (int i=0; i<16; i++) {
         mChStat[i].changeFlg = 0;
@@ -1359,4 +1360,10 @@ void C700Generator::SetVPSet( InstParams *vp )
         mChStat[i].changeFlg = 0;
         mChStat[i].changedVP = vp[0];
     }
+}
+
+//-----------------------------------------------------------------------------
+double C700Generator::GetProcessDelayTime()
+{
+    return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) + 8) / mSampleRate;    // 8ms + resample
 }

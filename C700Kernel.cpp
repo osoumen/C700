@@ -250,6 +250,10 @@ bool C700Kernel::SetParameter( int id, float value )
 			mGenerator.SetMultiMode(3, value==0 ? false:true);
 			break;
 			
+        case kParam_alwaysDelayNote:
+            mGenerator.SetEventDelayClocks(value==0 ? 0:8192);
+            break;
+            
 		default:
 			return false;
 	}
