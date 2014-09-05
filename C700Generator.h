@@ -111,7 +111,7 @@ public:
 	
 	void		SetSampleRate( double samplerate ) {
         mSampleRate = samplerate;
-        mEventDelaySamples = (EVENT_DELAY_SAMPLES * mSampleRate) / 32000;
+        mEventDelaySamples = calcEventDelaySamples();
     }
     
 	void		Process( unsigned int frames, float *output[2] );
@@ -119,6 +119,13 @@ public:
 	InstParams	*getVP(int pg) const { return &mVPset[pg]; }
 	InstParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
 	void		SetVPSet( InstParams *vp );
+    
+    void        SetEventDelayClocks(int clocks) {
+        mEventDelayClocks = clocks;
+        mEventDelaySamples = calcEventDelaySamples();
+    }
+    
+    double      GetProcessDelayTime();
 	
 	void		RefreshKeyMap(void);
 	
@@ -126,7 +133,7 @@ private:
 	static const int INTERNAL_CLOCK = 32000;
     static const int CYCLES_PER_SAMPLE = 21168;
     static const int PORTAMENT_CYCLE_SAMPLES = 32;  // ポルタメント処理を行うサンプル数(32kHz換算)
-    static const int EVENT_DELAY_SAMPLES = 256;
+    static const int CLOCKS_PER_SAMPLE = 32;
     
     static const int VOLUME_DEFAULT = 100;
     static const int EXPRESSION_DEFAULT = 127;
@@ -217,7 +224,8 @@ private:
 	velocity_mode	mVelocityMode;
     ChannelStatus   mChStat[16];
     int             mPortamentCount;        // DSP処理が1サンプル出力される毎にカウントされ、ポルタメント処理されるとPORTAMENT_CYCLE_SAMPLES 減らす
-    int             mEventDelaySamples;     // 動作遅延サンプル
+    int             mEventDelaySamples;     // 動作遅延サンプル(処理サンプリングレート)
+    int             mEventDelayClocks;      // 動作遅延クロック
 	
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
 	InstParams		*mVPset;
@@ -233,4 +241,5 @@ private:
     void processPortament(int vo);
     void calcPanVolume(int value, int *volL, int *volR);
     bool doEvents( const MIDIEvt *evt, bool isDelayed );
+    int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / 32000; }
 };

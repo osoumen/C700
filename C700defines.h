@@ -74,6 +74,8 @@ enum {
     kParam_bankCmulti,
     kParam_bankDmulti,
     
+    kParam_alwaysDelayNote,
+    
     kNumberOfParameters
 };
 

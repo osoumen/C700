@@ -63,7 +63,7 @@ public:
 	virtual OSStatus			RestoreState(CFPropertyListRef plist);
 	
  	virtual	bool				SupportsTail() {return true;}
-//virtual Float64				GetLatency() {return 8.0/32000.0;}
+    virtual Float64				GetLatency() {return mEfx->GetProcessDelayTime();}
 	
 	virtual OSStatus			RealTimeStartNote(		SynthGroupElement 			*inGroup,
 														NoteInstanceID 				inNoteInstanceID, 

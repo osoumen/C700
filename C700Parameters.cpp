@@ -36,6 +36,7 @@ static const float kDefaultValue_bankAmulti = 0;
 static const float kDefaultValue_bankBmulti = 0;
 static const float kDefaultValue_bankCmulti = 0;
 static const float kDefaultValue_bankDmulti = 0;
+static const float kDefaultValue_alwaysDelayNote = 1;
 
 //ÉGÉRÅ[ïî
 static const float kDefaultValue_echovol_L = 50;
@@ -174,7 +175,9 @@ const char *C700Parameters::GetParameterName( int id )
 		
 		"Bank B Multi",
 		"Bank C Multi",
-		"Bank D Multi"
+		"Bank D Multi",
+        
+        "alwaysDelayNote"
 	};
 	return paramName[id];
 }
@@ -269,6 +272,9 @@ const char *C700Parameters::GetParameterName( int id )
 			return kMaximumValue_127;
 		case kParam_fir7:
 			return kMaximumValue_127;
+            
+        case kParam_alwaysDelayNote:
+            return 1;
 			
 		default:
 			return 0;
@@ -366,6 +372,9 @@ const char *C700Parameters::GetParameterName( int id )
 			return kMinimumValue_n128;
 		case kParam_fir7:
 			return kMinimumValue_n128;
+            
+        case kParam_alwaysDelayNote:
+            return 0;
 			
 		default:
 			return 0;
@@ -463,6 +472,9 @@ const char *C700Parameters::GetParameterName( int id )
 			return kDefaultValue_fir6;
 		case kParam_fir7:
 			return kDefaultValue_fir7;
+            
+        case kParam_alwaysDelayNote:
+            return kDefaultValue_alwaysDelayNote;
 			
 		default:
 			return .0f;

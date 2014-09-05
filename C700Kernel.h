@@ -57,6 +57,8 @@ public:
 	void			SetParameterSetFunc( void (*func) (int paramID, float value, void* userData) , void* userData );
 	
 	InstParams* GetVP() { return mVPset; }
+    
+    double          GetProcessDelayTime() { return mGenerator.GetProcessDelayTime(); }
 	
 private:
 	int		GetTotalRAM();
