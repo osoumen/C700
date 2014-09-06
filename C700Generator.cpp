@@ -503,6 +503,7 @@ int C700Generator::GetAllocedVoice(unsigned int uniqueID)
 }
 
 //-----------------------------------------------------------------------------
+#if 0
 int C700Generator::StealVoice()
 {
     // —Dæ“x–³‹ Œã’…—Dæ
@@ -516,7 +517,7 @@ int C700Generator::StealVoice()
 	}
 	return v;
 }
-
+#endif
 //-----------------------------------------------------------------------------
 int C700Generator::StealVoice(int prio)
 {

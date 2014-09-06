@@ -245,7 +245,7 @@ private:
 	
 	int		FindFreeVoice();
     int     GetAllocedVoice(unsigned int uniqueID);
-    int     StealVoice();
+//    int     StealVoice();
     int     StealVoice(int prio);
     int     StealVoice(int ch, int prio);
 	int		StopPlayingVoice( const MIDIEvt *evt );
