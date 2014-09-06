@@ -47,6 +47,11 @@ public:
         float       portaTc;
         float       portaStartPitch;
         int         lastNote;
+        
+        int         priority;
+        int         limit;
+        int         noteOns;
+        
         uint32_t    changeFlg;
         InstParams  changedVP;
     } ChannelStatus;
@@ -126,6 +131,7 @@ public:
     }
     
     double      GetProcessDelayTime();
+    int         GetNoteOnNotes(int ch) { return mChStat[ch].noteOns; }
 	
 	void		RefreshKeyMap(void);
 	
@@ -158,6 +164,7 @@ private:
 	
 	struct VoiceState {
 		int				midi_ch;
+        int             priority;
 		unsigned int	uniqueID;
 		
 		unsigned char	*brrdata;
@@ -233,6 +240,7 @@ private:
 	int		FindFreeVoice();
     int     GetAllocedVoice();
     int     StealVoice();
+    int     StealVoice(int ch, int prio);
 	int		StopPlayingVoice( const MIDIEvt *evt );
 	void	DoKeyOn(const MIDIEvt *evt);
 	float	VibratoWave(float phase);
