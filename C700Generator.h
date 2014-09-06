@@ -166,7 +166,28 @@ private:
 		int				midi_ch;
         int             priority;
 		unsigned int	uniqueID;
+        
+        bool            isKeyOn;       // キーオンされているかどうか
 		
+		int				pb;
+		int				vibdepth;
+		bool			reg_pmod;
+		float			vibPhase;
+        float           portaPitch;
+		
+		int				ar,dr,sl,sr,vol_l,vol_r;
+		
+		int				velo;
+        int             volume;
+        int             expression;
+        int             pan;
+		unsigned int	loopPoint;
+		bool			loop;
+        
+		bool			echoOn;
+		
+
+        // 音源内部状態
 		unsigned char	*brrdata;
 		int				memPtr;        /* Sample data memory pointer   */
 		int             end;            /* End or loop after block      */
@@ -183,25 +204,7 @@ private:
 		int				smp1;           /* Last sample (for BRR filter) */
 		int				smp2;           /* Second-to-last sample decoded*/
 		int				sampbuf[4];   /* Buffer for Gaussian interp   */
-		
-		
-		int				pb;
-		int				vibdepth;
-		bool			reg_pmod;
-		float			vibPhase;
-        float           portaPitch;
-		
-		int				ar,dr,sl,sr,vol_l,vol_r;
-		
-		int				velo;
-        int             volume;
-        int             expression;
-        int             pan;
-		unsigned int	loopPoint;
-		bool			loop;
-	
-		bool			echoOn;
-		
+
 		void Reset();
 	};
 	
@@ -216,7 +219,6 @@ private:
 	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
 	
 	std::list<int>	mPlayVo;				//ノートオン状態のボイス
-	std::list<int>	mAllocedVo;             //確保されたが未発音状態のボイス
 	std::list<int>	mWaitVo;				//ノートオフ状態のボイス
 	
 	VoiceState		mVoice[kMaximumVoices];		//ボイスの状況
@@ -238,7 +240,7 @@ private:
 	InstParams		*mVPset;
 	
 	int		FindFreeVoice();
-    int     GetAllocedVoice();
+    int     GetAllocedVoice(unsigned int uniqueID);
     int     StealVoice();
     int     StealVoice(int ch, int prio);
 	int		StopPlayingVoice( const MIDIEvt *evt );

@@ -114,6 +114,8 @@ void C700Generator::VoiceState::Reset()
 	midi_ch = 0;
 	uniqueID = 0;
     priority = 0;
+    
+    isKeyOn = false;
 	
 	smp1=0;
 	smp2=0;
@@ -156,7 +158,6 @@ void C700Generator::Reset()
     mPortamentCount=0;
 	
 	mPlayVo.clear();
-    mAllocedVo.clear();
 	mWaitVo.clear();
 	for(int i=0;i<mVoiceLimit;i++){
 		mWaitVo.push_back(i);
@@ -460,15 +461,21 @@ int C700Generator::FindFreeVoice()
 }
 
 //-----------------------------------------------------------------------------
-int C700Generator::GetAllocedVoice()
+int C700Generator::GetAllocedVoice(unsigned int uniqueID)
 {
 	int	v=-1;
     
 	//再生準備中ボイスを一番古いものから一つ取得
-    if ( mAllocedVo.size() > 0 ) {
-		v = mAllocedVo.front();
-		mAllocedVo.pop_front();
-	}
+    if (mPlayVo.size() > 0) {
+        std::list<int>::iterator    it = mPlayVo.begin();
+        while (it != mPlayVo.end()) {
+            if ((mVoice[*it].isKeyOn == false) && (mVoice[*it].uniqueID == uniqueID)) {
+                v = *it;
+                break;
+            }
+            it++;
+        }
+    }
     return v;
 }
 
@@ -479,14 +486,9 @@ int C700Generator::StealVoice()
     
 	if ( mPlayVo.size() > 0 ) {
 		//空きボイスが無かった場合一番古い発音を停止させる
-		v = mPlayVo.front();
-		mPlayVo.pop_front();
+        v = mPlayVo.front();
+        mPlayVo.pop_front();
 	}
-    else if ( mAllocedVo.size() > 0 ) {
-        //再生中ボイスが無く、残りも全て再生準備中の場合
-        v = mAllocedVo.front();
-        mAllocedVo.pop_front();
-    }
 	return v;
 }
 
@@ -506,7 +508,7 @@ int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
         while ( it != mDelayedEvt.end() ) {
             if (it->uniqueID == evt->uniqueID) {
                 it = mDelayedEvt.erase( it );
-                int vo = GetAllocedVoice();
+                int vo = GetAllocedVoice(evt->uniqueID);
                 if ( vo < mVoiceLimit ) {
                     mWaitVo.push_back(vo);
                 }
@@ -523,7 +525,7 @@ int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
         while (it != mPlayVo.end()) {
             int	vo = *it;
             
-            if ( mVoice[vo].uniqueID == evt->uniqueID ) {
+            if ( (mVoice[vo].isKeyOn == true) && (mVoice[vo].uniqueID == evt->uniqueID) ) {
                 InstParams		vp = getChannelVP(evt->ch, evt->note);
                 if (vp.sustainMode) {
                     //キーオフさせずにsrを変更する
@@ -534,6 +536,7 @@ int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
                     mVoice[vo].envstate = RELEASE;
                 }
                 mVoice[vo].priority = 0;
+                mVoice[vo].isKeyOn = false;
                 if ( vo < mVoiceLimit ) {
                     mWaitVo.push_back(vo);
                 }
@@ -558,25 +561,16 @@ void C700Generator::DoKeyOn(const MIDIEvt *evt)
 	}
 	
 	//空きボイスを取得
-	int	v = GetAllocedVoice();
-#if 0
-    if (v == -1) {
-        v = StealVoice();
-        if (v == -1) {
-            return;
-        }
-    }
-#else
+	int	v = GetAllocedVoice(evt->uniqueID);
     if (v == -1) {
         return;
     }
-#endif
-    mPlayVo.push_back(v);
 	
 	//MIDIチャンネルを設定
 	mVoice[v].midi_ch = evt->ch;
 	mVoice[v].uniqueID = evt->uniqueID;
     mVoice[v].priority = mChStat[evt->ch].priority;
+    mVoice[v].isKeyOn = true;
 	
 	//ベロシティの取得
 	if ( mVelocityMode == kVelocityMode_Square ) {
@@ -878,8 +872,10 @@ bool C700Generator::doEvents( const MIDIEvt *evt, bool isDelayed )
                     mChStat[ mVoice[v].midi_ch ].noteOns--;
                 }
                 if (v != -1) {
+                    mVoice[v].isKeyOn = false;
+                    mVoice[v].uniqueID = evt->uniqueID;
                     mVoice[v].envstate = RELEASE;
-                    mAllocedVo.push_back(v);
+                    mPlayVo.push_back(v);
                     mChStat[evt->ch].noteOns++;
                 }
             }
