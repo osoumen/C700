@@ -101,6 +101,9 @@ C700Generator::C700Generator()
         mChStat[i].expression = EXPRESSION_DEFAULT;
         mChStat[i].pan = 64;
         mChStat[i].lastNote = 0;
+        mChStat[i].priority = 64;
+        mChStat[i].limit = 0;
+        mChStat[i].noteOns = 0;
 	}
 	Reset();
 }
@@ -110,6 +113,7 @@ void C700Generator::VoiceState::Reset()
 {
 	midi_ch = 0;
 	uniqueID = 0;
+    priority = 0;
 	
 	smp1=0;
 	smp2=0;
@@ -151,22 +155,14 @@ void C700Generator::Reset()
 	mProcessbufPtr=0;
     mPortamentCount=0;
 	
-	mMIDIEvt.clear();
-    mDelayedEvt.clear();
-	
-	for ( int i=0; i<kMaximumVoices; i++ ) {
-		mVoice[i].Reset();
-	}
-	
 	mPlayVo.clear();
     mAllocedVo.clear();
 	mWaitVo.clear();
 	for(int i=0;i<mVoiceLimit;i++){
 		mWaitVo.push_back(i);
 	}
-	
-	mEcho[0].Reset();
-	mEcho[1].Reset();
+    
+    AllSoundOff();
 }
 
 //-----------------------------------------------------------------------------
@@ -217,16 +213,15 @@ void C700Generator::AllNotesOff()
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mVoice[i].Reset();
 	}
+    for (int i=0; i<16; i++) {
+        mChStat[i].noteOns = 0;
+    }
 }
 
 //-----------------------------------------------------------------------------
 void C700Generator::AllSoundOff()
 {
-	mMIDIEvt.clear();
-    mDelayedEvt.clear();
-	for ( int i=0; i<kMaximumVoices; i++ ) {
-		mVoice[i].Reset();
-	}
+    AllNotesOff();
 	mEcho[0].Reset();
 	mEcho[1].Reset();	
 }
@@ -496,6 +491,11 @@ int C700Generator::StealVoice()
 }
 
 //-----------------------------------------------------------------------------
+int C700Generator::StealVoice(int ch, int prio)
+{
+}
+
+//-----------------------------------------------------------------------------
 int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
 {
 	int	stops=0;
@@ -533,6 +533,7 @@ int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
                 else {
                     mVoice[vo].envstate = RELEASE;
                 }
+                mVoice[vo].priority = 0;
                 if ( vo < mVoiceLimit ) {
                     mWaitVo.push_back(vo);
                 }
@@ -575,6 +576,7 @@ void C700Generator::DoKeyOn(const MIDIEvt *evt)
 	//MIDIチャンネルを設定
 	mVoice[v].midi_ch = evt->ch;
 	mVoice[v].uniqueID = evt->uniqueID;
+    mVoice[v].priority = mChStat[evt->ch].priority;
 	
 	//ベロシティの取得
 	if ( mVelocityMode == kVelocityMode_Square ) {
@@ -860,21 +862,25 @@ bool C700Generator::doEvents( const MIDIEvt *evt, bool isDelayed )
     
     if (!isDelayed) {
         if (evt->type == NOTE_OFF) {
-            StopPlayingVoice( evt );
+            int stops = StopPlayingVoice( evt );
+            mChStat[evt->ch].noteOns -= stops;
         }
         else {
             MIDIEvt dEvt = *evt;
             dEvt.remain_samples = mEventDelaySamples;
             mDelayedEvt.push_back(dEvt);
+            
             if (evt->type == NOTE_ON) {
                 //ボイスを確保して再生準備状態にする
                 int	v = FindFreeVoice();
                 if (v == -1) {
                     v = StealVoice();
+                    mChStat[ mVoice[v].midi_ch ].noteOns--;
                 }
                 if (v != -1) {
                     mVoice[v].envstate = RELEASE;
                     mAllocedVo.push_back(v);
+                    mChStat[evt->ch].noteOns++;
                 }
             }
         }
@@ -998,7 +1004,7 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 	//メイン処理
 	for (unsigned int frame=0; frame<frames; ++frame) {
 		//イベント処理
-		if ( !mMIDIEvt.empty() ) {
+		if ( mMIDIEvt.size() != 0 ) {
 			std::list<MIDIEvt>::iterator	it = mMIDIEvt.begin();
 			while ( it != mMIDIEvt.end() ) {
 				if ( it->remain_samples >= 0 ) {
@@ -1012,7 +1018,7 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				it++;
 			}
 		}
-        if ( !mDelayedEvt.empty() ) {
+        if ( mDelayedEvt.size() != 0 ) {
 			std::list<MIDIEvt>::iterator	it = mDelayedEvt.begin();
 			while ( it != mDelayedEvt.end() ) {
 				if ( it->remain_samples >= 0 ) {
