@@ -949,11 +949,10 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             // ポルタメント・コントロール
         case 91:
             // ECEN ON/OFF
-            mGenerator.ControlChange( ch, controlNum, value, inFrame);
-            break;
             
         default:
-            break;
+           mGenerator.ControlChange( ch, controlNum, value, inFrame);
+           break;
     }
 }
 

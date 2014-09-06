@@ -51,6 +51,7 @@ public:
         int         priority;
         int         limit;
         int         noteOns;
+        int         releasePriority;
         
         uint32_t    changeFlg;
         InstParams  changedVP;
@@ -94,6 +95,9 @@ public:
     void        SetPortamentOn( int ch, bool on );
     void        SetPortamentTime( int ch, float secs );
     void        SetPortamentControl( int ch, int note );
+    void        SetChPriority( int ch, int value );
+    void        SetChLimit( int ch, int value );
+    void        SetReleasePriority( int ch, int value );
 
     // global params
 	void		SetVoiceLimit( int value );
@@ -242,6 +246,7 @@ private:
 	int		FindFreeVoice();
     int     GetAllocedVoice(unsigned int uniqueID);
     int     StealVoice();
+    int     StealVoice(int prio);
     int     StealVoice(int ch, int prio);
 	int		StopPlayingVoice( const MIDIEvt *evt );
 	void	DoKeyOn(const MIDIEvt *evt);
