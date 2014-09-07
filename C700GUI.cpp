@@ -104,6 +104,18 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
 					cntl = waveview;
 					break;
 				}
+                case 'spls':
+                {
+                    char		rsrcName[100];
+					snprintf(rsrcName, 99, "%s.png", desc->title);
+					CBitmap		*helpPicture = new CBitmap(rsrcName);
+                    CRect toDisplay(10, 10, helpPicture->getWidth()+10, helpPicture->getHeight()+10);
+                    CSplashScreen *splash;
+                    splash = new CSplashScreen(cntlSize, this, desc->id, helpPicture, toDisplay);
+                    helpPicture->forget();
+                    cntl = splash;
+                    break;
+                }
 				default:
 					goto makeDummy;
 					break;

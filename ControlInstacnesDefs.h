@@ -12,6 +12,57 @@
 #include "ControlInstances.h"
 
 ControlInstances	sCntl[] = {
+    {
+		'appl',	//sig
+		'stxt',	//kind
+		__DATE__,	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		2, 16, 73, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+		"[?]",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		35, 2, 20, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'VeMa',	//sig
+		'spls',	//kind
+		"help",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'user',	//sig
+		-1,	//id
+		0,	//command
+		0, 0, 64, 48,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
 	{
 		'appl',	//sig
 		'stxt',	//kind
