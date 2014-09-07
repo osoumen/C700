@@ -297,6 +297,8 @@
 		F597AD41160B67860003E710 /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD33160B67860003E710 /* vstcontrols.cpp */; };
 		F597AD42160B67860003E710 /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD34160B67860003E710 /* vstgui.cpp */; };
 		F597AD43160B67860003E710 /* vstgui.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD35160B67860003E710 /* vstgui.h */; };
+		F5BEFCA519BC4F8C0083F8D9 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = F5BEFCA419BC4F8C0083F8D9 /* help.png */; };
+		F5BEFCA619BC4F8C0083F8D9 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = F5BEFCA419BC4F8C0083F8D9 /* help.png */; };
 		F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
 		F5C1B32316F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
 /* End PBXBuildFile section */
@@ -499,6 +501,7 @@
 		F597AD33160B67860003E710 /* vstcontrols.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = vstcontrols.cpp; sourceTree = "<group>"; };
 		F597AD34160B67860003E710 /* vstgui.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = vstgui.cpp; sourceTree = "<group>"; };
 		F597AD35160B67860003E710 /* vstgui.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = vstgui.h; sourceTree = "<group>"; };
+		F5BEFCA419BC4F8C0083F8D9 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = help.png; path = graphics/help.png; sourceTree = "<group>"; };
 		F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstacnesDefs.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -570,6 +573,7 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F5BEFCA419BC4F8C0083F8D9 /* help.png */,
 				8ACF4C260B2144FD00EC1825 /* AUBackground.png */,
 				8AC1D32A0B27525A00FFD294 /* dragimg.png */,
 				F569AD17161D3277006C91AD /* rocker_sw.png */,
@@ -1129,6 +1133,7 @@
 				8ACF4C5A0B2144FD00EC1825 /* sliderThumb.png in Resources */,
 				F569AA86161BFFA8006C91AD /* bt_check.png in Resources */,
 				F569AD18161D3277006C91AD /* rocker_sw.png in Resources */,
+				F5BEFCA519BC4F8C0083F8D9 /* help.png in Resources */,
 				F55D64FC161EB76D001CF9AB /* bt_copy.png in Resources */,
 				F55D64FE161EB7CD001CF9AB /* bt_calc.png in Resources */,
 				F55D6500161EB8CE001CF9AB /* bt_load.png in Resources */,
@@ -1170,6 +1175,7 @@
 				F54331C116296E0200863A0B /* sliderThumb.png in Resources */,
 				F54331C216296E0200863A0B /* bt_check.png in Resources */,
 				F54331C316296E0200863A0B /* rocker_sw.png in Resources */,
+				F5BEFCA619BC4F8C0083F8D9 /* help.png in Resources */,
 				F54331C416296E0200863A0B /* bt_copy.png in Resources */,
 				F54331C516296E0200863A0B /* bt_calc.png in Resources */,
 				F54331C616296E0200863A0B /* bt_load.png in Resources */,
