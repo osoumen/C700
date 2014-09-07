@@ -175,7 +175,8 @@ void C700Edit::setParameter(int index, float value)
 	cntl = m_pUIView->FindControlByTag(tag);
 	while (cntl)
 	{
-		cntl->invalid();
+		//cntl->invalid();
+        cntl->setDirty();
 		cntl->setValue(value);
 		//printf("tag=%d, value=%f\n",tag,value);
 		
@@ -265,7 +266,8 @@ void C700Edit::SetProgramName( const char *pgname )
 	if ( cntl ) {
 		if ( cntl->isTypeOf("CMyTextEdit") ) {
 			CMyTextEdit	*textbox = reinterpret_cast<CMyTextEdit*> (cntl);
-			textbox->invalid();		//Windowsではこれが無いとなぜか更新されない
+			//textbox->invalid();		//Windowsではこれが無いとなぜか更新されない
+            textbox->setDirty();
 			textbox->setText(pgname);
 		}
 	}
