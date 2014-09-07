@@ -1123,7 +1123,7 @@ ComponentResult C700::RealTimeStopNote( MusicDeviceGroupID 			inGroup,
 	//MIDIƒ`ƒƒƒ“ƒlƒ‹‚ÌŽæ“¾
 	unsigned int		chID = inGroup % 16;
 	
-	mEfx->HandleNoteOff(chID, 0xff, inNoteInstanceID+chID*256, inOffsetSampleFrame);
+	mEfx->HandleNoteOff(chID, inNoteInstanceID, inNoteInstanceID+chID*256, inOffsetSampleFrame);
 	return noErr;
 }
 
