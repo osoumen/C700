@@ -221,6 +221,7 @@ private:
 	
 	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
 	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
+    bool            mClearEvent;            //次のRenderでFIFOをクリアするフラグ
 	
 	std::list<int>	mPlayVo;				//ノートオン状態のボイス
 	std::list<int>	mWaitVo;				//ノートオフ状態のボイス
@@ -244,8 +245,6 @@ private:
 	InstParams		*mVPset;
 	
 	int		FindFreeVoice();
-    int     GetAllocedVoice(unsigned int uniqueID);
-//    int     StealVoice();
     int     StealVoice(int prio);
     int     StealVoice(int ch, int prio);
 	int		StopPlayingVoice( const MIDIEvt *evt );
@@ -255,6 +254,7 @@ private:
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
     void calcPanVolume(int value, int *volL, int *volR);
-    bool doEvents( const MIDIEvt *evt, bool isDelayed );
+    bool doEvents1( const MIDIEvt *evt );
+    bool doEvents2( const MIDIEvt *evt );
     int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }
 };
