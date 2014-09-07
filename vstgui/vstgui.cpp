@@ -6601,8 +6601,8 @@ public:
 		}
 protected:
 	HGLOBAL resData;
-	unsigned long streamPos;
-	unsigned long resSize;
+	size_t streamPos;
+	size_t resSize;
 };
 #endif
 #if WINDOWS && GDIPLUS

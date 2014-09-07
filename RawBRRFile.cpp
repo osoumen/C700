@@ -26,7 +26,7 @@ void getInstFileName( const char *path, char *out, int maxLen )
 	CFRelease(extlesspath);
 	CFRelease(url);
 #else
-	int	len = strlen(path);
+	int	len = static_cast<int>(strlen(path));
 	int extPos = len;
 	//"."‚ÌˆÊ’u‚ðŒŸõ
 	for ( int i=len-1; i>=0; i-- ) {
