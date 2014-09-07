@@ -53,7 +53,7 @@ public:
         int         noteOns;
         int         releasePriority;
         
-        uint32_t    changeFlg;
+        unsigned int changeFlg;
         InstParams  changedVP;
     } ChannelStatus;
     

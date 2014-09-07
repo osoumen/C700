@@ -41,7 +41,7 @@ void getFileNameDeletingPathExt( const char *path, char *out, int maxLen )
 	CFRelease(url);
 #else
 	//Windowsでの拡張子、パス除去処理
-	int	len = strlen(path);
+	int	len = static_cast<int>(strlen(path));
 	int extPos = len;
 	int bcPos = 0;
 	for ( int i=len-1; i>=0; i-- ) {
@@ -71,7 +71,7 @@ void getFileNameExt( const char *path, char *out, int maxLen )
 	CFRelease(url);
 #else
 	//Windowsでの拡張子抽出処理
-	int	len = strlen(path);
+	int	len = static_cast<int>(strlen(path));
 	int extPos = len;
 	for ( int i=len-1; i>=0; i-- ) {
 		if ( path[i] == '.' ) {
