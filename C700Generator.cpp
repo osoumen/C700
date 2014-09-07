@@ -32,7 +32,7 @@ static const int	ENVCNT[32]
     0x0C00, 0x0F00, 0x1400, 0x1800, 0x1E00, 0x2800, 0x3C00, 0x7800
 };
 
-static const int	VELOCITY_CURB[128]
+static const int	VOLUME_CURB[128]
 = {
 	0x000, 0x001, 0x001, 0x001, 0x002, 0x003, 0x005, 0x006, 0x008, 0x00a, 0x00d, 0x00f, 0x012, 0x015, 0x019, 0x01d, 
 	0x020, 0x025, 0x029, 0x02e, 0x033, 0x038, 0x03d, 0x043, 0x049, 0x04f, 0x056, 0x05d, 0x064, 0x06b, 0x072, 0x07a, 
@@ -44,73 +44,15 @@ static const int	VELOCITY_CURB[128]
 	0x638, 0x655, 0x671, 0x68e, 0x6ac, 0x6c9, 0x6e7, 0x705, 0x724, 0x742, 0x761, 0x780, 0x79f, 0x7bf, 0x7df, 0x7ff
 };
 
-static const int PanTblL[128]={
-    511,511,510,510,
-    510,510,510,509,
-    509,508,507,507,
-    506,505,504,503,
-    502,500,499,498,
-    496,495,493,491,
-    490,488,486,484,
-    482,480,477,475,
-    473,470,468,465,
-    463,460,457,454,
-    451,448,445,442,
-    439,436,432,429,
-    425,422,418,414,
-    411,407,403,399,
-    395,391,387,383,
-    378,374,370,365,
-    361,356,352,347,
-    342,338,333,328,
-    323,318,313,308,
-    303,298,293,287,
-    282,277,271,266,
-    260,255,249,244,
-    238,233,227,221,
-    215,210,204,198,
-    192,186,180,174,
-    168,162,156,150,
-    144,138,132,126,
-    119,113,107,101,
-    95,88,82,76,
-    69,63,57,50,
-    44,38,31,25,
-    19,12,6,0
-};
-static const int PanTblR[128]={
-    0,0,6,12,
-    19,25,31,38,
-    44,50,57,63,
-    69,76,82,88,
-    95,101,107,113,
-    119,126,132,138,
-    144,150,156,162,
-    168,174,180,186,
-    192,198,204,210,
-    215,221,227,233,
-    238,244,249,255,
-    260,266,271,277,
-    282,287,293,298,
-    303,308,313,318,
-    323,328,333,338,
-    342,347,352,356,
-    361,365,370,374,
-    378,383,387,391,
-    395,399,403,407,
-    411,414,418,422,
-    425,429,432,436,
-    439,442,445,448,
-    451,454,457,460,
-    463,465,468,470,
-    473,475,477,480,
-    482,484,486,488,
-    490,491,493,495,
-    496,498,499,500,
-    502,503,504,505,
-    506,507,507,508,
-    509,509,510,510,
-    510,510,510,511
+static const int PAN_CURB[129]={
+    511, 511, 510, 510, 510, 510, 510, 509, 509, 508, 507, 507, 506, 505, 504, 503,
+    502, 500, 499, 498, 496, 495, 493, 491, 490, 488, 486, 484, 482, 480, 477, 475,
+    473, 470, 468, 465, 463, 460, 457, 454, 451, 448, 445, 442, 439, 436, 432, 429,
+    425, 422, 418, 414, 411, 407, 403, 399, 395, 391, 387, 383, 378, 374, 370, 365,
+    361, 356, 352, 347, 342, 338, 333, 328, 323, 318, 313, 308, 303, 298, 293, 287,
+    282, 277, 271, 266, 260, 255, 249, 244, 238, 233, 227, 221, 215, 210, 204, 198,
+    192, 186, 180, 174, 168, 162, 156, 150, 144, 138, 132, 126, 119, 113, 107, 101,
+    95, 88, 82, 76, 69, 63, 57, 50, 44, 38, 31, 25, 19, 12, 6, 0, 0
 };
 
 static const int sinctable[] = {
@@ -675,13 +617,13 @@ void C700Generator::DoKeyOn(const MIDIEvt *evt)
 	
 	//ベロシティの取得
 	if ( mVelocityMode == kVelocityMode_Square ) {
-		mVoice[v].velo = VELOCITY_CURB[evt->velo];
+		mVoice[v].velo = VOLUME_CURB[evt->velo];
 	}
 	else if ( mVelocityMode == kVelocityMode_Linear ) {
 		mVoice[v].velo = evt->velo << 4;
 	}
 	else {
-		mVoice[v].velo=VELOCITY_CURB[127];
+		mVoice[v].velo=VOLUME_CURB[127];
 	}
     mVoice[v].volume = mChStat[midiCh].volume;
     mVoice[v].expression = mChStat[midiCh].expression;
@@ -760,7 +702,7 @@ InstParams C700Generator::getChannelVP(int ch, int note)
 //-----------------------------------------------------------------------------
 void C700Generator::Volume( int ch, int value )
 {
-    mChStat[ch].volume = value;
+    mChStat[ch].volume = value & 0x7f;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
         if (mVoice[i].midi_ch == ch) {
@@ -772,7 +714,7 @@ void C700Generator::Volume( int ch, int value )
 //-----------------------------------------------------------------------------
 void C700Generator::Expression( int ch, int value )
 {
-    mChStat[ch].expression = value;
+    mChStat[ch].expression = value & 0x7f;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
         if (mVoice[i].midi_ch == ch) {
@@ -784,7 +726,7 @@ void C700Generator::Expression( int ch, int value )
 //-----------------------------------------------------------------------------
 void C700Generator::Panpot( int ch, int value )
 {
-    mChStat[ch].pan = value;
+    mChStat[ch].pan = value & 0x7f;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
         if (mVoice[i].midi_ch == ch) {
@@ -941,8 +883,6 @@ float C700Generator::VibratoWave(float phase)
 //-----------------------------------------------------------------------------
 void C700Generator::processPortament(int vo)
 {
-    //if ( mVoice[vo].portaPitch == mVoice[vo].pitch ) return;
-    
     float   newPitch;
     float   tc = mChStat[ mVoice[vo].midi_ch ].portaTc;
     float   tcInv = 1.0f - tc;
@@ -1049,7 +989,7 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
                     
                 case 11:
                     // エクスプレッション
-                    Expression(evt->ch, evt->velo & 0x7f);
+                    Expression(evt->ch, evt->velo);
                     break;
                     
                 case 55:
@@ -1073,7 +1013,7 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
                     
                 case 65:
                     // ポルタメント・オン・オフ
-                    SetPortamentOn(evt->ch, evt->velo==0?false:true);
+                    SetPortamentOn(evt->ch, (evt->velo < 64)?false:true);
                     break;
                     
                 case 72:
@@ -1113,7 +1053,7 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
                     
                 case 91:
                     // ECEN ON/OFF
-                    ChangeChEcho(evt->ch, (evt->velo > 0)?127:0);
+                    ChangeChEcho(evt->ch, (evt->velo < 64)?0:127);
                     break;
                     
                 default:
@@ -1181,7 +1121,9 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
             std::list<int>::iterator	it = mPlayVo.begin();
             while (it != mPlayVo.end()) {
                 int	vo = *it;
-                processPortament(vo);
+                if (mVoice[vo].isKeyOn) {
+                    processPortament(vo);
+                }
                 it++;
             }
             mPortamentCount -= PORTAMENT_CYCLE_SAMPLES;
@@ -1268,7 +1210,7 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 					}
 					
 					float vibwave = VibratoWave(mVoice[v].vibPhase);
-					outx = (vibwave*mVibdepth)*VELOCITY_CURB[mVoice[v].vibdepth];
+					outx = (vibwave*mVibdepth)*VOLUME_CURB[mVoice[v].vibdepth];
 					
 					pitch = ( pitch * ( outx + 32768 ) ) >> 15;
 					if (pitch <= 0) {
@@ -1390,12 +1332,12 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
                 calcPanVolume(mVoice[v].pan, &volL, &volR);
                 
 				//ボリューム値の反映
-				volL = ( volL * mVoice[v].volume ) / 127;
-				volR = ( volR * mVoice[v].volume ) / 127;
+				volL = ( volL * VOLUME_CURB[ mVoice[v].volume ] ) / 0x7ff;
+				volR = ( volR * VOLUME_CURB[ mVoice[v].volume ] ) / 0x7ff;
                 
                 // エクスプレッションの反映
-				volL = ( volL * mVoice[v].expression ) / 127;
-				volR = ( volR * mVoice[v].expression ) / 127;
+				volL = ( volL * VOLUME_CURB[ mVoice[v].expression ] ) / 0x7ff;
+				volR = ( volR * VOLUME_CURB[ mVoice[v].expression ] ) / 0x7ff;
 				
 				//ゲイン値の反映
 				vl = ( volL * outx ) >> 7;
@@ -1452,6 +1394,7 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 //-----------------------------------------------------------------------------
 void C700Generator::calcPanVolume(int value, int *volL, int *volR)
 {
+#if 0
     int     absL = (*volL > 0)?(*volL):-(*volL);
     int     absR = (*volR > 0)?(*volR):-(*volR);
     int     center =(absR + absL) / 2;
@@ -1473,6 +1416,10 @@ void C700Generator::calcPanVolume(int value, int *volL, int *volR)
     }
     *volL = (*volL)>0 ? absL:-absL;
     *volR = (*volR)>0 ? absR:-absR;
+#else
+    *volL = (*volL * PAN_CURB[value]) / 511;
+    *volR = (*volR * PAN_CURB[128-value]) / 511;
+#endif
 }
 
 //-----------------------------------------------------------------------------
