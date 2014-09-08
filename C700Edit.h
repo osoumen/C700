@@ -41,6 +41,8 @@ public:
 	virtual void	valueChanged(CControl *pControl);	
 	long			getTag();
 
+	virtual void	idle();
+
 private:
 	void			SetLoopPoint( int lp );
 	void			UpdateXMSNESText();

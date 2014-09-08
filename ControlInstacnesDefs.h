@@ -2708,7 +2708,11 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_SustainMode,	//id
 		0,	//command
+#ifdef _WIN32
+		466, 164, 70, 11,	//x,y,w,h
+#else
 		470, 164, 64, 11,	//x,y,w,h
+#endif
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
