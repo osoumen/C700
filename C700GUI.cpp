@@ -971,7 +971,7 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 
 		cEditNum++;
 	}
-	efxAcc->SetParameter(this, kParam_clipnoise, 1);
+	efxAcc->SetParameter(this, kParam_newadpcm, 1);
 	
 	return true;
 }
