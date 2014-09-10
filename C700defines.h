@@ -21,7 +21,7 @@ enum {
     kParam_velocity,
     kParam_bendrange,
     kParam_program,
-    kParam_clipnoise,
+    kParam_newadpcm,
     kParam_bankAmulti,
     
     kParam_program_2,

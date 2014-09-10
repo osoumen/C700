@@ -166,8 +166,8 @@ bool C700Kernel::SetParameter( int id, float value )
 			mGenerator.ProgramChange(0, value, 0);
 			break;
 			
-		case kParam_clipnoise:
-			mGenerator.SetClipper( value==0 ? false:true );
+		case kParam_newadpcm:
+			mGenerator.SetADPCMMode( value==0 ? false:true );
 			break;
 			
 		case kParam_bankAmulti:

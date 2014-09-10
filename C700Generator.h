@@ -103,7 +103,7 @@ public:
 	void		SetVoiceLimit( int value );
 	void		SetPBRange( float value );
 	void		SetPBRange( int ch, float value );
-	void		SetClipper( bool value );
+	void		SetADPCMMode( bool value );
 	void		SetMultiMode( int bank, bool value );
 	bool		GetMultiMode( int bank ) const;
 	void		SetVelocityMode( velocity_mode value );
@@ -233,7 +233,7 @@ private:
 	int				mMainVolume_R;
 	float			mVibfreq;
 	float			mVibdepth;
-	bool			mClipper;
+	bool			mNewADPCM;
 	bool			mDrumMode[NUM_BANKS];
 	velocity_mode	mVelocityMode;
     ChannelStatus   mChStat[16];

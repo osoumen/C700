@@ -78,7 +78,7 @@ static unsigned char silence_brr[] = {
 //-----------------------------------------------------------------------------
 C700Generator::C700Generator()
 : mSampleRate(44100.0),
-  mClipper( false ),
+  mNewADPCM( false ),
   mVelocityMode( kVelocityMode_Square ),
   mVPset(NULL)
 {
@@ -363,9 +363,9 @@ void C700Generator::SetPBRange( int ch, float value )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::SetClipper( bool value )
+void C700Generator::SetADPCMMode( bool value )
 {
-	mClipper = value;
+	mNewADPCM = value;
 }
 
 //-----------------------------------------------------------------------------
@@ -1073,7 +1073,6 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
 void C700Generator::Process( unsigned int frames, float *output[2] )
 {
 	int		outx;
-	int		vl, vr;
 	int		pitch;
 	int		procstep = (INTERNAL_CLOCK*CYCLES_PER_SAMPLE) / mSampleRate;    // CYCLES_PER_SAMPLE=1.0 とした固定小数
 	
@@ -1210,9 +1209,9 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 					}
 					
 					float vibwave = VibratoWave(mVoice[v].vibPhase);
-					outx = (vibwave*mVibdepth)*VOLUME_CURB[mVoice[v].vibdepth];
+					int pitchRatio = (vibwave*mVibdepth)*VOLUME_CURB[mVoice[v].vibdepth];
 					
-					pitch = ( pitch * ( outx + 32768 ) ) >> 15;
+					pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
 					if (pitch <= 0) {
 						pitch=1;
 					}
@@ -1238,10 +1237,10 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 						
 						//開始バイトの情報を取得
 						mVoice[v].headerCnt = 8;
-						vl = ( unsigned char )mVoice[v].brrdata[mVoice[v].memPtr++];
-						mVoice[v].range = vl >> 4;
-						mVoice[v].end = vl & 3;
-						mVoice[v].filter = ( vl & 12 ) >> 2;
+						int headbyte = ( unsigned char )mVoice[v].brrdata[mVoice[v].memPtr++];
+						mVoice[v].range = headbyte >> 4;
+						mVoice[v].end = headbyte & 3;
+						mVoice[v].filter = ( headbyte & 12 ) >> 2;
 					}
 					
 					if ( mVoice[v].half == 0 ) {
@@ -1281,45 +1280,50 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 							break;
 					}
 					
+                    // フィルタ後にクリップ
 					if ( outx < -32768 ) {
 						outx = -32768;
 					}
 					else if ( outx > 32767 ) {
 						outx = 32767;
 					}
-					if (mClipper) {
+                    // y[-1]へ送る際に２倍されたらクランプ
+					if (mNewADPCM) {
 						mVoice[v].smp2 = mVoice[v].smp1;
 						mVoice[v].smp1 = ( signed short )( outx << 1 );
-						mVoice[v].sampbuf[mVoice[v].sampptr] = mVoice[v].smp1;
 					}
 					else {
+                        // 古いエミュレータの一部にはクランプを行わないものもある
+                        // 音は実機と異なる
 						mVoice[v].smp2 = mVoice[v].smp1;
 						mVoice[v].smp1 = outx << 1;
-						mVoice[v].sampbuf[mVoice[v].sampptr] = mVoice[v].smp1;
 					}
+                    mVoice[v].sampbuf[mVoice[v].sampptr] = mVoice[v].smp1;
 					mVoice[v].sampptr = ( mVoice[v].sampptr + 1 ) & 3;
 				}
 				
-				vl = mVoice[v].mixfrac >> 4;
-				vr = ( ( G4[ -vl - 1 ] * mVoice[v].sampbuf[ mVoice[v].sampptr ] ) >> 11 ) & ~1;
-				vr += ( ( G3[ -vl ]
+				int fracPos = mVoice[v].mixfrac >> 4;
+				int smpl = ( ( G4[ -fracPos - 1 ] * mVoice[v].sampbuf[ mVoice[v].sampptr ] ) >> 11 ) & ~1;
+				smpl += ( ( G3[ -fracPos ]
 						 * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 1 ) & 3 ] ) >> 11 ) & ~1;
-				vr += ( ( G2[ vl ]
+				smpl += ( ( G2[ fracPos ]
 						 * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 2 ) & 3 ] ) >> 11 ) & ~1;
-				
-				if (mClipper) {
-					vr = ( signed short )vr;
+				// openspcではなぜかここでもクランプさせていた
+                // ここも無いと実機と違ってしまう
+				if (mNewADPCM) {
+					smpl = ( signed short )smpl;
 				}
-				vr += ( ( G1[ vl ]
+				smpl += ( ( G1[ fracPos ]
 						 * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 3 ) & 3 ] ) >> 11 ) & ~1;
 				
-				if ( vr > 32767 ) {
-					vr = 32767;
+                // ガウス補間後にクリップ
+				if ( smpl > 32767 ) {
+					smpl = 32767;
 				}
-				else if ( vr < -32768 ) {
-					vr = -32768;
+				else if ( smpl < -32768 ) {
+					smpl = -32768;
 				}
-				outx = vr;
+				outx = smpl;
 				
 				mVoice[v].mixfrac += pitch;
 				
@@ -1340,8 +1344,8 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				volR = ( volR * VOLUME_CURB[ mVoice[v].expression ] ) / 0x7ff;
 				
 				//ゲイン値の反映
-				vl = ( volL * outx ) >> 7;
-				vr = ( volR * outx ) >> 7;
+				int vl = ( volL * outx ) >> 7;
+				int vr = ( volR * outx ) >> 7;
                 
 				//エコー処理
 				if ( mVoice[v].echoOn ) {

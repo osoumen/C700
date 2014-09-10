@@ -212,7 +212,7 @@ const char *C700Parameters::GetParameterName( int id )
 			return kMaximumValue_15;
 		case kParam_velocity:
 			return 2;
-		case kParam_clipnoise:
+		case kParam_newadpcm:
 			return 1;
 		case kParam_bendrange:
 			return 24;
@@ -312,7 +312,7 @@ const char *C700Parameters::GetParameterName( int id )
 			return kMinimumValue_1;
 		case kParam_velocity:
 			return kMinimumValue_0;
-		case kParam_clipnoise:
+		case kParam_newadpcm:
 			return kMinimumValue_0;
 		case kParam_bendrange:
 			return 1;
@@ -412,7 +412,7 @@ const char *C700Parameters::GetParameterName( int id )
 			return kDefaultValue_vibdepth2;
 		case kParam_velocity:
 			return kDefaultValue_velocity;
-		case kParam_clipnoise:
+		case kParam_newadpcm:
 			return kDefaultValue_clipnoise;
 		case kParam_bendrange:
 			return kDefaultValue_bendrange;
