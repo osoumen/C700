@@ -21,7 +21,7 @@ const float onepi = 3.14159265358979;
 static const int	*G1 = &gauss[256];
 static const int	*G2 = &gauss[512];
 static const int	*G3 = &gauss[255];
-static const int	*G4 = &gauss[-1];
+static const int	*G4 = &gauss[0];
 
 static const int	CNT_INIT = 0x7800;
 static const int	ENVCNT[32]
@@ -1301,7 +1301,7 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				}
 				
 				vl = mVoice[v].mixfrac >> 4;
-				vr = ( ( G4[ -vl ] * mVoice[v].sampbuf[ mVoice[v].sampptr ] ) >> 11 ) & ~1;
+				vr = ( ( G4[ -vl - 1 ] * mVoice[v].sampbuf[ mVoice[v].sampptr ] ) >> 11 ) & ~1;
 				vr += ( ( G3[ -vl ]
 						 * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 1 ) & 3 ] ) >> 11 ) & ~1;
 				vr += ( ( G2[ vl ]
