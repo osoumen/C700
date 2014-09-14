@@ -20,7 +20,7 @@ typedef enum
     DECAY,
     SUSTAIN,
     RELEASE,
-	FASTRELEASE
+//	FASTRELEASE
 } env_state_t32;
 
 //-----------------------------------------------------------------------------
@@ -93,7 +93,7 @@ public:
     void        ChangeChBank(int ch, int bank);
     void        ChangeChSustainMode(int ch, int sustainMode);
     void        SetPortamentOn( int ch, bool on );
-    void        SetPortamentTime( int ch, float secs );
+    void        SetPortamentTime( int ch, int value );
     void        SetPortamentControl( int ch, int note );
     void        SetChPriority( int ch, int value );
     void        SetChLimit( int ch, int value );
@@ -257,4 +257,5 @@ private:
     bool doEvents1( const MIDIEvt *evt );
     bool doEvents2( const MIDIEvt *evt );
     int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }
+    float calcGM2PortamentCurve(int value);
 };
