@@ -48,6 +48,7 @@ public:
         float       portaStartPitch;
         int         lastNote;
         bool        damper;
+        bool        monoMode;
         
         int         priority;
         int         limit;
