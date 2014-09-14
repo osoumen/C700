@@ -18,6 +18,8 @@
 
 const float onepi = 3.14159265358979;
 
+#define ANALOG_PORTAMENTO 0
+
 static const int	*G1 = &gauss[256];
 static const int	*G2 = &gauss[512];
 static const int	*G3 = &gauss[255];
@@ -450,9 +452,32 @@ void C700Generator::SetPortamentOn( int ch, bool on )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::SetPortamentTime( int ch, float secs )
+float C700Generator::calcGM2PortamentCurve(int value)
 {
+    float   logCentPerMilis;
+    if (value < 16) {
+        logCentPerMilis = (value * value)/192.0f - (3.0f/16.0f)*value + 3.0f;
+    }
+    else if (value < 112) {
+        logCentPerMilis = -value/48.0f + 5.0f/3.0f;
+    }
+    else {
+        logCentPerMilis = -(value * value)/256.0f + (41.0f/48.0f)*value - 142.0f/3.0f;
+    }
+    return powf(10.0f, logCentPerMilis);
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::SetPortamentTime( int ch, int value )
+{
+#if ANALOG_PORTAMENTO
+    float secs = value / 100.0f;
     mChStat[ch].portaTc = expf(-2.0f / ((INTERNAL_CLOCK / PORTAMENT_CYCLE_SAMPLES) * secs));
+#else
+    float centPerMilis = calcGM2PortamentCurve(value);
+    centPerMilis *= 1000.0f / (static_cast<float>(INTERNAL_CLOCK) / PORTAMENT_CYCLE_SAMPLES);
+    mChStat[ch].portaTc = powf(2.0f, centPerMilis / 1200);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -635,6 +660,9 @@ void C700Generator::DoKeyOn(const MIDIEvt *evt)
 	
 	//中心周波数の算出
 	mVoice[v].pitch = pow(2., (evt->note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+    if (mChStat[midiCh].portaStartPitch == 0) {
+        mChStat[midiCh].portaStartPitch = mVoice[v].pitch;
+    }
     mVoice[v].portaPitch = mChStat[midiCh].portaStartPitch;
 	
 	mVoice[v].pb = CalcPBValue( midiCh, mChStat[midiCh].pitchBend, mVoice[v].pitch );
@@ -884,10 +912,27 @@ float C700Generator::VibratoWave(float phase)
 void C700Generator::processPortament(int vo)
 {
     float   newPitch;
+#if ANALOG_PORTAMENTO
     float   tc = mChStat[ mVoice[vo].midi_ch ].portaTc;
     float   tcInv = 1.0f - tc;
     newPitch = mVoice[vo].pitch * tcInv + mVoice[vo].portaPitch * tc;
     mVoice[vo].portaPitch = newPitch;
+#else
+    if ( mVoice[vo].pitch > mVoice[vo].portaPitch) {
+        newPitch = mVoice[vo].portaPitch * mChStat[ mVoice[vo].midi_ch ].portaTc;
+        if (newPitch > mVoice[vo].pitch) {
+            newPitch = mVoice[vo].pitch;
+        }
+        mVoice[vo].portaPitch = newPitch;
+    }
+    else if ( mVoice[vo].pitch < mVoice[vo].portaPitch) {
+        newPitch = mVoice[vo].portaPitch / mChStat[ mVoice[vo].midi_ch ].portaTc;
+        if (newPitch < mVoice[vo].pitch) {
+            newPitch = mVoice[vo].pitch;
+        }
+        mVoice[vo].portaPitch = newPitch;
+    }
+#endif
     mChStat[ mVoice[vo].midi_ch ].portaStartPitch = mVoice[vo].portaPitch;
 }
 
@@ -974,7 +1019,7 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
                     
                 case 5:
                     // ポルタメントタイム
-                    SetPortamentTime(evt->ch, evt->velo / 100.0f);    // 10ms単位
+                    SetPortamentTime(evt->ch, evt->velo);
                     break;
                     
                 case 7:
@@ -1182,12 +1227,12 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 							}
 							break;
 							
-						case FASTRELEASE:
-							mVoice[v].envx -= 0x40;
-							if ( mVoice[v].envx <= 0 ) {
-								mVoice[v].envx = -1;
-							}
-							break;
+//						case FASTRELEASE:
+//							mVoice[v].envx -= 0x40;
+//							if ( mVoice[v].envx <= 0 ) {
+//								mVoice[v].envx = -1;
+//							}
+//							break;
 					}
 				}
 				
