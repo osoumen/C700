@@ -117,6 +117,7 @@ C700Generator::C700Generator()
         mChStat[i].limit = 127;
         mChStat[i].releasePriority = 0;
         mChStat[i].damper = false;
+        mChStat[i].monoMode = false;
         
         mChStat[i].lastNote = 0;
         mChStat[i].noteOns = 0;
@@ -252,14 +253,15 @@ void C700Generator::ResetAllControllers()
         mChStat[i].vibDepth = 0;
         mChStat[i].pbRange = static_cast<float>(DEFAULT_PBRANGE);
         mChStat[i].expression = EXPRESSION_DEFAULT;
-        mChStat[i].pan = 64;
+        //mChStat[i].pan = 64;
         mChStat[i].portaOn = false;
-        mChStat[i].portaTc = 1.0f;
+        //mChStat[i].portaTc = 1.0f;
         mChStat[i].portaStartPitch = 0;
-        mChStat[i].priority = 64;
-        mChStat[i].limit = 127;
-        mChStat[i].releasePriority = 0;
+        //mChStat[i].priority = 64;
+        //mChStat[i].limit = 127;
+        //mChStat[i].releasePriority = 0;
         mChStat[i].damper = false;
+        //mChStat[i].monoMode = false;
 	}
 }
 
