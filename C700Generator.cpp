@@ -133,6 +133,7 @@ void C700Generator::VoiceState::Reset()
     priority = 0;
     
     isKeyOn = false;
+    legato = false;
 	
 	smp1=0;
 	smp2=0;
@@ -511,6 +512,12 @@ void C700Generator::SetReleasePriority( int ch, int value )
 }
 
 //-----------------------------------------------------------------------------
+void C700Generator::SetMonoMode( int ch, bool on )
+{
+    mChStat[ch].monoMode = on;
+}
+
+//-----------------------------------------------------------------------------
 int C700Generator::FindFreeVoice()
 {
 	int	v=-1;
@@ -544,9 +551,6 @@ int C700Generator::StealVoice(int prio)
     if (prio_min > prio) {
         v = -1;
     }
-    if (v != -1) {
-        mPlayVo.remove(v);
-    }
     
     return v;
 }
@@ -569,9 +573,6 @@ int C700Generator::StealVoice(int ch, int prio)
     // 鳴らす音より高い優先度の音しか無かったら鳴らさない
     if (prio_min > prio) {
         v = -1;
-    }
-    if (v != -1) {
-        mPlayVo.remove(v);
     }
     
     return v;
@@ -643,63 +644,69 @@ void C700Generator::DoKeyOn(const MIDIEvt *evt)
         return;
     }
 	
-    mVoice[v].isKeyOn = true;
-	
-	//ベロシティの取得
-	if ( mVelocityMode == kVelocityMode_Square ) {
-		mVoice[v].velo = VOLUME_CURB[evt->velo];
-	}
-	else if ( mVelocityMode == kVelocityMode_Linear ) {
-		mVoice[v].velo = evt->velo << 4;
-	}
-	else {
-		mVoice[v].velo=VOLUME_CURB[127];
-	}
-    mVoice[v].volume = mChStat[midiCh].volume;
-    mVoice[v].expression = mChStat[midiCh].expression;
-	
-	mVoice[v].brrdata = vp.brr.data;
-	mVoice[v].loopPoint = vp.lp;
-	mVoice[v].loop = vp.loop;
-	mVoice[v].echoOn = vp.echo;
-	
-	//中心周波数の算出
+	// 中心周波数の算出
 	mVoice[v].pitch = pow(2., (evt->note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
-    if (mChStat[midiCh].portaStartPitch == 0) {
-        mChStat[midiCh].portaStartPitch = mVoice[v].pitch;
+
+    mVoice[v].isKeyOn = true;
+
+    if (!mVoice[v].legato) {
+        
+        if (mChStat[midiCh].portaStartPitch == 0) {
+            mChStat[midiCh].portaStartPitch = mVoice[v].pitch;
+        }
+        mVoice[v].portaPitch = mChStat[midiCh].portaStartPitch;
+        
+        //ベロシティの取得
+        if ( mVelocityMode == kVelocityMode_Square ) {
+            mVoice[v].velo = VOLUME_CURB[evt->velo];
+        }
+        else if ( mVelocityMode == kVelocityMode_Linear ) {
+            mVoice[v].velo = evt->velo << 4;
+        }
+        else {
+            mVoice[v].velo=VOLUME_CURB[127];
+        }
+        
+        mVoice[v].volume = mChStat[midiCh].volume;
+        mVoice[v].expression = mChStat[midiCh].expression;
+        
+        mVoice[v].brrdata = vp.brr.data;
+        mVoice[v].loopPoint = vp.lp;
+        mVoice[v].loop = vp.loop;
+        mVoice[v].echoOn = vp.echo;
+        
+        mVoice[v].pb = CalcPBValue( midiCh, mChStat[midiCh].pitchBend, mVoice[v].pitch );
+        mVoice[v].vibdepth = mChStat[midiCh].vibDepth;
+
+        mVoice[v].reg_pmod = mVoice[v].vibdepth>0 ? true:false;
+        mVoice[v].vibPhase = 0.0f;
+        
+        mVoice[v].vol_l=vp.volL;
+        mVoice[v].vol_r=vp.volR;
+        mVoice[v].ar=vp.ar;
+        mVoice[v].dr=vp.dr;
+        mVoice[v].sl=vp.sl;
+        if (vp.sustainMode) {
+            mVoice[v].sr=0;		//ノートオフ時に設定値になる
+        }
+        else {
+            mVoice[v].sr=vp.sr;
+        }
+        
+        // キーオン
+        mVoice[v].memPtr = 0;
+        mVoice[v].headerCnt = 0;
+        mVoice[v].half = 0;
+        mVoice[v].envx = 0;
+        mVoice[v].end = 0;
+        mVoice[v].sampptr = 0;
+        mVoice[v].mixfrac = 3 * 4096;
+        mVoice[v].envcnt = CNT_INIT;
+        mVoice[v].envstate = ATTACK;
+        
+        // 最後に発音したノート番号を保存
+        mChStat[midiCh].lastNote = evt->note;
     }
-    mVoice[v].portaPitch = mChStat[midiCh].portaStartPitch;
-	
-	mVoice[v].pb = CalcPBValue( midiCh, mChStat[midiCh].pitchBend, mVoice[v].pitch );
-	mVoice[v].vibdepth = mChStat[midiCh].vibDepth;
-	mVoice[v].reg_pmod = mVoice[v].vibdepth>0 ? true:false;
-	mVoice[v].vibPhase = 0.0f;
-	
-	mVoice[v].vol_l=vp.volL;
-	mVoice[v].vol_r=vp.volR;
-	mVoice[v].ar=vp.ar;
-	mVoice[v].dr=vp.dr;
-	mVoice[v].sl=vp.sl;
-    if (vp.sustainMode) {
-        mVoice[v].sr=0;		//ノートオフ時に設定値になる
-    }
-    else {
-        mVoice[v].sr=vp.sr;
-    }
-	
-    // キーオン
-	mVoice[v].memPtr = 0;
-	mVoice[v].headerCnt = 0;
-	mVoice[v].half = 0;
-	mVoice[v].envx = 0;
-	mVoice[v].end = 0;
-	mVoice[v].sampptr = 0;
-	mVoice[v].mixfrac = 3 * 4096;
-	mVoice[v].envcnt = CNT_INIT;
-	mVoice[v].envstate = ATTACK;
-    
-    // 最後に発音したノート番号を保存
-    mChStat[midiCh].lastNote = evt->note;
 }
 
 //-----------------------------------------------------------------------------
@@ -963,12 +970,20 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
         if (evt->type == NOTE_ON) {
             //ボイスを確保して再生準備状態にする
             int	v = -1;
+            int limit = mChStat[evt->ch].monoMode ? 1:mChStat[evt->ch].limit;
             
-            if (mChStat[evt->ch].noteOns >= mChStat[evt->ch].limit) {
+            if (mChStat[evt->ch].noteOns >= limit) {
                 // ch発音数を超えてたら、そのchの音を一つ止めて次の音を鳴らす
                 v = StealVoice(evt->ch, mChStat[evt->ch].priority);
                 if (v != -1) {
-                    mChStat[ mVoice[v].midi_ch ].noteOns--;
+                    if ((mVoice[v].isKeyOn == false) || (!mChStat[mVoice[v].midi_ch].monoMode)) {
+                        mPlayVo.remove(v);
+                        mChStat[ mVoice[v].midi_ch ].noteOns--;
+                        mVoice[v].legato = false;
+                    }
+                    else {
+                        mVoice[v].legato = true;
+                    }
                 }
             }
             else {
@@ -977,20 +992,28 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
                 if (v == -1) {
                     v = StealVoice(mChStat[evt->ch].priority);
                     if (v != -1) {
+                        mPlayVo.remove(v);
                         mChStat[ mVoice[v].midi_ch ].noteOns--;
+                        mVoice[v].legato = false;
                     }
                 }
+                else {
+                    mVoice[v].legato = false;
+                }
             }
+            
             if (v != -1) {
                 // 上位4bitにボイス番号を入れる
                 dEvt.ch += v << 4;
                 mVoice[v].isKeyOn = false;
                 mVoice[v].midi_ch = evt->ch;
                 mVoice[v].uniqueID = evt->uniqueID;
-                mVoice[v].envstate = RELEASE;
                 mVoice[v].priority = mChStat[evt->ch].priority;
-                mPlayVo.push_back(v);
-                mChStat[evt->ch].noteOns++;
+                if (mVoice[v].legato == false) {
+                    mPlayVo.push_back(v);
+                    mVoice[v].envstate = RELEASE;
+                    mChStat[evt->ch].noteOns++;
+                }
             }
         }
         mDelayedEvt.push_back(dEvt);
@@ -1110,6 +1133,16 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
                 case 91:
                     // ECEN ON/OFF
                     ChangeChEcho(evt->ch, (evt->velo < 64)?0:127);
+                    break;
+                    
+                case 126:
+                    // Mono Mode
+                    SetMonoMode(evt->ch, (evt->velo < 64)?0:127);
+                    break;
+                    
+                case 127:
+                    // Poly Mode
+                    SetMonoMode(evt->ch, (evt->velo < 64)?127:0);
                     break;
                     
                 default:
