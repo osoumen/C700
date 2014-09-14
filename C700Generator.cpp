@@ -116,6 +116,7 @@ C700Generator::C700Generator()
         mChStat[i].priority = 64;
         mChStat[i].limit = 127;
         mChStat[i].releasePriority = 0;
+        mChStat[i].damper = false;
         
         mChStat[i].lastNote = 0;
         mChStat[i].noteOns = 0;
@@ -258,6 +259,7 @@ void C700Generator::ResetAllControllers()
         mChStat[i].priority = 64;
         mChStat[i].limit = 127;
         mChStat[i].releasePriority = 0;
+        mChStat[i].damper = false;
 	}
 }
 
@@ -329,8 +331,9 @@ void C700Generator::ModWheel( int ch, int value )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::Damper( int ch, int value )
+void C700Generator::Damper( int ch, bool on )
 {
+    mChStat[ch].damper = on;
 }
 
 //-----------------------------------------------------------------------------
@@ -942,8 +945,13 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
     bool    handled = true;
     
     if (evt->type == NOTE_OFF) {
-        int stops = StopPlayingVoice( evt );
-        mChStat[evt->ch].noteOns -= stops;
+        if (mChStat[evt->ch].damper) {
+            handled = false;
+        }
+        else {
+            int stops = StopPlayingVoice( evt );
+            mChStat[evt->ch].noteOns -= stops;
+        }
     }
     else {
         // ノートオフ以外のイベントは全て遅延実行する
@@ -1054,6 +1062,7 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
                     
                 case 64:
                     // ホールド１（ダンパー）
+                    Damper(evt->ch, (evt->velo < 64)?false:true);
                     break;
                     
                 case 65:
@@ -1102,13 +1111,13 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
                     break;
                     
                 default:
-                    handled = false;
+                    //handled = false;
                     break;
             }
             break;
             
         default:
-            handled = false;
+            //handled = false;
             break;
     }
     return handled;
@@ -1136,12 +1145,13 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 			while ( it != mMIDIEvt.end() ) {
 				if ( it->remain_samples >= 0 ) {
 					it->remain_samples--;
-					if ( it->remain_samples < 0 ) {
-                        doEvents1(&(*it));
-						it = mMIDIEvt.erase( it );
-						continue;
-					}
-				}
+                }
+                if ( it->remain_samples < 0 ) {
+                    if (doEvents1(&(*it))) {
+                        it = mMIDIEvt.erase( it );
+                        continue;
+                    }
+                }
 				it++;
 			}
 		}
@@ -1150,12 +1160,13 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 			while ( it != mDelayedEvt.end() ) {
 				if ( it->remain_samples >= 0 ) {
 					it->remain_samples--;
-					if ( it->remain_samples < 0 ) {
-                        doEvents2(&(*it));
-						it = mDelayedEvt.erase( it );
-						continue;
-					}
-				}
+                }
+                if ( it->remain_samples < 0 ) {
+                    if (doEvents2(&(*it))) {
+                        it = mDelayedEvt.erase( it );
+                        continue;
+                    }
+                }
 				it++;
 			}
 		}
