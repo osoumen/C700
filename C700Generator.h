@@ -100,6 +100,7 @@ public:
     void        SetChPriority( int ch, int value );
     void        SetChLimit( int ch, int value );
     void        SetReleasePriority( int ch, int value );
+    void        SetMonoMode( int ch, bool on );
 
     // global params
 	void		SetVoiceLimit( int value );
@@ -174,6 +175,7 @@ private:
 		unsigned int	uniqueID;
         
         bool            isKeyOn;       // キーオンされているかどうか
+        bool            legato;        // モノモードで２音目以降の音か
 		
 		int				pb;
 		int				vibdepth;
