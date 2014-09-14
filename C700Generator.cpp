@@ -651,10 +651,15 @@ void C700Generator::DoKeyOn(const MIDIEvt *evt)
 
     if (!mVoice[v].legato) {
         
-        if (mChStat[midiCh].portaStartPitch == 0) {
-            mChStat[midiCh].portaStartPitch = mVoice[v].pitch;
+        if (mChStat[midiCh].portaOn) {
+            if (mChStat[midiCh].portaStartPitch == 0) {
+                mChStat[midiCh].portaStartPitch = mVoice[v].pitch;
+            }
+            mVoice[v].portaPitch = mChStat[midiCh].portaStartPitch;
         }
-        mVoice[v].portaPitch = mChStat[midiCh].portaStartPitch;
+        else {
+            mVoice[v].portaPitch = mVoice[v].pitch;
+        }
         
         //ベロシティの取得
         if ( mVelocityMode == kVelocityMode_Square ) {
