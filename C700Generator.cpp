@@ -1293,8 +1293,9 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 				}
 				
 				//ピッチの算出
-                int voicePitch = mChStat[mVoice[v].midi_ch].portaOn ?
-                static_cast<int>(mVoice[v].portaPitch + 0.5f):mVoice[v].pitch;
+                int voicePitch = static_cast<int>(mVoice[v].portaPitch + 0.5f);
+//                int voicePitch = mChStat[mVoice[v].midi_ch].portaOn ?
+//                static_cast<int>(mVoice[v].portaPitch + 0.5f):mVoice[v].pitch;
 
 				pitch = (voicePitch + mVoice[v].pb) & 0x3fff;
 				
