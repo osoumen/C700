@@ -47,6 +47,7 @@ public:
         float       portaTc;
         float       portaStartPitch;
         int         lastNote;
+        bool        damper;
         
         int         priority;
         int         limit;
@@ -75,7 +76,7 @@ public:
 	void		doProgramChange( int ch, int value );
 	void		doPitchBend( int ch, int value1, int value2 );
 	void		ModWheel( int ch, int value );
-	void		Damper( int ch, int value );
+	void		Damper( int ch, bool on );
     void        Volume( int ch, int value );
     void        Expression( int ch, int value );
     void        Panpot( int ch, int value );
