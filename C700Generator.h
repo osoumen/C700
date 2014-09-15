@@ -43,17 +43,17 @@ public:
         int         expression;
         int         pan;
         float       pbRange;
-        bool        portaOn;
+        //bool        portaOn;
         float       portaTc;
         float       portaStartPitch;
         int         lastNote;
         bool        damper;
-        bool        monoMode;
+        //bool        monoMode;
         
-        int         priority;
+        //int         priority;
         int         limit;
         int         noteOns;
-        int         releasePriority;
+        //int         releasePriority;
         
         unsigned int changeFlg;
         InstParams  changedVP;
@@ -74,8 +74,6 @@ public:
 	void		ResetAllControllers();
 	
     // channel params
-	void		doProgramChange( int ch, int value );
-	void		doPitchBend( int ch, int value1, int value2 );
 	void		ModWheel( int ch, int value );
 	void		Damper( int ch, bool on );
     void        Volume( int ch, int value );
@@ -96,6 +94,7 @@ public:
     void        ChangeChSustainMode(int ch, int sustainMode);
     void        SetPortamentOn( int ch, bool on );
     void        SetPortamentTime( int ch, int value );
+    void        UpdatePortamentoTime( int prog );
     void        SetPortamentControl( int ch, int note );
     void        SetChPriority( int ch, int value );
     void        SetChLimit( int ch, int value );
@@ -252,7 +251,10 @@ private:
     int     StealVoice(int prio);
     int     StealVoice(int ch, int prio);
 	int		StopPlayingVoice( const MIDIEvt *evt );
-	void	DoKeyOn(const MIDIEvt *evt);
+	void	doKeyOn(const MIDIEvt *evt);
+	void	doProgramChange( int ch, int value );
+	void	doPitchBend( int ch, int value1, int value2 );
+    void    doControlChange( int ch, int controlNum, int value );
 	float	VibratoWave(float phase);
 	int		CalcPBValue(int ch, float pitchBend, int basePitch);
     InstParams getChannelVP(int ch, int note);

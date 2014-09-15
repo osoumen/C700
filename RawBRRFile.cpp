@@ -153,6 +153,11 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	mInst.volR	= 100;
 	mInst.echo = false;
 	mInst.bank = 0;
+    mInst.monoMode = false;
+    mInst.portamentoOn = false;
+    mInst.portamentoRate = 0;
+    mInst.noteOnPriority = 64;
+    mInst.releasePriority = 0;
 	mInst.isEmphasized = false;
 	mInst.sourceFile[0] = 0;
 	
@@ -228,17 +233,41 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 			fscanf(fp, "%d", &mInst.bank );
 			mHasData |= HAS_BANK;
 		}
-		else if ( strcmp(buf, "isemph")==0 ) {
-			int	val;
-			fscanf(fp, "%d", &val );
-			mInst.isEmphasized = val?true:false;
-			mHasData |= HAS_ISEMPHASIZED;
-		}
 		else if ( strcmp(buf, "sustainMode")==0 ) {
 			int	val;
 			fscanf(fp, "%d", &val );
 			mInst.sustainMode = val?true:false;
 			mHasData |= HAS_SUSTAINMODE;
+		}
+        else if ( strcmp(buf, "monoMode")==0 ) {
+			int	val;
+			fscanf(fp, "%d", &val );
+			mInst.monoMode = val?true:false;
+			mHasData |= HAS_MONOMODE;
+		}
+		else if ( strcmp(buf, "portamentoOn")==0 ) {
+			int	val;
+			fscanf(fp, "%d", &val );
+			mInst.portamentoOn = val?true:false;
+			mHasData |= HAS_PORTAMENTOON;
+		}
+        else if ( strcmp(buf, "portamentoRate")==0 ) {
+			fscanf(fp, "%d", &mInst.portamentoRate );
+			mHasData |= HAS_PORTAMENTORATE;
+		}
+        else if ( strcmp(buf, "noteOnPriority")==0 ) {
+			fscanf(fp, "%d", &mInst.noteOnPriority );
+			mHasData |= HAS_NOTEONPRIORITY;
+		}
+        else if ( strcmp(buf, "releasePriority")==0 ) {
+			fscanf(fp, "%d", &mInst.releasePriority );
+			mHasData |= HAS_RELEASEPRIORITY;
+		}
+		else if ( strcmp(buf, "isemph")==0 ) {
+			int	val;
+			fscanf(fp, "%d", &val );
+			mInst.isEmphasized = val?true:false;
+			mHasData |= HAS_ISEMPHASIZED;
 		}
 		else if ( strcmp(buf, "srcfile")==0 ) {
 			fscanf(fp, "%[^\n]s", buf);
@@ -291,6 +320,11 @@ bool RawBRRFile::Write()
 	fprintf(fp, "volR=%d\n",mInst.volR);
 	fprintf(fp, "echo=%d\n",mInst.echo?1:0);
 	fprintf(fp, "bank=%d\n",mInst.bank);
+    fprintf(fp, "monoMode=%d\n",mInst.monoMode?1:0);
+    fprintf(fp, "portamentoOn=%d\n",mInst.portamentoOn?1:0);
+    fprintf(fp, "portamentoRate=%d\n",mInst.portamentoRate);
+    fprintf(fp, "noteOnPriority=%d\n",mInst.noteOnPriority);
+    fprintf(fp, "releasePriority=%d\n",mInst.releasePriority);
 	fprintf(fp, "isemph=%d\n",mInst.isEmphasized?1:0);
 	if ( mHasData & HAS_SOURCEFILE ) {
 		fprintf(fp, "srcfile=%s\n",mInst.sourceFile);

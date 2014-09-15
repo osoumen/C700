@@ -107,17 +107,17 @@ C700Generator::C700Generator()
         mChStat[i].pitchBend = 0;
         mChStat[i].vibDepth = 0;
         mChStat[i].pbRange = static_cast<float>(DEFAULT_PBRANGE);
-        mChStat[i].portaOn = false;
+        //mChStat[i].portaOn = false;
         mChStat[i].portaTc = 1.0f;
         mChStat[i].portaStartPitch = 0;
         mChStat[i].volume = VOLUME_DEFAULT;
         mChStat[i].expression = EXPRESSION_DEFAULT;
         mChStat[i].pan = 64;
-        mChStat[i].priority = 64;
+        //mChStat[i].priority = 64;
         mChStat[i].limit = 127;
-        mChStat[i].releasePriority = 0;
+        //mChStat[i].releasePriority = 0;
         mChStat[i].damper = false;
-        mChStat[i].monoMode = false;
+        //mChStat[i].monoMode = false;
         
         mChStat[i].lastNote = 0;
         mChStat[i].noteOns = 0;
@@ -255,7 +255,7 @@ void C700Generator::ResetAllControllers()
         mChStat[i].pbRange = static_cast<float>(DEFAULT_PBRANGE);
         mChStat[i].expression = EXPRESSION_DEFAULT;
         //mChStat[i].pan = 64;
-        mChStat[i].portaOn = false;
+        //mChStat[i].portaOn = false;
         //mChStat[i].portaTc = 1.0f;
         mChStat[i].portaStartPitch = 0;
         //mChStat[i].priority = 64;
@@ -285,6 +285,8 @@ void C700Generator::doProgramChange( int ch, int value )
     if (mVPset) {
         mChStat[ch].changeFlg = 0;
         mChStat[ch].changedVP = mVPset[mChStat[ch].prog];
+        
+        SetPortamentTime(ch, value);
     }
 }
 
@@ -454,7 +456,9 @@ void C700Generator::SetFIRTap( int tap, int value )
 //-----------------------------------------------------------------------------
 void C700Generator::SetPortamentOn( int ch, bool on )
 {
-    mChStat[ch].portaOn = on;
+    //mChStat[ch].portaOn = on;
+    mChStat[ch].changedVP.portamentoOn = on;
+    mChStat[ch].changeFlg |= HAS_PORTAMENTOON;
 }
 
 //-----------------------------------------------------------------------------
@@ -487,6 +491,20 @@ void C700Generator::SetPortamentTime( int ch, int value )
 }
 
 //-----------------------------------------------------------------------------
+void C700Generator::UpdatePortamentoTime( int prog )
+{
+    if (mVPset == NULL) {
+        return;
+    }
+    
+    for (int i=0; i<16; i++) {
+        if (mChStat[i].prog == prog) {
+            SetPortamentTime(i, mVPset[prog].portamentoRate);
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
 void C700Generator::SetPortamentControl( int ch, int note )
 {
     InstParams		vp = getChannelVP(ch, mChStat[ch].lastNote);
@@ -496,7 +514,9 @@ void C700Generator::SetPortamentControl( int ch, int note )
 //-----------------------------------------------------------------------------
 void C700Generator::SetChPriority( int ch, int value )
 {
-    mChStat[ch].priority = value;
+    //mChStat[ch].priority = value;
+    mChStat[ch].changedVP.noteOnPriority = value;
+    mChStat[ch].changeFlg |= HAS_NOTEONPRIORITY;
 }
 
 //-----------------------------------------------------------------------------
@@ -508,13 +528,17 @@ void C700Generator::SetChLimit( int ch, int value )
 //-----------------------------------------------------------------------------
 void C700Generator::SetReleasePriority( int ch, int value )
 {
-    mChStat[ch].releasePriority = value;
+    //mChStat[ch].releasePriority = value;
+    mChStat[ch].changedVP.releasePriority = value;
+    mChStat[ch].changeFlg |= HAS_RELEASEPRIORITY;
 }
 
 //-----------------------------------------------------------------------------
 void C700Generator::SetMonoMode( int ch, bool on )
 {
-    mChStat[ch].monoMode = on;
+    //mChStat[ch].monoMode = on;
+    mChStat[ch].changedVP.monoMode = on;
+    mChStat[ch].changeFlg |= HAS_MONOMODE;
 }
 
 //-----------------------------------------------------------------------------
@@ -602,7 +626,7 @@ int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
                     mVoice[vo].envstate = RELEASE;
                 }
                 mVoice[vo].uniqueID = 0;
-                mVoice[vo].priority = mChStat[evt->ch].releasePriority;
+                mVoice[vo].priority = vp.releasePriority;
                 mVoice[vo].isKeyOn = false;
             }
             if ( vo < mVoiceLimit ) {
@@ -619,7 +643,7 @@ int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::DoKeyOn(const MIDIEvt *evt)
+void C700Generator::doKeyOn(const MIDIEvt *evt)
 {
     int     midiCh = evt->ch & 0x0f;
     
@@ -646,21 +670,20 @@ void C700Generator::DoKeyOn(const MIDIEvt *evt)
 	
 	// 中心周波数の算出
 	mVoice[v].pitch = pow(2., (evt->note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
-
+    
+    if (vp.portamentoOn) {
+        if (mChStat[midiCh].portaStartPitch == 0) {
+            mChStat[midiCh].portaStartPitch = mVoice[v].pitch;
+        }
+        mVoice[v].portaPitch = mChStat[midiCh].portaStartPitch;
+    }
+    else {
+        mVoice[v].portaPitch = mVoice[v].pitch;
+    }
+    
     mVoice[v].isKeyOn = true;
 
     if (!mVoice[v].legato) {
-        
-        if (mChStat[midiCh].portaOn) {
-            if (mChStat[midiCh].portaStartPitch == 0) {
-                mChStat[midiCh].portaStartPitch = mVoice[v].pitch;
-            }
-            mVoice[v].portaPitch = mChStat[midiCh].portaStartPitch;
-        }
-        else {
-            mVoice[v].portaPitch = mVoice[v].pitch;
-        }
-        
         //ベロシティの取得
         if ( mVelocityMode == kVelocityMode_Square ) {
             mVoice[v].velo = VOLUME_CURB[evt->velo];
@@ -740,6 +763,11 @@ InstParams C700Generator::getChannelVP(int ch, int note)
 //        if (mChStat[ch].changeFlg & HAS_ISEMPHASIZED) mergedVP.isEmphasized = mChStat[ch].changedVP.isEmphasized;
 //        if (mChStat[ch].changeFlg & HAS_SOURCEFILE) mergedVP.sourceFile = mChStat[ch].changedVP.sourceFile;
         if (mChStat[ch].changeFlg & HAS_SUSTAINMODE) mergedVP.sustainMode = mChStat[ch].changedVP.sustainMode;
+        if (mChStat[ch].changeFlg & HAS_MONOMODE) mergedVP.monoMode = mChStat[ch].changedVP.monoMode;
+        if (mChStat[ch].changeFlg & HAS_PORTAMENTOON) mergedVP.portamentoOn = mChStat[ch].changedVP.portamentoOn;
+        if (mChStat[ch].changeFlg & HAS_PORTAMENTORATE) mergedVP.portamentoRate = mChStat[ch].changedVP.portamentoRate;
+        if (mChStat[ch].changeFlg & HAS_NOTEONPRIORITY) mergedVP.noteOnPriority = mChStat[ch].changedVP.noteOnPriority;
+        if (mChStat[ch].changeFlg & HAS_RELEASEPRIORITY) mergedVP.releasePriority = mChStat[ch].changedVP.releasePriority;
         return mergedVP;
     }
 }
@@ -974,14 +1002,15 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
         
         if (evt->type == NOTE_ON) {
             //ボイスを確保して再生準備状態にする
+            InstParams		vp = getChannelVP(evt->ch, evt->note);
             int	v = -1;
-            int limit = mChStat[evt->ch].monoMode ? 1:mChStat[evt->ch].limit;
+            int limit = vp.monoMode ? 1:mChStat[evt->ch].limit;
             
             if (mChStat[evt->ch].noteOns >= limit) {
                 // ch発音数を超えてたら、そのchの音を一つ止めて次の音を鳴らす
-                v = StealVoice(evt->ch, mChStat[evt->ch].priority);
+                v = StealVoice(evt->ch, vp.noteOnPriority);
                 if (v != -1) {
-                    if ((mVoice[v].isKeyOn == false) || (!mChStat[mVoice[v].midi_ch].monoMode)) {
+                    if ((mVoice[v].isKeyOn == false) || (!vp.monoMode)) {
                         mPlayVo.remove(v);
                         mChStat[ mVoice[v].midi_ch ].noteOns--;
                         mVoice[v].legato = false;
@@ -995,7 +1024,7 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
                 // 超えてない場合は、後着優先で優先度の低い音を消す
                 v = FindFreeVoice();
                 if (v == -1) {
-                    v = StealVoice(mChStat[evt->ch].priority);
+                    v = StealVoice(vp.noteOnPriority);
                     if (v != -1) {
                         mPlayVo.remove(v);
                         mChStat[ mVoice[v].midi_ch ].noteOns--;
@@ -1013,7 +1042,7 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
                 mVoice[v].isKeyOn = false;
                 mVoice[v].midi_ch = evt->ch;
                 mVoice[v].uniqueID = evt->uniqueID;
-                mVoice[v].priority = mChStat[evt->ch].priority;
+                mVoice[v].priority = vp.noteOnPriority;
                 if (mVoice[v].legato == false) {
                     mPlayVo.push_back(v);
                     mVoice[v].envstate = RELEASE;
@@ -1027,13 +1056,123 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
     return handled;
 }
 
+void C700Generator::doControlChange( int ch, int controlNum, int value )
+{
+    switch (controlNum) {
+        case 1:
+            // モジュレーションホイール
+            ModWheel(ch, value);
+            break;
+            
+        case 5:
+            // ポルタメントタイム
+            SetPortamentTime(ch, value);
+            mChStat[ch].changedVP.portamentoRate = value;
+            mChStat[ch].changeFlg |= HAS_PORTAMENTORATE;
+            break;
+            
+        case 7:
+            // ボリューム
+            Volume(ch, value);
+            break;
+            
+        case 10:
+            // パン
+            Panpot(ch, value);
+            break;
+            
+        case 11:
+            // エクスプレッション
+            Expression(ch, value);
+            break;
+            
+        case 55:
+            // チャンネル リミット
+            SetChLimit(ch, value);
+            break;
+            
+        case 56:
+            // チャンネル プライオリティ
+            SetChPriority(ch, value);
+            break;
+            
+        case 57:
+            // リリース プライオリティ
+            SetReleasePriority(ch, value);
+            break;
+            
+        case 64:
+            // ホールド１（ダンパー）
+            Damper(ch, (value < 64)?false:true);
+            break;
+            
+        case 65:
+            // ポルタメント・オン・オフ
+            SetPortamentOn(ch, (value < 64)?false:true);
+            break;
+            
+        case 72:
+            // SR
+            ChangeChSR(ch, value >> 2);
+            break;
+            
+        case 73:
+            // AR
+            ChangeChAR(ch, value >> 3);
+            break;
+            
+        case 80:
+            // SL
+            ChangeChSL(ch, value >> 4);
+            break;
+            
+        case 75:
+            // DR
+            ChangeChDR(ch, value >> 4);
+            break;
+            
+        case 76:
+            // ビブラート・レート
+            SetVibFreq(ch, (35.0f * value) / 127);
+            break;
+            
+        case 77:
+            // ビブラート・デプス
+            SetVibDepth(ch, (15.0f * value) / 127);
+            break;
+            
+        case 84:
+            // ポルタメント・コントロール
+            SetPortamentControl(ch, value);
+            break;
+            
+        case 91:
+            // ECEN ON/OFF
+            ChangeChEcho(ch, (value < 64)?0:127);
+            break;
+            
+        case 126:
+            // Mono Mode
+            SetMonoMode(ch, (value < 64)?0:127);
+            break;
+            
+        case 127:
+            // Poly Mode
+            SetMonoMode(ch, (value < 64)?127:0);
+            break;
+            
+        default:
+            break;
+    }
+}
+
 bool C700Generator::doEvents2( const MIDIEvt *evt )
 {
     bool    handled = true;
     
     switch (evt->type) {
         case NOTE_ON:
-            DoKeyOn( evt );
+            doKeyOn( evt );
             break;
             
         case NOTE_OFF:
@@ -1049,111 +1188,7 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
             break;
             
         case CONTROL_CHANGE:
-            switch (evt->note) {
-                case 1:
-                    // モジュレーションホイール
-                    ModWheel(evt->ch, evt->velo);
-                    break;
-                    
-                case 5:
-                    // ポルタメントタイム
-                    SetPortamentTime(evt->ch, evt->velo);
-                    break;
-                    
-                case 7:
-                    // ボリューム
-                    Volume(evt->ch, evt->velo);
-                    break;
-                    
-                case 10:
-                    // パン
-                    Panpot(evt->ch, evt->velo);
-                    break;
-                    
-                case 11:
-                    // エクスプレッション
-                    Expression(evt->ch, evt->velo);
-                    break;
-                    
-                case 55:
-                    // チャンネル リミット
-                    SetChLimit(evt->ch, evt->velo);
-                    break;
-                    
-                case 56:
-                    // チャンネル プライオリティ
-                    SetChPriority(evt->ch, evt->velo);
-                    break;
-                    
-                case 57:
-                    // リリース プライオリティ
-                    SetReleasePriority(evt->ch, evt->velo);
-                    break;
-                    
-                case 64:
-                    // ホールド１（ダンパー）
-                    Damper(evt->ch, (evt->velo < 64)?false:true);
-                    break;
-                    
-                case 65:
-                    // ポルタメント・オン・オフ
-                    SetPortamentOn(evt->ch, (evt->velo < 64)?false:true);
-                    break;
-                    
-                case 72:
-                    // SR
-                    ChangeChSR(evt->ch, evt->velo >> 2);
-                    break;
-                    
-                case 73:
-                    // AR
-                    ChangeChAR(evt->ch, evt->velo >> 3);
-                    break;
-                    
-                case 80:
-                    // SL
-                    ChangeChSL(evt->ch, evt->velo >> 4);
-                    break;
-                    
-                case 75:
-                    // DR
-                    ChangeChDR(evt->ch, evt->velo >> 4);
-                    break;
-                    
-                case 76:
-                    // ビブラート・レート
-                    SetVibFreq(evt->ch, (35.0f * evt->velo) / 127);
-                    break;
-                    
-                case 77:
-                    // ビブラート・デプス
-                    SetVibDepth(evt->ch, (15.0f * evt->velo) / 127);
-                    break;
-                    
-                case 84:
-                    // ポルタメント・コントロール
-                    SetPortamentControl(evt->ch, evt->velo);
-                    break;
-                    
-                case 91:
-                    // ECEN ON/OFF
-                    ChangeChEcho(evt->ch, (evt->velo < 64)?0:127);
-                    break;
-                    
-                case 126:
-                    // Mono Mode
-                    SetMonoMode(evt->ch, (evt->velo < 64)?0:127);
-                    break;
-                    
-                case 127:
-                    // Poly Mode
-                    SetMonoMode(evt->ch, (evt->velo < 64)?127:0);
-                    break;
-                    
-                default:
-                    //handled = false;
-                    break;
-            }
+            doControlChange(evt->ch, evt->note, evt->velo);
             break;
             
         default:

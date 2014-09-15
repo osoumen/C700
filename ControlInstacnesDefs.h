@@ -2281,7 +2281,7 @@ ControlInstances	sCntl[] = {
 		0,	//Minimum
 		1,	//Maximum
 		'user',	//sig
-		kAudioUnitCustomProperty_Portamento,	//id
+		kAudioUnitCustomProperty_PortamentoOn,	//id
 		0,	//command
 		414, 123, 33, 12,	//x,y,w,h
 		"",	//fontname

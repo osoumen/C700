@@ -154,7 +154,7 @@ enum
     
     kAudioUnitCustomProperty_SustainMode,
     kAudioUnitCustomProperty_MonoMode,
-    kAudioUnitCustomProperty_Portamento,
+    kAudioUnitCustomProperty_PortamentoOn,
     kAudioUnitCustomProperty_PortamentoRate,
     kAudioUnitCustomProperty_NoteOnPriority,
     kAudioUnitCustomProperty_ReleasePriority,
@@ -222,7 +222,12 @@ enum InstChangeFlag {
     HAS_BANK            = 1 << 12,
     HAS_ISEMPHASIZED    = 1 << 13,
     HAS_SOURCEFILE      = 1 << 14,
-    HAS_SUSTAINMODE     = 1 << 15
+    HAS_SUSTAINMODE     = 1 << 15,
+    HAS_MONOMODE        = 1 << 16,
+    HAS_PORTAMENTOON    = 1 << 17,
+    HAS_PORTAMENTORATE  = 1 << 18,
+    HAS_NOTEONPRIORITY  = 1 << 19,
+    HAS_RELEASEPRIORITY = 1 << 20
 };
 
 static const int kMaximumVoices = 16;
@@ -242,6 +247,11 @@ static const int kDefaultValue_SL = 7;
 static const int kDefaultValue_SR = 31;
 
 static const bool kDefaultValue_SustainMode = true;
+static const bool kDefaultValue_MonoMode = false;
+static const bool kDefaultValue_PortamentoOn = false;
+static const int kDefaultValue_PortamentoRate = 0;
+static const int kDefaultValue_NoteOnPriority = 64;
+static const int kDefaultValue_ReleasePriority = 0;
 
 typedef struct {
     int             size;
@@ -262,6 +272,11 @@ typedef struct {
     char        sourceFile[PATH_LEN_MAX];
     bool        isEmphasized;
     bool        sustainMode;
+    bool        monoMode;
+    bool        portamentoOn;
+    int         portamentoRate;
+    int         noteOnPriority;
+    int         releasePriority;
 } InstParams;
 
 float ConvertToVSTValue( float value, float min, float max );

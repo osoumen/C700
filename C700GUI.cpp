@@ -859,6 +859,11 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 		}
 	}
     if ( hasFlg & HAS_SUSTAINMODE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SustainMode,inst.sustainMode ? 1.0f:.0f);
+    if ( hasFlg & HAS_MONOMODE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_MonoMode,inst.monoMode ? 1.0f:.0f);
+    if ( hasFlg & HAS_PORTAMENTOON ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_PortamentoOn,inst.portamentoOn ? 1.0f:.0f);
+    if ( hasFlg & HAS_PORTAMENTORATE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_PortamentoRate,inst.portamentoRate);
+    if ( hasFlg & HAS_NOTEONPRIORITY ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority,inst.noteOnPriority);
+    if ( hasFlg & HAS_RELEASEPRIORITY ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_ReleasePriority,inst.releasePriority);
 	
 	return true;
 }
