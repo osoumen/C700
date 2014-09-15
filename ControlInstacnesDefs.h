@@ -753,7 +753,92 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		4, 211, 59, 11,	//x,y,w,h
+		4, 206, 59, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+		"Priority",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		6, 238, 59, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+		"NteOn",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		7, 250, 59, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'dtxt',	//kind
+		"Monaco 10 180 248 255 0 2 1 0",	//title
+		0,	//Value
+		0,	//Minimum
+		127,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_NoteOnPriority,	//id
+		0,	//command
+		38, 248, 24, 12,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+		"Rel",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		66, 250, 59, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'dtxt',	//kind
+		"Monaco 10 180 248 255 0 2 1 0",	//title
+		0,	//Value
+		0,	//Minimum
+		127,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_ReleasePriority,	//id
+		0,	//command
+		84, 248, 24, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1790,7 +1875,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		70011,	//id
 		'drat',	//command
-		81, 224, 29, 14,	//x,y,w,h
+		81, 219, 29, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1943,7 +2028,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64002,	//id
 		0,	//command
-		12, 223, 66, 14,	//x,y,w,h
+		12, 218, 66, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kRightText,	//fontalign
@@ -2165,6 +2250,74 @@ ControlInstances	sCntl[] = {
 		64014,	//id
 		0,	//command
 		414, 91, 33, 12,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'cbtn',	//kind
+		"Mono",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_MonoMode,	//id
+		0,	//command
+		414, 107, 33, 12,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'cbtn',	//kind
+		"Glide",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_Portamento,	//id
+		0,	//command
+		414, 123, 33, 12,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+	{
+		'appl',	//sig
+		'stxt',	//kind
+		"Rate",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		414, 137, 33, 12,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'dtxt',	//kind
+		"Monaco 10 180 248 255 0 2 1 0",	//title
+		0,	//Value
+		0,	//Minimum
+		127,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_PortamentoRate,	//id
+		0,	//command
+		414, 148, 24, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2713,6 +2866,23 @@ ControlInstances	sCntl[] = {
 #else
 		470, 164, 64, 11,	//x,y,w,h
 #endif
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'push',	//kind
+		"bt_khaos",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		0,	//sig
+		kControlButtonKhaos,	//id
+		'copy',	//command
+		500, 80, 33, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign

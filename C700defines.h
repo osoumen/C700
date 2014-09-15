@@ -153,6 +153,11 @@ enum
     kAudioUnitCustomProperty_IsEmaphasized,
     
     kAudioUnitCustomProperty_SustainMode,
+    kAudioUnitCustomProperty_MonoMode,
+    kAudioUnitCustomProperty_Portamento,
+    kAudioUnitCustomProperty_PortamentoRate,
+    kAudioUnitCustomProperty_NoteOnPriority,
+    kAudioUnitCustomProperty_ReleasePriority,
     
     kAudioUnitCustomProperty_End,
     kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
@@ -196,7 +201,9 @@ enum
     kControlSelectTrack4,
     kControlSelectTrack3,
     kControlSelectTrack2,
-    kControlSelectTrack1
+    kControlSelectTrack1,
+    
+    kControlButtonKhaos
 };
 
 enum InstChangeFlag {
