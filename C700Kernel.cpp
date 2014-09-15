@@ -603,10 +603,12 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 
         case kAudioUnitCustomProperty_NoteOnPriority:
             mVPset[mEditProg].noteOnPriority = value;
+            mGenerator.AllNotesOff();
             return true;
             
         case kAudioUnitCustomProperty_ReleasePriority:
             mVPset[mEditProg].releasePriority = value;
+            mGenerator.AllNotesOff();
             return true;
 
 		case kAudioUnitCustomProperty_SourceFileRef:

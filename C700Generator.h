@@ -250,9 +250,10 @@ private:
 	int		FindFreeVoice();
     int     StealVoice(int prio);
     int     StealVoice(int ch, int prio);
+    int     FindVoice(int ch=-1);
 	int		StopPlayingVoice( const MIDIEvt *evt );
 	void	doKeyOn(const MIDIEvt *evt);
-	void	doProgramChange( int ch, int value );
+    void    doProgramChange( int ch, int value );
 	void	doPitchBend( int ch, int value1, int value2 );
     void    doControlChange( int ch, int controlNum, int value );
 	float	VibratoWave(float phase);
