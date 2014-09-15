@@ -278,6 +278,8 @@
 		F569C40C16254B6E006C91AD /* XIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C40A16254B6E006C91AD /* XIFile.cpp */; };
 		F569C6DF162644AE006C91AD /* PlistBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C6DD162644AE006C91AD /* PlistBRRFile.h */; };
 		F569C6E0162644AE006C91AD /* PlistBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */; };
+		F56A752919C6B65B00348177 /* bt_khaos.png in Resources */ = {isa = PBXBuildFile; fileRef = F56A752819C6B65B00348177 /* bt_khaos.png */; };
+		F56A752A19C6B65B00348177 /* bt_khaos.png in Resources */ = {isa = PBXBuildFile; fileRef = F56A752819C6B65B00348177 /* bt_khaos.png */; };
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
@@ -480,6 +482,7 @@
 		F569C40A16254B6E006C91AD /* XIFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = XIFile.cpp; sourceTree = "<group>"; };
 		F569C6DD162644AE006C91AD /* PlistBRRFile.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = PlistBRRFile.h; sourceTree = "<group>"; };
 		F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = PlistBRRFile.cpp; sourceTree = "<group>"; };
+		F56A752819C6B65B00348177 /* bt_khaos.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bt_khaos.png; path = graphics/bt_khaos.png; sourceTree = "<group>"; };
 		F56D351F156A0EA000038960 /* encodetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = encodetest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
 		F56D359F156A185300038960 /* libMiniAiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMiniAiff.a; path = encodetest/libMiniAiff.a; sourceTree = "<group>"; };
@@ -573,6 +576,7 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F56A752819C6B65B00348177 /* bt_khaos.png */,
 				F5BEFCA419BC4F8C0083F8D9 /* help.png */,
 				8ACF4C260B2144FD00EC1825 /* AUBackground.png */,
 				8AC1D32A0B27525A00FFD294 /* dragimg.png */,
@@ -1137,6 +1141,7 @@
 				F55D64FC161EB76D001CF9AB /* bt_copy.png in Resources */,
 				F55D64FE161EB7CD001CF9AB /* bt_calc.png in Resources */,
 				F55D6500161EB8CE001CF9AB /* bt_load.png in Resources */,
+				F56A752919C6B65B00348177 /* bt_khaos.png in Resources */,
 				F55D6502161EB957001CF9AB /* bt_save.png in Resources */,
 				F55D6504161EB9B6001CF9AB /* bt_unload.png in Resources */,
 				F55D6506161EBA24001CF9AB /* bt_save_xi.png in Resources */,
@@ -1179,6 +1184,7 @@
 				F54331C416296E0200863A0B /* bt_copy.png in Resources */,
 				F54331C516296E0200863A0B /* bt_calc.png in Resources */,
 				F54331C616296E0200863A0B /* bt_load.png in Resources */,
+				F56A752A19C6B65B00348177 /* bt_khaos.png in Resources */,
 				F54331C716296E0200863A0B /* bt_save.png in Resources */,
 				F54331C816296E0200863A0B /* bt_unload.png in Resources */,
 				F54331C916296E0200863A0B /* bt_save_xi.png in Resources */,
