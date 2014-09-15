@@ -63,6 +63,11 @@ C700Kernel::C700Kernel()
 		mVPset[i].sr = kDefaultValue_SR;
         
         mVPset[i].sustainMode = kDefaultValue_SustainMode;
+        mVPset[i].monoMode = kDefaultValue_MonoMode;
+        mVPset[i].portamentoOn = kDefaultValue_PortamentoOn;
+        mVPset[i].portamentoRate = kDefaultValue_PortamentoRate;
+        mVPset[i].noteOnPriority = kDefaultValue_NoteOnPriority;
+        mVPset[i].releasePriority = kDefaultValue_ReleasePriority;
 	}
 	
 	// âπåπÇ…ÉvÉçÉOÉâÉÄÇÃÉÅÉÇÉäÇìnÇ∑
@@ -369,6 +374,21 @@ float C700Kernel::GetPropertyValue( int inID )
             
         case kAudioUnitCustomProperty_SustainMode:
             return mVPset[mEditProg].sustainMode ? 1.0f:.0f;
+            
+        case kAudioUnitCustomProperty_MonoMode:
+            return mVPset[mEditProg].monoMode ? 1.0f:.0f;
+            
+        case kAudioUnitCustomProperty_PortamentoOn:
+            return mVPset[mEditProg].portamentoOn ? 1.0f:.0f;
+            
+        case kAudioUnitCustomProperty_PortamentoRate:
+            return mVPset[mEditProg].portamentoRate;
+            
+        case kAudioUnitCustomProperty_NoteOnPriority:
+            return mVPset[mEditProg].noteOnPriority;
+            
+        case kAudioUnitCustomProperty_ReleasePriority:
+            return mVPset[mEditProg].releasePriority;
 			
 		case kAudioUnitCustomProperty_SourceFileRef:
 		case kAudioUnitCustomProperty_BRRData:
@@ -470,7 +490,9 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
 					propertyNotifyFunc( i, propNotifyUserData );
 				}
-                propertyNotifyFunc( kAudioUnitCustomProperty_SustainMode, propNotifyUserData );
+                for (int i=kAudioUnitCustomProperty_SustainMode; i<=kAudioUnitCustomProperty_ReleasePriority; i++) {
+					propertyNotifyFunc( i, propNotifyUserData );
+				}
 			}
 			return true;
 		}
@@ -495,7 +517,9 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
 					propertyNotifyFunc( i, propNotifyUserData );
 				}
-                propertyNotifyFunc( kAudioUnitCustomProperty_SustainMode, propNotifyUserData );
+                for (int i=kAudioUnitCustomProperty_SustainMode; i<=kAudioUnitCustomProperty_ReleasePriority; i++) {
+					propertyNotifyFunc( i, propNotifyUserData );
+				}
 			}
 			return true;
 		}
@@ -564,6 +588,27 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             mVPset[mEditProg].sustainMode = boolData;
             return true;
             
+        case kAudioUnitCustomProperty_MonoMode:
+            mVPset[mEditProg].monoMode = boolData;
+            return true;
+
+        case kAudioUnitCustomProperty_PortamentoOn:
+            mVPset[mEditProg].portamentoOn = boolData;
+            return true;
+            
+        case kAudioUnitCustomProperty_PortamentoRate:
+            mVPset[mEditProg].portamentoRate = value;
+            mGenerator.UpdatePortamentoTime(mEditProg);
+            return true;
+
+        case kAudioUnitCustomProperty_NoteOnPriority:
+            mVPset[mEditProg].noteOnPriority = value;
+            return true;
+            
+        case kAudioUnitCustomProperty_ReleasePriority:
+            mVPset[mEditProg].releasePriority = value;
+            return true;
+
 		case kAudioUnitCustomProperty_SourceFileRef:
 		case kAudioUnitCustomProperty_BRRData:
 		case kAudioUnitCustomProperty_ProgramName:

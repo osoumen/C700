@@ -85,6 +85,24 @@ bool PGChunk::AppendDataFromVP( InstParams *vp )
 	intValue = vp->bank;
 	writeChunk(kAudioUnitCustomProperty_Bank, &intValue, sizeof(int));
 	
+    intValue = vp->sustainMode ? 1:0;
+    writeChunk(kAudioUnitCustomProperty_SustainMode, &intValue, sizeof(int));
+	
+    intValue = vp->monoMode ? 1:0;
+    writeChunk(kAudioUnitCustomProperty_MonoMode, &intValue, sizeof(int));
+
+    intValue = vp->portamentoOn ? 1:0;
+    writeChunk(kAudioUnitCustomProperty_PortamentoOn, &intValue, sizeof(int));
+
+    intValue = vp->portamentoRate;
+    writeChunk(kAudioUnitCustomProperty_PortamentoRate, &intValue, sizeof(int));
+
+    intValue = vp->noteOnPriority;
+    writeChunk(kAudioUnitCustomProperty_NoteOnPriority, &intValue, sizeof(int));
+    
+    intValue = vp->releasePriority;
+    writeChunk(kAudioUnitCustomProperty_ReleasePriority, &intValue, sizeof(int));
+
 	//Œ³”gŒ`î•ñ
 	intValue = vp->isEmphasized ? 1:0;
 	writeChunk(kAudioUnitCustomProperty_IsEmaphasized, &intValue, sizeof(int));
@@ -92,9 +110,6 @@ bool PGChunk::AppendDataFromVP( InstParams *vp )
 		writeChunk(kAudioUnitCustomProperty_SourceFileRef, vp->sourceFile, PATH_LEN_MAX);
 	}
     
-    intValue = vp->sustainMode ? 1:0;
-    writeChunk(kAudioUnitCustomProperty_SustainMode, &intValue, sizeof(int));
-	
 	mNumPrograms++;
 	
 	return true;
@@ -105,8 +120,8 @@ int PGChunk::getPGChunkSize( const InstParams *vp )
 {
 	int cksize = 0;
 	if ( vp->brr.data ) {
-		cksize += sizeof( MyChunkHead ) * 18;
-		cksize += sizeof( int ) * 14;	//intŒ^ƒf[ƒ^~14
+		cksize += sizeof( MyChunkHead ) * 23;
+		cksize += sizeof( int ) * 19;	//intŒ^ƒf[ƒ^~14
 		cksize += sizeof(double);		//doubleŒ^ƒf[ƒ^‚P‚Â
 		cksize += PROGRAMNAME_MAX_LEN;
 		cksize += PATH_LEN_MAX;
@@ -193,6 +208,34 @@ bool PGChunk::ReadDataToVP( InstParams *vp )
 				readData(&vp->bank, ckSize, NULL);
 				break;
 				
+            case kAudioUnitCustomProperty_MonoMode:
+			{
+				int value;
+				readData(&value, ckSize, NULL);
+				vp->monoMode = value ? true:false;
+				break;
+			}
+            
+            case kAudioUnitCustomProperty_PortamentoOn:
+			{
+				int value;
+				readData(&value, ckSize, NULL);
+				vp->portamentoOn = value ? true:false;
+				break;
+			}
+                
+            case kAudioUnitCustomProperty_PortamentoRate:
+				readData(&vp->portamentoRate, ckSize, NULL);
+				break;
+                
+            case kAudioUnitCustomProperty_NoteOnPriority:
+				readData(&vp->noteOnPriority, ckSize, NULL);
+				break;
+                
+            case kAudioUnitCustomProperty_ReleasePriority:
+				readData(&vp->releasePriority, ckSize, NULL);
+				break;
+                
 			case kAudioUnitCustomProperty_IsEmaphasized:
 			{
 				int value;

@@ -23,7 +23,13 @@ static CFStringRef kSaveKey_echo = CFSTR("echo");
 static CFStringRef kSaveKey_bank = CFSTR("bank");
 static CFStringRef kSaveKey_IsEmphasized = CFSTR("isemph");
 static CFStringRef kSaveKey_SourceFile = CFSTR("srcfile");
-static CFStringRef kSaveKey_sustainMode = CFSTR("sustainMode");
+static CFStringRef kSaveKey_SustainMode = CFSTR("sustainmode");
+static CFStringRef kSaveKey_MonoMode = CFSTR("monomode");
+static CFStringRef kSaveKey_PortamentoOn = CFSTR("portamentoon");
+static CFStringRef kSaveKey_PortamentoRate = CFSTR("portamentorate");
+static CFStringRef kSaveKey_NoteOnPriority = CFSTR("noteonpriority");
+static CFStringRef kSaveKey_ReleasePriority = CFSTR("releasepriority");
+
 
 //-----------------------------------------------------------------------------
 
@@ -461,6 +467,30 @@ ComponentResult		C700::GetPropertyInfo (AudioUnitPropertyID	inID,
                 outWritable = false;
                 return noErr;
 								
+            case kAudioUnitCustomProperty_MonoMode:
+                outDataSize = sizeof(bool);
+                outWritable = false;
+                return noErr;
+                
+            case kAudioUnitCustomProperty_PortamentoOn:
+                outDataSize = sizeof(bool);
+                outWritable = false;
+                return noErr;
+                
+            case kAudioUnitCustomProperty_PortamentoRate:
+                outDataSize = sizeof(int);
+                outWritable = false;
+                return noErr;
+                
+            case kAudioUnitCustomProperty_NoteOnPriority:
+                outDataSize = sizeof(int);
+                outWritable = false;
+                return noErr;
+                
+            case kAudioUnitCustomProperty_ReleasePriority:
+                outDataSize = sizeof(int);
+                outWritable = false;
+                return noErr;
 		}
 	}
 	
@@ -548,6 +578,9 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_MaxNoteTrack_14:
 			case kAudioUnitCustomProperty_MaxNoteTrack_15:
 			case kAudioUnitCustomProperty_MaxNoteTrack_16:
+            case kAudioUnitCustomProperty_PortamentoRate:
+            case kAudioUnitCustomProperty_NoteOnPriority:
+            case kAudioUnitCustomProperty_ReleasePriority:
 				*((int *)outData) = mEfx->GetPropertyValue(inID);
 				return noErr;
 				
@@ -555,6 +588,8 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_Echo:
 			case kAudioUnitCustomProperty_IsEmaphasized:
             case kAudioUnitCustomProperty_SustainMode:
+            case kAudioUnitCustomProperty_MonoMode:
+            case kAudioUnitCustomProperty_PortamentoOn:
 				*((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
 				return noErr;
 				
@@ -675,6 +710,9 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_MaxNoteTrack_14:
 			case kAudioUnitCustomProperty_MaxNoteTrack_15:
 			case kAudioUnitCustomProperty_MaxNoteTrack_16:
+            case kAudioUnitCustomProperty_PortamentoRate:
+            case kAudioUnitCustomProperty_NoteOnPriority:
+            case kAudioUnitCustomProperty_ReleasePriority:
 				mEfx->SetPropertyValue(inID, *((int*)inData) );
 				return noErr;
 				
@@ -682,6 +720,8 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_Echo:
 			case kAudioUnitCustomProperty_IsEmaphasized:
             case kAudioUnitCustomProperty_SustainMode:
+            case kAudioUnitCustomProperty_MonoMode:
+            case kAudioUnitCustomProperty_PortamentoOn:
 				mEfx->SetPropertyValue(inID, *((bool*)inData) ? 1.0f:.0f );
 				return noErr;
 				
@@ -910,12 +950,17 @@ int C700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 	AddNumToDictionary(dict, kSaveKey_dr, vpSet[pgnum].dr);
 	AddNumToDictionary(dict, kSaveKey_sl, vpSet[pgnum].sl);
 	AddNumToDictionary(dict, kSaveKey_sr, vpSet[pgnum].sr);
-    AddBooleanToDictionary(dict, kSaveKey_sustainMode, vpSet[pgnum].sustainMode);
+    AddBooleanToDictionary(dict, kSaveKey_SustainMode, vpSet[pgnum].sustainMode);
 	AddNumToDictionary(dict, kSaveKey_volL, vpSet[pgnum].volL);
 	AddNumToDictionary(dict, kSaveKey_volR, vpSet[pgnum].volR);
 	AddBooleanToDictionary(dict, kSaveKey_echo, vpSet[pgnum].echo);
 	AddNumToDictionary(dict, kSaveKey_bank, vpSet[pgnum].bank);
-	
+	AddBooleanToDictionary(dict, kSaveKey_MonoMode, vpSet[pgnum].monoMode);
+	AddBooleanToDictionary(dict, kSaveKey_PortamentoOn, vpSet[pgnum].portamentoOn);
+    AddNumToDictionary(dict, kSaveKey_PortamentoRate, vpSet[pgnum].portamentoRate);
+    AddNumToDictionary(dict, kSaveKey_NoteOnPriority, vpSet[pgnum].noteOnPriority);
+    AddNumToDictionary(dict, kSaveKey_ReleasePriority, vpSet[pgnum].releasePriority);
+    
 	//Œ³”gŒ`î•ñ
 	AddBooleanToDictionary(dict, kSaveKey_IsEmphasized, vpSet[pgnum].isEmphasized);
 	if ( vpSet[pgnum].sourceFile[0] ) {
@@ -1021,8 +1066,8 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SR, value);
 	}
 	
-    if (CFDictionaryContainsKey(dict, kSaveKey_sustainMode)) {
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_sustainMode));
+    if (CFDictionaryContainsKey(dict, kSaveKey_SustainMode)) {
+		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_SustainMode));
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
 	}
 	else {
@@ -1064,6 +1109,49 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Bank, 0 );
 	}
 	
+    if (CFDictionaryContainsKey(dict, kSaveKey_MonoMode)) {
+		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_MonoMode));
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_MonoMode,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
+	}
+	else {
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_MonoMode, .0f);
+	}
+    
+    if (CFDictionaryContainsKey(dict, kSaveKey_PortamentoOn)) {
+		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_PortamentoOn));
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_PortamentoOn,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
+	}
+	else {
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_PortamentoOn, .0f);
+	}
+    
+    if (CFDictionaryContainsKey(dict, kSaveKey_PortamentoRate)) {
+		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_PortamentoRate));
+		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_PortamentoRate, value );
+	}
+	else {
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_PortamentoRate, 0 );
+	}
+    
+    if (CFDictionaryContainsKey(dict, kSaveKey_NoteOnPriority)) {
+		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_NoteOnPriority));
+		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority, value );
+	}
+	else {
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority, 64 );
+	}
+    
+    if (CFDictionaryContainsKey(dict, kSaveKey_ReleasePriority)) {
+		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_ReleasePriority));
+		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_ReleasePriority, value );
+	}
+	else {
+		mEfx->SetPropertyValue(kAudioUnitCustomProperty_ReleasePriority, 0 );
+	}
+    
 	if (CFDictionaryContainsKey(dict, kSaveKey_ProgName)) {
 		char	pgname[PROGRAMNAME_MAX_LEN];
 		CFStringGetCString(reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, kSaveKey_ProgName)),

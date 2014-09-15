@@ -84,6 +84,9 @@ AudioUnitParameterValue		inParameterValue
 			case kAudioUnitCustomProperty_EditingChannel:
 			case kAudioUnitCustomProperty_LoopPoint:
 			case kAudioUnitCustomProperty_Bank:
+            case kAudioUnitCustomProperty_PortamentoRate:
+            case kAudioUnitCustomProperty_NoteOnPriority:
+            case kAudioUnitCustomProperty_ReleasePriority:
 				value = *((int*)outDataPtr);
 				break;
 				
@@ -95,6 +98,8 @@ AudioUnitParameterValue		inParameterValue
 			case kAudioUnitCustomProperty_Echo:
 			case kAudioUnitCustomProperty_IsEmaphasized:
             case kAudioUnitCustomProperty_SustainMode:
+            case kAudioUnitCustomProperty_MonoMode:
+            case kAudioUnitCustomProperty_PortamentoOn:
 				value = *((bool*)outDataPtr);
 				break;
 								
