@@ -227,7 +227,7 @@ void C700Generator::ControlChange( int ch, int controlNum, int value, int inFram
 //-----------------------------------------------------------------------------
 void C700Generator::AllNotesOff()
 {
-    mClearEvent = true;
+    //mClearEvent = true;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mVoice[i].Reset();
 	}
@@ -597,6 +597,38 @@ int C700Generator::StealVoice(int ch, int prio)
     // –Â‚ç‚·‰¹‚æ‚è‚‚¢—Dæ“x‚Ì‰¹‚µ‚©–³‚©‚Á‚½‚ç–Â‚ç‚³‚È‚¢
     if (prio_min > prio) {
         v = -1;
+    }
+    
+    return v;
+}
+
+//-----------------------------------------------------------------------------
+int C700Generator::FindVoice(int ch)
+{
+    int v=-1;
+    int prio_min = 0x7fff;
+    
+    std::list<int>::reverse_iterator  it = mPlayVo.rbegin();
+    while (it != mPlayVo.rend()) {
+        int vo = *it;
+        bool    chMatch = (mVoice[vo].midi_ch == ch) ? true:false;
+        if (ch == -1) {
+            chMatch = true;
+        }
+        if ( (mVoice[vo].priority <= prio_min) && chMatch ) {
+            prio_min = mVoice[vo].priority;
+            v = vo + kMaximumVoices;
+        }
+        it++;
+    }
+    it = mWaitVo.rbegin();
+    while (it != mWaitVo.rend()) {
+        int vo = *it;
+        if (mVoice[vo].priority <= prio_min) {
+            prio_min = mVoice[vo].priority;
+            v = vo;
+        }
+        it++;
     }
     
     return v;
@@ -1008,7 +1040,7 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
             
             if (mChStat[evt->ch].noteOns >= limit) {
                 // ch”­‰¹”‚ð’´‚¦‚Ä‚½‚çA‚»‚Ìch‚Ì‰¹‚ðˆê‚ÂŽ~‚ß‚ÄŽŸ‚Ì‰¹‚ð–Â‚ç‚·
-                v = StealVoice(evt->ch, vp.noteOnPriority);
+                v = StealVoice(evt->ch, 9999);
                 if (v != -1) {
                     if ((mVoice[v].isKeyOn == false) || (!vp.monoMode)) {
                         mPlayVo.remove(v);
@@ -1022,14 +1054,16 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
             }
             else {
                 // ’´‚¦‚Ä‚È‚¢ê‡‚ÍAŒã’…—Dæ‚Å—Dæ“x‚Ì’á‚¢‰¹‚ðÁ‚·
-                v = FindFreeVoice();
-                if (v == -1) {
-                    v = StealVoice(vp.noteOnPriority);
-                    if (v != -1) {
-                        mPlayVo.remove(v);
-                        mChStat[ mVoice[v].midi_ch ].noteOns--;
-                        mVoice[v].legato = false;
-                    }
+                v = FindVoice();
+                if (v >= kMaximumVoices) {  //‹ó‚«‚ª‚È‚­‚Ä‚Ç‚±‚©‚ðŽ~‚ß‚½
+                    v -= kMaximumVoices;
+                    mPlayVo.remove(v);
+                    mChStat[ mVoice[v].midi_ch ].noteOns--;
+                    mVoice[v].legato = false;
+                }
+                else if (v >= 0) {
+                    mWaitVo.remove(v);
+                    mVoice[v].legato = false;
                 }
                 else {
                     mVoice[v].legato = false;
