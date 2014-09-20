@@ -1178,12 +1178,12 @@ void C700Generator::doControlChange( int ch, int controlNum, int value )
             
         case 126:
             // Mono Mode
-            SetMonoMode(ch, (value < 64)?0:127);
+			SetMonoMode(ch, (value < 64)?false:true);
             break;
             
         case 127:
             // Poly Mode
-            SetMonoMode(ch, (value < 64)?127:0);
+            SetMonoMode(ch, (value < 64)?true:false);
             break;
             
         default:

@@ -27,6 +27,8 @@
 #include "aeffguieditor.h"
 #endif
 
+#include <time.h>
+
 static CFontDesc g_LabelFont("Helvetica", 9, kBoldFace);
 CFontRef kLabelFont = &g_LabelFont;
 
