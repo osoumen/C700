@@ -209,6 +209,8 @@
 		F54338DB1629759600863A0B /* C700VST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338D91629759600863A0B /* C700VST.cpp */; };
 		F543D0AC147D285F00DC53A3 /* C700Generator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* C700Generator.cpp */; };
 		F543D0AD147D285F00DC53A3 /* C700Generator.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* C700Generator.h */; };
+		F557ACE719CD159300CF9792 /* MersenneTwister.h in Headers */ = {isa = PBXBuildFile; fileRef = F557ACE619CD159300CF9792 /* MersenneTwister.h */; };
+		F557ACE819CD159300CF9792 /* MersenneTwister.h in Headers */ = {isa = PBXBuildFile; fileRef = F557ACE619CD159300CF9792 /* MersenneTwister.h */; };
 		F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
 		F55D63DB161D6FFE001CF9AB /* DummyCntl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */; };
 		F55D6448161D7A94001CF9AB /* ControlInstances.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6447161D7A94001CF9AB /* ControlInstances.h */; };
@@ -413,6 +415,7 @@
 		F54338D91629759600863A0B /* C700VST.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700VST.cpp; sourceTree = "<group>"; };
 		F543D0AA147D285F00DC53A3 /* C700Generator.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700Generator.cpp; sourceTree = "<group>"; };
 		F543D0AB147D285F00DC53A3 /* C700Generator.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Generator.h; sourceTree = "<group>"; };
+		F557ACE619CD159300CF9792 /* MersenneTwister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MersenneTwister.h; sourceTree = "<group>"; };
 		F55D63D8161D6FFE001CF9AB /* DummyCntl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummyCntl.h; sourceTree = "<group>"; };
 		F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DummyCntl.cpp; sourceTree = "<group>"; };
 		F55D6447161D7A94001CF9AB /* ControlInstances.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstances.h; sourceTree = "<group>"; };
@@ -784,6 +787,7 @@
 		F54331441629649D00863A0B /* Common Source */ = {
 			isa = PBXGroup;
 			children = (
+				F557ACE619CD159300CF9792 /* MersenneTwister.h */,
 				8A77F1030ADE785100F2B2BE /* C700defines.h */,
 				8AF717CF0AE3DD5900C79293 /* gauss.h */,
 				8A10AB550AE2855600271511 /* samplebrr.h */,
@@ -937,6 +941,7 @@
 				8AA4CF410AAE7C4000AA021C /* CAAUMIDIMapManager.h in Headers */,
 				8AA4CF500AAE7CFC00AA021C /* AUMIDIBase.h in Headers */,
 				8AA4CF520AAE7CFC00AA021C /* MusicDeviceBase.h in Headers */,
+				F557ACE719CD159300CF9792 /* MersenneTwister.h in Headers */,
 				8AA4CF610AAE7D7A00AA021C /* AUInstrumentBase.h in Headers */,
 				8AA4CF620AAE7D7A00AA021C /* LockFreeFIFO.h in Headers */,
 				8AA4CF640AAE7D7A00AA021C /* SynthElement.h in Headers */,
@@ -989,6 +994,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F557ACE819CD159300CF9792 /* MersenneTwister.h in Headers */,
 				F543317916296E0200863A0B /* C700_Prefix.pch in Headers */,
 				F543319716296E0200863A0B /* C700defines.h in Headers */,
 				F543319816296E0200863A0B /* samplebrr.h in Headers */,
@@ -1512,6 +1518,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = macosx10.6;
 				ZERO_LINK = YES;
 			};
@@ -1531,6 +1538,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
+				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = macosx10.6;
 			};
 			name = Deployment;

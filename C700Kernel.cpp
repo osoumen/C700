@@ -50,7 +50,7 @@ C700Kernel::C700Kernel()
 		mVPset[i].echo = false;
 		mVPset[i].bank = 0;
 		mVPset[i].lp = 0;
-		mVPset[i].rate = 0;
+		mVPset[i].rate = 32000.0f;
 		mVPset[i].volL = 100;
 		mVPset[i].volR = 100;
 		

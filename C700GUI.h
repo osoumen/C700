@@ -50,6 +50,7 @@ public:
 private:
 	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
 	void			copyFIRParamToClipBoard();
+    bool            loadToCurrentProgramFromKhaos();
 	bool			loadToCurrentProgramFromBRR( RawBRRFile *file );
 	bool			loadToCurrentProgramFromPlistBRR( PlistBRRFile *file );
 	bool			loadToCurrentProgramFromAudioFile( AudioFile *file );
