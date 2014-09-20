@@ -443,7 +443,12 @@ int brrdecode(unsigned char *src, short *output, int looppoint, int loops)
 			
 			out2=out1;
 			out1=temp2>>1;
-			out=(input<<range)>>1;
+            if ( range <= 0xC ) {
+                out=(input<<range)>>1;
+            }
+            else {
+                out = input & ~0x7FF;
+            }
 			
 			out += ComputeFilter( out2, out1, filter );
 			
@@ -467,7 +472,12 @@ int brrdecode(unsigned char *src, short *output, int looppoint, int loops)
 			
 			out2=out1;
 			out1=temp2>>1;
-			out=(input<<range)>>1;
+			if ( range <= 0xC ) {
+                out=(input<<range)>>1;
+            }
+            else {
+                out = input & ~0x7FF;
+            }
 			
 			out += ComputeFilter( out2, out1, filter );
 			
