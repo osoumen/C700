@@ -444,6 +444,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 		case kAudioUnitCustomProperty_Bank:
 			mVPset[mEditProg].bank = value;
+            mGenerator.RefreshKeyMap();
 			return true;
 			
 		case kAudioUnitCustomProperty_AR:
