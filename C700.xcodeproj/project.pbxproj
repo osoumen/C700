@@ -1404,7 +1404,7 @@
 		3E0BED030898391C00E1F0F7 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
 				DEPLOYMENT_LOCATION = NO;
@@ -1453,10 +1453,7 @@
 		3E0BED040898391C00E1F0F7 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					"$(ARCHS_STANDARD_32_64_BIT)",
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_LOCATION = NO;
@@ -1583,7 +1580,7 @@
 				REZ_SEARCH_PATHS = "";
 				SDKROOT = macosx10.6;
 				SECTORDER_FLAGS = "";
-				VALID_ARCHS = "i386 ppc";
+				VALID_ARCHS = i386;
 				VERSIONING_SYSTEM = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -1598,10 +1595,7 @@
 		F543322716296E0200863A0B /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					"$(ARCHS_STANDARD_32_BIT)",
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_LOCATION = NO;
@@ -1635,7 +1629,7 @@
 				REZ_SEARCH_PATHS = "";
 				SDKROOT = macosx10.6;
 				SECTORDER_FLAGS = "";
-				VALID_ARCHS = "i386 ppc";
+				VALID_ARCHS = i386;
 				VERSIONING_SYSTEM = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
