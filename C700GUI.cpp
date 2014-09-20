@@ -13,6 +13,8 @@
 #include "cfileselector.h"
 #include <math.h>
 
+#include "MersenneTwister.h"
+
 #if MAC
 #include "czt.h"
 #else
@@ -565,6 +567,12 @@ void C700GUI::valueChanged(CControl* control)
 				}
 				break;
 				
+            case kControlButtonKhaos:
+                if ( value > 0 ) {
+                    loadToCurrentProgramFromKhaos();
+                }
+                break;
+                
 			case kControlButtonSave:
 				if ( value > 0 ) {
 					//サンプルデータの存在確認
@@ -695,7 +703,7 @@ void C700GUI::valueChanged(CControl* control)
 			case kControlBankABtn:
 				efxAcc->SetPropertyValue( kAudioUnitCustomProperty_Bank, 3-(tag-kControlBankDBtn) );
 				break;
-				
+                
 			default:
 				break;
 		}
@@ -807,6 +815,53 @@ bool C700GUI::loadToCurrentProgram( const char *path )
 	}
 	
 	return false;
+}
+
+//-----------------------------------------------------------------------------
+bool C700GUI::loadToCurrentProgramFromKhaos()
+{
+    // 乱数の初期化
+    CMersenneTwister    mersennetwister;
+    mersennetwister.init_genrand((unsigned)time(NULL));
+    // サンプル長を決める
+    int     blockNumMin = 1;
+    int     blockNumMax = 4;     // 仮
+    int     blockNum = mersennetwister.genrand_N(blockNumMax) + blockNumMin;
+    BRRData brrData;
+    brrData.size = blockNum * 9;    // 1ブロック=9バイト
+    brrData.data = new unsigned char[brrData.size];
+    for (int i=0; i<brrData.size; i++) {
+        brrData.data[i] = mersennetwister.genrand_N(256);
+        if ((i % 9) == 0) {
+            brrData.data[i] &= 0xfe;
+            if (brrData.data[i] >= 0xd0) {
+                brrData.data[i] &= 0x0f;
+                brrData.data[i] |= 0xc0;
+            }
+        }
+    }
+    brrData.data[(blockNum-1)*9] |= 0x01;       // END bit
+    efxAcc->SetBRRData(&brrData);
+    
+    // 名前を決める
+    char    instName[PROGRAMNAME_MAX_LEN];
+    int     nameLength = mersennetwister.genrand_N(brrData.size-9)+9;
+    if (nameLength > PROGRAMNAME_MAX_LEN-1) {
+        nameLength = PROGRAMNAME_MAX_LEN-1;
+    }
+    for (int i=0; i<nameLength; i++) {
+        instName[i] = 0x20 + mersennetwister.genrand_N(0x5f);
+    }
+    instName[nameLength] = 0;
+    efxAcc->SetProgramName( instName );
+    
+    delete [] brrData.data;
+    
+    efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint,0);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		1.0f);
+    efxAcc->SetPropertyValue(kAudioUnitCustomProperty_BaseKey,	69);
+    efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate,	32000);
+    return true;
 }
 
 //-----------------------------------------------------------------------------
