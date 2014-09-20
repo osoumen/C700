@@ -185,7 +185,7 @@ void C700Generator::Reset()
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::KeyOn( int ch, int note, int velo, unsigned int uniqueID, int inFrame )
+void C700Generator::NoteOn( int ch, int note, int velo, unsigned int uniqueID, int inFrame )
 {
 	MIDIEvt			evt;
 	evt.type = NOTE_ON;
@@ -198,7 +198,7 @@ void C700Generator::KeyOn( int ch, int note, int velo, unsigned int uniqueID, in
 }
 
 //-----------------------------------------------------------------------------
-void C700Generator::KeyOff( int ch, int note, int velo, unsigned int uniqueID, int inFrame )
+void C700Generator::NoteOff( int ch, int note, int velo, unsigned int uniqueID, int inFrame )
 {
 	MIDIEvt			evt;
 	evt.type = NOTE_OFF;
@@ -635,7 +635,7 @@ int C700Generator::FindVoice(int ch)
 }
 
 //-----------------------------------------------------------------------------
-int C700Generator::StopPlayingVoice( const MIDIEvt *evt )
+int C700Generator::doNoteOff( const MIDIEvt *evt )
 {
 	int	stops=0;
 
@@ -1023,7 +1023,7 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
             handled = false;
         }
         else {
-            int stops = StopPlayingVoice( evt );
+            int stops = doNoteOff( evt );
             mChStat[evt->ch].noteOns -= stops;
         }
     }
@@ -1210,7 +1210,7 @@ bool C700Generator::doEvents2( const MIDIEvt *evt )
             break;
             
         case NOTE_OFF:
-            //StopPlayingVoice( evt );
+            //doNoteOff( evt );
             break;
             
         case PROGRAM_CHANGE:
