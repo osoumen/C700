@@ -2882,7 +2882,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		kControlButtonKhaos,	//id
 		'copy',	//command
-		500, 80, 33, 12,	//x,y,w,h
+		502, 80, 33, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
