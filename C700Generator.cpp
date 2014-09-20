@@ -688,15 +688,25 @@ void C700Generator::doKeyOn(const MIDIEvt *evt)
 	
 	//ƒ{ƒCƒX‚ðŽæ“¾
     int v = (evt->ch >> 4) & 0x0f;
+    
+    //mPlayVo ‚É v ‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç–Â‚ç‚³‚È‚¢
+    bool    playable = false;
+    std::list<int>::iterator	it = mPlayVo.begin();
+    while (it != mPlayVo.end()) {
+        int	vo = *it;
+        if (vo == v) {
+            playable = true;
+            break;
+        }
+        it++;
+    }
+    
     if (
-        (mPlayVo.size() == 0) ||
+        (playable == false) ||
         (mVoice[v].isKeyOn == true) ||
         (mVoice[v].uniqueID != evt->uniqueID) ||
         (mVoice[v].midi_ch != midiCh)
         ) {
-        v = -1;
-    }
-    if (v == -1) {
         return;
     }
 	
