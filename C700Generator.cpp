@@ -555,32 +555,20 @@ int C700Generator::FindFreeVoice()
 }
 
 //-----------------------------------------------------------------------------
-int C700Generator::StealVoice(int prio)
+bool C700Generator::IsPlayingVoice(int v)
 {
-    // MIDIchñ≥éã í·óDêÊìx
-    
-    int v=-1;
-    int prio_min = 0x7fff;
-    
-    std::list<int>::reverse_iterator  it = mPlayVo.rbegin();
-    while (it != mPlayVo.rend()) {
-        int vo = *it;
-        if (mVoice[vo].priority <= prio_min) {
-            prio_min = mVoice[vo].priority;
-            v = vo;
+    std::list<int>::iterator	it = mPlayVo.begin();
+    while (it != mPlayVo.end()) {
+        int	vo = *it;
+        if (vo == v) {
+            return true;
         }
         it++;
     }
-    // ñ¬ÇÁÇ∑âπÇÊÇËçÇÇ¢óDêÊìxÇÃâπÇµÇ©ñ≥Ç©Ç¡ÇΩÇÁñ¬ÇÁÇ≥Ç»Ç¢
-    if (prio_min > prio) {
-        v = -1;
-    }
-    
-    return v;
+    return false;
 }
-
 //-----------------------------------------------------------------------------
-int C700Generator::StealVoice(int ch, int prio)
+int C700Generator::StealVoice(int ch)
 {
     int v=-1;
     int prio_min = 0x7fff;
@@ -593,10 +581,6 @@ int C700Generator::StealVoice(int ch, int prio)
             v = vo;
         }
         it++;
-    }
-    // ñ¬ÇÁÇ∑âπÇÊÇËçÇÇ¢óDêÊìxÇÃâπÇµÇ©ñ≥Ç©Ç¡ÇΩÇÁñ¬ÇÁÇ≥Ç»Ç¢
-    if (prio_min > prio) {
-        v = -1;
     }
     
     return v;
@@ -690,19 +674,8 @@ void C700Generator::doKeyOn(const MIDIEvt *evt)
     int v = (evt->ch >> 4) & 0x0f;
     
     //mPlayVo Ç… v Ç™ä‹Ç‹ÇÍÇƒÇ¢Ç»Ç©Ç¡ÇΩÇÁñ¬ÇÁÇ≥Ç»Ç¢
-    bool    playable = false;
-    std::list<int>::iterator	it = mPlayVo.begin();
-    while (it != mPlayVo.end()) {
-        int	vo = *it;
-        if (vo == v) {
-            playable = true;
-            break;
-        }
-        it++;
-    }
-    
     if (
-        (playable == false) ||
+        (IsPlayingVoice(v) == false) ||
         (mVoice[v].isKeyOn == true) ||
         (mVoice[v].uniqueID != evt->uniqueID) ||
         (mVoice[v].midi_ch != midiCh)
@@ -1046,37 +1019,45 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
             //É{ÉCÉXÇämï€ÇµÇƒçƒê∂èÄîıèÛë‘Ç…Ç∑ÇÈ
             InstParams		vp = getChannelVP(evt->ch, evt->note);
             int	v = -1;
-            int limit = vp.monoMode ? 1:mChStat[evt->ch].limit;
+            int limit = mChStat[evt->ch].limit;
             
-            if (mChStat[evt->ch].noteOns >= limit) {
-                // chî≠âπêîÇí¥Ç¶ÇƒÇΩÇÁÅAÇªÇÃchÇÃâπÇàÍÇ¬é~ÇﬂÇƒéüÇÃâπÇñ¬ÇÁÇ∑
-                v = StealVoice(evt->ch, 9999);
-                if (v != -1) {
-                    if ((mVoice[v].isKeyOn == false) || (!vp.monoMode)) {
-                        mPlayVo.remove(v);
-                        mChStat[ mVoice[v].midi_ch ].noteOns--;
-                        mVoice[v].legato = false;
-                    }
-                    else {
-                        mVoice[v].legato = true;
-                    }
+            if (vp.monoMode) {
+                v = evt->ch & 0x07;
+                if (IsPlayingVoice(v) && (mVoice[v].isKeyOn == true)) {
+                    mVoice[v].legato = true;
                 }
-            }
-            else {
-                // í¥Ç¶ÇƒÇ»Ç¢èÍçáÇÕÅAå„íÖóDêÊÇ≈óDêÊìxÇÃí·Ç¢âπÇè¡Ç∑
-                v = FindVoice();
-                if (v >= kMaximumVoices) {  //ãÛÇ´Ç™Ç»Ç≠ÇƒÇ«Ç±Ç©Çé~ÇﬂÇΩ
-                    v -= kMaximumVoices;
+                else {
                     mPlayVo.remove(v);
                     mChStat[ mVoice[v].midi_ch ].noteOns--;
                     mVoice[v].legato = false;
                 }
-                else if (v >= 0) {
-                    mWaitVo.remove(v);
-                    mVoice[v].legato = false;
+            }
+            else {
+                if (mChStat[evt->ch].noteOns >= limit) {
+                    // chî≠âπêîÇí¥Ç¶ÇƒÇΩÇÁÅAÇªÇÃchÇÃâπÇàÍÇ¬é~ÇﬂÇƒéüÇÃâπÇñ¬ÇÁÇ∑
+                    v = StealVoice(evt->ch);
+                    if (v != -1) {
+                        mPlayVo.remove(v);
+                        mChStat[ mVoice[v].midi_ch ].noteOns--;
+                        mVoice[v].legato = false;
+                    }
                 }
                 else {
-                    mVoice[v].legato = false;
+                    // í¥Ç¶ÇƒÇ»Ç¢èÍçáÇÕÅAå„íÖóDêÊÇ≈óDêÊìxÇÃí·Ç¢âπÇè¡Ç∑
+                    v = FindVoice();
+                    if (v >= kMaximumVoices) {  //ãÛÇ´Ç™Ç»Ç≠ÇƒÇ«Ç±Ç©Çé~ÇﬂÇΩ
+                        v -= kMaximumVoices;
+                        mPlayVo.remove(v);
+                        mChStat[ mVoice[v].midi_ch ].noteOns--;
+                        mVoice[v].legato = false;
+                    }
+                    else if (v >= 0) {
+                        mWaitVo.remove(v);
+                        mVoice[v].legato = false;
+                    }
+                    else {
+                        mVoice[v].legato = false;
+                    }
                 }
             }
             

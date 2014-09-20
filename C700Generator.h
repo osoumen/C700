@@ -248,8 +248,8 @@ private:
 	InstParams		*mVPset;
 	
 	int		FindFreeVoice();
-    int     StealVoice(int prio);
-    int     StealVoice(int ch, int prio);
+    bool    IsPlayingVoice(int v);
+    int     StealVoice(int ch);
     int     FindVoice(int ch=-1);
 	int		doNoteOff( const MIDIEvt *evt );
 	void	doKeyOn(const MIDIEvt *evt);
