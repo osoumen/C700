@@ -64,8 +64,8 @@ public:
 	
 	virtual void		Reset();
 
-	void		KeyOn( int ch, int note, int velo, unsigned int uniqueID, int inFrame );
-	void		KeyOff( int ch, int note, int velo, unsigned int uniqueID, int inFrame );
+	void		NoteOn( int ch, int note, int velo, unsigned int uniqueID, int inFrame );
+	void		NoteOff( int ch, int note, int velo, unsigned int uniqueID, int inFrame );
 	void		ProgramChange( int ch, int value, int inFrame );
 	void		PitchBend( int ch, int value1, int value2, int inFrame );
     void        ControlChange( int ch, int controlNum, int value, int inFrame );
@@ -251,7 +251,7 @@ private:
     int     StealVoice(int prio);
     int     StealVoice(int ch, int prio);
     int     FindVoice(int ch=-1);
-	int		StopPlayingVoice( const MIDIEvt *evt );
+	int		doNoteOff( const MIDIEvt *evt );
 	void	doKeyOn(const MIDIEvt *evt);
     void    doProgramChange( int ch, int value );
 	void	doPitchBend( int ch, int value1, int value2 );

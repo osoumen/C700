@@ -900,14 +900,14 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 
 void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFrame )
 {
-	mGenerator.KeyOn(ch, note, vel, uniqueID, inFrame);
+	mGenerator.NoteOn(ch, note, vel, uniqueID, inFrame);
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 {
-	mGenerator.KeyOff(ch, note, 0, uniqueID, inFrame);
+	mGenerator.NoteOff(ch, note, 0, uniqueID, inFrame);
 }
 
 //-----------------------------------------------------------------------------
