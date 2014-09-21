@@ -305,6 +305,9 @@ bool RawBRRFile::Write()
 	
 	//.instファイルに音色パラメータを書き出す
 	fp = fopen(mInstFilePath, "w");
+    if (fp == NULL) {
+        return false;
+    }
 	fprintf(fp, "[C700SMPL]\n");
 	fprintf(fp, "progname=%s\n",mInst.pgname);
 	fprintf(fp, "samplerate=%lf\n",mInst.rate);
