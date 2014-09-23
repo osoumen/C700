@@ -20,22 +20,22 @@ public:
 	} InstData;
 	
 	typedef struct {
-		unsigned long manufacturer;
-		unsigned long product;
-		unsigned long sample_period;
-		unsigned long note;
-		unsigned long pitch_fraction;
-		unsigned long smpte_format;
-		unsigned long smpte_offset;
-		unsigned long loops;
-		unsigned long sampler_data;
+		unsigned int manufacturer;
+		unsigned int product;
+		unsigned int sample_period;
+		unsigned int note;
+		unsigned int pitch_fraction;
+		unsigned int smpte_format;
+		unsigned int smpte_offset;
+		unsigned int loops;
+		unsigned int sampler_data;
 		
-		unsigned long cue_id;
-		unsigned long type;
-		unsigned long start;
-		unsigned long end;
-		unsigned long fraction;
-		unsigned long play_count;
+		unsigned int cue_id;
+		unsigned int type;
+		unsigned int start;
+		unsigned int end;
+		unsigned int fraction;
+		unsigned int play_count;
 	} WAV_smpl;
 	
 	AudioFile( const char *path, bool isWriteable );
