@@ -712,6 +712,7 @@ void C700Generator::doKeyOn(const MIDIEvt *evt)
         
         mVoice[v].volume = mChStat[midiCh].volume;
         mVoice[v].expression = mChStat[midiCh].expression;
+        mVoice[v].pan = mChStat[midiCh].pan;
         
         mVoice[v].brrdata = vp.brr.data;
         mVoice[v].loopPoint = vp.lp;
