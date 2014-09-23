@@ -928,7 +928,9 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 //-----------------------------------------------------------------------------
 bool C700GUI::loadToCurrentProgramFromPlistBRR( PlistBRRFile *file )
 {
-	return efxAcc->SetPlistBRRFileData(file);
+    bool result = efxAcc->SetPlistBRRFileData(file);
+    efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, .0f);
+	return result;
 }
 
 //-----------------------------------------------------------------------------
