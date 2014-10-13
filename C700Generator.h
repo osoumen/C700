@@ -246,22 +246,23 @@ private:
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
 	InstParams		*mVPset;
 	
-	int		FindFreeVoice();
-    bool    IsPlayingVoice(int v);
-    int     StealVoice(int ch);
-    int     FindVoice(int ch=-1);
-	int		doNoteOff( const MIDIEvt *evt );
-	void	doKeyOn(const MIDIEvt *evt);
+    InstParams getChannelVP(int ch, int note);
+    void processPortament(int vo);
+    void calcPanVolume(int value, int *volL, int *volR);
     void    doProgramChange( int ch, int value );
 	void	doPitchBend( int ch, int value1, int value2 );
     void    doControlChange( int ch, int controlNum, int value );
 	float	VibratoWave(float phase);
 	int		CalcPBValue(int ch, float pitchBend, int basePitch);
-    InstParams getChannelVP(int ch, int note);
-    void processPortament(int vo);
-    void calcPanVolume(int value, int *volL, int *volR);
+    bool    doNoteOn1( MIDIEvt dEvt );
+	void	doNoteOn2(const MIDIEvt *evt);
+	int		doNoteOff( const MIDIEvt *evt );
     bool doEvents1( const MIDIEvt *evt );
     bool doEvents2( const MIDIEvt *evt );
+	int		FindFreeVoice();
+    bool    IsPlayingVoice(int v);
+    int     StealVoice(int ch);
+    int     FindVoice(int ch=-1);
     int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }
     float calcGM2PortamentCurve(int value);
 };

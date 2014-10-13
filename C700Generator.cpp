@@ -541,219 +541,6 @@ void C700Generator::SetMonoMode( int ch, bool on )
 }
 
 //-----------------------------------------------------------------------------
-int C700Generator::FindFreeVoice()
-{
-	int	v=-1;
-
-	//空きボイスを探す
-    if ( mWaitVo.size() > 0 ) {
-		v = mWaitVo.front();
-		mWaitVo.pop_front();
-	}
-    return v;
-}
-
-//-----------------------------------------------------------------------------
-bool C700Generator::IsPlayingVoice(int v)
-{
-    std::list<int>::iterator	it = mPlayVo.begin();
-    while (it != mPlayVo.end()) {
-        int	vo = *it;
-        if (vo == v) {
-            return true;
-        }
-        it++;
-    }
-    return false;
-}
-//-----------------------------------------------------------------------------
-int C700Generator::StealVoice(int ch)
-{
-    int v=-1;
-    int prio_min = 0x7fff;
-    
-    std::list<int>::reverse_iterator  it = mPlayVo.rbegin();
-    while (it != mPlayVo.rend()) {
-        int vo = *it;
-        if ( (mVoice[vo].priority <= prio_min) && (mVoice[vo].midi_ch == ch) ) {
-            prio_min = mVoice[vo].priority;
-            v = vo;
-        }
-        it++;
-    }
-    
-    return v;
-}
-
-//-----------------------------------------------------------------------------
-int C700Generator::FindVoice(int ch)
-{
-    int v=-1;
-    int prio_min = 0x7fff;
-    
-    std::list<int>::reverse_iterator  it = mPlayVo.rbegin();
-    while (it != mPlayVo.rend()) {
-        int vo = *it;
-        bool    chMatch = (mVoice[vo].midi_ch == ch) ? true:false;
-        if (ch == -1) {
-            chMatch = true;
-        }
-        if ( (mVoice[vo].priority <= prio_min) && chMatch ) {
-            prio_min = mVoice[vo].priority;
-            v = vo + kMaximumVoices;
-        }
-        it++;
-    }
-    it = mWaitVo.rbegin();
-    while (it != mWaitVo.rend()) {
-        int vo = *it;
-        if (mVoice[vo].priority <= prio_min) {
-            prio_min = mVoice[vo].priority;
-            v = vo;
-        }
-        it++;
-    }
-    
-    return v;
-}
-
-//-----------------------------------------------------------------------------
-int C700Generator::doNoteOff( const MIDIEvt *evt )
-{
-	int	stops=0;
-
-    // 再生中なら停止する
-    // 再生中でも未再生でも同じ処理で止められるはず
-    std::list<int>::iterator	it = mPlayVo.begin();
-    while (it != mPlayVo.end()) {
-        int	vo = *it;
-        
-        if ( mVoice[vo].uniqueID == evt->uniqueID ) {
-            InstParams		vp = getChannelVP(evt->ch, evt->note);
-            if (mVoice[vo].isKeyOn) {
-                if (vp.sustainMode) {
-                    //キーオフさせずにsrを変更する
-                    mVoice[vo].dr = 7;
-                    mVoice[vo].sr = vp.sr;
-                }
-                else {
-                    // キーオフ
-                    mVoice[vo].envstate = RELEASE;
-                }
-                mVoice[vo].uniqueID = 0;
-                mVoice[vo].priority = vp.releasePriority;
-                mVoice[vo].isKeyOn = false;
-            }
-            if ( vo < mVoiceLimit ) {
-                mWaitVo.push_back(vo);
-            }
-            it = mPlayVo.erase(it);
-            stops++;
-            continue;
-        }
-        it++;
-    }
-
-	return stops;
-}
-
-//-----------------------------------------------------------------------------
-void C700Generator::doKeyOn(const MIDIEvt *evt)
-{
-    int     midiCh = evt->ch & 0x0f;
-    int     note = evt->note & 0x7f;
-    
-	InstParams		vp = getChannelVP(midiCh, note);
-	
-	//波形データが存在しない場合は、ここで中断
-	if (vp.brr.data == NULL) {
-		return;
-	}
-	
-	//ボイスを取得
-    int v = (evt->ch >> 4) & 0x0f;
-    
-    //mPlayVo に v が含まれていなかったら鳴らさない
-    if (
-        (IsPlayingVoice(v) == false) ||
-        (mVoice[v].isKeyOn == true) ||
-        (mVoice[v].uniqueID != evt->uniqueID) ||
-        (mVoice[v].midi_ch != midiCh)
-        ) {
-        return;
-    }
-	
-	// 中心周波数の算出
-	mVoice[v].pitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
-    
-    if (vp.portamentoOn) {
-        if (mChStat[midiCh].portaStartPitch == 0) {
-            mChStat[midiCh].portaStartPitch = mVoice[v].pitch;
-        }
-        mVoice[v].portaPitch = mChStat[midiCh].portaStartPitch;
-    }
-    else {
-        mVoice[v].portaPitch = mVoice[v].pitch;
-    }
-    
-    mVoice[v].isKeyOn = true;
-
-    if ((evt->note & 0x80) == 0) {
-        //ベロシティの取得
-        if ( mVelocityMode == kVelocityMode_Square ) {
-            mVoice[v].velo = VOLUME_CURB[evt->velo];
-        }
-        else if ( mVelocityMode == kVelocityMode_Linear ) {
-            mVoice[v].velo = evt->velo << 4;
-        }
-        else {
-            mVoice[v].velo=VOLUME_CURB[127];
-        }
-        
-        mVoice[v].volume = mChStat[midiCh].volume;
-        mVoice[v].expression = mChStat[midiCh].expression;
-        mVoice[v].pan = mChStat[midiCh].pan;
-        
-        mVoice[v].brrdata = vp.brr.data;
-        mVoice[v].loopPoint = vp.lp;
-        mVoice[v].loop = vp.loop;
-        mVoice[v].echoOn = vp.echo;
-        
-        mVoice[v].pb = CalcPBValue( midiCh, mChStat[midiCh].pitchBend, mVoice[v].pitch );
-        mVoice[v].vibdepth = mChStat[midiCh].vibDepth;
-
-        mVoice[v].reg_pmod = mVoice[v].vibdepth>0 ? true:false;
-        mVoice[v].vibPhase = 0.0f;
-        
-        mVoice[v].vol_l=vp.volL;
-        mVoice[v].vol_r=vp.volR;
-        mVoice[v].ar=vp.ar;
-        mVoice[v].dr=vp.dr;
-        mVoice[v].sl=vp.sl;
-        if (vp.sustainMode) {
-            mVoice[v].sr=0;		//ノートオフ時に設定値になる
-        }
-        else {
-            mVoice[v].sr=vp.sr;
-        }
-        
-        // キーオン
-        mVoice[v].memPtr = 0;
-        mVoice[v].headerCnt = 0;
-        mVoice[v].half = 0;
-        mVoice[v].envx = 0;
-        mVoice[v].end = 0;
-        mVoice[v].sampptr = 0;
-        mVoice[v].mixfrac = 3 * 4096;
-        mVoice[v].envcnt = CNT_INIT;
-        mVoice[v].envstate = ATTACK;
-        
-        // 最後に発音したノート番号を保存
-        mChStat[midiCh].lastNote = note;
-    }
-}
-
-//-----------------------------------------------------------------------------
 InstParams C700Generator::getChannelVP(int ch, int note)
 {
     InstParams  *pgVP = &mVPset[mChStat[ch].prog];
@@ -998,6 +785,217 @@ void C700Generator::processPortament(int vo)
 }
 
 //-----------------------------------------------------------------------------
+bool C700Generator::doNoteOn1( MIDIEvt dEvt )
+{
+    bool legato = false;
+    dEvt.remain_samples = mEventDelaySamples;
+    
+    if (dEvt.type == NOTE_ON) {
+        //ボイスを確保して再生準備状態にする
+        InstParams		vp = getChannelVP(dEvt.ch, dEvt.note);
+        int	v = -1;
+        int limit = mChStat[dEvt.ch].limit;
+        
+        if (vp.monoMode) {
+            v = dEvt.ch & 0x07;     // 固定のchを確保
+            if (IsPlayingVoice(v)) {
+                if (mVoice[v].midi_ch == dEvt.ch) {
+                    // レガートで鳴らした音
+                    legato = true;
+                    if (mVoice[v].isKeyOn == true) {
+                        // キーオン前に２回叩かれた場合は最後のノートオンだけが有効になるように
+                        dEvt.note |= 0x80;  // レガートフラグ
+                    }
+                }
+                else {
+                    // 別のchの発音がすでにある場合
+                    mPlayVo.remove(v);
+                    mChStat[ mVoice[v].midi_ch ].noteOns--;
+                }
+            }
+            else {
+                mWaitVo.remove(v);
+            }
+        }
+        else {
+            if (mChStat[dEvt.ch].noteOns >= limit) {
+                // ch発音数を超えてたら、そのchの音を一つ止めて次の音を鳴らす
+                v = StealVoice(dEvt.ch);
+                if (v != -1) {
+                    mPlayVo.remove(v);
+                    mChStat[ mVoice[v].midi_ch ].noteOns--;
+                }
+            }
+            else {
+                // 超えてない場合は、後着優先で優先度の低い音を消す
+                v = FindVoice();
+                if (v >= kMaximumVoices) {  //空きがなくてどこかを止めた
+                    v -= kMaximumVoices;
+                    mPlayVo.remove(v);
+                    mChStat[ mVoice[v].midi_ch ].noteOns--;
+                }
+                else if (v >= 0) {
+                    mWaitVo.remove(v);
+                }
+            }
+        }
+        
+        if (v != -1) {
+            mVoice[v].isKeyOn = false;
+            mVoice[v].midi_ch = dEvt.ch;
+            mVoice[v].uniqueID = dEvt.uniqueID;
+            mVoice[v].priority = vp.noteOnPriority;
+            if (legato == false) {
+                mPlayVo.push_back(v);
+                mVoice[v].envstate = RELEASE;
+                mChStat[dEvt.ch].noteOns++;
+            }
+            // 上位4bitにボイス番号を入れる
+            dEvt.ch += v << 4;
+        }
+    }
+    mDelayedEvt.push_back(dEvt);
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+void C700Generator::doNoteOn2(const MIDIEvt *evt)
+{
+    int     midiCh = evt->ch & 0x0f;
+    int     note = evt->note & 0x7f;
+    
+	InstParams		vp = getChannelVP(midiCh, note);
+	
+	//波形データが存在しない場合は、ここで中断
+	if (vp.brr.data == NULL) {
+		return;
+	}
+	
+	//ボイスを取得
+    int v = (evt->ch >> 4) & 0x0f;
+    
+    //mPlayVo に v が含まれていなかったら鳴らさない
+    if (
+        (IsPlayingVoice(v) == false) ||
+        (mVoice[v].isKeyOn == true) ||
+        (mVoice[v].uniqueID != evt->uniqueID) ||
+        (mVoice[v].midi_ch != midiCh)
+        ) {
+        return;
+    }
+	
+	// 中心周波数の算出
+	mVoice[v].pitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+    
+    if (vp.portamentoOn) {
+        if (mChStat[midiCh].portaStartPitch == 0) {
+            mChStat[midiCh].portaStartPitch = mVoice[v].pitch;
+        }
+        mVoice[v].portaPitch = mChStat[midiCh].portaStartPitch;
+    }
+    else {
+        mVoice[v].portaPitch = mVoice[v].pitch;
+    }
+    
+    mVoice[v].isKeyOn = true;
+    
+    if ((evt->note & 0x80) == 0) {
+        //ベロシティの取得
+        if ( mVelocityMode == kVelocityMode_Square ) {
+            mVoice[v].velo = VOLUME_CURB[evt->velo];
+        }
+        else if ( mVelocityMode == kVelocityMode_Linear ) {
+            mVoice[v].velo = evt->velo << 4;
+        }
+        else {
+            mVoice[v].velo=VOLUME_CURB[127];
+        }
+        
+        mVoice[v].volume = mChStat[midiCh].volume;
+        mVoice[v].expression = mChStat[midiCh].expression;
+        mVoice[v].pan = mChStat[midiCh].pan;
+        
+        mVoice[v].brrdata = vp.brr.data;
+        mVoice[v].loopPoint = vp.lp;
+        mVoice[v].loop = vp.loop;
+        mVoice[v].echoOn = vp.echo;
+        
+        mVoice[v].pb = CalcPBValue( midiCh, mChStat[midiCh].pitchBend, mVoice[v].pitch );
+        mVoice[v].vibdepth = mChStat[midiCh].vibDepth;
+        
+        mVoice[v].reg_pmod = mVoice[v].vibdepth>0 ? true:false;
+        mVoice[v].vibPhase = 0.0f;
+        
+        mVoice[v].vol_l=vp.volL;
+        mVoice[v].vol_r=vp.volR;
+        mVoice[v].ar=vp.ar;
+        mVoice[v].dr=vp.dr;
+        mVoice[v].sl=vp.sl;
+        if (vp.sustainMode) {
+            mVoice[v].sr=0;		//ノートオフ時に設定値になる
+        }
+        else {
+            mVoice[v].sr=vp.sr;
+        }
+        
+        // キーオン
+        mVoice[v].memPtr = 0;
+        mVoice[v].headerCnt = 0;
+        mVoice[v].half = 0;
+        mVoice[v].envx = 0;
+        mVoice[v].end = 0;
+        mVoice[v].sampptr = 0;
+        mVoice[v].mixfrac = 3 * 4096;
+        mVoice[v].envcnt = CNT_INIT;
+        mVoice[v].envstate = ATTACK;
+        
+        // 最後に発音したノート番号を保存
+        mChStat[midiCh].lastNote = note;
+    }
+}
+
+
+//-----------------------------------------------------------------------------
+int C700Generator::doNoteOff( const MIDIEvt *evt )
+{
+	int	stops=0;
+    
+    // 再生中なら停止する
+    // 再生中でも未再生でも同じ処理で止められるはず
+    std::list<int>::iterator	it = mPlayVo.begin();
+    while (it != mPlayVo.end()) {
+        int	vo = *it;
+        
+        if ( mVoice[vo].uniqueID == evt->uniqueID ) {
+            InstParams		vp = getChannelVP(evt->ch, evt->note);
+            if (mVoice[vo].isKeyOn) {
+                if (vp.sustainMode) {
+                    //キーオフさせずにsrを変更する
+                    mVoice[vo].dr = 7;
+                    mVoice[vo].sr = vp.sr;
+                }
+                else {
+                    // キーオフ
+                    mVoice[vo].envstate = RELEASE;
+                }
+                mVoice[vo].uniqueID = 0;
+                mVoice[vo].priority = vp.releasePriority;
+                mVoice[vo].isKeyOn = false;
+            }
+            if ( vo < mVoiceLimit ) {
+                mWaitVo.push_back(vo);
+            }
+            it = mPlayVo.erase(it);
+            stops++;
+            continue;
+        }
+        it++;
+    }
+    
+	return stops;
+}
+
+//-----------------------------------------------------------------------------
 bool C700Generator::doEvents1( const MIDIEvt *evt )
 {
     bool    handled = true;
@@ -1013,77 +1011,123 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
     }
     else {
         // ノートオフ以外のイベントは全て遅延実行する
-        MIDIEvt dEvt = *evt;
-        bool legato = false;
-        dEvt.remain_samples = mEventDelaySamples;
-        
-        if (evt->type == NOTE_ON) {
-            //ボイスを確保して再生準備状態にする
-            InstParams		vp = getChannelVP(evt->ch, evt->note);
-            int	v = -1;
-            int limit = mChStat[evt->ch].limit;
-            
-            if (vp.monoMode) {
-                v = evt->ch & 0x07;     // 固定のchを確保
-                if (IsPlayingVoice(v)) {
-                    if (mVoice[v].midi_ch == evt->ch) {
-                        // レガートで鳴らした音
-                        legato = true;
-                        if (mVoice[v].isKeyOn == true) {
-                            // キーオン前に２回叩かれた場合は最後のノートオンだけが有効になるように
-                            dEvt.note |= 0x80;  // レガートフラグ
-                        }
-                    }
-                    else {
-                        // 別のchの発音がすでにある場合
-                        mPlayVo.remove(v);
-                        mChStat[ mVoice[v].midi_ch ].noteOns--;
-                    }
-                }
-            }
-            else {
-                if (mChStat[evt->ch].noteOns >= limit) {
-                    // ch発音数を超えてたら、そのchの音を一つ止めて次の音を鳴らす
-                    v = StealVoice(evt->ch);
-                    if (v != -1) {
-                        mPlayVo.remove(v);
-                        mChStat[ mVoice[v].midi_ch ].noteOns--;
-                    }
-                }
-                else {
-                    // 超えてない場合は、後着優先で優先度の低い音を消す
-                    v = FindVoice();
-                    if (v >= kMaximumVoices) {  //空きがなくてどこかを止めた
-                        v -= kMaximumVoices;
-                        mPlayVo.remove(v);
-                        mChStat[ mVoice[v].midi_ch ].noteOns--;
-                    }
-                    else if (v >= 0) {
-                        mWaitVo.remove(v);
-                    }
-                }
-            }
-            
-            if (v != -1) {
-                // 上位4bitにボイス番号を入れる
-                dEvt.ch += v << 4;
-                mVoice[v].isKeyOn = false;
-                mVoice[v].midi_ch = evt->ch;
-                mVoice[v].uniqueID = evt->uniqueID;
-                mVoice[v].priority = vp.noteOnPriority;
-                if (legato == false) {
-                    mPlayVo.push_back(v);
-                    mVoice[v].envstate = RELEASE;
-                    mChStat[evt->ch].noteOns++;
-                }
-            }
-        }
-        mDelayedEvt.push_back(dEvt);
+        doNoteOn1(*evt);
     }
     
     return handled;
 }
 
+//-----------------------------------------------------------------------------
+bool C700Generator::doEvents2( const MIDIEvt *evt )
+{
+    bool    handled = true;
+    
+    switch (evt->type) {
+        case NOTE_ON:
+            doNoteOn2( evt );
+            break;
+            
+        case NOTE_OFF:
+            //doNoteOff( evt );
+            break;
+            
+        case PROGRAM_CHANGE:
+            doProgramChange(evt->ch, evt->note);
+            break;
+            
+        case PITCH_BEND:
+            doPitchBend(evt->ch, evt->note, evt->velo);
+            break;
+            
+        case CONTROL_CHANGE:
+            doControlChange(evt->ch, evt->note, evt->velo);
+            break;
+            
+        default:
+            //handled = false;
+            break;
+    }
+    return handled;
+}
+
+//-----------------------------------------------------------------------------
+int C700Generator::FindFreeVoice()
+{
+	int	v=-1;
+    
+	//空きボイスを探す
+    if ( mWaitVo.size() > 0 ) {
+		v = mWaitVo.front();
+		mWaitVo.pop_front();
+	}
+    return v;
+}
+
+//-----------------------------------------------------------------------------
+bool C700Generator::IsPlayingVoice(int v)
+{
+    std::list<int>::iterator	it = mPlayVo.begin();
+    while (it != mPlayVo.end()) {
+        int	vo = *it;
+        if (vo == v) {
+            return true;
+        }
+        it++;
+    }
+    return false;
+}
+//-----------------------------------------------------------------------------
+int C700Generator::StealVoice(int ch)
+{
+    int v=-1;
+    int prio_min = 0x7fff;
+    
+    std::list<int>::reverse_iterator  it = mPlayVo.rbegin();
+    while (it != mPlayVo.rend()) {
+        int vo = *it;
+        if ( (mVoice[vo].priority <= prio_min) && (mVoice[vo].midi_ch == ch) ) {
+            prio_min = mVoice[vo].priority;
+            v = vo;
+        }
+        it++;
+    }
+    
+    return v;
+}
+
+//-----------------------------------------------------------------------------
+int C700Generator::FindVoice(int ch)
+{
+    int v=-1;
+    int prio_min = 0x7fff;
+    
+    std::list<int>::reverse_iterator  it = mPlayVo.rbegin();
+    while (it != mPlayVo.rend()) {
+        int vo = *it;
+        bool    chMatch = (mVoice[vo].midi_ch == ch) ? true:false;
+        if (ch == -1) {
+            chMatch = true;
+        }
+        if ( (mVoice[vo].priority <= prio_min) && chMatch ) {
+            prio_min = mVoice[vo].priority;
+            v = vo + kMaximumVoices;
+        }
+        it++;
+    }
+    it = mWaitVo.rbegin();
+    while (it != mWaitVo.rend()) {
+        int vo = *it;
+        if (mVoice[vo].priority <= prio_min) {
+            prio_min = mVoice[vo].priority;
+            v = vo;
+        }
+        it++;
+    }
+    
+    return v;
+}
+
+//-----------------------------------------------------------------------------
 void C700Generator::doControlChange( int ch, int controlNum, int value )
 {
     switch (controlNum) {
@@ -1192,38 +1236,6 @@ void C700Generator::doControlChange( int ch, int controlNum, int value )
         default:
             break;
     }
-}
-
-bool C700Generator::doEvents2( const MIDIEvt *evt )
-{
-    bool    handled = true;
-    
-    switch (evt->type) {
-        case NOTE_ON:
-            doKeyOn( evt );
-            break;
-            
-        case NOTE_OFF:
-            //doNoteOff( evt );
-            break;
-            
-        case PROGRAM_CHANGE:
-            doProgramChange(evt->ch, evt->note);
-            break;
-            
-        case PITCH_BEND:
-            doPitchBend(evt->ch, evt->note, evt->velo);
-            break;
-            
-        case CONTROL_CHANGE:
-            doControlChange(evt->ch, evt->note, evt->velo);
-            break;
-            
-        default:
-            //handled = false;
-            break;
-    }
-    return handled;
 }
 
 //-----------------------------------------------------------------------------
