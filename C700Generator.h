@@ -174,7 +174,6 @@ private:
 		unsigned int	uniqueID;
         
         bool            isKeyOn;       // キーオンされているかどうか
-        bool            legato;        // モノモードで２音目以降の音か
 		
 		int				pb;
 		int				vibdepth;
