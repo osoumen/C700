@@ -133,7 +133,6 @@ void C700Generator::VoiceState::Reset()
     priority = 0;
     
     isKeyOn = false;
-    legato = false;
 	
 	smp1=0;
 	smp2=0;
@@ -662,8 +661,9 @@ int C700Generator::doNoteOff( const MIDIEvt *evt )
 void C700Generator::doKeyOn(const MIDIEvt *evt)
 {
     int     midiCh = evt->ch & 0x0f;
+    int     note = evt->note & 0x7f;
     
-	InstParams		vp = getChannelVP(midiCh, evt->note);
+	InstParams		vp = getChannelVP(midiCh, note);
 	
 	//波形データが存在しない場合は、ここで中断
 	if (vp.brr.data == NULL) {
@@ -684,7 +684,7 @@ void C700Generator::doKeyOn(const MIDIEvt *evt)
     }
 	
 	// 中心周波数の算出
-	mVoice[v].pitch = pow(2., (evt->note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+	mVoice[v].pitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
     
     if (vp.portamentoOn) {
         if (mChStat[midiCh].portaStartPitch == 0) {
@@ -698,7 +698,7 @@ void C700Generator::doKeyOn(const MIDIEvt *evt)
     
     mVoice[v].isKeyOn = true;
 
-    if (!mVoice[v].legato) {
+    if ((evt->note & 0x80) == 0) {
         //ベロシティの取得
         if ( mVelocityMode == kVelocityMode_Square ) {
             mVoice[v].velo = VOLUME_CURB[evt->velo];
@@ -749,7 +749,7 @@ void C700Generator::doKeyOn(const MIDIEvt *evt)
         mVoice[v].envstate = ATTACK;
         
         // 最後に発音したノート番号を保存
-        mChStat[midiCh].lastNote = evt->note;
+        mChStat[midiCh].lastNote = note;
     }
 }
 
@@ -1014,6 +1014,7 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
     else {
         // ノートオフ以外のイベントは全て遅延実行する
         MIDIEvt dEvt = *evt;
+        bool legato = false;
         dEvt.remain_samples = mEventDelaySamples;
         
         if (evt->type == NOTE_ON) {
@@ -1023,14 +1024,21 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
             int limit = mChStat[evt->ch].limit;
             
             if (vp.monoMode) {
-                v = evt->ch & 0x07;
-                if (IsPlayingVoice(v) && (mVoice[v].isKeyOn == true)) {
-                    mVoice[v].legato = true;
-                }
-                else {
-                    mPlayVo.remove(v);
-                    mChStat[ mVoice[v].midi_ch ].noteOns--;
-                    mVoice[v].legato = false;
+                v = evt->ch & 0x07;     // 固定のchを確保
+                if (IsPlayingVoice(v)) {
+                    if (mVoice[v].midi_ch == evt->ch) {
+                        // レガートで鳴らした音
+                        legato = true;
+                        if (mVoice[v].isKeyOn == true) {
+                            // キーオン前に２回叩かれた場合は最後のノートオンだけが有効になるように
+                            dEvt.note |= 0x80;  // レガートフラグ
+                        }
+                    }
+                    else {
+                        // 別のchの発音がすでにある場合
+                        mPlayVo.remove(v);
+                        mChStat[ mVoice[v].midi_ch ].noteOns--;
+                    }
                 }
             }
             else {
@@ -1040,7 +1048,6 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
                     if (v != -1) {
                         mPlayVo.remove(v);
                         mChStat[ mVoice[v].midi_ch ].noteOns--;
-                        mVoice[v].legato = false;
                     }
                 }
                 else {
@@ -1050,14 +1057,9 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
                         v -= kMaximumVoices;
                         mPlayVo.remove(v);
                         mChStat[ mVoice[v].midi_ch ].noteOns--;
-                        mVoice[v].legato = false;
                     }
                     else if (v >= 0) {
                         mWaitVo.remove(v);
-                        mVoice[v].legato = false;
-                    }
-                    else {
-                        mVoice[v].legato = false;
                     }
                 }
             }
@@ -1069,7 +1071,7 @@ bool C700Generator::doEvents1( const MIDIEvt *evt )
                 mVoice[v].midi_ch = evt->ch;
                 mVoice[v].uniqueID = evt->uniqueID;
                 mVoice[v].priority = vp.noteOnPriority;
-                if (mVoice[v].legato == false) {
+                if (legato == false) {
                     mPlayVo.push_back(v);
                     mVoice[v].envstate = RELEASE;
                     mChStat[evt->ch].noteOns++;
