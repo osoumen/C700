@@ -200,7 +200,7 @@ AudioUnitParameterValue		inParameterValue
 	}
 	
 	//タイマーの設定
-	timer = [NSTimer scheduledTimerWithTimeInterval:1.0/24
+	timer = [NSTimer scheduledTimerWithTimeInterval:1.0/60
 											 target:self
 										   selector:@selector(respondToEventTimer:)
 										   userInfo:nil
@@ -220,7 +220,7 @@ AudioUnitParameterValue		inParameterValue
 	//イベントリスナーの作成
 	NSAssert(	AUEventListenerCreate(	EventListenerDispatcher, editor, 
 								 CFRunLoopGetCurrent(), 
-								kCFRunLoopDefaultMode, 0.100, 0.010,
+								kCFRunLoopDefaultMode, 1.0/60, 1.0/60,
 								 &mEventListener	) == noErr,
 			 @"[CocoaView _addListeners] AUListenerCreate()");
 	
