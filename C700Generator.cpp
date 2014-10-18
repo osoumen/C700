@@ -876,10 +876,10 @@ void C700Generator::doNoteOn2(const MIDIEvt *evt)
     
     //mPlayVo ‚É v ‚ªŠÜ‚Ü‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç–Â‚ç‚³‚È‚¢
     if (
-        (IsPlayingVoice(v) == false) ||
-        (mVoice[v].isKeyOn == true) ||
-        (mVoice[v].uniqueID != evt->uniqueID) ||
-        (mVoice[v].midi_ch != midiCh)
+        (IsPlayingVoice(v) == false) ||     // doNoteOn1‚ðŒo‚Ä‚¢‚È‚¢
+//        (mVoice[v].isKeyOn == true) ||      // •Ê‚Ìch‚ÉŽæ‚ç‚ê‚Äã‘‚«‚³‚ê‚½
+        (mVoice[v].uniqueID != evt->uniqueID) //|| // ”­‰¹‘O‚É‚©‚«Á‚³‚ê‚Äã‘‚«‚³‚ê‚½
+//        (mVoice[v].midi_ch != midiCh)       // •Ê‚Ìch‚ÉŽæ‚ç‚ê‚Äã‘‚«‚³‚ê‚½
         ) {
         return;
     }
