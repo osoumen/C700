@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=bd_f2
+samplerate=16000.000000
+key=53
+lowkey=53
+highkey=53
+ar=15
+dr=7
+sl=7
+sr=31
+volL=100
+volR=100
+echo=0
+bank=1
+isemph=0

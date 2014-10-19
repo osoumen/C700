@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=miniv_tip_r
+samplerate=32000.000000
+key=37
+lowkey=37
+highkey=37
+ar=15
+dr=7
+sl=7
+sr=31
+volL=127
+volR=127
+echo=0
+bank=1
+isemph=1

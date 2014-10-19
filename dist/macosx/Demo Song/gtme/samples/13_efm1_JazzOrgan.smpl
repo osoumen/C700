@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=efm1_JazzOrgan
+samplerate=14080.000000
+key=57
+lowkey=0
+highkey=127
+ar=9
+dr=1
+sl=0
+sr=23
+volL=76
+volR=42
+echo=1
+bank=0
+isemph=1

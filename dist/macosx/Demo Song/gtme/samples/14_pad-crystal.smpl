@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=pad-crystal
+samplerate=6980.840332
+key=69
+lowkey=0
+highkey=127
+ar=2
+dr=7
+sl=7
+sr=31
+volL=127
+volR=127
+echo=0
+bank=0
+isemph=1
