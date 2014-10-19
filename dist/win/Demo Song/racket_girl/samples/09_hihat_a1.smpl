@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=hihat_a1
+samplerate=32000.000000
+key=46
+lowkey=46
+highkey=46
+ar=15
+dr=2
+sl=0
+sr=26
+volL=100
+volR=100
+echo=0
+bank=1
+isemph=0

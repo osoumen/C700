@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=strings_a3
+samplerate=10535.000000
+key=69
+lowkey=0
+highkey=127
+ar=13
+dr=7
+sl=7
+sr=23
+volL=39
+volR=39
+echo=1
+bank=0
+isemph=0

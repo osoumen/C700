@@ -1,0 +1,22 @@
+[C700SMPL]
+progname=nZ5qy+7`7o%a!#Y
+samplerate=14080.000000
+key=69
+lowkey=0
+highkey=127
+ar=15
+dr=6
+sl=0
+sr=19
+sustainMode=1
+volL=42
+volR=52
+echo=1
+bank=1
+monoMode=0
+portamentoOn=0
+portamentoRate=0
+noteOnPriority=64
+releasePriority=0
+isemph=1
+srcfile=/Users/osoumen/Dropbox/working/spc140923/samples/This Gumm a5.aif

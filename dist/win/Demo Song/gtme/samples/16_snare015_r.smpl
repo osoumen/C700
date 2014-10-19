@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=snare015_r
+samplerate=12000.000000
+key=45
+lowkey=45
+highkey=45
+ar=15
+dr=7
+sl=7
+sr=31
+volL=127
+volR=127
+echo=0
+bank=1
+isemph=1

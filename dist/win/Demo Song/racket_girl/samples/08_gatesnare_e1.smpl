@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=gatesnare_e1
+samplerate=24000.000000
+key=40
+lowkey=40
+highkey=40
+ar=15
+dr=7
+sl=7
+sr=31
+volL=100
+volR=100
+echo=0
+bank=1
+isemph=0
