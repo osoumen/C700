@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=click_6_r
+samplerate=23637.148438
+key=43
+lowkey=43
+highkey=43
+ar=15
+dr=7
+sl=7
+sr=31
+volL=127
+volR=127
+echo=0
+bank=1
+isemph=1

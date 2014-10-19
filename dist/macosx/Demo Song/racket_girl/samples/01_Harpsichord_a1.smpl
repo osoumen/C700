@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=Harpsichord_a1
+samplerate=17600.000000
+key=45
+lowkey=0
+highkey=127
+ar=15
+dr=2
+sl=5
+sr=31
+volL=30
+volR=30
+echo=1
+bank=0
+isemph=0

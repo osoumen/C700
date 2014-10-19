@@ -1,0 +1,15 @@
+[C700SMPL]
+progname=cymbal_b2
+samplerate=24000.000000
+key=59
+lowkey=59
+highkey=59
+ar=15
+dr=0
+sl=0
+sr=7
+volL=70
+volR=47
+echo=0
+bank=1
+isemph=0
