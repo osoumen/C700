@@ -1246,13 +1246,13 @@ void C700Generator::Process( unsigned int frames, float *output[2] )
 	int		procstep = (INTERNAL_CLOCK*CYCLES_PER_SAMPLE) / mSampleRate;    // CYCLES_PER_SAMPLE=1.0 とした固定小数
 	
 	//メイン処理
-    
+    /*
     if (mClearEvent) {
         mMIDIEvt.clear();
         mDelayedEvt.clear();
         mClearEvent = false;
     }
-    
+    */
 	for (unsigned int frame=0; frame<frames; ++frame) {
 		//イベント処理
 		if ( mMIDIEvt.size() != 0 ) {

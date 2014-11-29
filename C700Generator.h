@@ -223,7 +223,7 @@ private:
 	
 	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
 	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
-    bool            mClearEvent;            //次のRenderでFIFOをクリアするフラグ
+    //bool            mClearEvent;            //次のRenderでFIFOをクリアするフラグ
 	
 	std::list<int>	mPlayVo;				//ノートオン状態のボイス
 	std::list<int>	mWaitVo;				//ノートオフ状態のボイス
