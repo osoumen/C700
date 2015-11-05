@@ -10,7 +10,7 @@
 #pragma once
 
 #include "C700defines.h"
-#include "C700Generator.h"
+#include "C700Driver.h"
 #include "C700Parameters.h"
 
 class C700Kernel : public C700Parameters
@@ -34,7 +34,7 @@ public:
 	bool			SetProgramName( const char *pgname );
 	const BRRData	*GetBRRData();
 	const BRRData	*GetBRRData(int prog);
-	bool			SetBRRData( const BRRData *brr );
+	bool			SetBRRData( const unsigned char *data, int size, int prog=-1, bool reset=true, bool notify=true );
 	
 	static int		GetPresetNum();
 	static const char	*GetPresetName( int num );
@@ -51,7 +51,7 @@ public:
 	void			HandleAllNotesOff( int ch, int inFrame );
 	void			HandleAllSoundOff( int ch, int inFrame );
 	
-	C700Generator	*GetGenerator() { return &mGenerator; }
+	C700Driver	*GetGenerator() { return &mGenerator; }
 	
 	void			SetPropertyNotifyFunc( void (*func) (int propID, void* userData), void* userData );
 	void			SetParameterSetFunc( void (*func) (int paramID, float value, void* userData) , void* userData );
@@ -85,7 +85,7 @@ private:
     int                 mRPN[16];
     int                 mNRPN[16];
 	
-	C700Generator	mGenerator;
+	C700Driver	mGenerator;
     
     void            setRPNLSB(int ch, int value);
     void            setRPNMSB(int ch, int value);

@@ -11,7 +11,7 @@
 
 #include "FileAccess.h"
 #include "DataBuffer.h"
-#include "C700Generator.h"
+#include "C700Driver.h"
 
 class XIFile : public FileAccess, public DataBuffer {
 public:
@@ -25,7 +25,7 @@ public:
 	CFDataRef			GetCFData() const;
 #endif
 	
-	bool				SetDataFromChip( const C700Generator *chip, int targetProgram, double tempo );
+	bool				SetDataFromChip( const C700Driver *chip, int targetProgram, double tempo );
 	
 private:
 	

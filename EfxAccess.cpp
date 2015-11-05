@@ -34,7 +34,9 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 	//エフェクタ側から現在のプログラムの情報を取得してRawBRRFileを作成
 #if AU
 	InstParams	inst;
-	GetBRRData(&inst.brr);
+    BRRData     brr;
+	GetBRRData(&brr);
+    inst.setBRRData(&brr);
 	GetProgramName(inst.pgname, PROGRAMNAME_MAX_LEN);
 	inst.ar = GetPropertyValue(kAudioUnitCustomProperty_AR);
 	inst.dr = GetPropertyValue(kAudioUnitCustomProperty_DR);

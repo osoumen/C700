@@ -2,7 +2,7 @@
 
 #include "AUInstrumentBase.h"
 #include "C700Version.h"
-#include "C700Generator.h"
+#include "C700Driver.h"
 
 #ifdef USE_CARBON_UI
 #include "AUCarbonViewBase.h"
