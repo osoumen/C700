@@ -253,12 +253,14 @@ static const int kDefaultValue_PortamentoRate = 0;
 static const int kDefaultValue_NoteOnPriority = 64;
 static const int kDefaultValue_ReleasePriority = 0;
 
-typedef struct {
+typedef struct BRRData {
     int             size;
     unsigned char   *data;
+    BRRData() : size(0), data(NULL) {}
 } BRRData;
 
 typedef struct {
+public:
     char        pgname[PROGRAMNAME_MAX_LEN];
     int         ar,dr,sl,sr;
     int         volL,volR;
@@ -268,7 +270,6 @@ typedef struct {
     bool        loop;
     bool        echo;
     int         bank;
-    BRRData     brr;
     char        sourceFile[PATH_LEN_MAX];
     bool        isEmphasized;
     bool        sustainMode;
@@ -277,6 +278,32 @@ typedef struct {
     int         portamentoRate;
     int         noteOnPriority;
     int         releasePriority;
+    
+    bool        hasBrrData()
+    {
+        return (brr.data != NULL)?true:false;
+    }
+    void        setLoop()
+    {
+        brr.data[brr.size - 9] |= 2;
+    }
+    void        unsetLoop()
+    {
+        brr.data[brr.size - 9] &= ~2;
+    }
+    unsigned char *brrData() const { return brr.data; }
+    int brrSize() const { return brr.size; }
+    const BRRData *getBRRData() const { return &brr; }
+    void setBRRData(const BRRData *srcbrr) { brr = *srcbrr; }
+    void releaseBrr() {
+        if (brr.data) {
+            delete [] brr.data;
+        }
+        brr.data = NULL;
+        brr.size = 0;
+    }
+private:
+    BRRData     brr;    
 } InstParams;
 
 float ConvertToVSTValue( float value, float min, float max );

@@ -872,7 +872,7 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 	//RawBRRFileからデータを取得してエフェクタ側へ反映
 	InstParams	inst = *(file->GetLoadedInst());
 	
-	efxAcc->SetBRRData(&inst.brr);
+	efxAcc->SetBRRData(inst.getBRRData());
 	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint,inst.lp);
 	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		inst.loop ? 1.0f:.0f);
 	
@@ -885,9 +885,9 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 			short	*buffer;
 			int		pitch;
 			int		length;
-			buffer = new short[(inst.brr.size*2)/9*16];
-			brrdecode(inst.brr.data, buffer, inst.lp, 2);
-			length = ((inst.brr.size-inst.lp)*2)/9*16;
+			buffer = new short[(inst.brrSize()*2)/9*16];
+			brrdecode(inst.brrData(), buffer, inst.lp, 2);
+			length = ((inst.brrSize()-inst.lp)*2)/9*16;
 			pitch = estimatebasefreq(buffer+inst.lp/9*16, length);
 			if (pitch > 0) {
 				samplerate = length/(double)pitch * 440.0*pow(2.0,-9.0/12);

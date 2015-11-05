@@ -673,7 +673,7 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_BRRData:
 			{
 				BRRData *brr = (BRRData *)inData;
-				mEfx->SetBRRData(brr);
+				mEfx->SetBRRData(brr->data, brr->size);
 				return noErr;
 			}
 
@@ -927,15 +927,15 @@ int C700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 {
 	CFMutableDictionaryRef dict = CFDictionaryCreateMutable	(NULL, 0, 
 								&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-	const InstParams	*vpSet = mEfx->GetVP();
+	InstParams	*vpSet = mEfx->GetVP();
 	
 	if (vpSet[pgnum].loop) {
-		vpSet[pgnum].brr.data[vpSet[pgnum].brr.size - 9] |= 2;
+        vpSet[pgnum].setLoop();
 	}
 	else {
-		vpSet[pgnum].brr.data[vpSet[pgnum].brr.size - 9] &= ~2;
+        vpSet[pgnum].unsetLoop();
 	}
-	CFDataRef	brrdata = CFDataCreate(NULL, vpSet[pgnum].brr.data, vpSet[pgnum].brr.size);
+	CFDataRef	brrdata = CFDataCreate(NULL, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
 	CFDictionarySetValue(dict, kSaveKey_brrdata, brrdata);
 	CFRelease(brrdata);
 	
@@ -996,12 +996,9 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_brrdata));
 	int	size = CFDataGetLength(cfdata);
 	const UInt8	*dataptr = CFDataGetBytePtr(cfdata);
-	BRRData		brr;
-	brr.data = const_cast<unsigned char*>(dataptr);
-	brr.size = size;
-	mEfx->SetBRRData(&brr);
+	mEfx->SetBRRData(dataptr, size);
 	mEfx->SetPropertyValue(kAudioUnitCustomProperty_Loop, 
-						   brr.data[brr.size-9]&2?true:false);
+						   dataptr[size-9]&2?true:false);
 	
 	int	value;
 	if (CFDictionaryContainsKey(dict, kSaveKey_looppoint)) {

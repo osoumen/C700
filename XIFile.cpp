@@ -40,7 +40,7 @@ XIFile::~XIFile()
 }
 
 //-----------------------------------------------------------------------------
-bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, double tempo )
+bool XIFile::SetDataFromChip( const C700Driver *chip, int targetProgram, double tempo )
 {
 	mDataPos = 0;
 	mDataUsed = 0;
@@ -162,7 +162,7 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 	
 	// XI Sample Headers
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
-		if ( chip->getVP(ismp)->brr.data != NULL && chip->getVP(ismp)->bank == selectBank ) {
+		if ( chip->getVP(ismp)->hasBrrData() && chip->getVP(ismp)->bank == selectBank ) {
 			
 			//元ファイルのヘッダー情報を読み込む
 			bool	existSrcFile = false;
@@ -183,7 +183,7 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 				}
 			}
 			if ( existSrcFile == false ) {
-				xsh.samplen = EndianU32_NtoL( chip->getVP(ismp)->brr.size/9*32 );
+				xsh.samplen = EndianU32_NtoL( chip->getVP(ismp)->brrSize()/9*32 );
 				xsh.loopstart = EndianU32_NtoL( chip->getVP(ismp)->lp/9*32 );
 				xsh.looplen = EndianU32_NtoL( xsh.samplen - xsh.loopstart );
 			}
@@ -216,7 +216,7 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 	
 	// XI Sample Data
 	for (int ismp=start_prg; ismp<=end_prg; ismp++) {
-		if ( chip->getVP(ismp)->brr.data != NULL && chip->getVP(ismp)->bank == selectBank ) {
+		if ( chip->getVP(ismp)->hasBrrData() && chip->getVP(ismp)->bank == selectBank ) {
 			short	*wavedata;
 			int		numSamples;
 			bool	existSrcFile = false;	//元ファイルが存在するか？
@@ -242,10 +242,10 @@ bool XIFile::SetDataFromChip( const C700Generator *chip, int targetProgram, doub
 			
 			//ソースファイルが無い場合はbrrデータをデコードして使用する
 			if ( existSrcFile == false ) {
-				numSamples = chip->getVP(ismp)->brr.size/9*16;
+				numSamples = chip->getVP(ismp)->brrSize()/9*16;
 				//wavedata = new short[numSamples];
 				wavedata = (short *)malloc(numSamples * sizeof(short));
-				brrdecode(chip->getVP(ismp)->brr.data, wavedata,0,0);
+				brrdecode(chip->getVP(ismp)->brrData(), wavedata,0,0);
 			}
 			
 			short s_new,s_old;

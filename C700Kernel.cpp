@@ -41,8 +41,7 @@ C700Kernel::C700Kernel()
 	//プログラムの初期化
 	for (int i=0; i<128; i++) {
 		mVPset[i].pgname[0] = 0;
-		mVPset[i].brr.size = 0;
-		mVPset[i].brr.data = NULL;
+		//mVPset[i].releaseBrr();   // BRRDataのコンストラクタで初期化される
 		mVPset[i].basekey = 0;
 		mVPset[i].lowkey = 0;
 		mVPset[i].highkey = 0;
@@ -80,9 +79,6 @@ C700Kernel::~C700Kernel()
 	for (int i=0; i<128; i++) {
 		mVPset[i].pgname[0] = 0;
 		mVPset[i].sourceFile[0] = 0;
-		if( mVPset[i].brr.data ) {
-			delete [] mVPset[i].brr.data;
-		}
 	}	
 }
 
@@ -426,8 +422,8 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 		case kAudioUnitCustomProperty_LoopPoint:
 			mVPset[mEditProg].lp = value;
-			if (mVPset[mEditProg].lp > mVPset[mEditProg].brr.size) {
-				mVPset[mEditProg].lp = mVPset[mEditProg].brr.size;
+			if (mVPset[mEditProg].lp > mVPset[mEditProg].brrSize()) {
+				mVPset[mEditProg].lp = mVPset[mEditProg].brrSize();
 			}
 			if ( mVPset[mEditProg].lp < 0 ) {
 				mVPset[mEditProg].lp = 0;
@@ -685,46 +681,57 @@ bool C700Kernel::SetProgramName( const char *pgname )
 
 const BRRData *C700Kernel::GetBRRData()
 {
-	return &(mVPset[mEditProg].brr);
+	return mVPset[mEditProg].getBRRData();
 }
 
 //-----------------------------------------------------------------------------
 
 const BRRData *C700Kernel::GetBRRData(int prog)
 {
-	return &(mVPset[prog].brr);
+	return mVPset[prog].getBRRData();
 }
 
 //-----------------------------------------------------------------------------
 
-bool C700Kernel::SetBRRData( const BRRData *brr )
+bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool reset, bool notify )
 {
+    if (prog < 0 || prog > 127) {
+        prog = mEditProg;
+    }
+    
 	//発音を停止する
-	Reset();
+    if (reset) {
+        Reset();
+    }
 
 	//brrデータをこちら側に移動する
-	if (brr->data) {
-		if ( mVPset[mEditProg].brr.data ) {
-			delete [] mVPset[mEditProg].brr.data;
+	if (data) {
+		if ( mVPset[prog].hasBrrData() ) {
+			mVPset[prog].releaseBrr();
 		}
-		mVPset[mEditProg].brr.data = new unsigned char[brr->size];
-		memmove(mVPset[mEditProg].brr.data, brr->data, brr->size);
-		mVPset[mEditProg].brr.size = brr->size;
+        BRRData brr;
+        brr.data = new unsigned char[size];
+        brr.size = size;
+		memmove(brr.data, data, size);
+        mVPset[prog].setBRRData(&brr);
 	}
 	else {
-		if (mVPset[mEditProg].brr.data) {
-			delete [] mVPset[mEditProg].brr.data;
-			mVPset[mEditProg].brr.data = NULL;
-			mVPset[mEditProg].brr.size = 0;
-			mVPset[mEditProg].pgname[0] = 0;
+        //NULLデータをセットされると削除を行う
+		if (mVPset[prog].hasBrrData()) {
+            mVPset[prog].releaseBrr();
+			mVPset[prog].pgname[0] = 0;
 			if ( propertyNotifyFunc ) {
 				propertyNotifyFunc( kAudioUnitCustomProperty_ProgramName, propNotifyUserData );
 			}
 		}
 	}
-	if ( propertyNotifyFunc ) {
-		propertyNotifyFunc( kAudioUnitCustomProperty_TotalRAM, propNotifyUserData );
-	}
+    
+    //TODO: ここで波形を転送？
+    if (notify) {
+        if ( propertyNotifyFunc ) {
+            propertyNotifyFunc( kAudioUnitCustomProperty_TotalRAM, propNotifyUserData );
+        }
+    }
 	return true;
 }
 
@@ -754,10 +761,8 @@ bool C700Kernel::SelectPreset( int num )
 	switch(num) {
 		case 0:
 			for (int j=0; j<128; j++) {
-				if (mVPset[j].brr.data) {
-					delete [] mVPset[j].brr.data;
-					mVPset[j].brr.data = NULL;
-					mVPset[j].brr.size = 0;
+				if (mVPset[j].hasBrrData()) {
+					mVPset[j].releaseBrr();
 					mVPset[j].pgname[0] = 0;
 				}
 			}
@@ -767,13 +772,9 @@ bool C700Kernel::SelectPreset( int num )
 			}
 			break;
 		case 1:
+        {
 			//プリセット音色
-			mVPset[0].brr.size=0x36;
-			if ( mVPset[0].brr.data ) {
-				delete [] mVPset[0].brr.data;
-			}
-			mVPset[0].brr.data	= new unsigned char[mVPset[0].brr.size];
-			memmove(mVPset[0].brr.data,sinewave_brr,mVPset[0].brr.size);
+            SetBRRData(sinewave_brr, 0x36, 0, false, false);
 			mVPset[0].basekey=81;
 			mVPset[0].lowkey=0;
 			mVPset[0].highkey=127;
@@ -786,12 +787,7 @@ bool C700Kernel::SelectPreset( int num )
 			mVPset[0].volR=100;
 			strcpy(mVPset[0].pgname, "Sine Wave");
 			
-			mVPset[1].brr.size=0x2d;
-			if ( mVPset[1].brr.data ) {
-				delete [] mVPset[1].brr.data;
-			}
-			mVPset[1].brr.data = new unsigned char[mVPset[1].brr.size];
-			memmove(mVPset[1].brr.data,squarewave_brr,mVPset[1].brr.size);
+            SetBRRData(squarewave_brr, 0x2d, 1, false, false);
 			mVPset[1].basekey=69;
 			mVPset[1].lowkey=0;
 			mVPset[1].highkey=127;
@@ -804,12 +800,7 @@ bool C700Kernel::SelectPreset( int num )
 			mVPset[1].volR=100;
 			strcpy(mVPset[1].pgname, "Square Wave");
 			
-			mVPset[2].brr.size=0x2d;
-			if ( mVPset[2].brr.data ) {
-				delete [] mVPset[2].brr.data;
-			}
-			mVPset[2].brr.data= new unsigned char[mVPset[2].brr.size];
-			memmove(mVPset[2].brr.data,pulse1_brr,mVPset[2].brr.size);
+            SetBRRData(pulse1_brr, 0x2d, 2, false, false);
 			mVPset[2].basekey=69;
 			mVPset[2].lowkey=0;
 			mVPset[2].highkey=127;
@@ -822,12 +813,7 @@ bool C700Kernel::SelectPreset( int num )
 			mVPset[2].volR=100;
 			strcpy(mVPset[2].pgname, "25% Pulse");
 			
-			mVPset[3].brr.size=0x2d;
-			if ( mVPset[3].brr.data ) {
-				delete [] mVPset[2].brr.data;
-			}
-			mVPset[3].brr.data=  new unsigned char[mVPset[3].brr.size];
-			memmove(mVPset[3].brr.data,pulse2_brr,mVPset[3].brr.size);
+            SetBRRData(pulse2_brr, 0x2d, 3, false, false);
 			mVPset[3].basekey=69;
 			mVPset[3].lowkey=0;
 			mVPset[3].highkey=127;
@@ -840,12 +826,7 @@ bool C700Kernel::SelectPreset( int num )
 			mVPset[3].volR=100;
 			strcpy(mVPset[3].pgname, "12.5% Pulse");
 			
-			mVPset[4].brr.size=0x2d;
-			if ( mVPset[4].brr.data ) {
-				delete [] mVPset[4].brr.data;
-			}
-			mVPset[4].brr.data= new unsigned char[mVPset[4].brr.size];
-			memmove(mVPset[4].brr.data,pulse3_brr,mVPset[4].brr.size);
+            SetBRRData(pulse3_brr, 0x2d, 4, false, false);
 			mVPset[4].basekey=69;
 			mVPset[4].lowkey=0;
 			mVPset[4].highkey=127;
@@ -864,6 +845,7 @@ bool C700Kernel::SelectPreset( int num )
 				}
 			}
 			break;
+        }
 		default:
 			return false;
 	}
@@ -1121,8 +1103,8 @@ int C700Kernel::GetTotalRAM()
 	//使用メモリを合計
 	int	totalRam = 0;
 	for ( int i=0; i<128; i++ ) {
-		if ( mVPset[i].brr.data ) {
-			totalRam += mVPset[i].brr.size;
+		if ( mVPset[i].hasBrrData() ) {
+			totalRam += mVPset[i].brrSize();
 		}
 	}
 	totalRam += 2048 * ((int)GetParameter(kParam_echodelay));
