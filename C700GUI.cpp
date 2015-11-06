@@ -885,10 +885,10 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 			short	*buffer;
 			int		pitch;
 			int		length;
-			buffer = new short[(inst.brrSize()*2)/9*16];
+			buffer = new short[inst.brrSamples()*2];
 			brrdecode(inst.brrData(), buffer, inst.lp, 2);
-			length = ((inst.brrSize()-inst.lp)*2)/9*16;
-			pitch = estimatebasefreq(buffer+inst.lp/9*16, length);
+			length = (inst.brrSamples()-inst.brrLpSamples())*2;
+			pitch = estimatebasefreq(buffer+inst.brrLpSamples(), length);
 			if (pitch > 0) {
 				samplerate = length/(double)pitch * 440.0*pow(2.0,-9.0/12);
 			}
@@ -1007,7 +1007,7 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 		
 		samplerate = 32000;
 		if (loop) {
-			buffer = new short[(brr.size*2)/9*16];
+			buffer = new short[brr.samples()*2];
 			brrdecode(brr.data, buffer, looppoint, 2);
 			length = ((brr.size-looppoint)*2)/9*16;
 			pitch = estimatebasefreq(buffer+looppoint/9*16, length);
@@ -1203,7 +1203,7 @@ void C700GUI::autocalcCurrentProgramSampleRate()
 	
 	key = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_BaseKey);
 	
-	buffer = new short[brr.size/9*16];
+	buffer = new short[brr.samples()];
 	brrdecode(brr.data, buffer, 0, 0);
 	length = (brr.size-looppoint)/9*16;
 	pitch = estimatebasefreq(buffer+looppoint/9*16, length);
@@ -1236,7 +1236,7 @@ void C700GUI::autocalcCurrentProgramBaseKey()
 	
 	samplerate = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_Rate);
 	
-	buffer = new short[brr.size/9*16];
+	buffer = new short[brr.samples()];
 	brrdecode(brr.data, buffer, 0, 0);
 	length = (brr.size-looppoint)/9*16;
 	pitch = estimatebasefreq(buffer+looppoint/9*16, length);

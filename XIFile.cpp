@@ -242,7 +242,7 @@ bool XIFile::SetDataFromChip( const C700Driver *chip, int targetProgram, double 
 			
 			//ソースファイルが無い場合はbrrデータをデコードして使用する
 			if ( existSrcFile == false ) {
-				numSamples = chip->getVP(ismp)->brrSize()/9*16;
+				numSamples = chip->getVP(ismp)->brrSamples();
 				//wavedata = new short[numSamples];
 				wavedata = (short *)malloc(numSamples * sizeof(short));
 				brrdecode(chip->getVP(ismp)->brrData(), wavedata,0,0);

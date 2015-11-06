@@ -257,6 +257,7 @@ typedef struct BRRData {
     int             size;
     unsigned char   *data;
     BRRData() : size(0), data(NULL) {}
+    int samples() const { return (size/9)*16; }
 } BRRData;
 
 typedef struct {
@@ -293,6 +294,8 @@ public:
     }
     unsigned char *brrData() const { return brr.data; }
     int brrSize() const { return brr.size; }
+    int brrSamples() const { return (brr.size/9)*16; }
+    int brrLpSamples() const { return (lp/9)*16; }
     const BRRData *getBRRData() const { return &brr; }
     void setBRRData(const BRRData *srcbrr) { brr = *srcbrr; }
     void releaseBrr() {
