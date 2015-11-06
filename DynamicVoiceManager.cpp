@@ -124,7 +124,7 @@ int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, bool monoMod
         mVoPrio[v] = prio;
         mVoKeyOn[v] = false;
         mVoUniqueID[v] = uniqueID;
-        if (*isLegato == false) {
+        if (*isLegato == false && !IsPlayingVoice(v)) { // モノモードの同時ノートオン対策
             mPlayVo.push_back(v);
             mChNoteOns[ch]++;
         }
