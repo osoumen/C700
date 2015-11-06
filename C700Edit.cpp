@@ -246,9 +246,9 @@ void C700Edit::SetLoopPoint( int lp )
 	
 	int		start;
 	int		length;
-	wavedata = new short[brr.size/9*16];
+	wavedata = new short[brr.samples()];
 	brrdecode(brr.data, wavedata,0,0);
-	numSamples = brr.size/9*16;
+	numSamples = brr.samples();
 	start = looppoint;
 	length = ((start+headView->getWidth())<numSamples?headView->getWidth():(numSamples-start));
 	headView->setWave(wavedata+start, length);
