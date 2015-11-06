@@ -64,11 +64,11 @@ public:
         
 		//bool			echoOn;    // ミラー
         
-        int				pitch;    // ミラー
+        int				targetPitch;
         
         VoiceStatus() : pb(0), vibdepth(0), reg_pmod(0), vibPhase(0), portaPitch(0),
                         vol_l(0), vol_r(0), velo(0), volume(0), expression(0), pan(0), srcn(0),
-                        pitch(0) {}
+                        targetPitch(0) {}
         void Reset();
 	} VoiceStatus;
     

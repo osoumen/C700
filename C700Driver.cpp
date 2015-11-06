@@ -64,7 +64,7 @@ void C700Driver::VoiceStatus::Reset()
     portaPitch = .0f;
     pan = 64;
 	
-    pitch = 0;
+    targetPitch = 0;
 	//loopPoint = 0;
 	//loop = false;
 }
@@ -260,7 +260,7 @@ void C700Driver::doPitchBend( int ch, int value1, int value2 )
     mChStat[ch].pitchBend = pb_value;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		if ( mVoiceManager.GetVoiceMidiCh(i) == ch ) {
-			mVoiceStat[i].pb = CalcPBValue( ch, pb_value, mVoiceStat[i].pitch );
+			mVoiceStat[i].pb = CalcPBValue( ch, pb_value, mVoiceStat[i].targetPitch );
 		}
 	}
 }
@@ -696,17 +696,17 @@ void C700Driver::processPortament(int vo)
     newPitch = mVoice[vo].pitch * tcInv + mVoice[vo].portaPitch * tc;
     mVoice[vo].portaPitch = newPitch;
 #else
-    if ( mVoiceStat[vo].pitch > mVoiceStat[vo].portaPitch) {
+    if ( mVoiceStat[vo].targetPitch > mVoiceStat[vo].portaPitch) {
         newPitch = mVoiceStat[vo].portaPitch * mChStat[ mVoiceManager.GetVoiceMidiCh(vo) ].portaTc;
-        if (newPitch > mVoiceStat[vo].pitch) {
-            newPitch = mVoiceStat[vo].pitch;
+        if (newPitch > mVoiceStat[vo].targetPitch) {
+            newPitch = mVoiceStat[vo].targetPitch;
         }
         mVoiceStat[vo].portaPitch = newPitch;
     }
-    else if ( mVoiceStat[vo].pitch < mVoiceStat[vo].portaPitch) {
+    else if ( mVoiceStat[vo].targetPitch < mVoiceStat[vo].portaPitch) {
         newPitch = mVoiceStat[vo].portaPitch / mChStat[ mVoiceManager.GetVoiceMidiCh(vo) ].portaTc;
-        if (newPitch < mVoiceStat[vo].pitch) {
-            newPitch = mVoiceStat[vo].pitch;
+        if (newPitch < mVoiceStat[vo].targetPitch) {
+            newPitch = mVoiceStat[vo].targetPitch;
         }
         mVoiceStat[vo].portaPitch = newPitch;
     }
@@ -769,16 +769,16 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
     }
 	
 	// 中心周波数の算出
-	mVoiceStat[v].pitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+	mVoiceStat[v].targetPitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
     
     if (vp.portamentoOn) {
         if (mChStat[midiCh].portaStartPitch == 0) {
-            mChStat[midiCh].portaStartPitch = mVoiceStat[v].pitch;
+            mChStat[midiCh].portaStartPitch = mVoiceStat[v].targetPitch;
         }
         mVoiceStat[v].portaPitch = mChStat[midiCh].portaStartPitch;
     }
     else {
-        mVoiceStat[v].portaPitch = mVoiceStat[v].pitch;
+        mVoiceStat[v].portaPitch = mVoiceStat[v].targetPitch;
     }
     
     mVoiceManager.SetKeyOn(v);
@@ -798,7 +798,7 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         mVoiceStat[v].volume = mChStat[midiCh].volume;
         mVoiceStat[v].expression = mChStat[midiCh].expression;
         mVoiceStat[v].pan = mChStat[midiCh].pan;
-        mVoiceStat[v].pb = CalcPBValue( midiCh, mChStat[midiCh].pitchBend, mVoiceStat[v].pitch );
+        mVoiceStat[v].pb = CalcPBValue( midiCh, mChStat[midiCh].pitchBend, mVoiceStat[v].targetPitch );
         mVoiceStat[v].vibdepth = mChStat[midiCh].vibDepth;
         mVoiceStat[v].reg_pmod = mVoiceStat[v].vibdepth>0 ? true:false;
         mVoiceStat[v].vibPhase = 0.0f;
@@ -1116,7 +1116,6 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 						pitch=1;
 					}
 				}
-                mVoiceStat[v].pitch = pitch;
                 mDSP.SetPitch(v, pitch);
                 
                 // パンのボリューム値への反映
