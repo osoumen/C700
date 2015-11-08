@@ -927,14 +927,9 @@ int C700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 {
 	CFMutableDictionaryRef dict = CFDictionaryCreateMutable	(NULL, 0, 
 								&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-	InstParams	*vpSet = mEfx->GetVP();
+	const InstParams	*vpSet = mEfx->GetVP();
 	
-	if (vpSet[pgnum].loop) {
-        vpSet[pgnum].setLoop();
-	}
-	else {
-        vpSet[pgnum].unsetLoop();
-	}
+    mEfx->CorrectLoopFlagForSave(pgnum);
 	CFDataRef	brrdata = CFDataCreate(NULL, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
 	CFDictionarySetValue(dict, kSaveKey_brrdata, brrdata);
 	CFRelease(brrdata);
@@ -993,19 +988,19 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(data);
 	CFNumberRef cfnum;
 	
-	CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_brrdata));
-	int	size = CFDataGetLength(cfdata);
-	const UInt8	*dataptr = CFDataGetBytePtr(cfdata);
-	mEfx->SetBRRData(dataptr, size);
-	mEfx->SetPropertyValue(kAudioUnitCustomProperty_Loop, 
-						   dataptr[size-9]&2?true:false);
-	
 	int	value;
 	if (CFDictionaryContainsKey(dict, kSaveKey_looppoint)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_looppoint));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, value);
 	}
+	
+	CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_brrdata));
+	int	size = CFDataGetLength(cfdata);
+	const UInt8	*dataptr = CFDataGetBytePtr(cfdata);
+	mEfx->SetBRRData(dataptr, size);
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_Loop, 
+						   dataptr[size-9]&2?true:false);
 	
 	double	dvalue;
 	if (CFDictionaryContainsKey(dict, kSaveKey_samplerate)) {

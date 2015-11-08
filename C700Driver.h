@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "MemManager.h"
 #include "C700defines.h"
 #include "C700DSP.h"
 #include "DynamicVoiceManager.h"
@@ -132,26 +133,23 @@ public:
 	void		SetDelayTime( int value );
 	int			GetDelayTime();
 	void		SetFIRTap( int tap, int value );
+    
+    void        SetBrrSample( int prog, const unsigned char *data, int size, int loopPoint);
+    void        DelBrrSample( int prog );
+    void        UpdateLoopPoint( int prog );
+    void        UpdateLoopFlag( int prog );
 	
-	void		SetSampleRate( double samplerate ) {
-        mSampleRate = samplerate;
-        mEventDelaySamples = calcEventDelaySamples();
-    }
-    
-	void		Process( unsigned int frames, float *output[2] );
-	int			GetKeyMap( int bank, int key ) const { return mKeyMap[bank][key]; }
-	InstParams	*getVP(int pg) const { return &mVPset[pg]; }
-	InstParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
-	void		SetVPSet( InstParams *vp );
-    
-    void        SetEventDelayClocks(int clocks) {
-        mEventDelayClocks = clocks;
-        mEventDelaySamples = calcEventDelaySamples();
-    }
-    
+	void		SetSampleRate( double samplerate );
+    void        SetEventDelayClocks(int clocks);
     double      GetProcessDelayTime();
     int         GetNoteOnNotes(int ch) { return mVoiceManager.GetNoteOns(ch); }
-	
+	    
+	void		Process( unsigned int frames, float *output[2] );
+	int			GetKeyMap( int bank, int key ) const { return mKeyMap[bank][key]; }
+	const InstParams	*getVP(int pg) const { return &mVPset[pg]; }
+	const InstParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
+	void		SetVPSet( InstParams *vp );
+    
 	void		RefreshKeyMap(void);
 	
 private:
@@ -204,8 +202,9 @@ private:
     int             mEventDelayClocks;      // 動作遅延クロック
 	
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
-	InstParams		*mVPset;
+	const InstParams *mVPset;
     
+    MemManager      mMemManager;
     C700DSP         mDSP;
     VoiceStatus		mVoiceStat[kMaximumVoices];
 	

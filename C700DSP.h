@@ -20,7 +20,6 @@ typedef enum
     DECAY,
     SUSTAIN,
     RELEASE,
-    //	FASTRELEASE
 } env_state_t32;
 
 class C700DSP {
@@ -49,30 +48,32 @@ public:
     void SetPitch(int v, int value);
     void SetEchoOn(int v, bool isOn);
     void SetSrcn(int v, int value);
+    void SetDir(int value);
     
-    int TransferBrrData(int srcn, unsigned char	*data, int size);
-    void ReleaseBrrData(int srcn);
+    void WriteRam(int addr, unsigned char *data, int size);
+    void WriteRam(int addr, unsigned char data);
     
     void KeyOffVoice(int v);
     void KeyOnVoice(int v);
     
     void Process1Sample(int &outl, int &outr);
     
-    // テスト用
-    void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint, bool loop);
+private:
+    void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint);
     
 private:
     struct DSPState {
         // 音源内部状態
 		int				ar,dr,sl,sr;
         int             vol_l,vol_r;
-		unsigned int	loopPoint;
-		bool			loop;
-		bool			echoOn;
+		bool			ecen;
         
 		unsigned char	*brrdata;
+		unsigned int	loopPoint;
+        
 		int				memPtr;        /* Sample data memory pointer   */
 		int             end;            /* End or loop after block      */
+        int             loop;
 		int             envcnt;         /* Counts to envelope update    */
 		env_state_t32   envstate;       /* Current envelope state       */
 		int             envx;           /* Last env height (0-0x7FFF)   */
@@ -96,7 +97,10 @@ private:
 	int				mVoiceLimit;
 	int				mMainVolume_L;
 	int				mMainVolume_R;
+    int             mDirAddr;
 	bool			mNewADPCM;
+    
+    unsigned char   mRam[65536];
 
 };
 

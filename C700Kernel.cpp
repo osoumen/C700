@@ -422,16 +422,25 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 		case kAudioUnitCustomProperty_LoopPoint:
 			mVPset[mEditProg].lp = value;
+            /*
 			if (mVPset[mEditProg].lp > mVPset[mEditProg].brrSize()) {
 				mVPset[mEditProg].lp = mVPset[mEditProg].brrSize();
-			}
+			}*/
 			if ( mVPset[mEditProg].lp < 0 ) {
 				mVPset[mEditProg].lp = 0;
 			}
+            mGenerator.UpdateLoopPoint(mEditProg);
 			return true;
 			
 		case kAudioUnitCustomProperty_Loop:
 			mVPset[mEditProg].loop = boolData;
+            if (boolData) {
+                mVPset[mEditProg].setLoop();
+            }
+            else {
+                mVPset[mEditProg].unsetLoop();
+            }
+            mGenerator.UpdateLoopFlag(mEditProg);
 			return true;
 			
 		case kAudioUnitCustomProperty_Echo:
@@ -714,19 +723,22 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
         brr.size = size;
 		memmove(brr.data, data, size);
         mVPset[prog].setBRRData(&brr);
+        // 波形の転送
+        mGenerator.SetBrrSample(prog, data, size, mVPset[prog].lp);
 	}
 	else {
         //NULLデータをセットされると削除を行う
 		if (mVPset[prog].hasBrrData()) {
             mVPset[prog].releaseBrr();
 			mVPset[prog].pgname[0] = 0;
+            // 波形メモリの解放
+            mGenerator.DelBrrSample(prog);
 			if ( propertyNotifyFunc ) {
 				propertyNotifyFunc( kAudioUnitCustomProperty_ProgramName, propNotifyUserData );
 			}
 		}
 	}
     
-    //TODO: ここで波形を転送？
     if (notify) {
         if ( propertyNotifyFunc ) {
             propertyNotifyFunc( kAudioUnitCustomProperty_TotalRAM, propNotifyUserData );
@@ -750,7 +762,7 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
 		"Empty",
 		"Testtones"
 	};
-	if ( num < 0 || num >= NUM_PRESETS ) return false;
+	if ( num < 0 || num >= NUM_PRESETS ) return NULL;
 	return presetNames[num];
 }
 
@@ -774,7 +786,6 @@ bool C700Kernel::SelectPreset( int num )
 		case 1:
         {
 			//プリセット音色
-            SetBRRData(sinewave_brr, 0x36, 0, false, false);
 			mVPset[0].basekey=81;
 			mVPset[0].lowkey=0;
 			mVPset[0].highkey=127;
@@ -785,9 +796,9 @@ bool C700Kernel::SelectPreset( int num )
 			mVPset[0].rate=28160.0;
 			mVPset[0].volL=100;
 			mVPset[0].volR=100;
+            SetBRRData(sinewave_brr, 0x36, 0, false, false);
 			strcpy(mVPset[0].pgname, "Sine Wave");
 			
-            SetBRRData(squarewave_brr, 0x2d, 1, false, false);
 			mVPset[1].basekey=69;
 			mVPset[1].lowkey=0;
 			mVPset[1].highkey=127;
@@ -798,9 +809,9 @@ bool C700Kernel::SelectPreset( int num )
 			mVPset[1].rate=28160.0;
 			mVPset[1].volL=100;
 			mVPset[1].volR=100;
+            SetBRRData(squarewave_brr, 0x2d, 1, false, false);
 			strcpy(mVPset[1].pgname, "Square Wave");
 			
-            SetBRRData(pulse1_brr, 0x2d, 2, false, false);
 			mVPset[2].basekey=69;
 			mVPset[2].lowkey=0;
 			mVPset[2].highkey=127;
@@ -811,9 +822,9 @@ bool C700Kernel::SelectPreset( int num )
 			mVPset[2].rate=28160.0;
 			mVPset[2].volL=100;
 			mVPset[2].volR=100;
+            SetBRRData(pulse1_brr, 0x2d, 2, false, false);
 			strcpy(mVPset[2].pgname, "25% Pulse");
 			
-            SetBRRData(pulse2_brr, 0x2d, 3, false, false);
 			mVPset[3].basekey=69;
 			mVPset[3].lowkey=0;
 			mVPset[3].highkey=127;
@@ -824,9 +835,9 @@ bool C700Kernel::SelectPreset( int num )
 			mVPset[3].rate=28160.0;
 			mVPset[3].volL=100;
 			mVPset[3].volR=100;
+            SetBRRData(pulse2_brr, 0x2d, 3, false, false);
 			strcpy(mVPset[3].pgname, "12.5% Pulse");
 			
-            SetBRRData(pulse3_brr, 0x2d, 4, false, false);
 			mVPset[4].basekey=69;
 			mVPset[4].lowkey=0;
 			mVPset[4].highkey=127;
@@ -837,6 +848,7 @@ bool C700Kernel::SelectPreset( int num )
 			mVPset[4].rate=28160.0;
 			mVPset[4].volL=100;
 			mVPset[4].volR=100;
+            SetBRRData(pulse3_brr, 0x2d, 4, false, false);
 			strcpy(mVPset[4].pgname, "6.25% Pulse");
 			
 			if ( propertyNotifyFunc ) {
@@ -1123,4 +1135,15 @@ void C700Kernel::SetParameterSetFunc( void (*func) (int paramID, float value, vo
 {
 	parameterSetFunc = func;
 	paramSetUserData = userData;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::CorrectLoopFlagForSave(int pgnum)
+{
+    if (mVPset[pgnum].loop) {
+        mVPset[pgnum].setLoop();
+	}
+	else {
+        mVPset[pgnum].unsetLoop();
+	}
 }

@@ -170,7 +170,6 @@ void C700Driver::ControlChange( int ch, int controlNum, int value, int inFrame )
 //-----------------------------------------------------------------------------
 void C700Driver::AllNotesOff()
 {
-    // TODO: mPlayVo, mWaitVoをなぜクリアしていないのか調べる
     //mClearEvent = true;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		mDSP.ResetVoice(i);
@@ -382,6 +381,51 @@ void C700Driver::SetFIRTap( int tap, int value )
 }
 
 //-----------------------------------------------------------------------------
+void C700Driver::SetBrrSample( int prog, const unsigned char *data, int size, int loopPoint)
+{
+    mDSP.SetDir(0x2); // TODO: 初期化時に１回だけ設定する
+    mMemManager.WriteData(prog, data, size, loopPoint);
+    mMemManager.UpdateMem(&mDSP);
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::DelBrrSample( int prog )
+{
+    mDSP.SetDir(0x2); // TODO: 初期化時に１回だけ設定する
+    mMemManager.DeleteData(prog);
+    mMemManager.UpdateMem(&mDSP);
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::UpdateLoopPoint( int prog )
+{
+    mMemManager.ChangeLoopPoint(prog, mVPset[prog].lp, &mDSP);
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::UpdateLoopFlag( int prog )
+{
+    // TODO: 最後のバイトだけ書き換える
+    mMemManager.DeleteData(prog);
+    mMemManager.WriteData(prog, mVPset[prog].brrData(), mVPset[prog].brrSize(), mVPset[prog].lp);
+    mMemManager.UpdateMem(&mDSP);
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::SetSampleRate( double samplerate )
+{
+    mSampleRate = samplerate;
+    mEventDelaySamples = calcEventDelaySamples();
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::SetEventDelayClocks(int clocks)
+{
+    mEventDelayClocks = clocks;
+    mEventDelaySamples = calcEventDelaySamples();
+}
+
+//-----------------------------------------------------------------------------
 void C700Driver::SetPortamentOn( int ch, bool on )
 {
     //mChStat[ch].portaOn = on;
@@ -472,7 +516,7 @@ void C700Driver::SetMonoMode( int ch, bool on )
 //-----------------------------------------------------------------------------
 InstParams C700Driver::getChannelVP(int ch, int note)
 {
-    InstParams  *pgVP = &mVPset[mChStat[ch].prog];
+    const InstParams  *pgVP = &mVPset[mChStat[ch].prog];
     if (mDrumMode[pgVP->bank]) {
         return *(getMappedVP(pgVP->bank, note));
     }
@@ -806,16 +850,9 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         mVoiceStat[v].vol_r=vp.volR;
 
         // 波形番号を指定する
-        // TODO: データをもっと前の時点で転送しておく仕様に変更
+        // データをもっと前の時点で転送しておく仕様に変更
         mVoiceStat[v].srcn = mChStat[midiCh].prog;
-        /*
-        mVoiceStat[v].brrdata = vp.brr.data;
-        mVoiceStat[v].loopPoint = vp.lp;
-        mVoiceStat[v].loop = vp.loop;
-        */
-        //テスト
-        mDSP.setBrr(v, vp.brrData(), vp.lp, vp.loop);
-        
+
         mDSP.SetSrcn(v, mChStat[midiCh].prog);
         
         mDSP.SetEchoOn(v, vp.echo);

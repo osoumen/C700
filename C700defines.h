@@ -280,7 +280,7 @@ public:
     int         noteOnPriority;
     int         releasePriority;
     
-    bool        hasBrrData()
+    bool        hasBrrData() const
     {
         return (brr.data != NULL)?true:false;
     }
