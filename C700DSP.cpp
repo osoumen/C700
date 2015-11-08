@@ -40,23 +40,15 @@ void C700DSP::DSPState::Reset()
 	sampbuf[1]=0;
 	sampbuf[2]=0;
 	sampbuf[3]=0;
-	/*
-	pb = 0;
-	reg_pmod = 0;
-	vibdepth = 0;
-	vibPhase = 0.0f;
-    portaPitch = .0f;
-    pan = 64;
-	*/
 	brrdata = silence_brr;
 	loopPoint = 0;
-	loop = false;
 	pitch = 0;
 	memPtr = 0;
 	headerCnt = 0;
 	half = 0;
 	envx = 0;
 	end = 0;
+	loop = 0;
 	sampptr = 0;
 	mixfrac=0;
 	envcnt = CNT_INIT;
@@ -68,6 +60,7 @@ C700DSP::C700DSP() : mNewADPCM( false )
     //Initialize
 	mMainVolume_L = 127;
 	mMainVolume_R = 127;
+    mDirAddr = 0;
 }
 
 C700DSP::~C700DSP()
@@ -189,31 +182,52 @@ void C700DSP::SetPitch(int v, int value)
 
 void C700DSP::SetEchoOn(int v, bool isOn)
 {
-    mVoice[v].echoOn = isOn;
+    mVoice[v].ecen = isOn;
 }
 
 void C700DSP::SetSrcn(int v, int value)
 {
-    // TODO: v chのsrcnを設定する
+    // v chのsrcnからbrrdata,loopPointを設定する
+    int brrPtr = mDirAddr + value * 4;
+    int loopPtr = brrPtr + 2;
+    int brrAddr = mRam[brrPtr+1] * 256 + mRam[brrPtr];
+    int loopAddr = mRam[loopPtr+1] * 256 + mRam[loopPtr];
+    
+    setBrr( v, &mRam[brrAddr], loopAddr - brrAddr);
 }
 
-void C700DSP::setBrr(int v, unsigned char *brrdata, unsigned int loopPoint, bool loop)
+void C700DSP::SetDir(int value)
+{
+    mDirAddr = (value & 0xff) << 8;
+}
+
+void C700DSP::setBrr(int v, unsigned char *brrdata, unsigned int loopPoint)
 {
     mVoice[v].brrdata = brrdata;
     mVoice[v].loopPoint = loopPoint;
-    mVoice[v].loop = loop;
 }
 
-int C700DSP::TransferBrrData(int srcn, unsigned char *data, int size)
+void C700DSP::WriteRam(int addr, unsigned char *data, int size)
 {
-    // TODO: srcnにdataをsizeバイト分転送して、転送したアドレスを返す
-    
-    return 0;
+    // addrにdataをsizeバイト分転送する
+    int startaddr = 0;
+    int endaddr = addr + size;
+    if (addr > startaddr) {
+        startaddr = addr;
+    }
+    if (endaddr > 0x10000) {
+        endaddr = 0x10000;
+    }
+    const unsigned char *srcPtr = data;
+    for (int i=startaddr; i<endaddr; i++) {
+        mRam[i] = *srcPtr;
+        srcPtr++;
+    }
 }
 
-void C700DSP::ReleaseBrrData(int srcn)
+void C700DSP::WriteRam(int addr, unsigned char data)
 {
-    // TODO: srcnの波形を解放する
+    mRam[addr & 0xffff] = data;
 }
 
 void C700DSP::Process1Sample(int &outl, int &outr)
@@ -301,7 +315,8 @@ void C700DSP::Process1Sample(int &outl, int &outr)
                 mVoice[v].headerCnt = 8;
                 int headbyte = ( unsigned char )mVoice[v].brrdata[mVoice[v].memPtr++];
                 mVoice[v].range = headbyte >> 4;
-                mVoice[v].end = headbyte & 3;
+                mVoice[v].end = headbyte & 1;
+                mVoice[v].loop = headbyte & 2;
                 mVoice[v].filter = ( headbyte & 12 ) >> 2;
             }
             
@@ -396,7 +411,7 @@ void C700DSP::Process1Sample(int &outl, int &outr)
         int vr = ( mVoice[v].vol_r * outx ) >> 7;
         
         // エコー処理
-        if ( mVoice[v].echoOn ) {
+        if ( mVoice[v].ecen ) {
             mEcho[0].Input(vl);
             mEcho[1].Input(vr);
         }

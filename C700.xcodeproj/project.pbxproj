@@ -85,6 +85,10 @@
 		F510B705163266CB00A844B4 /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510B703163266CB00A844B4 /* FileAccess.cpp */; };
 		F510B706163266CB00A844B4 /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F510B702163266CB00A844B4 /* FileAccess.h */; };
 		F510B707163266CB00A844B4 /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510B703163266CB00A844B4 /* FileAccess.cpp */; };
+		F527FFA01BEE323F0083E355 /* MemManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F527FF9E1BEE323F0083E355 /* MemManager.cpp */; };
+		F527FFA11BEE323F0083E355 /* MemManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F527FF9E1BEE323F0083E355 /* MemManager.cpp */; };
+		F527FFA21BEE323F0083E355 /* MemManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F527FF9F1BEE323F0083E355 /* MemManager.h */; };
+		F527FFA31BEE323F0083E355 /* MemManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F527FF9F1BEE323F0083E355 /* MemManager.h */; };
 		F53602A11984CEC60079A9BE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602A01984CEC60079A9BE /* Cocoa.framework */; };
 		F53602A21984CEC60079A9BE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602A01984CEC60079A9BE /* Cocoa.framework */; };
 		F53602A71984CF600079A9BE /* aeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602A31984CF600079A9BE /* aeffect.h */; };
@@ -399,6 +403,8 @@
 		8D01CCD20486CAD60068D4B7 /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		F510B702163266CB00A844B4 /* FileAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileAccess.h; sourceTree = "<group>"; };
 		F510B703163266CB00A844B4 /* FileAccess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileAccess.cpp; sourceTree = "<group>"; };
+		F527FF9E1BEE323F0083E355 /* MemManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemManager.cpp; sourceTree = "<group>"; };
+		F527FF9F1BEE323F0083E355 /* MemManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemManager.h; sourceTree = "<group>"; };
 		F53602A01984CEC60079A9BE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		F53602A31984CF600079A9BE /* aeffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aeffect.h; path = pluginterfaces/vst2.x/aeffect.h; sourceTree = "<group>"; };
 		F53602A41984CF600079A9BE /* aeffectx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aeffectx.h; path = pluginterfaces/vst2.x/aeffectx.h; sourceTree = "<group>"; };
@@ -811,6 +817,8 @@
 				F543D0AA147D285F00DC53A3 /* C700Driver.cpp */,
 				F58DCD7D1A2B4586004BD426 /* C700DSP.h */,
 				F58DCD7C1A2B4586004BD426 /* C700DSP.cpp */,
+				F527FF9F1BEE323F0083E355 /* MemManager.h */,
+				F527FF9E1BEE323F0083E355 /* MemManager.cpp */,
 				F5432C241627AE4200863A0B /* EchoKernel.h */,
 				F5432C251627AE4200863A0B /* EchoKernel.cpp */,
 				F556802B1A2AA8550031451C /* DynamicVoiceManager.cpp */,
@@ -938,6 +946,7 @@
 				8BA05AAF072073D300365D66 /* AUBase.h in Headers */,
 				8BA05AB1072073D300365D66 /* AUDispatch.h in Headers */,
 				8BA05AB3072073D300365D66 /* AUInputElement.h in Headers */,
+				F527FFA21BEE323F0083E355 /* MemManager.h in Headers */,
 				8BA05AB5072073D300365D66 /* AUOutputElement.h in Headers */,
 				8BA05AB8072073D300365D66 /* AUScopeElement.h in Headers */,
 				8BA05ABA072073D300365D66 /* ComponentBase.h in Headers */,
@@ -1042,6 +1051,7 @@
 				F54331AF16296E0200863A0B /* SeparatorLine.h in Headers */,
 				F54331B016296E0200863A0B /* MyParamDisplay.h in Headers */,
 				F54331B116296E0200863A0B /* MyTextEdit.h in Headers */,
+				F527FFA31BEE323F0083E355 /* MemManager.h in Headers */,
 				F53602AB1984CF600079A9BE /* vstfxstore.h in Headers */,
 				F54331B216296E0200863A0B /* EfxAccess.h in Headers */,
 				F54331B316296E0200863A0B /* DataBuffer.h in Headers */,
@@ -1348,6 +1358,7 @@
 				F569C3AE162518B9006C91AD /* AudioFile.cpp in Sources */,
 				F569C3B2162518BF006C91AD /* SPCFile.cpp in Sources */,
 				F569C3B6162518C6006C91AD /* RawBRRFile.cpp in Sources */,
+				F527FFA01BEE323F0083E355 /* MemManager.cpp in Sources */,
 				F569C40C16254B6E006C91AD /* XIFile.cpp in Sources */,
 				F569C6E0162644AE006C91AD /* PlistBRRFile.cpp in Sources */,
 				F5432C271627AE4200863A0B /* EchoKernel.cpp in Sources */,
@@ -1364,6 +1375,7 @@
 				F54331FC16296E0200863A0B /* czt.cpp in Sources */,
 				F54331FD16296E0200863A0B /* brrcodec.cpp in Sources */,
 				F54331FE16296E0200863A0B /* C700Driver.cpp in Sources */,
+				F527FFA11BEE323F0083E355 /* MemManager.cpp in Sources */,
 				F54331FF16296E0200863A0B /* cocoasupport.mm in Sources */,
 				F543320116296E0200863A0B /* cvstguitimer.cpp in Sources */,
 				F543320216296E0200863A0B /* cfileselector.cpp in Sources */,

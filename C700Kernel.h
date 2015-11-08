@@ -56,7 +56,9 @@ public:
 	void			SetPropertyNotifyFunc( void (*func) (int propID, void* userData), void* userData );
 	void			SetParameterSetFunc( void (*func) (int paramID, float value, void* userData) , void* userData );
 	
-	InstParams* GetVP() { return mVPset; }
+	const InstParams* GetVP() { return mVPset; }
+    
+    void            CorrectLoopFlagForSave(int pgnum);
     
     double          GetProcessDelayTime() { return mGenerator.GetProcessDelayTime(); }
 	
@@ -85,7 +87,7 @@ private:
     int                 mRPN[16];
     int                 mNRPN[16];
 	
-	C700Driver	mGenerator;
+	C700Driver      mGenerator;
     
     void            setRPNLSB(int ch, int value);
     void            setRPNMSB(int ch, int value);
