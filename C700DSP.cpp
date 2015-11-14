@@ -207,7 +207,7 @@ void C700DSP::setBrr(int v, unsigned char *brrdata, unsigned int loopPoint)
     mVoice[v].loopPoint = loopPoint;
 }
 
-void C700DSP::WriteRam(int addr, unsigned char *data, int size)
+void C700DSP::WriteRam(int addr, const unsigned char *data, int size)
 {
     // addrにdataをsizeバイト分転送する
     int startaddr = 0;

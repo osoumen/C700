@@ -21,7 +21,7 @@ public:
     
     bool SetAddr(int addr);
     int GetAddr();
-    void ReadData(unsigned char *outBuf);
+    const unsigned char *GetData();
     int GetSize() { return mSize; }
     void SetLoopPoint(int lp) { mLoopPoint = lp; }
     int GetLoopPoint() { return mLoopPoint; }
@@ -42,7 +42,6 @@ public:
     bool WriteData(int srcn, const unsigned char *data, int size, int loopPoint);
     void DeleteData(int srcn);
     void UpdateMem(C700DSP *dsp);
-    const unsigned char *GetMemImage() const { return mMem; }
     void ChangeLoopPoint(int srcn, int lp, C700DSP *dsp);
     
     void SetBrrEndAddr(int addr);
@@ -50,7 +49,6 @@ public:
     
 private:
     std::map<int, BrrRegion>            mRegions;
-    unsigned char                       *mMem;
     int                                 mMemSize;
     int                                 mDirAddr;
     int                                 mTotalSize;

@@ -64,29 +64,24 @@ int BrrRegion::GetAddr()
     return mAddr;
 }
 
-void BrrRegion::ReadData(unsigned char *outBuf)
+const unsigned char *BrrRegion::GetData()
 {
-    memcpy(outBuf, mData, mSize);
+    return mData;
 }
 
 //--------------------------------------
 
 MemManager::MemManager(int size)
-: mMem(NULL)
-, mTotalSize(0)
+: mTotalSize(0)
 {
     mMemSize = size;
     mDirAddr = 0x200;
     mBrrStartAddr = 0x600;
     mBrrEndAddr = 0x10000;
-    mMem = new unsigned char[size];
 }
 
 MemManager::~MemManager()
 {
-    if (mMem != NULL) {
-        delete [] mMem;
-    }
 }
 
 bool MemManager::WriteData(int srcn, const unsigned char *data, int size, int loopPoint)
@@ -119,8 +114,7 @@ void MemManager::UpdateMem(C700DSP *dsp)
             break;
         }
         if (it->second.SetAddr(nextAddr)) {
-            it->second.ReadData(&mMem[nextAddr]);
-            dsp->WriteRam(nextAddr, &mMem[nextAddr], it->second.GetSize());
+            dsp->WriteRam(nextAddr, it->second.GetData(), it->second.GetSize());
             // DIRに書き込む
             unsigned char addrLoop[4];
             addrLoop[0] = nextAddr & 0xff;

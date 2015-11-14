@@ -50,7 +50,7 @@ public:
     void SetSrcn(int v, int value);
     void SetDir(int value);
     
-    void WriteRam(int addr, unsigned char *data, int size);
+    void WriteRam(int addr, const unsigned char *data, int size);
     void WriteRam(int addr, unsigned char data);
     
     void KeyOffVoice(int v);
