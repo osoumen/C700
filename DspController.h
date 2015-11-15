@@ -9,8 +9,14 @@
 #ifndef __C700__DspController__
 #define __C700__DspController__
 
+#define USE_OPENSPC
+
 #include "DspRegFIFO.h"
+#ifdef USE_OPENSPC
+#include "openspc.h"
+#else
 #include "SNES_SPC.h"
+#endif
 #include <pthread.h>
 
 class DspController {
@@ -30,17 +36,21 @@ private:
     static unsigned char dspregAccCode[];
     
     DspRegFIFO          mFifo;
+#ifndef USE_OPENSPC
     SNES_SPC            mDsp;
+#endif
     int                 mPort0state;
     int                 mWaitPort;
     int                 mWaitByte;
     unsigned char       mDspMirror[128];
     
-    int                 mWaitCycle;
-    
     pthread_mutex_t     mMtx;
     
+#ifdef USE_OPENSPC
+    short               mOutSamples[dspOutBufSize];
+#else
     SNES_SPC::sample_t  mOutSamples[dspOutBufSize];
+#endif
 };
 
 #endif /* defined(__C700__DspController__) */

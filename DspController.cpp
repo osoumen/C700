@@ -51,21 +51,36 @@ unsigned char DspController::dspregAccCode[] =
 
 DspController::DspController()
 {
+#ifndef USE_OPENSPC
     mDsp.init();
+#endif
     unsigned char spcdata[0x10200] = "SNES-SPC700 Sound File Data v0.30\x1A\x1A";
     memset(spcdata+33, 0, 0x10200-33);
     spcdata[0x25] = dspAccCodeAddr & 0xff;
     spcdata[0x26] = (dspAccCodeAddr >> 8) & 0xff;
+    spcdata[0x2b] = 0xef;
     spcdata[0x100 + 0xf0] = 0x0a;
     memcpy(&spcdata[0x100 + dspAccCodeAddr], dspregAccCode, sizeof(dspregAccCode));
+#ifndef USE_OPENSPC
     mDsp.load_spc(spcdata, 0x10200);
+#else
+    OSPC_Init(spcdata, 0x10200);
+#endif
     mPort0state = 0x01;
     mWaitPort = -1;
     mWaitByte = 0;
+#ifndef USE_OPENSPC
     do {
         mDsp.play(2, NULL);
     } while (mDsp.read_port(0, 3) != 0x77);
+#else
+    do {
+        OSPC_Run(1, NULL, 0);
+    } while ((unsigned char)OSPC_ReadPort3() != 0x77);
+#endif
     memset(mDspMirror, 0, 128);
+    WriteDsp(0x6c, 0x18);
+    //WriteDsp(0x3d, 0xff);   // NON テスト
     pthread_mutex_init(&mMtx, 0);
 }
 
@@ -78,16 +93,29 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
 {
     pthread_mutex_lock(&mMtx);
     for (int i=0; i<size; i++) {
+#ifndef USE_OPENSPC
         mDsp.write_port(0, 1, data[i]);
         mDsp.write_port(0, 2, (addr + i) & 0xff);
         mDsp.write_port(0, 3, ((addr + i)>>8) & 0xff);
         mDsp.write_port(0, 0, mPort0state | 0x80);
+#else
+        OSPC_WritePort1(data[i]);
+        OSPC_WritePort2((addr + i) & 0xff);
+        OSPC_WritePort3(((addr + i)>>8) & 0xff);
+        OSPC_WritePort0(mPort0state | 0x80);
+#endif
         mWaitPort = 0;
         mWaitByte = mPort0state | 0x80;
         mPort0state = mPort0state ^ 0x01;
+#ifndef USE_OPENSPC
         do {
             mDsp.play(2, NULL);
         } while (mDsp.read_port(0, mWaitPort) != mWaitByte);
+#else
+        do {
+            OSPC_Run(32, NULL, 0);
+        } while ((unsigned char)OSPC_ReadPort0() != mWaitByte);
+#endif
         mWaitPort = -1;
     }
     pthread_mutex_unlock(&mMtx);
@@ -117,40 +145,59 @@ void DspController::Process1Sample(int &outl, int &outr)
     
     //assert(mFifo.GetNumWrites() > 2000);
     if (mWaitPort >= 0) {
+#ifndef USE_OPENSPC
         if (mDsp.read_port(0, mWaitPort) == mWaitByte) {
             mWaitPort = -1;
-            mWaitCycle = 0;
         }
-        else {
-            mWaitCycle++;
-            //assert(mWaitCycle < 1000);
+#else
+        unsigned char read = OSPC_ReadPort0();
+        if (read == mWaitByte) {
+            mWaitPort = -1;
         }
+#endif
     }
     else {
         size_t numWrites = mFifo.GetNumWrites();
         if (numWrites > 0) {
             DspRegFIFO::DspWrite write = mFifo.PopFront();
             if (write.isRam) {
+#ifndef USE_OPENSPC
                 mDsp.write_port(0, 1, write.data);
                 mDsp.write_port(0, 2, write.addr & 0xff);
                 mDsp.write_port(0, 3, (write.addr>>8) & 0xff);
                 mDsp.write_port(0, 0, mPort0state | 0x80);
+#else
+                OSPC_WritePort1(write.data);
+                OSPC_WritePort2(write.addr & 0xff);
+                OSPC_WritePort3((write.addr>>8) & 0xff);
+                OSPC_WritePort0(mPort0state | 0x80);
+#endif
                 mWaitPort = 0;
                 mWaitByte = mPort0state | 0x80;
                 mPort0state = mPort0state ^ 0x01;
             }
             else {
+#ifndef USE_OPENSPC
                 mDsp.write_port(0, 1, write.data);
                 mDsp.write_port(0, 2, write.addr);
                 mDsp.write_port(0, 0, mPort0state);
+#else
+                OSPC_WritePort1(write.data);
+                OSPC_WritePort2(write.addr);
+                OSPC_WritePort0(mPort0state);
+#endif
                 mWaitPort = 0;
                 mWaitByte = mPort0state;
                 mPort0state = mPort0state ^ 0x01;
             }
         }
     }
+#ifndef USE_OPENSPC
     blargg_err_t err = mDsp.play(2, mOutSamples);
     assert(err == NULL);
+#else
+    OSPC_Run(32, mOutSamples, dspOutBufSize);
+#endif
     outl = mOutSamples[0];
     outr = mOutSamples[1];
     pthread_mutex_unlock(&mMtx);
