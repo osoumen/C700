@@ -9,6 +9,7 @@
 #ifndef __C700__C700DSP__
 #define __C700__C700DSP__
 
+#include "DspController.h"
 #include "EchoKernel.h"
 #include "C700defines.h"
 #include <iostream>
@@ -101,6 +102,8 @@ private:
 	bool			mNewADPCM;
     
     unsigned char   mRam[65536];
+    
+    DspController   mDsp;
 
 };
 
