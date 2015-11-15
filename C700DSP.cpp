@@ -96,6 +96,7 @@ void C700DSP::ResetVoice(int voice)
 {
     mVoice[voice].Reset();
     mDsp.WriteDsp(DSP_KOF, 0xff);
+    mDsp.WriteDsp(DSP_KOF, 0x00);
 }
 
 void C700DSP::ResetEcho()
@@ -166,6 +167,7 @@ void C700DSP::KeyOffVoice(int v)
 {
     mVoice[v].envstate = RELEASE;
     mDsp.WriteDsp(DSP_KOF, static_cast<unsigned char>(0x01 << v));
+    mDsp.WriteDsp(DSP_KOF, 0);  // 本当に必要？
 }
 
 void C700DSP::KeyOnVoice(int v)
@@ -246,8 +248,8 @@ void C700DSP::SetPitch(int v, int value)
 {
     mVoice[v].pitch = value;
     if (v < 8) {
-        mDsp.WriteDsp(DSP_P + 0x10*v, static_cast<unsigned char>((value>>8)&0x3f));
-        mDsp.WriteDsp(DSP_P+1 + 0x10*v, static_cast<unsigned char>(value&0xff));
+        mDsp.WriteDsp(DSP_P + 0x10*v, static_cast<unsigned char>(value&0xff));
+        mDsp.WriteDsp(DSP_P+1 + 0x10*v, static_cast<unsigned char>((value>>8)&0x3f));
     }
 }
 
