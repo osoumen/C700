@@ -850,10 +850,15 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         mVoiceStat[v].vol_r=vp.volR;
 
         // 波形番号を指定する
-        // データをもっと前の時点で転送しておく仕様に変更
-        mVoiceStat[v].srcn = mChStat[midiCh].prog;
-
-        mDSP.SetSrcn(v, mChStat[midiCh].prog);
+        int     srcn;
+        if (mDrumMode[vp.bank]) {
+            srcn = GetKeyMap(vp.bank, evt->note);
+        }
+        else {
+            srcn = mChStat[midiCh].prog;
+        }
+        mVoiceStat[v].srcn = srcn;
+        mDSP.SetSrcn(v, srcn);
         
         mDSP.SetEchoOn(v, vp.echo);
         mDSP.SetAR(v, vp.ar);
