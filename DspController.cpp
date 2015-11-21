@@ -94,23 +94,28 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
     pthread_mutex_lock(&mMtx);
     for (int i=0; i<size; i++) {
 #ifndef USE_OPENSPC
+        /*
         mDsp.write_port(0, 1, data[i]);
         mDsp.write_port(0, 2, (addr + i) & 0xff);
         mDsp.write_port(0, 3, ((addr + i)>>8) & 0xff);
         mDsp.write_port(0, 0, mPort0state | 0x80);
+         */
+        mDsp.GetRam()[addr+i] = data[i];
 #else
         OSPC_WritePort1(data[i]);
         OSPC_WritePort2((addr + i) & 0xff);
         OSPC_WritePort3(((addr + i)>>8) & 0xff);
         OSPC_WritePort0(mPort0state | 0x80);
-#endif
         mWaitPort = 0;
         mWaitByte = mPort0state | 0x80;
         mPort0state = mPort0state ^ 0x01;
+#endif
 #ifndef USE_OPENSPC
+        /*
         do {
             mDsp.play(2, NULL);
         } while (mDsp.read_port(0, mWaitPort) != mWaitByte);
+         */
 #else
         do {
             OSPC_Run(32, NULL, 0);
@@ -143,7 +148,6 @@ void DspController::Process1Sample(int &outl, int &outr)
         return;
     }
     
-    //assert(mFifo.GetNumWrites() > 2000);
     if (mWaitPort >= 0) {
 #ifndef USE_OPENSPC
         if (mDsp.read_port(0, mWaitPort) == mWaitByte) {
