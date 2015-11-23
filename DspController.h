@@ -11,6 +11,7 @@
 
 #define USE_OPENSPC
 
+#include "SpcControlDevice.h"
 #include "DspRegFIFO.h"
 #ifdef USE_OPENSPC
 #include "openspc.h"
@@ -35,11 +36,15 @@ private:
     
     static unsigned char dspregAccCode[];
     
+    SpcControlDevice    mSpcDev;
+    bool                mIsHwAvailable;
+    
     DspRegFIFO          mFifo;
 #ifndef USE_OPENSPC
     SNES_SPC            mDsp;
 #endif
-    int                 mPort0state;
+    int                 mPort0stateEmu;
+    int                 mPort0stateHw;
     int                 mWaitPort;
     int                 mWaitByte;
     unsigned char       mDspMirror[128];
@@ -51,6 +56,9 @@ private:
 #else
     SNES_SPC::sample_t  mOutSamples[dspOutBufSize];
 #endif
+    
+    static void onDeviceAdded(void *ref);
+    static void onDeviceRemoved(void *ref);
 };
 
 #endif /* defined(__C700__DspController__) */

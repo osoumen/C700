@@ -103,6 +103,16 @@
 		F510C3A31BF8899100E7365D /* SPCimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510C3921BF8899100E7365D /* SPCimpl.cpp */; };
 		F510C3A41BF8899100E7365D /* SPCimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = F510C3931BF8899100E7365D /* SPCimpl.h */; };
 		F510C3A51BF8899100E7365D /* SPCimpl.h in Headers */ = {isa = PBXBuildFile; fileRef = F510C3931BF8899100E7365D /* SPCimpl.h */; };
+		F526742D1C01E8A2006B0276 /* ControlUSB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52674291C01E8A2006B0276 /* ControlUSB.cpp */; };
+		F526742E1C01E8A2006B0276 /* ControlUSB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52674291C01E8A2006B0276 /* ControlUSB.cpp */; };
+		F526742F1C01E8A2006B0276 /* ControlUSB.h in Headers */ = {isa = PBXBuildFile; fileRef = F526742A1C01E8A2006B0276 /* ControlUSB.h */; };
+		F52674301C01E8A2006B0276 /* ControlUSB.h in Headers */ = {isa = PBXBuildFile; fileRef = F526742A1C01E8A2006B0276 /* ControlUSB.h */; };
+		F52674311C01E8A2006B0276 /* SpcControlDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F526742B1C01E8A2006B0276 /* SpcControlDevice.cpp */; };
+		F52674321C01E8A2006B0276 /* SpcControlDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F526742B1C01E8A2006B0276 /* SpcControlDevice.cpp */; };
+		F52674331C01E8A2006B0276 /* SpcControlDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F526742C1C01E8A2006B0276 /* SpcControlDevice.h */; };
+		F52674341C01E8A2006B0276 /* SpcControlDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F526742C1C01E8A2006B0276 /* SpcControlDevice.h */; };
+		F52674361C01E914006B0276 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F52674351C01E914006B0276 /* IOKit.framework */; };
+		F52674371C01E91E006B0276 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F52674351C01E914006B0276 /* IOKit.framework */; };
 		F527FFA01BEE323F0083E355 /* MemManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F527FF9E1BEE323F0083E355 /* MemManager.cpp */; };
 		F527FFA11BEE323F0083E355 /* MemManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F527FF9E1BEE323F0083E355 /* MemManager.cpp */; };
 		F527FFA21BEE323F0083E355 /* MemManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F527FF9F1BEE323F0083E355 /* MemManager.h */; };
@@ -472,6 +482,11 @@
 		F510C3911BF8899100E7365D /* spc700.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spc700.cpp; sourceTree = "<group>"; };
 		F510C3921BF8899100E7365D /* SPCimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SPCimpl.cpp; sourceTree = "<group>"; };
 		F510C3931BF8899100E7365D /* SPCimpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPCimpl.h; sourceTree = "<group>"; };
+		F52674291C01E8A2006B0276 /* ControlUSB.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = ControlUSB.cpp; sourceTree = "<group>"; };
+		F526742A1C01E8A2006B0276 /* ControlUSB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlUSB.h; sourceTree = "<group>"; };
+		F526742B1C01E8A2006B0276 /* SpcControlDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpcControlDevice.cpp; sourceTree = "<group>"; };
+		F526742C1C01E8A2006B0276 /* SpcControlDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpcControlDevice.h; sourceTree = "<group>"; };
+		F52674351C01E914006B0276 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		F527FF9E1BEE323F0083E355 /* MemManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemManager.cpp; sourceTree = "<group>"; };
 		F527FF9F1BEE323F0083E355 /* MemManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemManager.h; sourceTree = "<group>"; };
 		F53602A01984CEC60079A9BE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -624,6 +639,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F52674361C01E914006B0276 /* IOKit.framework in Frameworks */,
 				F57D96C61984D1E900F2FE06 /* Carbon.framework in Frameworks */,
 				8BA05AFC072074E100365D66 /* AudioToolbox.framework in Frameworks */,
 				F53602BF1984CFF80079A9BE /* Foundation.framework in Frameworks */,
@@ -638,6 +654,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F52674371C01E91E006B0276 /* IOKit.framework in Frameworks */,
 				F543321F16296E0200863A0B /* Accelerate.framework in Frameworks */,
 				F54338BE1629748300863A0B /* AudioToolbox.framework in Frameworks */,
 				F53602A21984CEC60079A9BE /* Cocoa.framework in Frameworks */,
@@ -660,6 +677,7 @@
 		089C166AFE841209C02AAC07 /* Chip700 */ = {
 			isa = PBXGroup;
 			children = (
+				F52674351C01E914006B0276 /* IOKit.framework */,
 				08FB77ADFE841716C02AAC07 /* Source */,
 				089C167CFE841241C02AAC07 /* Resources */,
 				089C1671FE841209C02AAC07 /* External Frameworks and Libraries */,
@@ -910,6 +928,17 @@
 			path = openspc;
 			sourceTree = "<group>";
 		};
+		F52674281C01E8A2006B0276 /* commusb */ = {
+			isa = PBXGroup;
+			children = (
+				F52674291C01E8A2006B0276 /* ControlUSB.cpp */,
+				F526742A1C01E8A2006B0276 /* ControlUSB.h */,
+				F526742B1C01E8A2006B0276 /* SpcControlDevice.cpp */,
+				F526742C1C01E8A2006B0276 /* SpcControlDevice.h */,
+			);
+			path = commusb;
+			sourceTree = "<group>";
+		};
 		F54331441629649D00863A0B /* Common Source */ = {
 			isa = PBXGroup;
 			children = (
@@ -925,6 +954,7 @@
 				F543D0AB147D285F00DC53A3 /* C700Driver.h */,
 				F58DCD7C1A2B4586004BD426 /* C700DSP.cpp */,
 				F58DCD7D1A2B4586004BD426 /* C700DSP.h */,
+				F52674281C01E8A2006B0276 /* commusb */,
 				F59D91851BF71FCE00E5EFC6 /* DspController.cpp */,
 				F59D91861BF71FCE00E5EFC6 /* DspController.h */,
 				F59D91BF1BF721CE00E5EFC6 /* DspRegFIFO.cpp */,
@@ -1126,7 +1156,9 @@
 				8A3E63210B22DD9C0091886F /* czt.h in Headers */,
 				8A3E63230B22DD9E0091886F /* brrcodec.h in Headers */,
 				F59D91BD1BF720EA00E5EFC6 /* SPC_Filter.h in Headers */,
+				F52674331C01E8A2006B0276 /* SpcControlDevice.h in Headers */,
 				F543D0AD147D285F00DC53A3 /* C700Driver.h in Headers */,
+				F526742F1C01E8A2006B0276 /* ControlUSB.h in Headers */,
 				F597AD37160B67860003E710 /* getpluginbundle.h in Headers */,
 				F597AD39160B67860003E710 /* vstkeycode.h in Headers */,
 				F597AD3A160B67860003E710 /* cocoasupport.h in Headers */,
@@ -1220,6 +1252,8 @@
 				F53602AB1984CF600079A9BE /* vstfxstore.h in Headers */,
 				F59D918A1BF71FCE00E5EFC6 /* DspController.h in Headers */,
 				F510C3A51BF8899100E7365D /* SPCimpl.h in Headers */,
+				F52674301C01E8A2006B0276 /* ControlUSB.h in Headers */,
+				F52674341C01E8A2006B0276 /* SpcControlDevice.h in Headers */,
 				F54331B216296E0200863A0B /* EfxAccess.h in Headers */,
 				F59D91B41BF720EA00E5EFC6 /* spc.h in Headers */,
 				F54331B316296E0200863A0B /* DataBuffer.h in Headers */,
@@ -1511,10 +1545,12 @@
 				F59D91A91BF720EA00E5EFC6 /* SNES_SPC.cpp in Sources */,
 				F597AD38160B67860003E710 /* plugguieditor.cpp in Sources */,
 				F597AD3B160B67860003E710 /* cvstguitimer.cpp in Sources */,
+				F52674311C01E8A2006B0276 /* SpcControlDevice.cpp in Sources */,
 				F597AD3E160B67860003E710 /* cfileselector.cpp in Sources */,
 				F597AD41160B67860003E710 /* vstcontrols.cpp in Sources */,
 				F597AD42160B67860003E710 /* vstgui.cpp in Sources */,
 				F569A3F71619527F006C91AD /* C700_CocoaViewFactory.mm in Sources */,
+				F526742D1C01E8A2006B0276 /* ControlUSB.cpp in Sources */,
 				F569A40616195488006C91AD /* C700Edit.cpp in Sources */,
 				F569A487161964FD006C91AD /* C700GUI.cpp in Sources */,
 				F569A8031619DEA6006C91AD /* ctooltipsupport.cpp in Sources */,
@@ -1583,6 +1619,7 @@
 				F543320E16296E0200863A0B /* SeparatorLine.cpp in Sources */,
 				F543320F16296E0200863A0B /* MyParamDisplay.cpp in Sources */,
 				F543321016296E0200863A0B /* MyTextEdit.cpp in Sources */,
+				F526742E1C01E8A2006B0276 /* ControlUSB.cpp in Sources */,
 				F59D91BC1BF720EA00E5EFC6 /* SPC_Filter.cpp in Sources */,
 				F543321116296E0200863A0B /* EfxAccess.cpp in Sources */,
 				F53602BD1984CF7D0079A9BE /* vstplugmain.cpp in Sources */,
@@ -1598,6 +1635,7 @@
 				F53602B51984CF7D0079A9BE /* audioeffect.cpp in Sources */,
 				F58DCD7F1A2B4586004BD426 /* C700DSP.cpp in Sources */,
 				F510C39B1BF8899100E7365D /* main.cpp in Sources */,
+				F52674321C01E8A2006B0276 /* SpcControlDevice.cpp in Sources */,
 				F59D91C21BF721CE00E5EFC6 /* DspRegFIFO.cpp in Sources */,
 				F543321916296E0200863A0B /* C700Kernel.cpp in Sources */,
 				F510C3951BF8899100E7365D /* dsp.cpp in Sources */,
