@@ -151,9 +151,11 @@ void C700DSP::SetDelayTime( int value )
 {
 	mEcho[0].SetDelayTime( value );
 	mEcho[1].SetDelayTime( value );
+    mDsp.WriteDsp(DSP_FLG, 0x20);
     mDsp.WriteDsp(DSP_EDL, 0);
     mDsp.WriteDsp(DSP_ESA, static_cast<unsigned char>(0xff - 0x8 * value));
     mDsp.WriteDsp(DSP_EDL, static_cast<unsigned char>(value & 0xff));
+    mDsp.WriteDsp(DSP_FLG, 0x00);
 }
 
 void C700DSP::SetFIRTap( int tap, int value )

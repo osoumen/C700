@@ -39,6 +39,7 @@ public:
     ~MemManager();
     
     void SetDirAddr(int addr) { mDirAddr = addr; }
+    int GetDirAddr() { return mDirAddr; }
     bool WriteData(int srcn, const unsigned char *data, int size, int loopPoint);
     void DeleteData(int srcn);
     void UpdateMem(C700DSP *dsp);
