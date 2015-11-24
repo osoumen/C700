@@ -20,6 +20,30 @@
 #endif
 #include <pthread.h>
 
+#define DSP_VOL		(0x00)
+#define DSP_P		(0x02)
+#define DSP_SRCN	(0x04)
+#define DSP_ADSR	(0x05)
+#define DSP_GAIN	(0x07)
+#define DSP_ENVX	(0x08)
+#define DSP_OUTX	(0x09)
+#define DSP_MVOLL	(0x0c)
+#define DSP_MVOLR	(0x1c)
+#define DSP_EVOLL	(0x2c)
+#define DSP_EVOLR	(0x3c)
+#define DSP_KON		(0x4c)
+#define DSP_KOF		(0x5c)
+#define DSP_FLG		(0x6c)
+#define DSP_ENDX	(0x7c)
+#define DSP_EFB		(0x0d)
+#define DSP_PMON	(0x2d)
+#define DSP_NON		(0x3d)
+#define DSP_EON		(0x4d)
+#define DSP_DIR		(0x5d)
+#define DSP_ESA		(0x6d)
+#define DSP_EDL		(0x7d)
+#define DSP_FIR		(0x0F)
+
 class DspController {
 public:
     DspController();
@@ -47,7 +71,7 @@ private:
     int                 mPort0stateHw;
     int                 mWaitPort;
     int                 mWaitByte;
-    unsigned char       mDspMirror[128];
+    int                 mDspMirror[128];
     
     pthread_mutex_t     mMtx;
     
