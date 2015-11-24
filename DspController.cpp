@@ -11,17 +11,11 @@
 //-----------------------------------------------------------------------------
 unsigned char DspController::dspregAccCode[] =
 {
-    0x8F ,0x6C ,0xF2  //                           	mov SPC_REGADDR,#DSP_FLG
-    ,0x8F ,0x20 ,0xF3 //                            	mov SPC_REGDATA,#,0x20
-    ,0x8F ,0x7D ,0xF2 //                            	mov SPC_REGADDR,#DSP_EDL
-    ,0x8F ,0x00 ,0xF3 //                            	mov SPC_REGDATA,#,0x00
-    ,0x8F ,0x6D ,0xF2 //                            	mov SPC_REGADDR,#DSP_ESA
-    ,0x8F ,0xFF ,0xF3 //                            	mov SPC_REGDATA,#,0xff
-    ,0x8F ,0x6C ,0xF2 //                            	mov SPC_REGADDR,#DSP_FLG
-    ,0x8F ,0x00 ,0xF3 //                            	mov SPC_REGDATA,#,0x00
-    ,0xE8 ,0x00       //                          	mov a,#,0x00
-    ,0xC4 ,0x04       //                          	mov ,0x04,a
-    ,0x8F ,0x77 ,0xF7 //                            	mov SPC_PORT3,#,0x77
+    0x8F ,0x6C ,0xF2 //                            	mov SPC_REGADDR,#DSP_FLG
+    ,0x8F ,0xA0 ,0xF3 //                            	mov SPC_REGDATA,#$a0
+    ,0xE8 ,0x00       //                          	mov a,#$00
+    ,0xC4 ,0x04       //                          	mov $04,a
+    ,0x8F ,0x77 ,0xF7 //                            	mov SPC_PORT3,#$77
     //                      loop:
     ,0x64 ,0xF4       //                          	cmp a,SPC_PORT0		; 3
     ,0xF0 ,0xFC       //                          	beq loop			; 2
@@ -49,10 +43,10 @@ unsigned char DspController::dspregAccCode[] =
     ,0xD7 ,0xF6       //                          	mov [SPC_PORT2]+y,a
     ,0x7D             //                        	mov a,x
     ,0xC4 ,0xF4       //                          	mov SPC_PORT0,a
-    ,0xF8 ,0x04       //                          	mov x,,0x04
-    ,0xF0 ,0xD2       //                          	beq loop	; ,0x0004に0以外が書き込まれたらIPLに飛ぶ
-    ,0x8F ,0xB0 ,0xF1 //                            	mov SPC_CONTROL,#,0xb0
-    ,0x5F ,0xCF ,0xFF //                            	jmp !,0xffcf
+    ,0xF8 ,0x04       //                          	mov x,$04
+    ,0xF0 ,0xD2       //                          	beq loop	; $0004に0以外が書き込まれたらIPLに飛ぶ
+    ,0x8F ,0xB0 ,0xF1 //                            	mov SPC_CONTROL,#$b0
+    ,0x5F ,0xCF ,0xFF //                            	jmp !$ffcf
 };
 
 DspController::DspController()
@@ -86,9 +80,20 @@ DspController::DspController()
         OSPC_Run(1, NULL, 0);
     } while ((unsigned char)OSPC_ReadPort3() != 0x77);
 #endif
-    memset(mDspMirror, 0, 128);
-    WriteDsp(0x6c, 0x18);
-    //WriteDsp(0x3d, 0xff);   // NON テスト
+    
+    memset(mDspMirror, 0xefefefef, 128);
+    WriteDsp(DSP_FLG, 0x00);
+    
+    // エコー音量をオフ
+    WriteDsp(DSP_EVOLL, 0x00);
+    WriteDsp(DSP_EVOLR, 0x00);
+    
+    // NONをオフ
+    WriteDsp(DSP_NON, 0x00);
+    
+    // PMONをオフ
+    WriteDsp(DSP_PMON, 0x00);
+
     pthread_mutex_init(&mMtx, 0);
     
     mSpcDev.setDeviceAddedFunc(onDeviceAdded, this);
@@ -119,12 +124,29 @@ void DspController::onDeviceAdded(void *ref)
         return;
     }
     
+    // EDL,ESAを初期化
+    unsigned char dspWrite[2];
+    dspWrite[0] = DSP_EDL;
+    dspWrite[1] = 0;
+    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, 0xcc);
+    if (err < 0) {
+        return;
+    }
+    dspWrite[0] = DSP_ESA;
+    dspWrite[1] = 0xff;
+    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
+    if (err < 0) {
+        return;
+    }
+    usleep(240000); // 240ms待ち
+    
     // DSPアクセス用コードを転送
-    err = This->mSpcDev.UploadRAMDataIPL(dspregAccCode, dspAccCodeAddr, sizeof(dspregAccCode), 0xcc);
+    err = This->mSpcDev.UploadRAMDataIPL(dspregAccCode, dspAccCodeAddr, sizeof(dspregAccCode), err+1);
     if (err < 0) {
         return;
     }
     
+    // 転送済みコードへジャンプ
     err = This->mSpcDev.JumpToCode(dspAccCodeAddr, err+1);
     if (err < 0) {
         return;
@@ -134,19 +156,19 @@ void DspController::onDeviceAdded(void *ref)
     
     This->mPort0stateHw = 1;
     
-    // NONをオフ
-    This->mSpcDev.BlockWrite(1, 0, 0x2d);
-    This->mSpcDev.WriteAndWait(0, This->mPort0stateHw);
     This->mSpcDev.WriteBuffer();
-    This->mPort0stateHw = This->mPort0stateHw ^ 1;
-    
-    // PMONをオフ
-    This->mSpcDev.BlockWrite(1, 0, 0x3d);
-    This->mSpcDev.WriteAndWait(0, This->mPort0stateHw);
-    This->mSpcDev.WriteBuffer();
-    This->mPort0stateHw = This->mPort0stateHw ^ 1;
-    
+
     // TODO: 必要なRAMデータを転送
+    
+    // DSPの復元
+    for (int i=0; i<128; i++) {
+        if (i != DSP_FLG && i != DSP_KON && This->mDspMirror[i] != 0xefefefef) {
+            This->mSpcDev.BlockWrite(1, This->mDspMirror[i], i);
+            This->mSpcDev.WriteAndWait(0, This->mPort0stateHw);
+            This->mPort0stateHw = This->mPort0stateHw ^ 1;
+        }
+    }
+    This->mSpcDev.WriteBuffer();
     
     This->mIsHwAvailable = true;
 }
@@ -195,7 +217,7 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
 
     if (mIsHwAvailable) {
 #if 0
-        WriteDsp(0x6c, 0x20);
+        WriteDsp(DSP_FLG, 0x20);
         // IPLに戻るために0x0004に非０を書き込む
         mSpcDev.BlockWrite(1, 0x01, 0x04, 0x00);
         mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
@@ -207,7 +229,8 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
         mSpcDev.ReadAndWait(3, 0x77);
         mSpcDev.WriteBuffer();
         mPort0stateHw = 1;
-        WriteDsp(0x6c, 0x00);
+        
+        WriteDsp(DSP_FLG, 0x00);
 #else
         for (int i=0; i<size; i++) {
             mSpcDev.BlockWrite(1, data[i], (addr + i) & 0xff, ((addr + i)>>8) & 0xff);
@@ -227,7 +250,6 @@ void DspController::WriteRam(int addr, unsigned char data)
         mSpcDev.BlockWrite(1, data, addr & 0xff, (addr>>8) & 0xff);
         mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
         mSpcDev.WriteBufferAsync();
-        //mSpcDev.WriteBuffer();
         mPort0stateHw = mPort0stateHw ^ 0x01;
     }
 }
@@ -242,7 +264,6 @@ void DspController::WriteDsp(int addr, unsigned char data)
             mSpcDev.BlockWrite(1, data, addr & 0xff);
             mSpcDev.WriteAndWait(0, mPort0stateHw);
             mSpcDev.WriteBufferAsync();
-            //mSpcDev.WriteBuffer();
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
     }
