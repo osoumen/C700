@@ -130,11 +130,12 @@ void C700DSP::SetDelayTime( int value )
     mDsp.WriteDsp(DSP_FLG, 0x20);
     
     // エコー領域のメモリをクリア(ノイズ対策)
+    /*
     int echoMemSize = (0x8 * value) << 8;
     unsigned char *mem = new unsigned char[echoMemSize];
     memset(mem, 0, echoMemSize);
     mDsp.WriteRam((0xff - 0x8 * value) << 8, mem, echoMemSize);
-    
+    */
     mDsp.WriteDsp(DSP_EDL, 0);
     mDsp.WriteDsp(DSP_ESA, static_cast<unsigned char>(0xff - 0x8 * value));
     mDsp.WriteDsp(DSP_EDL, static_cast<unsigned char>(value & 0xff));

@@ -74,6 +74,7 @@ unsigned char SpcControlDevice::PortRead(int addr)
     mUsbDev->bulkWrite(cmd, wb);
     
     int rb = 64;
+#if 0
     int retry = 500;
     while (mUsbDev->getReadableBytes() < rb) {
         usleep(1000);
@@ -85,6 +86,9 @@ unsigned char SpcControlDevice::PortRead(int addr)
     if (retry > 0) {
         mUsbDev->read(mReadBuf, rb);
     }
+#else
+    mUsbDev->bulkRead(mReadBuf, rb, 500);
+#endif
     return mReadBuf[0];
 }
 
@@ -305,7 +309,7 @@ int SpcControlDevice::JumpToCode(int addr, unsigned char initialP0state)
 {
     BlockWrite(2, addr & 0xff, (addr >> 8) & 0xff);
     BlockWrite(1, 0);    // 0なのでP2,P3はジャンプ先アドレス
-    unsigned char port0state = initialP0state;
+    unsigned char port0state = initialP0state & 0xff;
     BlockWrite(0, port0state);
     WriteBuffer();
     
