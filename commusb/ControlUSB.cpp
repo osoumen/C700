@@ -224,7 +224,7 @@ SInt32		ControlUSB::bulkWriteAsync(UInt8 *buf, UInt32 size)
 	return 0;
 }
 
-#if 0
+#if 1
 SInt32		ControlUSB::bulkRead(UInt8 *buf, UInt32 size, UInt32 timeout)
 {
 	if (!mIsPlugged) return -1;
@@ -570,6 +570,7 @@ void ControlUSB::setDeviceRemovedFunc( void (*func) (void* ownerClass) , void* o
 {
     ControlUSB  *This = static_cast<ControlUSB*>(arg);
     while (This->mIsPlugged) {
+#if 0
         IOReturn    kr = noErr;
         UInt32      readByte = 1;
         
@@ -584,6 +585,9 @@ void ControlUSB::setDeviceRemovedFunc( void (*func) (void* ownerClass) , void* o
         if (kr == kIOReturnSuccess) {
             This->mReadBufferWritePtr = (This->mReadBufferWritePtr + readByte) % READ_BUFFER_SIZE;
         }
+#else
+        usleep(1000);
+#endif
     }
     return 0;
 }

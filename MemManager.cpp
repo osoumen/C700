@@ -121,7 +121,10 @@ void MemManager::UpdateMem(C700DSP *dsp)
             addrLoop[1] = (nextAddr >> 8) & 0xff;
             addrLoop[2] = (nextAddr + it->second.GetLoopPoint()) & 0xff;
             addrLoop[3] = ((nextAddr + it->second.GetLoopPoint()) >> 8) & 0xff;
-            dsp->WriteRam(mDirAddr + it->first * 4, addrLoop, 4);
+            dsp->WriteRam(mDirAddr + it->first * 4, addrLoop[0]);
+            dsp->WriteRam(mDirAddr + it->first * 4+1, addrLoop[1]);
+            dsp->WriteRam(mDirAddr + it->first * 4+2, addrLoop[2]);
+            dsp->WriteRam(mDirAddr + it->first * 4+3, addrLoop[3]);
         }
         nextAddr += it->second.GetSize();
         it++;

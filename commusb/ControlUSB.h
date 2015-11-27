@@ -31,7 +31,7 @@ public:
 	IOReturn	resetwPipe();
 	SInt32		bulkWrite(UInt8 *buf, UInt32 size);
 	SInt32		bulkWriteAsync(UInt8 *buf, UInt32 size);
-	//SInt32		bulkRead(UInt8 *buf, UInt32 size, UInt32 timeout);
+	SInt32		bulkRead(UInt8 *buf, UInt32 size, UInt32 timeout);
     SInt32      read(UInt8 *buf, UInt32 size);
     SInt32      getReadableBytes();
 	

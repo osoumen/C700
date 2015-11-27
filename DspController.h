@@ -9,7 +9,7 @@
 #ifndef __C700__DspController__
 #define __C700__DspController__
 
-#define USE_OPENSPC
+//#define USE_OPENSPC
 
 #include "SpcControlDevice.h"
 #include "DspRegFIFO.h"
