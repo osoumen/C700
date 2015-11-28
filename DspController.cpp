@@ -105,7 +105,7 @@ DspController::DspController()
     } while ((unsigned char)OSPC_ReadPort3() != 0x77);
 #endif
     
-    memset(mDspMirror, 0xefefefef, 128);
+    memset(mDspMirror, 0xef, 128 * sizeof(int));
     WriteDsp(DSP_FLG, 0x00, true);
     WriteDsp(DSP_EFB, 0x00, true);
     
@@ -386,7 +386,7 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
     addr &= 0x7f;
     
     if (nonRealtime || mIsHwAvailable) {
-        doWrite = (addr == 0x4c || addr == 0x5c || mDspMirror[addr] != data)?true:false;
+        doWrite = (addr == DSP_KON || addr == DSP_KOF || mDspMirror[addr] != data)?true:false;
         
         if (doWrite) {
             while (mWaitPort >= 0) {
