@@ -50,8 +50,8 @@ public:
     ~DspController();
     
     void WriteRam(int addr, const unsigned char *data, int size);
-    void WriteRam(int addr, unsigned char data);
-    void WriteDsp(int addr, unsigned char data);
+    void WriteRam(int addr, unsigned char data, bool nonRealtime);
+    bool WriteDsp(int addr, unsigned char data, bool nonRealtime);
     void Process1Sample(int &outl, int &outr);
     
 private:
