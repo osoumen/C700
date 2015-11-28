@@ -11,66 +11,76 @@
 //-----------------------------------------------------------------------------
 unsigned char DspController::dspregAccCode[] =
 {
-    0x8F ,0x6C ,0xF2  //                           	mov SPC_REGADDR,#DSP_FLG
-    ,0x8F ,0xA0 ,0xF3 //                            	mov SPC_REGDATA,#$a0
-    ,0xE4 ,0xF4       //                          	mov a,SPC_PORT0
-    ,0x8F ,0x00 ,0x04 //                            	mov $04,#$00
-    //                      ack:
-    ,0x8F ,0x77 ,0xF7 //                            	mov SPC_PORT3,#$77
-    //                      loop:
-    ,0x64 ,0xF4       //                          	cmp a,SPC_PORT0		; 3
-    ,0xF0 ,0xFC       //                          	beq loop			; 2
-    ,0xE4 ,0xF4       //                          	mov a,SPC_PORT0		; 3
-    ,0x30 ,0x18       //                          	bmi toram			; 2
-    ,0xF8 ,0xF6       //                          	mov x,SPC_PORT2		; 3
-    ,0xD8 ,0xF2       //                          	mov SPC_REGADDR,x	; 4
-    ,0xFA ,0xF5 ,0xF3 //                            	mov SPC_REGDATA,SPC_PORT1
-    ,0xC4 ,0xF4       //                          	mov SPC_PORT0,a		; 4
-    //                      	; wait 64 - 32 cycle
-    ,0xC8 ,0x4C       //                          	cmp x,#DSP_KON	; 3
-    ,0xF0 ,0x04       //                          	beq wait	; 4
-    ,0xC8 ,0x5C       //                          	cmp x,#DSP_KOF	; 3
-    ,0xD0 ,0xE7       //                          	bne loop	; 4
-    //                      wait:
-    ,0x8D ,0x05       //                          	mov y,#5	; 2
-    //                      -
-    ,0xFE ,0xFE       //                          	dbnz y,-	; 4/6
-    ,0x00             //                        	nop			; 2
-    ,0x2F ,0xE0       //                          	bra loop	; 4
-    //                      toram:
-    ,0x5D             //                        	mov x,a
-    ,0x28 ,0x40       //                          	and a,#$40
-    ,0xD0 ,0x0B       //                          	bne blockTrans
-    ,0x8D ,0x00       //                          	mov y,#0
-    ,0xE4 ,0xF5       //                          	mov a,SPC_PORT1
-    ,0xD7 ,0xF6       //                          	mov [SPC_PORT2]+y,a
-    ,0x7D             //                        	mov a,x
-    ,0xC4 ,0xF4       //                          	mov SPC_PORT0,a
-    ,0x2F ,0xD0       //                          	bra loop
-    //                      blockTrans:
-    ,0xFA ,0xF6 ,0x06 //                            	mov $06,SPC_PORT2
-    ,0xFA ,0xF7 ,0x07 //                            	mov $07,SPC_PORT3
-    ,0x7D             //                        	mov a,x
-    ,0x8D ,0x00       //                          	mov y,#0
-    ,0xC4 ,0xF4       //                          	mov SPC_PORT0,a
-    //                      loop2:
-    ,0x64 ,0xF4       //                          	cmp a,SPC_PORT0
-    ,0xF0 ,0xFC       //                          	beq loop2
-    ,0xE4 ,0xF4       //                          	mov a,SPC_PORT0
-    ,0x30 ,0xBA       //                          	bmi ack
-    ,0x5D             //                        	mov x,a
-    ,0xE4 ,0xF5       //                          	mov a,SPC_PORT1
-    ,0xD7 ,0x06       //                          	mov [$06]+y,a
-    ,0x3A ,0x06       //                          	incw $06
-    ,0xE4 ,0xF6       //                          	mov a,SPC_PORT2
-    ,0xD7 ,0x06       //                          	mov [$06]+y,a
-    ,0x3A ,0x06       //                          	incw $06
-    ,0xE4 ,0xF7       //                          	mov a,SPC_PORT3
-    ,0xD7 ,0x06       //                          	mov [$06]+y,a
-    ,0x3A ,0x06       //                          	incw $06
-    ,0x7D             //                        	mov a,x
-    ,0xC4 ,0xF4       //                          	mov SPC_PORT0,a
-    ,0x2F ,0xE0       //                          	bra loop2
+    0x8F ,0x6C ,0xF2 //       	mov SPC_REGADDR,#DSP_FLG
+    ,0x8F ,0xA0 ,0xF3 //       	mov SPC_REGDATA,#$a0
+    //
+    ,0x8D ,0x00       //     	mov y,#0
+    ,0xE8 ,0x00       //     	mov a,#0
+    ,0x8F ,0x00 ,0x04 //       	mov $04,#$00
+    ,0x8F ,0x87 ,0x05 //       	mov $05,#$87
+    // initloop:
+    ,0xD7 ,0x04       //     	mov [$04]+y,a	; 7
+    ,0x3A ,0x04       //     	incw $04		; 6
+    ,0x78 ,0xFF ,0x05 //       	cmp $05,#$ff	; 5
+    ,0xD0 ,0xF7       //     	bne initloop	; 4
+    //
+    ,0xE4 ,0xF4       //     	mov a,SPC_PORT0
+    // ack:
+    ,0x8F ,0x77 ,0xF7 //       	mov SPC_PORT3,#$77
+    // loop:
+    ,0x64 ,0xF4       //     	cmp a,SPC_PORT0		; 3
+    ,0xF0 ,0xFC       //     	beq loop			; 2
+    ,0xE4 ,0xF4       //     	mov a,SPC_PORT0		; 3
+    ,0x30 ,0x18       //     	bmi toram			; 2
+    ,0xF8 ,0xF6       //     	mov x,SPC_PORT2		; 3
+    ,0xD8 ,0xF2       //     	mov SPC_REGADDR,x	; 4
+    ,0xFA ,0xF5 ,0xF3 //       	mov SPC_REGDATA,SPC_PORT1
+    ,0xC4 ,0xF4       //     	mov SPC_PORT0,a		; 4
+    // 	; wait 64 - 32 cycle
+    ,0xC8 ,0x4C       //     	cmp x,#DSP_KON	; 3
+    ,0xF0 ,0x04       //     	beq wait	; 4
+    ,0xC8 ,0x5C       //     	cmp x,#DSP_KOF	; 3
+    ,0xD0 ,0xE7       //     	bne loop	; 4
+    // wait:
+    ,0x8D ,0x05       //     	mov y,#5	; 2
+    // -
+    ,0xFE ,0xFE       //     	dbnz y,-	; 4/6
+    ,0x00             //   	nop			; 2
+    ,0x2F ,0xE0       //     	bra loop	; 4
+    // toram:
+    ,0x5D             //   	mov x,a
+    ,0x28 ,0x40       //     	and a,#$40
+    ,0xD0 ,0x0B       //     	bne blockTrans
+    ,0x8D ,0x00       //     	mov y,#0
+    ,0xE4 ,0xF5       //     	mov a,SPC_PORT1
+    ,0xD7 ,0xF6       //     	mov [SPC_PORT2]+y,a
+    ,0x7D             //   	mov a,x
+    ,0xC4 ,0xF4       //     	mov SPC_PORT0,a
+    ,0x2F ,0xD0       //     	bra loop
+    // blockTrans:
+    ,0xFA ,0xF6 ,0x04 //       	mov $04,SPC_PORT2
+    ,0xFA ,0xF7 ,0x05 //       	mov $05,SPC_PORT3
+    ,0x7D             //   	mov a,x
+    ,0x8D ,0x00       //     	mov y,#0
+    ,0xC4 ,0xF4       //     	mov SPC_PORT0,a
+    // loop2:
+    ,0x64 ,0xF4       //     	cmp a,SPC_PORT0
+    ,0xF0 ,0xFC       //     	beq loop2
+    ,0xE4 ,0xF4       //     	mov a,SPC_PORT0
+    ,0x30 ,0xBA       //     	bmi ack
+    ,0x5D             //   	mov x,a
+    ,0xE4 ,0xF5       //     	mov a,SPC_PORT1
+    ,0xD7 ,0x04       //     	mov [$04]+y,a
+    ,0x3A ,0x04       //     	incw $04
+    ,0xE4 ,0xF6       //     	mov a,SPC_PORT2
+    ,0xD7 ,0x04       //     	mov [$04]+y,a
+    ,0x3A ,0x04       //     	incw $04
+    ,0xE4 ,0xF7       //     	mov a,SPC_PORT3
+    ,0xD7 ,0x04       //     	mov [$04]+y,a
+    ,0x3A ,0x04       //     	incw $04
+    ,0x7D             //   	mov a,x
+    ,0xC4 ,0xF4       //     	mov SPC_PORT0,a
+    ,0x2F ,0xE0       //     	bra loop2
 };
 
 DspController::DspController()
@@ -203,13 +213,16 @@ void DspController::onDeviceAdded(void *ref)
     if (err < 0) {
         return;
     }
+#if 1
+    while (This->mSpcDev.PortRead(3) != 0x77) {
+        usleep(1000);
+    }
+#else
     This->mSpcDev.ReadAndWait(3, 0x77);
     This->mSpcDev.WriteBuffer();
-    
+#endif
     This->mPort0stateHw = 1;
     
-    This->mSpcDev.WriteBuffer();
-
     // TODO: 必要なRAMデータを転送
     
     // DSPの復元
