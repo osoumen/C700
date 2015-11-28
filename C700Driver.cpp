@@ -383,7 +383,7 @@ void C700Driver::SetFIRTap( int tap, int value )
 //-----------------------------------------------------------------------------
 void C700Driver::SetBrrSample( int prog, const unsigned char *data, int size, int loopPoint)
 {
-    mDSP.SetDir(mMemManager.GetDirAddr() >> 8); // TODO: ‰Šú‰»Žž‚É‚P‰ñ‚¾‚¯Ý’è‚·‚é
+    mDSP.SetDir(mMemManager.GetDirAddr() >> 8);
     mMemManager.WriteData(prog, data, size, loopPoint);
     mMemManager.UpdateMem(&mDSP);
 }
@@ -391,7 +391,7 @@ void C700Driver::SetBrrSample( int prog, const unsigned char *data, int size, in
 //-----------------------------------------------------------------------------
 void C700Driver::DelBrrSample( int prog )
 {
-    mDSP.SetDir(mMemManager.GetDirAddr() >> 8); // TODO: ‰Šú‰»Žž‚É‚P‰ñ‚¾‚¯Ý’è‚·‚é
+    mDSP.SetDir(mMemManager.GetDirAddr() >> 8);
     mMemManager.DeleteData(prog);
     mMemManager.UpdateMem(&mDSP);
 }
