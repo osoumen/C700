@@ -34,6 +34,13 @@ static unsigned char silence_brr[] = {
 //-----------------------------------------------------------------------------
 void C700DSP::DSPState::Reset()
 {
+    ar = -1;
+    dr = -1;
+    sl = -1;
+    sr = -1;
+    vol_l = -200;
+    vol_r = -200;
+    ecen = 0;
 	smp1=0;
 	smp2=0;
 	sampbuf[0]=0;
