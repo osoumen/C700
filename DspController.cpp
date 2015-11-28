@@ -358,7 +358,7 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
 
 void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
 {
-    if (nonRealtime || mIsHwAvailable) {
+    if (nonRealtime) {
         while (mWaitPort >= 0) {
             int outl ,outr;
             Process1Sample(outl, outr);
@@ -381,56 +381,54 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
         mWaitByte = mPort0stateEmu | 0x80;
         mPort0stateEmu = mPort0stateEmu ^ 0x01;
 #endif
+    }
+    else {
         if (mIsHwAvailable) {
             mSpcDev.BlockWrite(1, data, addr & 0xff, (addr>>8) & 0xff);
             mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
             mSpcDev.WriteBufferAsync();
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
-    }
-    else {
         mFifo.AddRamWrite(0, addr, data);
     }
 }
 
 bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
 {
-    bool doWrite = false;
+    bool doWrite = (addr == DSP_KON || addr == DSP_KOF || mDspMirror[addr] != data)?true:false;
     addr &= 0x7f;
     
-    if (nonRealtime || mIsHwAvailable) {
-        doWrite = (addr == DSP_KON || addr == DSP_KOF || mDspMirror[addr] != data)?true:false;
-        
-        if (doWrite) {
-            while (mWaitPort >= 0) {
-                int outl ,outr;
-                Process1Sample(outl, outr);
-            }
-            
-            mDspMirror[addr] = data;
+    if (nonRealtime) {
+        while (mWaitPort >= 0) {
+            int outl ,outr;
+            Process1Sample(outl, outr);
+        }
+        mDspMirror[addr] = data;
 #ifndef USE_OPENSPC
-            mDsp.write_port(0, 1, data);
-            mDsp.write_port(0, 2, addr);
-            mDsp.write_port(0, 0, mPort0stateEmu);
+        mDsp.write_port(0, 1, data);
+        mDsp.write_port(0, 2, addr);
+        mDsp.write_port(0, 0, mPort0stateEmu);
 #else
-            OSPC_WritePort1(data);
-            OSPC_WritePort2(addr);
-            OSPC_WritePort0(mPort0stateEmu);
+        OSPC_WritePort1(data);
+        OSPC_WritePort2(addr);
+        OSPC_WritePort0(mPort0stateEmu);
 #endif
-            mWaitPort = 0;
-            mWaitByte = mPort0stateEmu;
-            mPort0stateEmu = mPort0stateEmu ^ 0x01;
-            
+        mWaitPort = 0;
+        mWaitByte = mPort0stateEmu;
+        mPort0stateEmu = mPort0stateEmu ^ 0x01;
+        doWrite = true;
+    }
+    else {
+        if (doWrite) {
+            mDspMirror[addr] = data;
             if (mIsHwAvailable) {
                 mSpcDev.BlockWrite(1, data, addr & 0xff);
                 mSpcDev.WriteAndWait(0, mPort0stateHw);
                 mSpcDev.WriteBufferAsync();
                 mPort0stateHw = mPort0stateHw ^ 0x01;
             }
+            mFifo.AddDspWrite(0, addr, data);
         }
-    }
-    else {
-        mFifo.AddDspWrite(0, addr, data);
     }
     return doWrite;
 }
