@@ -41,6 +41,7 @@ void C700DSP::DSPState::Reset()
     vol_l = -200;
     vol_r = -200;
     ecen = 0;
+    
 	smp1=0;
 	smp2=0;
 	sampbuf[0]=0;
