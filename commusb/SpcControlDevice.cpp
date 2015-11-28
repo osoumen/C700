@@ -45,6 +45,9 @@ int SpcControlDevice::Close()
 
 void SpcControlDevice::HwReset()
 {
+    mUsbDev->resetrPipe();
+    mUsbDev->resetwPipe();
+    
     unsigned char cmd[] = {0xfd, 0x81, 0xff};
     int wb = sizeof(cmd);
     mUsbDev->bulkWrite(cmd, wb);

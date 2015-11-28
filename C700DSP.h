@@ -101,6 +101,13 @@ private:
     int             mDirAddr;
 	bool			mNewADPCM;
     
+    int             mEchoVolL;
+    int             mEchoVolR;
+    int             mEchoStartAddr;
+    int             mEchoDelay;
+    int             mEchoFeedBack;
+    int             mEchoEnableWait;
+    
     unsigned char   mRam[65536];
     
     DspController   mDsp;
