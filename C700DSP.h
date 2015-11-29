@@ -13,6 +13,7 @@
 #include "EchoKernel.h"
 #include "C700defines.h"
 #include <iostream>
+#include <sys/time.h>
 
 //-----------------------------------------------------------------------------
 typedef enum
@@ -107,6 +108,8 @@ private:
     int             mEchoDelay;
     int             mEchoFeedBack;
     int             mEchoEnableWait;
+    timeval         mEchoChangeTime;
+    int             mEchoChangeWaitusec;
     
     unsigned char   mRam[65536];
     
