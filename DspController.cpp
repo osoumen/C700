@@ -164,16 +164,17 @@ void DspController::onDeviceAdded(void *ref)
         return;
     }
     
-    // 音量を0に
+    // ノイズ回避のため音量を0に
     unsigned char dspWrite[2];
+    err = 0xcc-1;
     dspWrite[0] = DSP_MVOLL;
     dspWrite[1] = 0;
-    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, 0xcc);
+    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
     }
     dspWrite[0] = DSP_MVOLR;
-    dspWrite[1] = 0xff;
+    dspWrite[1] = 0;
     err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
@@ -185,7 +186,7 @@ void DspController::onDeviceAdded(void *ref)
         return;
     }
     dspWrite[0] = DSP_EVOLR;
-    dspWrite[1] = 0xff;
+    dspWrite[1] = 0;
     err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
