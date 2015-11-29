@@ -11,9 +11,9 @@
 //-----------------------------------------------------------------------------
 unsigned char DspController::dspregAccCode[] =
 {
-    0x8F ,0x30 ,0xF1 //       	mov SPC_CONTROL,#$30
+    0x8F ,0x00 ,0xF1 //       	mov SPC_CONTROL,#$00
     ,0x8F ,0x6C ,0xF2 //       	mov SPC_REGADDR,#DSP_FLG
-    ,0x8F ,0x00 ,0xF3 //       	mov SPC_REGDATA,#$a0
+    ,0x8F ,0x00 ,0xF3 //       	mov SPC_REGDATA,#$00
     ,0x8D ,0x00       //     	mov y,#0
     ,0xE8 ,0x00       //     	mov a,#0
     ,0x8F ,0x00 ,0x04 //       	mov $04,#$00
@@ -98,6 +98,13 @@ DspController::DspController()
     spcdata[0x26] = (dspAccCodeAddr >> 8) & 0xff;
     spcdata[0x2b] = 0xef;
     spcdata[0x100 + 0xf0] = 0x0a;
+    spcdata[0x10100 + DSP_MVOLL] = 0;
+    spcdata[0x10100 + DSP_MVOLR] = 0;
+    spcdata[0x10100 + DSP_EVOLL] = 0;
+    spcdata[0x10100 + DSP_EVOLR] = 0;
+    spcdata[0x10100 + DSP_FLG] = 0x20;
+    spcdata[0x10100 + DSP_EDL] = 0x00;
+    spcdata[0x10100 + DSP_ESA] = 0x06;
     memcpy(&spcdata[0x100 + dspAccCodeAddr], dspregAccCode, sizeof(dspregAccCode));
 #ifndef USE_OPENSPC
     mDsp.load_spc(spcdata, 0x10200);
@@ -118,15 +125,6 @@ DspController::DspController()
 #endif
     
     memset(mDspMirror, 0xef, 128 * sizeof(int));
-    WriteDsp(DSP_EDL, 0x00, true);
-    WriteDsp(DSP_ESA, 0x06, true);
-    WriteDsp(DSP_FLG, 0x00, true);
-    WriteDsp(DSP_EFB, 0x00, true);
-    
-    // エコー音量をオフ
-    WriteDsp(DSP_EVOLL, 0x00, true);
-    WriteDsp(DSP_EVOLR, 0x00, true);
-    
     // NONをオフ
     WriteDsp(DSP_NON, 0x00, true);
     
@@ -194,6 +192,12 @@ void DspController::onDeviceAdded(void *ref)
     }
     
     // EDL,ESAを初期化
+    dspWrite[0] = DSP_FLG;
+    dspWrite[1] = 0x20;
+    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
+    if (err < 0) {
+        return;
+    }
     dspWrite[0] = DSP_EDL;
     dspWrite[1] = 0;
     err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
