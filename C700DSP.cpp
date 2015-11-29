@@ -75,11 +75,13 @@ C700DSP::C700DSP() : mNewADPCM( false )
     mEchoDelay = 0;
     mEchoFeedBack = 0;
     mEchoEnableWait = 8000;
+    gettimeofday(&mEchoChangeTime, NULL);
+    mEchoChangeWaitusec = 250000;
 }
 
 C700DSP::~C700DSP()
 {
-    
+
 }
 
 void C700DSP::ResetVoice(int voice)
@@ -100,6 +102,8 @@ void C700DSP::ResetEcho()
     mDsp.WriteDsp(DSP_FLG, 0x20, false);
     if (mEchoEnableWait < mEchoDelay * 480) {
         mEchoEnableWait = mEchoDelay * 480;
+        gettimeofday(&mEchoChangeTime, NULL);
+        mEchoChangeWaitusec = mEchoDelay * 16000;
     }
 }
 
@@ -187,7 +191,9 @@ void C700DSP::SetDelayTime( int value )
         mDsp.WriteDsp(DSP_ESA, static_cast<unsigned char>(mEchoStartAddr), false);
         mDsp.WriteDsp(DSP_EDL, static_cast<unsigned char>(mEchoDelay), false);
         
-        mEchoEnableWait = 8000; // 240ms
+        mEchoEnableWait = 8000; // 250ms
+        gettimeofday(&mEchoChangeTime, NULL);
+        mEchoChangeWaitusec = 250000;
         /*
         usleep(240000);
         
@@ -570,12 +576,20 @@ void C700DSP::Process1Sample(int &outl, int &outr)
     outr += mEcho[1].GetFxOut();
 #else
     if (mEchoEnableWait > 0) {
-        mEchoEnableWait--;
-        if (mEchoEnableWait == 0) {
-            mDsp.WriteDsp(DSP_EFB, static_cast<unsigned char>(mEchoFeedBack), false);
-            mDsp.WriteDsp(DSP_FLG, 0x00, false);
-            mDsp.WriteDsp(DSP_EVOLL, static_cast<unsigned char>(mEchoVolL), false);
-            mDsp.WriteDsp(DSP_EVOLR, static_cast<unsigned char>(mEchoVolR), false);
+        if (mEchoEnableWait == 1) {
+            timeval nowTime;
+            gettimeofday(&nowTime, NULL);
+            int elapsedTime = (nowTime.tv_sec - mEchoChangeTime.tv_sec) * 1e6 + (nowTime.tv_usec - mEchoChangeTime.tv_usec);
+            if (elapsedTime >= mEchoChangeWaitusec) {
+                mDsp.WriteDsp(DSP_FLG, 0x00, false);
+                mDsp.WriteDsp(DSP_EFB, static_cast<unsigned char>(mEchoFeedBack), false);
+                mDsp.WriteDsp(DSP_EVOLL, static_cast<unsigned char>(mEchoVolL), false);
+                mDsp.WriteDsp(DSP_EVOLR, static_cast<unsigned char>(mEchoVolR), false);
+                mEchoEnableWait--;
+            }
+        }
+        else {
+            mEchoEnableWait--;
         }
     }
     mDsp.Process1Sample(outl, outr);
