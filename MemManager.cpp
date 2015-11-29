@@ -107,10 +107,11 @@ void MemManager::DeleteData(int srcn)
 
 void MemManager::UpdateMem(C700DSP *dsp)
 {
-    int nextAddr = mBrrStartAddr;
+    int nextAddr = mBrrEndAddr;
     auto it = mRegions.begin();
     while (it != mRegions.end()) {
-        if ((nextAddr + it->second.GetSize()) > mBrrEndAddr) {
+        nextAddr -= it->second.GetSize();
+        if (nextAddr < mBrrStartAddr) {
             break;
         }
         if (it->second.SetAddr(nextAddr)) {
@@ -126,7 +127,6 @@ void MemManager::UpdateMem(C700DSP *dsp)
             dsp->WriteRam(mDirAddr + it->first * 4+2, addrLoop[2]);
             dsp->WriteRam(mDirAddr + it->first * 4+3, addrLoop[3]);
         }
-        nextAddr += it->second.GetSize();
         it++;
     }
 }

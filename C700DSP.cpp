@@ -171,7 +171,7 @@ void C700DSP::SetDelayTime( int value )
 {
     if (mEchoDelay != value) {
         mEchoDelay = value & 0xff;
-        mEchoStartAddr = 0xff - 0x8 * value;
+        mEchoStartAddr = 0x06;  // DIRの直後
         
         mEcho[0].SetDelayTime( value );
         mEcho[1].SetDelayTime( value );
@@ -179,30 +179,14 @@ void C700DSP::SetDelayTime( int value )
         mDsp.WriteDsp(DSP_EVOLR, 0, false);
         mDsp.WriteDsp(DSP_EFB, 0, false);
         mDsp.WriteDsp(DSP_FLG, 0x20, false);
-        mDsp.WriteDsp(DSP_EDL, 0, false);
+        //mDsp.WriteDsp(DSP_EDL, 0, false);
         
-        // エコー領域のメモリをクリア(ノイズ対策)
-        /*
-        int echoMemSize = (0x8 * value) << 8;
-        unsigned char *mem = new unsigned char[echoMemSize];
-        memset(mem, 0, echoMemSize);
-        mDsp.WriteRam((0xff - 0x8 * value) << 8, mem, echoMemSize);
-        */
         mDsp.WriteDsp(DSP_ESA, static_cast<unsigned char>(mEchoStartAddr), false);
         mDsp.WriteDsp(DSP_EDL, static_cast<unsigned char>(mEchoDelay), false);
         
         mEchoEnableWait = 8000; // 250ms
         gettimeofday(&mEchoChangeTime, NULL);
         mEchoChangeWaitusec = 250000;
-        /*
-        usleep(240000);
-        
-        for (int i=0; i<7680; i++) {
-            int outl, outr;
-            mDsp.Process1Sample(outl, outr);
-        }
-        
-        */
     }
 }
 
