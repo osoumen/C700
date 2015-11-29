@@ -60,20 +60,23 @@ private:
     
     static unsigned char dspregAccCode[];
     
-    SpcControlDevice    mSpcDev;
     bool                mIsHwAvailable;
-    
     DspRegFIFO          mFifo;
+    int                 mDspMirror[128];
+    
+    pthread_mutex_t     mEmuMtx;
 #ifndef USE_OPENSPC
     SNES_SPC            mDsp;
 #endif
     int                 mPort0stateEmu;
-    int                 mPort0stateHw;
     int                 mWaitPort;
     int                 mWaitByte;
-    int                 mDspMirror[128];
+    // mEmuMtx
     
-    pthread_mutex_t     mMtx;
+    pthread_mutex_t     mHwMtx;
+    SpcControlDevice    mSpcDev;
+    int                 mPort0stateHw;
+    // mHwMtx
     
 #ifdef USE_OPENSPC
     short               mOutSamples[dspOutBufSize];
