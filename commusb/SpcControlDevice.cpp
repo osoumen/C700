@@ -295,7 +295,7 @@ int SpcControlDevice::UploadRAMDataIPL(const unsigned char *ram, int addr, int s
         WriteAndWait(0, port0State);
         port0State++;
         if ((i % 256) == 255) {
-            std::cout << ".";
+            //std::cout << ".";
         }
         if (i == (size-1)) {
             WriteBuffer();

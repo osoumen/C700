@@ -86,7 +86,7 @@ void C700DSP::ResetVoice(int voice)
 {
     mVoice[voice].Reset();
     mDsp.WriteDsp(DSP_KOF, 0xff, false);
-    mDsp.WriteDsp(DSP_KOF, 0x00, false);
+    //mDsp.WriteDsp(DSP_KOF, 0x00, false);
 }
 
 void C700DSP::ResetEcho()
