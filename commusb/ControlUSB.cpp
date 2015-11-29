@@ -355,7 +355,9 @@ IOReturn	ControlUSB::findInterfaces(IOUSBDeviceInterface300 **dev)
             (void) (*intf)->Release(intf);
             break;
         }
+#ifdef DEBUG_PRINT
 		printf("Interface has %d endpoints\n", interfaceNumEndpoints);
+#endif
 		
 		int		pipeRef;
 		for (pipeRef = 1; pipeRef <= interfaceNumEndpoints; pipeRef++)
