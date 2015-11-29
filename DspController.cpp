@@ -87,6 +87,9 @@ DspController::DspController()
 {
     mIsHwAvailable = false;
     
+    pthread_mutex_init(&mEmuMtx, 0);
+    pthread_mutex_init(&mHwMtx, 0);
+    
 #ifndef USE_OPENSPC
     mDsp.init();
 #endif
@@ -129,9 +132,6 @@ DspController::DspController()
     // PMONをオフ
     WriteDsp(DSP_PMON, 0x00, true);
 
-    pthread_mutex_init(&mEmuMtx, 0);
-    pthread_mutex_init(&mHwMtx, 0);
-    
     mSpcDev.setDeviceAddedFunc(onDeviceAdded, this);
     mSpcDev.setDeviceRemovedFunc(onDeviceRemoved, this);
     mSpcDev.Init();
