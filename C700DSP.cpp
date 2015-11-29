@@ -75,9 +75,11 @@ C700DSP::C700DSP() : mNewADPCM( false )
     mEchoStartAddr = 0xff;
     mEchoDelay = 0;
     mEchoFeedBack = 0;
+    /*
     mEchoEnableWait = 8000;
     gettimeofday(&mEchoChangeTime, NULL);
     mEchoChangeWaitusec = 250000;
+     */
 }
 
 C700DSP::~C700DSP()
@@ -97,15 +99,17 @@ void C700DSP::ResetEcho()
     mEcho[0].Reset();
 	mEcho[1].Reset();
     // エコー領域のRAMをリセット
-    mDsp.WriteDsp(DSP_EVOLL, 0, false);
-    mDsp.WriteDsp(DSP_EVOLR, 0, false);
-    mDsp.WriteDsp(DSP_EFB, 0, false);
-    mDsp.WriteDsp(DSP_FLG, 0x20, false);
+    //mDsp.WriteDsp(DSP_EVOLL, 0, false);
+    //mDsp.WriteDsp(DSP_EVOLR, 0, false);
+    //mDsp.WriteDsp(DSP_EFB, 0, false);
+    //mDsp.WriteDsp(DSP_FLG, 0x20, false);
+    /*
     if (mEchoEnableWait < mEchoDelay * 480) {
         mEchoEnableWait = mEchoDelay * 480;
         gettimeofday(&mEchoChangeTime, NULL);
         mEchoChangeWaitusec = mEchoDelay * 16000;
     }
+     */
 }
 
 void C700DSP::SetVoiceLimit(int value)
@@ -176,18 +180,19 @@ void C700DSP::SetDelayTime( int value )
         
         mEcho[0].SetDelayTime( value );
         mEcho[1].SetDelayTime( value );
-        mDsp.WriteDsp(DSP_EVOLL, 0, false);
-        mDsp.WriteDsp(DSP_EVOLR, 0, false);
-        mDsp.WriteDsp(DSP_EFB, 0, false);
-        mDsp.WriteDsp(DSP_FLG, 0x20, false);
+        //mDsp.WriteDsp(DSP_EVOLL, 0, false);
+        //mDsp.WriteDsp(DSP_EVOLR, 0, false);
+        //mDsp.WriteDsp(DSP_EFB, 0, false);
+        //mDsp.WriteDsp(DSP_FLG, 0x20, false);
         //mDsp.WriteDsp(DSP_EDL, 0, false);
         
-        mDsp.WriteDsp(DSP_ESA, static_cast<unsigned char>(mEchoStartAddr), false);
+        //mDsp.WriteDsp(DSP_ESA, static_cast<unsigned char>(mEchoStartAddr), false);
         mDsp.WriteDsp(DSP_EDL, static_cast<unsigned char>(mEchoDelay), false);
-        
+        /*
         mEchoEnableWait = 8000; // 250ms
         gettimeofday(&mEchoChangeTime, NULL);
         mEchoChangeWaitusec = 250000;
+         */
     }
 }
 
@@ -561,6 +566,7 @@ void C700DSP::Process1Sample(int &outl, int &outr)
     outl += mEcho[0].GetFxOut();
     outr += mEcho[1].GetFxOut();
 #else
+    /*
     if (mEchoEnableWait > 0) {
         if (mEchoEnableWait == 1) {
             timeval nowTime;
@@ -578,6 +584,7 @@ void C700DSP::Process1Sample(int &outl, int &outr)
             mEchoEnableWait--;
         }
     }
+     */
     mDsp.Process1Sample(outl, outr);
 #endif
 }
