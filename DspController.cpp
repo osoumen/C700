@@ -13,7 +13,7 @@ unsigned char DspController::dspregAccCode[] =
 {
     0x8F ,0x30 ,0xF1 //       	mov SPC_CONTROL,#$30
     ,0x8F ,0x6C ,0xF2 //       	mov SPC_REGADDR,#DSP_FLG
-    ,0x8F ,0xA0 ,0xF3 //       	mov SPC_REGDATA,#$a0
+    ,0x8F ,0x00 ,0xF3 //       	mov SPC_REGDATA,#$a0
     ,0x8D ,0x00       //     	mov y,#0
     ,0xE8 ,0x00       //     	mov a,#0
     ,0x8F ,0x00 ,0x04 //       	mov $04,#$00
@@ -118,6 +118,8 @@ DspController::DspController()
 #endif
     
     memset(mDspMirror, 0xef, 128 * sizeof(int));
+    WriteDsp(DSP_EDL, 0x00, true);
+    WriteDsp(DSP_ESA, 0x06, true);
     WriteDsp(DSP_FLG, 0x00, true);
     WriteDsp(DSP_EFB, 0x00, true);
     
