@@ -40,7 +40,8 @@ void C700DSP::DSPState::Reset()
     sr = -1;
     vol_l = -200;
     vol_r = -200;
-    ecen = 0;
+    ecen = false;
+    ecenNotWrited = true;
     
 	smp1=0;
 	smp2=0;
@@ -303,8 +304,9 @@ void C700DSP::SetPitch(int v, int value)
 
 void C700DSP::SetEchoOn(int v, bool isOn)
 {
-    if (mVoice[v].ecen != isOn) {
+    if ((mVoice[v].ecen != isOn) || mVoice[v].ecenNotWrited) {
         mVoice[v].ecen = isOn;
+        mVoice[v].ecenNotWrited = false;
         unsigned char data = 0;
         for (int i=0; i<8; i++) {
             if (mVoice[i].ecen) {
