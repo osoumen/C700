@@ -75,6 +75,7 @@ C700DSP::C700DSP() : mNewADPCM( false )
     mEchoStartAddr = 0xff;
     mEchoDelay = 0;
     mEchoFeedBack = 0;
+    mEchoEnableWait = 0;
     /*
     mEchoEnableWait = 8000;
     gettimeofday(&mEchoChangeTime, NULL);
