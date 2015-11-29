@@ -11,19 +11,18 @@
 //-----------------------------------------------------------------------------
 unsigned char DspController::dspregAccCode[] =
 {
-    0x8F ,0x6C ,0xF2 //       	mov SPC_REGADDR,#DSP_FLG
+    0x8F ,0x30 ,0xF1 //       	mov SPC_CONTROL,#$30
+    ,0x8F ,0x6C ,0xF2 //       	mov SPC_REGADDR,#DSP_FLG
     ,0x8F ,0xA0 ,0xF3 //       	mov SPC_REGDATA,#$a0
-    //
     ,0x8D ,0x00       //     	mov y,#0
     ,0xE8 ,0x00       //     	mov a,#0
     ,0x8F ,0x00 ,0x04 //       	mov $04,#$00
-    ,0x8F ,0x87 ,0x05 //       	mov $05,#$87
+    ,0x8F ,0x06 ,0x05 //       	mov $05,#$06
     // initloop:
     ,0xD7 ,0x04       //     	mov [$04]+y,a	; 7
     ,0x3A ,0x04       //     	incw $04		; 6
-    ,0x78 ,0xFF ,0x05 //       	cmp $05,#$ff	; 5
+    ,0x78 ,0x7E ,0x05 //       	cmp $05,#$7e	; 5
     ,0xD0 ,0xF7       //     	bne initloop	; 4
-    //
     ,0xE4 ,0xF4       //     	mov a,SPC_PORT0
     // ack:
     ,0x8F ,0x77 ,0xF7 //       	mov SPC_PORT3,#$77
@@ -200,7 +199,7 @@ void DspController::onDeviceAdded(void *ref)
         return;
     }
     dspWrite[0] = DSP_ESA;
-    dspWrite[1] = 0xff;
+    dspWrite[1] = 0x06; // DIRの直後
     err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
