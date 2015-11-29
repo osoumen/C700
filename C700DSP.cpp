@@ -179,7 +179,7 @@ void C700DSP::SetDelayTime( int value )
         mDsp.WriteDsp(DSP_EVOLR, 0, false);
         mDsp.WriteDsp(DSP_EFB, 0, false);
         mDsp.WriteDsp(DSP_FLG, 0x20, false);
-        //mDsp.WriteDsp(DSP_EDL, 0, false);
+        mDsp.WriteDsp(DSP_EDL, 0, false);
         
         // エコー領域のメモリをクリア(ノイズ対策)
         /*
