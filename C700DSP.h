@@ -69,6 +69,7 @@ private:
 		int				ar,dr,sl,sr;
         int             vol_l,vol_r;
 		bool			ecen;
+        bool            ecenNotWrited;
         
 		unsigned char	*brrdata;
 		unsigned int	loopPoint;
