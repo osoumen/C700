@@ -409,8 +409,8 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
 
 bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
 {
-    bool doWrite = (addr == DSP_KON || addr == DSP_KOF || mDspMirror[addr] != data)?true:false;
     addr &= 0x7f;
+    bool doWrite = (addr == DSP_KON || addr == DSP_KOF || mDspMirror[addr] != data)?true:false;
     
     if (nonRealtime) {
         while (mWaitPort >= 0) {
