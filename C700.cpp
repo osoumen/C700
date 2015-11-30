@@ -1058,12 +1058,11 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SR, value);
 	}
 	
+    bool isSustainModeSet = false;
     if (CFDictionaryContainsKey(dict, kSaveKey_SustainMode)) {
 		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_SustainMode));
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
+        isSustainModeSet = true;
 	}
 	
     if (CFDictionaryContainsKey(dict, kSaveKey_volL)) {
@@ -1168,10 +1167,20 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		
 		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_IsEmphasized));
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, CFBooleanGetValue(cfbool) ? 1.0f:.0f);
+        
+        // SRをリリース時に使用するけどSustainModeの設定項目は無い過渡的なバージョン
+        if (!isSustainModeSet) {
+            mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
+        }
 	}
 	else {
 		mEfx->SetSourceFilePath("");
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, .0f);
+        
+        // SRをそのまま使う古いバージョン
+        if (!isSustainModeSet) {
+            mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, .0f);
+        }
 	}
 	
 	//UIに変更を反映
