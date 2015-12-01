@@ -231,7 +231,7 @@ void DspController::onDeviceAdded(void *ref)
     }
 #if 1
     while (This->mSpcDev.PortRead(3) != 0x77) {
-        usleep(1000);
+        usleep(10000);
     }
 #else
     This->mSpcDev.ReadAndWait(3, 0x77);
