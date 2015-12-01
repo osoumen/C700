@@ -171,8 +171,8 @@ void C700Driver::ControlChange( int ch, int controlNum, int value, int inFrame )
 void C700Driver::AllNotesOff()
 {
     //mClearEvent = true;
+    mDSP.KeyOffAll();
 	for ( int i=0; i<kMaximumVoices; i++ ) {
-		mDSP.ResetVoice(i);
         mVoiceStat[i].Reset();
 	}
     mVoiceManager.Reset();

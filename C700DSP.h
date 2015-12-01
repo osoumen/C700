@@ -30,6 +30,7 @@ public:
     ~C700DSP();
     
     void ResetVoice(int voice);
+    void KeyOffAll();
     void ResetEcho();
     
     void SetVoiceLimit(int value);

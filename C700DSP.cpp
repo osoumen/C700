@@ -97,8 +97,18 @@ C700DSP::~C700DSP()
 void C700DSP::ResetVoice(int voice)
 {
     mVoice[voice].Reset();
+    if (voice < 8) {
+        mDsp.WriteDsp(DSP_KOF, 1 << voice, false);
+        //mDsp.WriteDsp(DSP_KOF, 0x00, false);
+    }
+}
+
+void C700DSP::KeyOffAll()
+{
+    for (int i=0; i<kMaximumVoices; i++) {
+        mVoice[i].Reset();
+    }
     mDsp.WriteDsp(DSP_KOF, 0xff, false);
-    //mDsp.WriteDsp(DSP_KOF, 0x00, false);
 }
 
 void C700DSP::ResetEcho()
