@@ -63,6 +63,9 @@ public:
 private:
     void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint);
     
+    static void onDeviceReady(void *ref);
+    static void onDeviceStop(void *ref);
+    
 private:
     struct DSPState {
         // 音源内部状態
@@ -109,10 +112,12 @@ private:
     int             mEchoDelay;
     int             mEchoFeedBack;
     int             mEchoEnableWait;
-    timeval         mEchoChangeTime;
-    int             mEchoChangeWaitusec;
+    //timeval         mEchoChangeTime;
+    //int             mEchoChangeWaitusec;
     
     unsigned char   mRam[65536];
+    int             mBrrStartAddr;
+    int             mBrrEndAddr;
     
     DspController   mDsp;
 

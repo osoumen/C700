@@ -24,7 +24,7 @@ int SpcControlDevice::Init()
 {
     mWriteBytes = BLOCKWRITE_CMD_LEN;    // 0xFD,0xB2,0xNN分
     mUsbDev->BeginPortWait(GIMIC_USBVID, GIMIC_USBPID, 1, 2);
-    /*
+#ifdef USB_CONSOLE_TEST
     int retryRemain = 100;
     while (!mUsbDev->isPlugged() && retryRemain > 0) {
         usleep(10000);
@@ -33,7 +33,7 @@ int SpcControlDevice::Init()
     if (!mUsbDev->isPlugged()) {
         return 1;
     }
-     */
+#endif
     return 0;
 }
 
