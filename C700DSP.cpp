@@ -81,6 +81,12 @@ C700DSP::C700DSP() : mNewADPCM( false )
     gettimeofday(&mEchoChangeTime, NULL);
     mEchoChangeWaitusec = 250000;
      */
+    mBrrStartAddr = 0x10000;
+    mBrrEndAddr = 0;
+
+    mDsp.setDeviceReadyFunc(onDeviceReady, this);
+    mDsp.setDeviceExitFunc(onDeviceStop, this);
+    mDsp.init();
 }
 
 C700DSP::~C700DSP()
@@ -366,6 +372,13 @@ void C700DSP::WriteRam(int addr, const unsigned char *data, int size)
         srcPtr++;
     }
     mDsp.WriteRam(addr, data, size);
+    
+    if (mBrrStartAddr > startaddr) {
+        mBrrStartAddr = startaddr;
+    }
+    if (mBrrEndAddr < endaddr) {
+        mBrrEndAddr = endaddr;
+    }
 }
 
 void C700DSP::WriteRam(int addr, unsigned char data)
@@ -588,4 +601,22 @@ void C700DSP::Process1Sample(int &outl, int &outr)
      */
     mDsp.Process1Sample(outl, outr);
 #endif
+}
+
+void C700DSP::onDeviceReady(void *ref)
+{
+    C700DSP   *This = reinterpret_cast<C700DSP*>(ref);
+    // RAMを転送
+    int writeBytes = This->mBrrEndAddr - This->mBrrStartAddr;
+    if (writeBytes > 0) {
+        // DIR領域を転送
+        This->mDsp.WriteRam(0x200, &This->mRam[0x200], 0x400);
+        // 波形領域を転送
+        This->mDsp.WriteRam(This->mBrrStartAddr, &This->mRam[This->mBrrStartAddr], writeBytes);
+    }
+}
+
+void C700DSP::onDeviceStop(void *ref)
+{
+    //C700DSP   *This = reinterpret_cast<C700DSP*>(ref);
 }

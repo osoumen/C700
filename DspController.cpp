@@ -86,9 +86,15 @@ DspController::DspController()
 {
     mIsHwAvailable = false;
     
+    mDeviceReadyFunc = NULL;
+    mDeviceExitFunc = NULL;
+    
     pthread_mutex_init(&mEmuMtx, 0);
     pthread_mutex_init(&mHwMtx, 0);
-    
+}
+
+void DspController::init()
+{
 #ifndef USE_OPENSPC
     mDsp.init();
 #endif
@@ -130,7 +136,7 @@ DspController::DspController()
     
     // PMONをオフ
     WriteDsp(DSP_PMON, 0x00, true);
-
+    
     mSpcDev.setDeviceAddedFunc(onDeviceAdded, this);
     mSpcDev.setDeviceRemovedFunc(onDeviceRemoved, this);
     mSpcDev.Init();
@@ -233,8 +239,6 @@ void DspController::onDeviceAdded(void *ref)
 #endif
     This->mPort0stateHw = 1;
     
-    // TODO: 必要なRAMデータを転送
-    
     // DSPの復元
     for (int i=0; i<128; i++) {
         if (This->mDspMirror[i] == 0xefefefef) {
@@ -255,6 +259,10 @@ void DspController::onDeviceAdded(void *ref)
     This->mIsHwAvailable = true;
     
     pthread_mutex_unlock(&This->mHwMtx);
+    
+    if (This->mDeviceReadyFunc) {
+        This->mDeviceReadyFunc(This->mDeviceReadyFuncClass);
+    }
 }
 
 void DspController::onDeviceRemoved(void *ref)
@@ -262,6 +270,10 @@ void DspController::onDeviceRemoved(void *ref)
     DspController   *This = reinterpret_cast<DspController*>(ref);
     
     This->mIsHwAvailable = false;
+    
+    if (This->mDeviceExitFunc) {
+        This->mDeviceExitFunc(This->mDeviceExitFuncClass);
+    }
 }
 
 void DspController::WriteRam(int addr, const unsigned char *data, int size)
@@ -505,4 +517,16 @@ void DspController::Process1Sample(int &outl, int &outr)
         outl = 0;
         outr = 0;
     }
+}
+
+void DspController::setDeviceReadyFunc( void (*func) (void* ownerClass), void* ownerClass )
+{
+    mDeviceReadyFunc = func;
+    mDeviceReadyFuncClass = ownerClass;
+}
+
+void DspController::setDeviceExitFunc( void (*func) (void* ownerClass) , void* ownerClass )
+{
+    mDeviceExitFunc = func;
+    mDeviceExitFuncClass = ownerClass;
 }

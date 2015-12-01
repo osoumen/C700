@@ -49,10 +49,15 @@ public:
     DspController();
     ~DspController();
     
+    void init();
+    
     void WriteRam(int addr, const unsigned char *data, int size);
     void WriteRam(int addr, unsigned char data, bool nonRealtime);
     bool WriteDsp(int addr, unsigned char data, bool nonRealtime);
     void Process1Sample(int &outl, int &outr);
+    
+    void setDeviceReadyFunc( void (*func) (void* ownerClass), void* ownerClass );
+	void setDeviceExitFunc( void (*func) (void* ownerClass) , void* ownerClass );
     
 private:
     static const int dspAccCodeAddr = 0x0010;
@@ -83,6 +88,11 @@ private:
 #else
     SNES_SPC::sample_t  mOutSamples[dspOutBufSize];
 #endif
+    
+    void               (*mDeviceReadyFunc) (void* ownerClass);
+	void               *mDeviceReadyFuncClass;
+    void               (*mDeviceExitFunc) (void* ownerClass);
+	void               *mDeviceExitFuncClass;
     
     static void onDeviceAdded(void *ref);
     static void onDeviceRemoved(void *ref);
