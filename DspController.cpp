@@ -7,6 +7,7 @@
 //
 
 #include "DspController.h"
+#include <iomanip>
 
 //-----------------------------------------------------------------------------
 unsigned char DspController::dspregAccCode[] =
@@ -133,9 +134,11 @@ void DspController::init()
     memset(mDspMirror, 0xef, 128 * sizeof(int));
     // NONをオフ
     WriteDsp(DSP_NON, 0x00, true);
+    mDspMirror[DSP_NON] = 0;
     
     // PMONをオフ
     WriteDsp(DSP_PMON, 0x00, true);
+    mDspMirror[DSP_PMON] = 0;
     
     mSpcDev.setDeviceAddedFunc(onDeviceAdded, this);
     mSpcDev.setDeviceRemovedFunc(onDeviceRemoved, this);
@@ -434,7 +437,6 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
             int outl ,outr;
             Process1Sample(outl, outr);
         }
-        mDspMirror[addr] = data;
         pthread_mutex_lock(&mEmuMtx);
 #ifndef USE_OPENSPC
         mDsp.write_port(0, 1, data);
@@ -456,6 +458,11 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
             mDspMirror[addr] = data;
             if (mIsHwAvailable) {
                 pthread_mutex_lock(&mHwMtx);
+                /*
+                if (addr == DSP_EDL) {
+                    std::cout << "addr:0x" << std::hex << std::setw(2) << std::setfill('0') << addr;
+                    std::cout << " data:0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data) << std::endl;
+                }*/
                 mSpcDev.BlockWrite(1, data, addr & 0xff);
                 mSpcDev.WriteAndWait(0, mPort0stateHw);
                 mSpcDev.WriteBufferAsync();
