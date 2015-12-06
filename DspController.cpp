@@ -58,6 +58,7 @@ unsigned char DspController::dspregAccCode[] =
     ,0xC4 ,0xF4       //     	mov SPC_PORT0,a
     ,0x2F ,0xD0       //     	bra loop
     // blockTrans:
+    ,0x8F ,0x00 ,0xF7 //       	mov SPC_PORT3,#$0
     ,0xFA ,0xF6 ,0x04 //       	mov $04,SPC_PORT2
     ,0xFA ,0xF7 ,0x05 //       	mov $05,SPC_PORT3
     ,0x7D             //   	mov a,x
@@ -67,7 +68,7 @@ unsigned char DspController::dspregAccCode[] =
     ,0x64 ,0xF4       //     	cmp a,SPC_PORT0
     ,0xF0 ,0xFC       //     	beq loop2
     ,0xE4 ,0xF4       //     	mov a,SPC_PORT0
-    ,0x30 ,0xBA       //     	bmi ack
+    ,0x30 ,0xB7       //     	bmi ack
     ,0x5D             //   	mov x,a
     ,0xE4 ,0xF5       //     	mov a,SPC_PORT1
     ,0xD7 ,0x04       //     	mov [$04]+y,a
@@ -363,9 +364,12 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
         mSpcDev.BlockWrite(0, mPort0stateHw | 0x80);
-        mSpcDev.ReadAndWait(3, 0x77);
+        //mSpcDev.ReadAndWait(3, 0x77);
         mSpcDev.WriteBuffer();
         mPort0stateHw = mPort0stateHw ^ 0x01;
+        while (mSpcDev.PortRead(3) != 0x77) {
+            usleep(1000);
+        }
         addr += num * 3;
         for (int i=0; i<rest; i++) {
             mSpcDev.BlockWrite(1, data[ptr], (addr + i) & 0xff, ((addr + i)>>8) & 0xff);
