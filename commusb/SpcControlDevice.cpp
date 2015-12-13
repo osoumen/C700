@@ -6,9 +6,20 @@
 //  Copyright (c) 2014年 osoumen. All rights reserved.
 //
 
-#include <iostream>
 #include "unistd.h"
 #include "SpcControlDevice.h"
+#include <iomanip>
+#include <iostream>
+
+void printBytes(const unsigned char *data, int bytes)
+{
+    /*
+    for (int i=0; i<bytes; i++) {
+        std::cout << std::hex << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<int>(data[i]) << " ";
+    }
+    std::cout << std::endl;
+     */
+}
 
 SpcControlDevice::SpcControlDevice()
 {
@@ -51,6 +62,8 @@ void SpcControlDevice::HwReset()
     unsigned char cmd[] = {0xfd, 0x81, 0xff};
     int wb = sizeof(cmd);
     mUsbDev->bulkWrite(cmd, wb);
+    
+    printBytes(cmd, wb);
 }
 
 void SpcControlDevice::SwReset()
@@ -58,6 +71,8 @@ void SpcControlDevice::SwReset()
     unsigned char cmd[] = {0xfd, 0x82, 0xff};
     int wb = sizeof(cmd);
     mUsbDev->bulkWrite(cmd, wb);
+    
+    printBytes(cmd, wb);
 }
 
 void SpcControlDevice::PortWrite(int addr, unsigned char data)
@@ -67,6 +82,8 @@ void SpcControlDevice::PortWrite(int addr, unsigned char data)
     cmd[1] = data;
     int wb = sizeof(cmd);
     mUsbDev->bulkWrite(cmd, wb);
+    
+    printBytes(cmd, wb);
 }
 
 unsigned char SpcControlDevice::PortRead(int addr)
@@ -75,6 +92,7 @@ unsigned char SpcControlDevice::PortRead(int addr)
     cmd[2] = addr;
     int wb = sizeof(cmd);
     mUsbDev->bulkWrite(cmd, wb);
+    printBytes(cmd, wb);
     
     int rb = 64;
 #if 0
@@ -91,6 +109,8 @@ unsigned char SpcControlDevice::PortRead(int addr)
     }
 #else
     mUsbDev->bulkRead(mReadBuf, rb, 500);
+    //std::cout << ">";
+    printBytes(mReadBuf, 1);
 #endif
     return mReadBuf[0];
 }
@@ -213,6 +233,9 @@ void SpcControlDevice::WriteBuffer()
         if (mWriteBytes < 64) {
             mWriteBuf[mWriteBytes++] = 0xff;
         }
+        //if (mWriteBuf[6] == 0x7d && mWriteBuf[7] == 0xc0) {
+            printBytes(mWriteBuf, mWriteBytes);
+        //}
         mUsbDev->bulkWrite(mWriteBuf, mWriteBytes);
         mWriteBytes = BLOCKWRITE_CMD_LEN;
     }
@@ -238,6 +261,9 @@ void SpcControlDevice::WriteBufferAsync()
         if (mWriteBytes < 64) {
             mWriteBuf[mWriteBytes++] = 0xff;
         }
+        //if (mWriteBuf[6] == 0x7d && mWriteBuf[7] == 0xc0) {
+            printBytes(mWriteBuf, mWriteBytes);
+        //}
         mUsbDev->bulkWriteAsync(mWriteBuf, mWriteBytes);
         mWriteBytes = BLOCKWRITE_CMD_LEN;
     }
