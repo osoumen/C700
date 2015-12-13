@@ -9,6 +9,8 @@
 #include "DspController.h"
 #include <iomanip>
 
+static const int p3waitValue = 0xee;
+
 //-----------------------------------------------------------------------------
 unsigned char DspController::dspregAccCode[] =
 {
@@ -26,7 +28,7 @@ unsigned char DspController::dspregAccCode[] =
     ,0xD0 ,0xF7       //     	bne initloop	; 4
     ,0xE4 ,0xF4       //     	mov a,SPC_PORT0
     // ack:
-    ,0x8F ,0x77 ,0xF7 //       	mov SPC_PORT3,#$77
+    ,0x8F ,0xEE ,0xF7 //       	mov SPC_PORT3,#$ee
     // loop:
     ,0x64 ,0xF4       //     	cmp a,SPC_PORT0		; 3
     ,0xF0 ,0xFC       //     	beq loop			; 2
@@ -125,11 +127,11 @@ void DspController::init()
 #ifndef USE_OPENSPC
     do {
         mDsp.play(2, NULL);
-    } while (mDsp.read_port(0, 3) != 0x77);
+    } while (mDsp.read_port(0, 3) != p3waitValue);
 #else
     do {
         OSPC_Run(1, NULL, 0);
-    } while ((unsigned char)OSPC_ReadPort3() != 0x77);
+    } while ((unsigned char)OSPC_ReadPort3() != p3waitValue);
 #endif
     
     memset(mDspMirror, 0xef, 128 * sizeof(int));
@@ -234,11 +236,11 @@ void DspController::onDeviceAdded(void *ref)
         return;
     }
 #if 1
-    while (This->mSpcDev.PortRead(3) != 0x77) {
+    while (This->mSpcDev.PortRead(3) != p3waitValue) {
         usleep(10000);
     }
 #else
-    This->mSpcDev.ReadAndWait(3, 0x77);
+    This->mSpcDev.ReadAndWait(3, p3waitValue);
     This->mSpcDev.WriteBuffer();
 #endif
     This->mPort0stateHw = 1;
@@ -342,10 +344,10 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
             mPort0stateHw++;
         }
         mSpcDev.JumpToCode(dspAccCodeAddr, mPort0stateHw + 1);
-        while (mSpcDev.PortRead(3) != 0x77) {
+        while (mSpcDev.PortRead(3) != p3waitValue) {
             usleep(1000);
         }
-        //mSpcDev.ReadAndWait(3, 0x77);
+        //mSpcDev.ReadAndWait(3, p3waitValue);
         //mSpcDev.WriteBuffer();
         mPort0stateHw = 1;
 #endif
@@ -364,12 +366,14 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
         mSpcDev.BlockWrite(0, mPort0stateHw | 0x80);
-        //mSpcDev.ReadAndWait(3, 0x77);
+        mSpcDev.ReadAndWait(3, p3waitValue);
         mSpcDev.WriteBuffer();
         mPort0stateHw = mPort0stateHw ^ 0x01;
-        while (mSpcDev.PortRead(3) != 0x77) {
-            usleep(1000);
+        /*
+        while (mSpcDev.PortRead(3) != p3waitValue) {
+            usleep(5000);
         }
+         */
         addr += num * 3;
         for (int i=0; i<rest; i++) {
             mSpcDev.BlockWrite(1, data[ptr], (addr + i) & 0xff, ((addr + i)>>8) & 0xff);
@@ -466,11 +470,22 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
                 if (addr == DSP_EDL) {
                     std::cout << "addr:0x" << std::hex << std::setw(2) << std::setfill('0') << addr;
                     std::cout << " data:0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data) << std::endl;
-                }*/
-                mSpcDev.BlockWrite(1, data, addr & 0xff);
-                mSpcDev.WriteAndWait(0, mPort0stateHw);
-                mSpcDev.WriteBufferAsync();
-                mPort0stateHw = mPort0stateHw ^ 0x01;
+                }
+                 */
+                int rewrite = 2;
+                if (((addr & 0x0f) < 0x0a) ||
+                    addr == DSP_KON ||
+                    addr == DSP_KOF ||
+                    addr == DSP_FLG) {
+                    rewrite = 1;
+                }
+                // 書き込み値が正しく反映されない場合があるのでチャンネルパラメータ以外を２回書き込む
+                for (int i=0; i<rewrite; i++) {
+                    mSpcDev.BlockWrite(1, data, addr & 0xff);
+                    mSpcDev.WriteAndWait(0, mPort0stateHw);
+                    mSpcDev.WriteBufferAsync();
+                    mPort0stateHw = mPort0stateHw ^ 0x01;
+                }
                 pthread_mutex_unlock(&mHwMtx);
             }
             mFifo.AddDspWrite(0, addr, data);
