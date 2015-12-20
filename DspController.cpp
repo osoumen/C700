@@ -89,6 +89,8 @@ unsigned char DspController::dspregAccCode[] =
 DspController::DspController()
 {
     mIsHwAvailable = false;
+    mSampleInFrame = 0;
+    gettimeofday(&mFrameStartTime, NULL);
     
     mDeviceReadyFunc = NULL;
     mDeviceExitFunc = NULL;
@@ -150,8 +152,13 @@ void DspController::init()
 
 DspController::~DspController()
 {
+    if (mIsHwAvailable) {
+        mIsHwAvailable = false;
+        pthread_join(mWriteHwThread, NULL);
+    }
     mSpcDev.Close();
-    mFifo.Clear();
+    mEmuFifo.Clear();
+    mHwFifo.Clear();
     pthread_mutex_destroy(&mHwMtx);
     pthread_mutex_destroy(&mEmuMtx);
 }
@@ -269,6 +276,9 @@ void DspController::onDeviceAdded(void *ref)
     if (This->mDeviceReadyFunc) {
         This->mDeviceReadyFunc(This->mDeviceReadyFuncClass);
     }
+    
+    // スレッドの開始
+    pthread_create(&This->mWriteHwThread, NULL, writeHwThreadFunc, This);
 }
 
 void DspController::onDeviceRemoved(void *ref)
@@ -276,6 +286,11 @@ void DspController::onDeviceRemoved(void *ref)
     DspController   *This = reinterpret_cast<DspController*>(ref);
     
     This->mIsHwAvailable = false;
+    
+    // スレッドの停止
+    pthread_join(This->mWriteHwThread, NULL);
+    
+    This->mHwFifo.Clear();
     
     if (This->mDeviceExitFunc) {
         This->mDeviceExitFunc(This->mDeviceExitFuncClass);
@@ -423,15 +438,11 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
         pthread_mutex_unlock(&mEmuMtx);
     }
     else {
-        if (mIsHwAvailable) {
-            pthread_mutex_lock(&mHwMtx);
-            mSpcDev.BlockWrite(1, data, addr & 0xff, (addr>>8) & 0xff);
-            mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
-            mSpcDev.WriteBufferAsync();
-            mPort0stateHw = mPort0stateHw ^ 0x01;
-            pthread_mutex_unlock(&mHwMtx);
-        }
-        mFifo.AddRamWrite(0, addr, data);
+        // mHwFifoに追加
+        long int frameTime = (mSampleInFrame * 1e6) / 32000;
+        mHwFifo.AddRamWrite(frameTime, addr, data);
+        
+        mEmuFifo.AddRamWrite(0, addr, data);
     }
 }
 
@@ -464,31 +475,11 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
     else {
         if (doWrite) {
             mDspMirror[addr] = data;
-            if (mIsHwAvailable) {
-                pthread_mutex_lock(&mHwMtx);
-                /*
-                if (addr == DSP_EDL) {
-                    std::cout << "addr:0x" << std::hex << std::setw(2) << std::setfill('0') << addr;
-                    std::cout << " data:0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data) << std::endl;
-                }
-                 */
-                int rewrite = 2;
-                if (((addr & 0x0f) < 0x0a) ||
-                    addr == DSP_KON ||
-                    addr == DSP_KOF ||
-                    addr == DSP_FLG) {
-                    rewrite = 1;
-                }
-                // 書き込み値が正しく反映されない場合があるのでチャンネルパラメータ以外を２回書き込む
-                for (int i=0; i<rewrite; i++) {
-                    mSpcDev.BlockWrite(1, data, addr & 0xff);
-                    mSpcDev.WriteAndWait(0, mPort0stateHw);
-                    mSpcDev.WriteBufferAsync();
-                    mPort0stateHw = mPort0stateHw ^ 0x01;
-                }
-                pthread_mutex_unlock(&mHwMtx);
-            }
-            mFifo.AddDspWrite(0, addr, data);
+            // mHwFifoに追加
+            long int frameTime = (mSampleInFrame * 1e6) / 32000;
+            mHwFifo.AddDspWrite(frameTime, addr, data);
+            
+            mEmuFifo.AddDspWrite(0, addr, data);
         }
     }
     return doWrite;
@@ -514,9 +505,9 @@ void DspController::Process1Sample(int &outl, int &outr)
         pthread_mutex_unlock(&mEmuMtx);
         bool nowrite = false;
         do {
-            size_t numWrites = mFifo.GetNumWrites();
+            size_t numWrites = mEmuFifo.GetNumWrites();
             if (numWrites > 0) {
-                DspRegFIFO::DspWrite write = mFifo.PopFront();
+                DspRegFIFO::DspWrite write = mEmuFifo.PopFront();
                 if (write.isRam) {
                     WriteRam(write.addr, write.data, true);
                 }
@@ -542,6 +533,93 @@ void DspController::Process1Sample(int &outl, int &outr)
     if (mIsHwAvailable) {
         outl = 0;
         outr = 0;
+    }
+    mSampleInFrame++;
+}
+
+void DspController::BeginFrameProcess()
+{
+    mSampleInFrame = 0;
+    gettimeofday(&mFrameStartTime, NULL);
+    pthread_mutex_lock(&mHwMtx);
+    while (mHwFifo.GetNumWrites() > 0) {
+        // mHwFifoに残っているものをすべて書き出す
+        DspRegFIFO::DspWrite writeData = mHwFifo.PopFront();
+        //std::cout << writeData.time << std::endl;
+        if (writeData.isRam) {
+            doWriteRamHw(writeData.addr, writeData.data);
+        }
+        else {
+            doWriteDspHw(writeData.addr, writeData.data);
+        }
+    }
+    pthread_mutex_unlock(&mHwMtx);
+}
+
+void *DspController::writeHwThreadFunc(void *arg)
+{
+    DspController   *This = reinterpret_cast<DspController*>(arg);
+    while (This->mIsHwAvailable) {
+        timeval nowTime;
+        gettimeofday(&nowTime, NULL);
+        int elapsedTime = (nowTime.tv_sec - This->mFrameStartTime.tv_sec) * 1e6 +
+        (nowTime.tv_usec - This->mFrameStartTime.tv_usec);
+        
+        pthread_mutex_lock(&This->mHwMtx);
+        while ((This->mHwFifo.GetNumWrites() > 0) &&
+               (This->mHwFifo.GetFrontTime() < elapsedTime)) {
+            DspRegFIFO::DspWrite writeData = This->mHwFifo.PopFront();
+            if (writeData.isRam) {
+                This->doWriteRamHw(writeData.addr, writeData.data);
+            }
+            else {
+                This->doWriteDspHw(writeData.addr, writeData.data);
+            }
+        }
+        pthread_mutex_unlock(&This->mHwMtx);
+        
+        usleep(500);
+    }
+    return 0;
+}
+
+void DspController::doWriteDspHw(int addr, unsigned char data)
+{
+    if (mIsHwAvailable) {
+        //pthread_mutex_lock(&mHwMtx);
+        /*
+         if (addr == DSP_EDL) {
+         std::cout << "addr:0x" << std::hex << std::setw(2) << std::setfill('0') << addr;
+         std::cout << " data:0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data) << std::endl;
+         }
+         */
+        int rewrite = 2;
+        if (((addr & 0x0f) < 0x0a) ||
+            addr == DSP_KON ||
+            addr == DSP_KOF ||
+            addr == DSP_FLG) {
+            rewrite = 1;
+        }
+        // 書き込み値が正しく反映されない場合があるのでチャンネルパラメータ以外を２回書き込む
+        for (int i=0; i<rewrite; i++) {
+            mSpcDev.BlockWrite(1, data, addr & 0xff);
+            mSpcDev.WriteAndWait(0, mPort0stateHw);
+            mSpcDev.WriteBufferAsync();
+            mPort0stateHw = mPort0stateHw ^ 0x01;
+        }
+        //pthread_mutex_unlock(&mHwMtx);
+    }
+}
+
+void DspController::doWriteRamHw(int addr, unsigned char data)
+{
+    if (mIsHwAvailable) {
+        //pthread_mutex_lock(&mHwMtx);
+        mSpcDev.BlockWrite(1, data, addr & 0xff, (addr>>8) & 0xff);
+        mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
+        mSpcDev.WriteBufferAsync();
+        mPort0stateHw = mPort0stateHw ^ 0x01;
+        //pthread_mutex_unlock(&mHwMtx);
     }
 }
 

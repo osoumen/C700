@@ -19,6 +19,7 @@
 #include "SNES_SPC.h"
 #endif
 #include <pthread.h>
+#include <sys/time.h>
 
 #define DSP_VOL		(0x00)
 #define DSP_P		(0x02)
@@ -55,6 +56,7 @@ public:
     void WriteRam(int addr, unsigned char data, bool nonRealtime);
     bool WriteDsp(int addr, unsigned char data, bool nonRealtime);
     void Process1Sample(int &outl, int &outr);
+    void BeginFrameProcess();
     
     void setDeviceReadyFunc( void (*func) (void* ownerClass), void* ownerClass );
 	void setDeviceExitFunc( void (*func) (void* ownerClass) , void* ownerClass );
@@ -66,7 +68,8 @@ private:
     static unsigned char dspregAccCode[];
     
     bool                mIsHwAvailable;
-    DspRegFIFO          mFifo;
+    DspRegFIFO          mEmuFifo;
+    DspRegFIFO          mHwFifo;
     int                 mDspMirror[128];
     
     pthread_mutex_t     mEmuMtx;
@@ -89,10 +92,19 @@ private:
     SNES_SPC::sample_t  mOutSamples[dspOutBufSize];
 #endif
     
+    int                 mSampleInFrame;
+    timeval             mFrameStartTime;
+    pthread_t           mWriteHwThread;
+    
     void               (*mDeviceReadyFunc) (void* ownerClass);
 	void               *mDeviceReadyFuncClass;
     void               (*mDeviceExitFunc) (void* ownerClass);
 	void               *mDeviceExitFuncClass;
+    
+    static void *writeHwThreadFunc(void *arg);
+    
+    void doWriteDspHw(int addr, unsigned char data);
+    void doWriteRamHw(int addr, unsigned char data);
     
     static void onDeviceAdded(void *ref);
     static void onDeviceRemoved(void *ref);
