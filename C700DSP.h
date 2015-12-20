@@ -60,6 +60,7 @@ public:
     void KeyOnVoice(int v);
     
     void Process1Sample(int &outl, int &outr);
+    void BeginFrameProcess();
     
 private:
     void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint);

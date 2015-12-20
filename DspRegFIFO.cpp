@@ -52,6 +52,15 @@ DspRegFIFO::DspWrite DspRegFIFO::PopFront()
     return front;
 }
 
+long DspRegFIFO::GetFrontTime()
+{
+    long time = 0;
+    if (mDspWrite.size() > 0) {
+        time = mDspWrite.front().time;
+    }
+    return time;
+}
+
 void DspRegFIFO::Clear()
 {
     mDspWrite.clear();

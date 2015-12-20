@@ -613,6 +613,11 @@ void C700DSP::Process1Sample(int &outl, int &outr)
 #endif
 }
 
+void C700DSP::BeginFrameProcess()
+{
+    mDsp.BeginFrameProcess();
+}
+
 void C700DSP::onDeviceReady(void *ref)
 {
     C700DSP   *This = reinterpret_cast<C700DSP*>(ref);

@@ -28,6 +28,7 @@ public:
     void AddRamWrite(long time, unsigned short addr, unsigned char data);
     size_t GetNumWrites() { return mDspWrite.size(); }
     DspWrite PopFront();
+    long GetFrontTime();
     void Clear();
     
     std::list<DspWrite> mDspWrite;
