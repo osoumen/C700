@@ -292,6 +292,10 @@ public:
     {
         brr.data[brr.size - 9] &= ~2;
     }
+    bool        isLoop() const
+    {
+        return (brr.data[brr.size - 9] & 2)?true:false;
+    }
     unsigned char *brrData() const { return brr.data; }
     int brrSize() const { return brr.size; }
     int brrSamples() const { return (brr.size/9)*16; }
