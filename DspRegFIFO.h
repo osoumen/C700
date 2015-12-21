@@ -29,6 +29,7 @@ public:
     size_t GetNumWrites() { return mDspWrite.size(); }
     DspWrite PopFront();
     long GetFrontTime();
+    void AddTime(long time);
     void Clear();
     
     std::list<DspWrite> mDspWrite;
