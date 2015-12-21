@@ -69,6 +69,18 @@ const unsigned char *BrrRegion::GetData()
     return mData;
 }
 
+void BrrRegion::SetLoopFlag(bool isLoop)
+{
+    if (mData != NULL) {
+        int flagPtr = (mSize / 9) * 9 - 9;
+        if (isLoop) {
+            mData[flagPtr] |= 2;
+        }
+        else {
+            mData[flagPtr] &= ~2;
+        }
+    }
+}
 //--------------------------------------
 
 MemManager::MemManager(int size)
@@ -103,6 +115,15 @@ void MemManager::DeleteData(int srcn)
         mTotalSize -= it->second.GetSize();
         mRegions.erase(it);
     }
+}
+
+bool MemManager::HasData(int srcn)
+{
+    auto it = mRegions.find(srcn);
+    if (it != mRegions.end()) {
+        return true;
+    }
+    return false;
 }
 
 void MemManager::UpdateMem(C700DSP *dsp)
@@ -141,6 +162,17 @@ void MemManager::ChangeLoopPoint(int srcn, int lp, C700DSP *dsp)
         loopPoint[1] = ((it->second.GetAddr() + lp) >> 8) & 0xff;
         dsp->WriteRam(mDirAddr + it->first * 4 + 2, loopPoint[0]);
         dsp->WriteRam(mDirAddr + it->first * 4 + 3, loopPoint[1]);
+    }
+}
+
+void MemManager::ChangeLoopFlag(int srcn, bool isLoop, C700DSP *dsp)
+{
+    auto it = mRegions.find(srcn);
+    if (it != mRegions.end()) {
+        it->second.SetLoopFlag(isLoop);
+        int flagPtr = (it->second.GetSize() / 9) * 9 - 9;
+        unsigned char loopFlag = it->second.GetData()[flagPtr];
+        dsp->WriteRam(it->second.GetAddr() + flagPtr, loopFlag);
     }
 }
 

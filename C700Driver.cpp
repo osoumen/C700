@@ -405,10 +405,15 @@ void C700Driver::UpdateLoopPoint( int prog )
 //-----------------------------------------------------------------------------
 void C700Driver::UpdateLoopFlag( int prog )
 {
-    // TODO: 最後のバイトだけ書き換える
-    mMemManager.DeleteData(prog);
-    mMemManager.WriteData(prog, mVPset[prog].brrData(), mVPset[prog].brrSize(), mVPset[prog].lp);
-    mMemManager.UpdateMem(&mDSP);
+    if (mMemManager.HasData(prog)) {
+        // 最後のバイトだけ書き換える
+        mMemManager.ChangeLoopFlag(prog, mVPset[prog].isLoop(), &mDSP);
+    }
+    else {
+        mDSP.SetDir(mMemManager.GetDirAddr() >> 8);
+        mMemManager.WriteData(prog, mVPset[prog].brrData(), mVPset[prog].brrSize(), mVPset[prog].lp);
+        mMemManager.UpdateMem(&mDSP);
+    }
 }
 
 //-----------------------------------------------------------------------------
