@@ -540,20 +540,17 @@ void DspController::Process1Sample(int &outl, int &outr)
 void DspController::BeginFrameProcess()
 {
     mSampleInFrame = 0;
-    gettimeofday(&mFrameStartTime, NULL);
+    
+    // バッファにに残っている分の時間を進める
+    timeval nowTime;
+    gettimeofday(&nowTime, NULL);
+    int elapsedTime = (nowTime.tv_sec - mFrameStartTime.tv_sec) * 1e6 +
+    (nowTime.tv_usec - mFrameStartTime.tv_usec);
     pthread_mutex_lock(&mHwMtx);
-    while (mHwFifo.GetNumWrites() > 0) {
-        // mHwFifoに残っているものをすべて書き出す
-        DspRegFIFO::DspWrite writeData = mHwFifo.PopFront();
-        //std::cout << writeData.time << std::endl;
-        if (writeData.isRam) {
-            doWriteRamHw(writeData.addr, writeData.data);
-        }
-        else {
-            doWriteDspHw(writeData.addr, writeData.data);
-        }
-    }
+    mHwFifo.AddTime(-elapsedTime);
     pthread_mutex_unlock(&mHwMtx);
+    
+    mFrameStartTime = nowTime;
 }
 
 void *DspController::writeHwThreadFunc(void *arg)

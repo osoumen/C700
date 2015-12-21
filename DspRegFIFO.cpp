@@ -61,6 +61,15 @@ long DspRegFIFO::GetFrontTime()
     return time;
 }
 
+void DspRegFIFO::AddTime(long time)
+{
+    std::list<DspWrite>::iterator it = mDspWrite.begin();
+    while (it != mDspWrite.end()) {
+        it->time += time;
+        it++;
+    }
+}
+
 void DspRegFIFO::Clear()
 {
     mDspWrite.clear();
