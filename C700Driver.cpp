@@ -174,6 +174,7 @@ void C700Driver::AllNotesOff()
     mDSP.KeyOffAll();
 	for ( int i=0; i<kMaximumVoices; i++ ) {
         mVoiceStat[i].Reset();
+        mKeyOnFlag[i] = false;
 	}
     mVoiceManager.Reset();
 }
@@ -784,6 +785,17 @@ bool C700Driver::doNoteOn1( MIDIEvt dEvt )
         if (v != -1) {
             if (legato == false) {
                 mDSP.KeyOffVoice(v);
+                
+                //mDSP.SetEchoOn(v, vp.echo);
+                mDSP.SetAR(v, vp.ar);
+                mDSP.SetDR(v, vp.dr);
+                mDSP.SetSL(v, vp.sl);
+                if (vp.sustainMode) {
+                    mDSP.SetSR(v, 0);		//ノートオフ時に設定値になる
+                }
+                else {
+                    mDSP.SetSR(v, vp.sr);
+                }
             }
             // 上位4bitに確保したボイス番号を入れる
             dEvt.ch += v << 4;
@@ -877,7 +889,7 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         }
         
         // キーオン
-        mDSP.KeyOnVoice(v);
+        mKeyOnFlag[v] = true;
         
         // 最後に発音したノート番号を保存
         mChStat[midiCh].lastNote = note;
@@ -1187,6 +1199,11 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
                 
                 mDSP.SetVol_L(v, volL);
                 mDSP.SetVol_R(v, volR);
+                
+                if (mKeyOnFlag[v]) {
+                    mDSP.KeyOnVoice(v);
+                    mKeyOnFlag[v] = false;
+                }
             }
             
 			int outl=0,outr=0;

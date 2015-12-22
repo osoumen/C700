@@ -187,7 +187,7 @@ private:
 	
 	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
 	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
-    //bool            mClearEvent;            //次のRenderでFIFOをクリアするフラグ
+    bool                mKeyOnFlag[kMaximumVoices]; // 次のProcessでKeyOnする
 	
     DynamicVoiceManager mVoiceManager;
 	    
