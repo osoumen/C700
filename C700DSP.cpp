@@ -241,6 +241,24 @@ void C700DSP::KeyOnVoice(int v)
     mDsp.WriteDsp(DSP_KON, static_cast<unsigned char>(0x01 << v), false);
 }
 
+void C700DSP::KeyOnVoiceFlg(int flg)
+{
+    for (int v=0; v<kMaximumVoices; v++) {
+        if (flg & (1 << v)) {
+            mVoice[v].memPtr = 0;
+            mVoice[v].headerCnt = 0;
+            mVoice[v].half = 0;
+            mVoice[v].envx = 0;
+            mVoice[v].end = 0;
+            mVoice[v].sampptr = 0;
+            mVoice[v].mixfrac = 3 * 4096;
+            mVoice[v].envcnt = CNT_INIT;
+            mVoice[v].envstate = ATTACK;
+        }
+    }
+    mDsp.WriteDsp(DSP_KON, static_cast<unsigned char>(flg & 0xff), false);
+}
+
 void C700DSP::SetAR(int v, int value)
 {
     if (mVoice[v].ar != value) {

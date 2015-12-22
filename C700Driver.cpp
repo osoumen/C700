@@ -1158,6 +1158,7 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
         }
 		
 		for ( ; mProcessFrac >= 0; mProcessFrac -= CYCLES_PER_SAMPLE ) {
+            int kon = 0;
             for ( int v=0; v<kMaximumVoices; v++ ) {
 				//ピッチの算出
                 int voicePitch = static_cast<int>(mVoiceStat[v].portaPitch + 0.5f);
@@ -1201,9 +1202,13 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
                 mDSP.SetVol_R(v, volR);
                 
                 if (mKeyOnFlag[v]) {
-                    mDSP.KeyOnVoice(v);
+                    kon |= 1 << v;
                     mKeyOnFlag[v] = false;
                 }
+            }
+            
+            if (kon) {
+                mDSP.KeyOnVoiceFlg(kon);
             }
             
 			int outl=0,outr=0;
