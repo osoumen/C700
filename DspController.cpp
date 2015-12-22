@@ -439,8 +439,10 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
     }
     else {
         // mHwFifoに追加
-        long int frameTime = (mSampleInFrame * 1e6) / 32000;
-        mHwFifo.AddRamWrite(frameTime, addr, data);
+        if (mIsHwAvailable) {
+            long int frameTime = (mSampleInFrame * 1e6) / 32000;
+            mHwFifo.AddRamWrite(frameTime, addr, data);
+        }
         
         mEmuFifo.AddRamWrite(0, addr, data);
     }
@@ -476,8 +478,10 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
         if (doWrite) {
             mDspMirror[addr] = data;
             // mHwFifoに追加
-            long int frameTime = (mSampleInFrame * 1e6) / 32000;
-            mHwFifo.AddDspWrite(frameTime, addr, data);
+            if (mIsHwAvailable) {
+                long int frameTime = (mSampleInFrame * 1e6) / 32000;
+                mHwFifo.AddDspWrite(frameTime, addr, data);
+            }
             
             mEmuFifo.AddDspWrite(0, addr, data);
         }
