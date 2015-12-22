@@ -58,6 +58,7 @@ public:
     
     void KeyOffVoice(int v);
     void KeyOnVoice(int v);
+    void KeyOnVoiceFlg(int flg);
     
     void Process1Sample(int &outl, int &outr);
     void BeginFrameProcess();
