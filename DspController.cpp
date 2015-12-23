@@ -277,6 +277,12 @@ void DspController::onDeviceAdded(void *ref)
         This->mDeviceReadyFunc(This->mDeviceReadyFuncClass);
     }
     
+    pthread_mutex_lock(&This->mEmuMtx);
+    This->mWaitPort = -1;
+    This->mWaitByte = 0;
+    This->mEmuFifo.Clear();
+    pthread_mutex_unlock(&This->mEmuMtx);
+    
     // スレッドの開始
     pthread_create(&This->mWriteHwThread, NULL, writeHwThreadFunc, This);
 }
@@ -289,6 +295,21 @@ void DspController::onDeviceRemoved(void *ref)
     
     // スレッドの停止
     pthread_join(This->mWriteHwThread, NULL);
+    
+    // DSPの復元
+    This->mWaitPort = -1;
+    for (int i=0; i<128; i++) {
+        if (This->mDspMirror[i] == 0xefefefef) {
+            continue;
+        }
+        if (i == DSP_FLG) {
+            continue;
+        }
+        if (i == DSP_KON) {
+            continue;
+        }
+        This->WriteDsp(i, This->mDspMirror[i], true);
+    }
     
     This->mHwFifo.Clear();
     
@@ -446,8 +467,9 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
             long int frameTime = (mSampleInFrame * 1e6) / 32000;
             mHwFifo.AddRamWrite(frameTime, addr, data);
         }
-        
-        mEmuFifo.AddRamWrite(0, addr, data);
+        else {
+            mEmuFifo.AddRamWrite(0, addr, data);
+        }
     }
 }
 
@@ -485,8 +507,9 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
                 long int frameTime = (mSampleInFrame * 1e6) / 32000;
                 mHwFifo.AddDspWrite(frameTime, addr, data);
             }
-            
-            mEmuFifo.AddDspWrite(0, addr, data);
+            else {
+                mEmuFifo.AddDspWrite(0, addr, data);
+            }
         }
     }
     return doWrite;
@@ -527,19 +550,21 @@ void DspController::Process1Sample(int &outl, int &outr)
             }
         } while (nowrite);
     }
-    pthread_mutex_lock(&mEmuMtx);
-#ifndef USE_OPENSPC
-    blargg_err_t err = mDsp.play(2, mOutSamples);
-    assert(err == NULL);
-#else
-    OSPC_Run(32, mOutSamples, dspOutBufSize);
-#endif
-    pthread_mutex_unlock(&mEmuMtx);
     outl = mOutSamples[0];
     outr = mOutSamples[1];
     if (mIsHwAvailable) {
         outl = 0;
         outr = 0;
+    }
+    else {
+        pthread_mutex_lock(&mEmuMtx);
+#ifndef USE_OPENSPC
+        blargg_err_t err = mDsp.play(2, mOutSamples);
+        assert(err == NULL);
+#else
+        OSPC_Run(32, mOutSamples, dspOutBufSize);
+#endif
+        pthread_mutex_unlock(&mEmuMtx);
     }
     mSampleInFrame++;
 }
