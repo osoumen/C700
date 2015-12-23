@@ -1071,6 +1071,9 @@ void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
 		parameterSetFunc( paramID, pg, paramSetUserData );
 	}
 #endif
+#ifdef DEBUG_PRINT
+    std::cout << "pg:" << pg << " inFrame:" << inFrame << std::endl;
+#endif
     mGenerator.ProgramChange(ch, pg, inFrame);
 }
 

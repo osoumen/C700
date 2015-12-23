@@ -554,7 +554,9 @@ void DspController::BeginFrameProcess()
     int elapsedTime = (nowTime.tv_sec - mFrameStartTime.tv_sec) * 1e6 +
     (nowTime.tv_usec - mFrameStartTime.tv_usec);
     mHwFifo.AddTime(-elapsedTime);
-    
+#ifdef DEBUG_PRINT
+    //std::cout << elapsedTime << std::endl;
+#endif
     mFrameStartTime = nowTime;
 }
 
