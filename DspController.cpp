@@ -597,10 +597,19 @@ void DspController::doWriteDspHw(int addr, unsigned char data)
          std::cout << " data:0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data) << std::endl;
          }
          */
-        mSpcDev.BlockWrite(1, data, addr & 0xff);
-        mSpcDev.WriteAndWait(0, mPort0stateHw);
+        int rewrite = 2;
+        if (((addr & 0x0f) < 0x0a) ||
+            addr == DSP_KON ||
+            addr == DSP_KOF ||
+            addr == DSP_FLG) {
+            rewrite = 1;
+        }
+        for (int i=0; i<rewrite; i++) {
+            mSpcDev.BlockWrite(1, data, addr & 0xff);
+            mSpcDev.WriteAndWait(0, mPort0stateHw);
+            mPort0stateHw = mPort0stateHw ^ 0x01;
+        }
         mSpcDev.WriteBuffer();
-        mPort0stateHw = mPort0stateHw ^ 0x01;
         //pthread_mutex_unlock(&mHwMtx);
     }
 }
