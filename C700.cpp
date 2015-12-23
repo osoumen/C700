@@ -63,6 +63,7 @@ C700::C700(AudioUnit component)
 	//デフォルト値を設定する
 	for ( int i=0; i<kNumberOfParameters; i++ ) {
 		Globals()->SetParameter(i, C700Kernel::GetParameterDefault(i) );
+        mParameterHasChanged[i] = false;
 	}
 	
 #if AU_DEBUG_DISPATCHER
@@ -112,9 +113,6 @@ void C700::ParameterSetFunc(int paramID, float value, void* userData)
 ComponentResult C700::Initialize()
 {	
 	AUInstrumentBase::Initialize();
-    for (int i=0; i<kNumberOfParameters; i++) {
-        mParameterHasChanged[i] = true;
-    }
 	return noErr;
 }
 
@@ -888,6 +886,9 @@ ComponentResult	C700::RestoreState(CFPropertyListRef plist)
 {
 	ComponentResult result;
 	result = AUInstrumentBase::RestoreState(plist);
+    for (int i=0; i<kNumberOfParameters; i++) {
+        mParameterHasChanged[i] = true;
+    }
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(plist);
 	if (result == noErr) {
 		//波形情報の復元
