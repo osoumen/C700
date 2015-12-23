@@ -8,6 +8,7 @@
 
 #include "C700DSP.h"
 #include "gauss.h"
+//#include <iomanip>
 
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
 #define filter2(a1,a2)	(a1 + ( ( -( a1 + ( a1 >> 1 ) ) ) >> 5 ) - ( a2 >> 1 ) + ( a2 >> 5 ))
@@ -191,6 +192,8 @@ void C700DSP::SetFeedBackLevel( int value )
 
 void C700DSP::SetDelayTime( int value )
 {
+    //std::cout << "edl:0x" << std::hex << std::setw(2) << std::setfill('0') << value << std::endl;
+    //assert(mEchoDelay != value);
     if (mEchoDelay != value) {
         mEchoDelay = value & 0xff;
         mEchoStartAddr = 0x06;  // DIRの直後
