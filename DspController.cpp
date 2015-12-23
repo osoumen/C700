@@ -397,6 +397,9 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
             mSpcDev.WriteBuffer();
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
+        
+        // 直後のDSP書き込みが失敗する場合があるので無意味なDSP書き込みを１回行う
+        doWriteDspHw(0x1d, 0);
 #else
         for (int i=0; i<size; i++) {
             mSpcDev.BlockWrite(1, data[i], (addr + i) & 0xff, ((addr + i)>>8) & 0xff);
@@ -592,20 +595,10 @@ void DspController::doWriteDspHw(int addr, unsigned char data)
          std::cout << " data:0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data) << std::endl;
          }
          */
-        int rewrite = 2;
-        if (((addr & 0x0f) < 0x0a) ||
-            addr == DSP_KON ||
-            addr == DSP_KOF ||
-            addr == DSP_FLG) {
-            rewrite = 1;
-        }
-        // 書き込み値が正しく反映されない場合があるのでチャンネルパラメータ以外を２回書き込む
-        for (int i=0; i<rewrite; i++) {
-            mSpcDev.BlockWrite(1, data, addr & 0xff);
-            mSpcDev.WriteAndWait(0, mPort0stateHw);
-            mSpcDev.WriteBuffer();
-            mPort0stateHw = mPort0stateHw ^ 0x01;
-        }
+        mSpcDev.BlockWrite(1, data, addr & 0xff);
+        mSpcDev.WriteAndWait(0, mPort0stateHw);
+        mSpcDev.WriteBuffer();
+        mPort0stateHw = mPort0stateHw ^ 0x01;
         //pthread_mutex_unlock(&mHwMtx);
     }
 }
