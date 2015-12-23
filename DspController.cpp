@@ -550,9 +550,7 @@ void DspController::BeginFrameProcess()
     gettimeofday(&nowTime, NULL);
     int elapsedTime = (nowTime.tv_sec - mFrameStartTime.tv_sec) * 1e6 +
     (nowTime.tv_usec - mFrameStartTime.tv_usec);
-    pthread_mutex_lock(&mHwMtx);
     mHwFifo.AddTime(-elapsedTime);
-    pthread_mutex_unlock(&mHwMtx);
     
     mFrameStartTime = nowTime;
 }
@@ -605,7 +603,7 @@ void DspController::doWriteDspHw(int addr, unsigned char data)
         for (int i=0; i<rewrite; i++) {
             mSpcDev.BlockWrite(1, data, addr & 0xff);
             mSpcDev.WriteAndWait(0, mPort0stateHw);
-            mSpcDev.WriteBufferAsync();
+            mSpcDev.WriteBuffer();
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
         //pthread_mutex_unlock(&mHwMtx);
@@ -618,7 +616,7 @@ void DspController::doWriteRamHw(int addr, unsigned char data)
         //pthread_mutex_lock(&mHwMtx);
         mSpcDev.BlockWrite(1, data, addr & 0xff, (addr>>8) & 0xff);
         mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
-        mSpcDev.WriteBufferAsync();
+        mSpcDev.WriteBuffer();
         mPort0stateHw = mPort0stateHw ^ 0x01;
         //pthread_mutex_unlock(&mHwMtx);
     }
