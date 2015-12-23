@@ -39,7 +39,7 @@ COMPONENT_ENTRY(C700)
 //	C700::C700
 //-----------------------------------------------------------------------------
 C700::C700(AudioUnit component)
-: AUInstrumentBase(component, 0, 1)
+: MusicDeviceBase(component, 0, 1, 32, 0)
 , mEfx(NULL)
 {
 	CreateElements();
@@ -112,7 +112,7 @@ void C700::ParameterSetFunc(int paramID, float value, void* userData)
 //-----------------------------------------------------------------------------
 ComponentResult C700::Initialize()
 {	
-	AUInstrumentBase::Initialize();
+	MusicDeviceBase::Initialize();
 	return noErr;
 }
 
@@ -128,15 +128,21 @@ ComponentResult C700::Reset(	AudioUnitScope 		inScope,
 //	if (inScope == kAudioUnitScope_Global) {
 		mEfx->Reset();
 //	}
-	return AUInstrumentBase::Reset(inScope, inElement);
+	return MusicDeviceBase::Reset(inScope, inElement);
 }
 
+//-----------------------------------------------------------------------------
+bool C700::StreamFormatWritable(	AudioUnitScope				scope,
+                                   AudioUnitElement				element)
+{
+	return IsInitialized() ? false : true;
+}
 //-----------------------------------------------------------------------------
 OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 												const AudioTimeStamp &			inTimeStamp,
 												UInt32							inNumberFrames)
 {
-	OSStatus result = AUInstrumentBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
+	OSStatus result = MusicDeviceBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
 	
 	CallHostBeatAndTempo(NULL, &mTempo);
 	mEfx->SetTempo( mTempo );
@@ -144,6 +150,16 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 	float				*output[2];
 	AudioBufferList&	bufferList = GetOutput(0)->GetBufferList();
 	
+    UInt32 numOutputs = Outputs().GetNumberOfElements();
+	for (UInt32 j = 0; j < numOutputs; ++j)
+	{
+		AudioBufferList& bufferList = GetOutput(j)->GetBufferList();
+		for (UInt32 k = 0; k < bufferList.mNumberBuffers; ++k)
+		{
+			memset(bufferList.mBuffers[k].mData, 0, bufferList.mBuffers[k].mDataByteSize);
+		}
+	}
+    
 	int numChans = bufferList.mNumberBuffers;
 	if (numChans > 2) return -1;
 	output[0] = (float*)bufferList.mBuffers[0].mData;
@@ -177,7 +193,7 @@ OSStatus C700::SetParameter(	AudioUnitParameterID			inID,
 								 Float32						inValue,
 								 UInt32							inBufferOffsetInFrames)
 {
-	OSStatus result = AUInstrumentBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
+	OSStatus result = MusicDeviceBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
 	if ( inScope == kAudioUnitScope_Global ) {
 		//mEfx->SetParameter(inID, inValue);
         if (inID < kNumberOfParameters) {
@@ -492,7 +508,7 @@ ComponentResult		C700::GetPropertyInfo (AudioUnitPropertyID	inID,
 		}
 	}
 	
-	return AUInstrumentBase::GetPropertyInfo(inID, inScope, inElement, outDataSize, outWritable);
+	return MusicDeviceBase::GetPropertyInfo(inID, inScope, inElement, outDataSize, outWritable);
 }
 
 //-----------------------------------------------------------------------------
@@ -653,7 +669,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 				
 		}
 	}
-	return AUInstrumentBase::GetProperty(inID, inScope, inElement, outData);
+	return MusicDeviceBase::GetProperty(inID, inScope, inElement, outData);
 }
 
 //-----------------------------------------------------------------------------
@@ -785,7 +801,7 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 			}
 		}
 	}
-	return AUInstrumentBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
+	return MusicDeviceBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
 }
 
 //-----------------------------------------------------------------------------
@@ -848,7 +864,7 @@ static void AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key,
 ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 {
 	ComponentResult result;
-	result = AUInstrumentBase::SaveState(outData);
+	result = MusicDeviceBase::SaveState(outData);
 	CFMutableDictionaryRef	dict=(CFMutableDictionaryRef)*outData;
 	if (result == noErr) {
 		CFDictionaryRef	pgdata;
@@ -885,7 +901,7 @@ ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 ComponentResult	C700::RestoreState(CFPropertyListRef plist)
 {
 	ComponentResult result;
-	result = AUInstrumentBase::RestoreState(plist);
+	result = MusicDeviceBase::RestoreState(plist);
     for (int i=0; i<kNumberOfParameters; i++) {
         mParameterHasChanged[i] = true;
     }
@@ -1192,26 +1208,26 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	mEfx->GetGenerator()->RefreshKeyMap();
 }
 //-----------------------------------------------------------------------------
-ComponentResult C700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
-											NoteInstanceID 				inNoteInstanceID, 
-											UInt32 						inOffsetSampleFrame, 
-											const MusicDeviceNoteParams &inParams)
+OSStatus C700::StartNote(	MusicDeviceInstrumentID 	inInstrument,
+                            MusicDeviceGroupID 			inGroupID,
+                            NoteInstanceID *			outNoteInstanceID,
+                            UInt32 						inOffsetSampleFrame,
+                            const MusicDeviceNoteParams &inParams)
 {
 	//MIDIチャンネルの取得
-	unsigned int		chID = inGroup->GroupID() % 16;
+	unsigned int		chID = inGroupID % 16;
 	
-	mEfx->HandleNoteOn(chID, inParams.mPitch, inParams.mVelocity, inNoteInstanceID+chID*256, inOffsetSampleFrame);
+	mEfx->HandleNoteOn(chID, inParams.mPitch, inParams.mVelocity, inParams.mPitch+chID*256, inOffsetSampleFrame);
 	return noErr;
 }
 
 //-----------------------------------------------------------------------------
-ComponentResult C700::RealTimeStopNote( MusicDeviceGroupID 			inGroup, 
-										   NoteInstanceID 				inNoteInstanceID, 
-										   UInt32 						inOffsetSampleFrame)
+OSStatus C700::StopNote(	MusicDeviceGroupID 			inGroupID,
+                            NoteInstanceID 				inNoteInstanceID,
+                            UInt32 						inOffsetSampleFrame)
 {
-	AUInstrumentBase::RealTimeStopNote( inGroup, inNoteInstanceID, inOffsetSampleFrame );
 	//MIDIチャンネルの取得
-	unsigned int		chID = inGroup % 16;
+	unsigned int		chID = inGroupID % 16;
 	
 	mEfx->HandleNoteOff(chID, inNoteInstanceID, inNoteInstanceID+chID*256, inOffsetSampleFrame);
 	return noErr;
@@ -1236,7 +1252,7 @@ OSStatus C700::HandleControlChange(	UInt8 	inChannel,
 									UInt32	inStartFrame)
 {
 	mEfx->HandleControlChange(inChannel, inController, inValue, inStartFrame);
-	return AUInstrumentBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
+	return MusicDeviceBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
 }
 
 //-----------------------------------------------------------------------------
@@ -1246,27 +1262,27 @@ OSStatus C700::HandleProgramChange(	UInt8	inChannel,
                                     UInt8	inValue,
                                     UInt32  inStartFrame)
 {
-	mEfx->HandleProgramChange(inChannel, inValue, 0);
-	return AUInstrumentBase::HandleProgramChange(inChannel, inValue, inStartFrame);
+	mEfx->HandleProgramChange(inChannel, inValue, inStartFrame);
+	return MusicDeviceBase::HandleProgramChange(inChannel, inValue, inStartFrame);
 }
 
 //-----------------------------------------------------------------------------
 OSStatus C700::HandleResetAllControllers( UInt8 	inChannel)
 {
 	mEfx->HandleResetAllControllers(inChannel, 0);
-	return AUInstrumentBase::HandleResetAllControllers( inChannel);
+	return MusicDeviceBase::HandleResetAllControllers( inChannel);
 }
 
 //-----------------------------------------------------------------------------
 OSStatus C700::HandleAllNotesOff( UInt8 inChannel )
 {
 	mEfx->HandleAllNotesOff(inChannel, 0);
-	return AUInstrumentBase::HandleAllNotesOff( inChannel);
+	return MusicDeviceBase::HandleAllNotesOff( inChannel);
 }
 
 //-----------------------------------------------------------------------------
 OSStatus C700::HandleAllSoundOff( UInt8 inChannel )
 {
 	mEfx->HandleAllSoundOff(inChannel, 0);
-	return AUInstrumentBase::HandleAllSoundOff( inChannel);
+	return MusicDeviceBase::HandleAllSoundOff( inChannel);
 }
