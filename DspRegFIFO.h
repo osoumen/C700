@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <list>
+#include <pthread.h>
 
 class DspRegFIFO {
 public:
@@ -32,7 +33,9 @@ public:
     void AddTime(long time);
     void Clear();
     
+    pthread_mutex_t     mListMtx;
     std::list<DspWrite> mDspWrite;
+    // mListMtx
     
     //static DspRegFIFO* GetInstance();
 };
