@@ -605,6 +605,7 @@ void *DspController::writeHwThreadFunc(void *arg)
                 This->doWriteDspHw(writeData.addr, writeData.data);
             }
         }
+        This->mSpcDev.WriteBuffer();
         pthread_mutex_unlock(&This->mHwMtx);
         
         usleep(500);
@@ -634,7 +635,7 @@ void DspController::doWriteDspHw(int addr, unsigned char data)
             mSpcDev.WriteAndWait(0, mPort0stateHw);
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
-        mSpcDev.WriteBuffer();
+        //mSpcDev.WriteBuffer();
         //pthread_mutex_unlock(&mHwMtx);
     }
 }
@@ -645,7 +646,7 @@ void DspController::doWriteRamHw(int addr, unsigned char data)
         //pthread_mutex_lock(&mHwMtx);
         mSpcDev.BlockWrite(1, data, addr & 0xff, (addr>>8) & 0xff);
         mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
-        mSpcDev.WriteBuffer();
+        //mSpcDev.WriteBuffer();
         mPort0stateHw = mPort0stateHw ^ 0x01;
         //pthread_mutex_unlock(&mHwMtx);
     }
