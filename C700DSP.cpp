@@ -65,7 +65,9 @@ void C700DSP::DSPState::Reset()
 	envstate = RELEASE;
 }
 
-C700DSP::C700DSP() : mNewADPCM( false )
+C700DSP::C700DSP() :
+mNewADPCM( false ),
+mUseRealEmulation( true )
 {
     //Initialize
 	mMainVolume_L = 127;
@@ -138,6 +140,11 @@ void C700DSP::SetVoiceLimit(int value)
 void C700DSP::SetNewADPCM(bool value)
 {
     mNewADPCM = value;
+}
+
+void C700DSP::SetRealEmulation(bool value)
+{
+    mUseRealEmulation = value;
 }
 
 void C700DSP::SetMainVolumeL(int value)
@@ -420,218 +427,204 @@ void C700DSP::WriteRam(int addr, unsigned char data)
 
 void C700DSP::Process1Sample(int &outl, int &outr)
 {
-#if 0
-    int		outx;
-    
-    for ( int v=0; v<kMaximumVoices; v++ ) {
-        outx = 0;
-        //--
-        {
-            switch( mVoice[v].envstate ) {
-                case ATTACK:
-                    if ( mVoice[v].ar == 15 ) {
-                        mVoice[v].envx += 0x400;
-                    }
-                    else {
-                        mVoice[v].envcnt -= ENVCNT[ ( mVoice[v].ar << 1 ) + 1 ];
+    if (mUseRealEmulation) {
+        mDsp.Process1Sample(outl, outr);
+    }
+    else if (!mDsp.IsHwAvailable()) {
+        int		outx;
+        
+        for ( int v=0; v<kMaximumVoices; v++ ) {
+            outx = 0;
+            //--
+            {
+                switch( mVoice[v].envstate ) {
+                    case ATTACK:
+                        if ( mVoice[v].ar == 15 ) {
+                            mVoice[v].envx += 0x400;
+                        }
+                        else {
+                            mVoice[v].envcnt -= ENVCNT[ ( mVoice[v].ar << 1 ) + 1 ];
+                            if ( mVoice[v].envcnt > 0 ) {
+                                break;
+                            }
+                            mVoice[v].envx += 0x20;       /* 0x020 / 0x800 = 1/64         */
+                            mVoice[v].envcnt = CNT_INIT;
+                        }
+                        
+                        if ( mVoice[v].envx > 0x7FF ) {
+                            mVoice[v].envx = 0x7FF;
+                            mVoice[v].envstate = DECAY;
+                        }
+                        break;
+                        
+                    case DECAY:
+                        mVoice[v].envcnt -= ENVCNT[ mVoice[v].dr*2 + 0x10 ];
+                        if ( mVoice[v].envcnt <= 0 ) {
+                            mVoice[v].envcnt = CNT_INIT;
+                            mVoice[v].envx -= ( ( mVoice[v].envx - 1 ) >> 8 ) + 1;
+                        }
+                        
+                        if ( mVoice[v].envx <= 0x100 * ( mVoice[v].sl + 1 ) ) {
+                            mVoice[v].envstate = SUSTAIN;
+                        }
+                        break;
+                        
+                    case SUSTAIN:
+                        mVoice[v].envcnt -= ENVCNT[ mVoice[v].sr ];
                         if ( mVoice[v].envcnt > 0 ) {
                             break;
                         }
-                        mVoice[v].envx += 0x20;       /* 0x020 / 0x800 = 1/64         */
-                        mVoice[v].envcnt = CNT_INIT;
-                    }
-                    
-                    if ( mVoice[v].envx > 0x7FF ) {
-                        mVoice[v].envx = 0x7FF;
-                        mVoice[v].envstate = DECAY;
-                    }
-                    break;
-                    
-                case DECAY:
-                    mVoice[v].envcnt -= ENVCNT[ mVoice[v].dr*2 + 0x10 ];
-                    if ( mVoice[v].envcnt <= 0 ) {
                         mVoice[v].envcnt = CNT_INIT;
                         mVoice[v].envx -= ( ( mVoice[v].envx - 1 ) >> 8 ) + 1;
-                    }
-                    
-                    if ( mVoice[v].envx <= 0x100 * ( mVoice[v].sl + 1 ) ) {
-                        mVoice[v].envstate = SUSTAIN;
-                    }
-                    break;
-                    
-                case SUSTAIN:
-                    mVoice[v].envcnt -= ENVCNT[ mVoice[v].sr ];
-                    if ( mVoice[v].envcnt > 0 ) {
                         break;
-                    }
-                    mVoice[v].envcnt = CNT_INIT;
-                    mVoice[v].envx -= ( ( mVoice[v].envx - 1 ) >> 8 ) + 1;
-                    break;
-                    
-                case RELEASE:
-                    mVoice[v].envx -= 0x8;
-                    if ( mVoice[v].envx <= 0 ) {
-                        mVoice[v].envx = -1;
-                    }
-                    break;
-            }
-        }
-        
-        if ( mVoice[v].envx < 0 ) {
-            outx = 0;
-            continue;
-        }
-        
-        for( ; mVoice[v].mixfrac >= 0; mVoice[v].mixfrac -= 4096 ) {
-            if( !mVoice[v].headerCnt ) {	//ブロックの始まり
-                if( mVoice[v].end & 1 ) {	//データ終了フラグあり
-                    if( mVoice[v].loop ) {
-                        mVoice[v].memPtr = mVoice[v].loopPoint;	//読み出し位置をループポイントまで戻す
-                    }
-                    else {	//ループなし
-                        mVoice[v].envx = 0;
-                        while( mVoice[v].mixfrac >= 0 ) {
-                            mVoice[v].sampbuf[mVoice[v].sampptr] = 0;
-                            outx = 0;
-                            mVoice[v].sampptr  = ( mVoice[v].sampptr + 1 ) & 3;
-                            mVoice[v].mixfrac -= 4096;
+                        
+                    case RELEASE:
+                        mVoice[v].envx -= 0x8;
+                        if ( mVoice[v].envx <= 0 ) {
+                            mVoice[v].envx = -1;
                         }
                         break;
+                }
+            }
+            
+            if ( mVoice[v].envx < 0 ) {
+                outx = 0;
+                continue;
+            }
+            
+            for( ; mVoice[v].mixfrac >= 0; mVoice[v].mixfrac -= 4096 ) {
+                if( !mVoice[v].headerCnt ) {	//ブロックの始まり
+                    if( mVoice[v].end & 1 ) {	//データ終了フラグあり
+                        if( mVoice[v].loop ) {
+                            mVoice[v].memPtr = mVoice[v].loopPoint;	//読み出し位置をループポイントまで戻す
+                        }
+                        else {	//ループなし
+                            mVoice[v].envx = 0;
+                            while( mVoice[v].mixfrac >= 0 ) {
+                                mVoice[v].sampbuf[mVoice[v].sampptr] = 0;
+                                outx = 0;
+                                mVoice[v].sampptr  = ( mVoice[v].sampptr + 1 ) & 3;
+                                mVoice[v].mixfrac -= 4096;
+                            }
+                            break;
+                        }
                     }
+                    
+                    //開始バイトの情報を取得
+                    mVoice[v].headerCnt = 8;
+                    int headbyte = ( unsigned char )mVoice[v].brrdata[mVoice[v].memPtr++];
+                    mVoice[v].range = headbyte >> 4;
+                    mVoice[v].end = headbyte & 1;
+                    mVoice[v].loop = headbyte & 2;
+                    mVoice[v].filter = ( headbyte & 12 ) >> 2;
                 }
                 
-                //開始バイトの情報を取得
-                mVoice[v].headerCnt = 8;
-                int headbyte = ( unsigned char )mVoice[v].brrdata[mVoice[v].memPtr++];
-                mVoice[v].range = headbyte >> 4;
-                mVoice[v].end = headbyte & 1;
-                mVoice[v].loop = headbyte & 2;
-                mVoice[v].filter = ( headbyte & 12 ) >> 2;
+                if ( mVoice[v].half == 0 ) {
+                    mVoice[v].half = 1;
+                    outx = ( ( signed char )mVoice[v].brrdata[ mVoice[v].memPtr ] ) >> 4;
+                }
+                else {
+                    mVoice[v].half = 0;
+                    outx = ( signed char )( mVoice[v].brrdata[ mVoice[v].memPtr++ ] << 4 );
+                    outx >>= 4;
+                    mVoice[v].headerCnt--;
+                }
+                //outx:4bitデータ
+                
+                if ( mVoice[v].range <= 0xC ) {
+                    outx = ( outx << mVoice[v].range ) >> 1;
+                }
+                else {
+                    outx &= ~0x7FF;
+                }
+                //outx:4bitデータ*Range
+                
+                switch( mVoice[v].filter ) {
+                    case 0:
+                        break;
+                        
+                    case 1:
+                        outx += filter1(mVoice[v].smp1);
+                        break;
+                        
+                    case 2:
+                        outx += filter2(mVoice[v].smp1,mVoice[v].smp2);
+                        break;
+                        
+                    case 3:
+                        outx += filter3(mVoice[v].smp1,mVoice[v].smp2);
+                        break;
+                }
+                
+                // フィルタ後にクリップ
+                if ( outx < -32768 ) {
+                    outx = -32768;
+                }
+                else if ( outx > 32767 ) {
+                    outx = 32767;
+                }
+                // y[-1]へ送る際に２倍されたらクランプ
+                if (mNewADPCM) {
+                    mVoice[v].smp2 = mVoice[v].smp1;
+                    mVoice[v].smp1 = ( signed short )( outx << 1 );
+                }
+                else {
+                    // 古いエミュレータの一部にはクランプを行わないものもある
+                    // 音は実機と異なる
+                    mVoice[v].smp2 = mVoice[v].smp1;
+                    mVoice[v].smp1 = outx << 1;
+                }
+                mVoice[v].sampbuf[mVoice[v].sampptr] = mVoice[v].smp1;
+                mVoice[v].sampptr = ( mVoice[v].sampptr + 1 ) & 3;
             }
             
-            if ( mVoice[v].half == 0 ) {
-                mVoice[v].half = 1;
-                outx = ( ( signed char )mVoice[v].brrdata[ mVoice[v].memPtr ] ) >> 4;
-            }
-            else {
-                mVoice[v].half = 0;
-                outx = ( signed char )( mVoice[v].brrdata[ mVoice[v].memPtr++ ] << 4 );
-                outx >>= 4;
-                mVoice[v].headerCnt--;
-            }
-            //outx:4bitデータ
-            
-            if ( mVoice[v].range <= 0xC ) {
-                outx = ( outx << mVoice[v].range ) >> 1;
-            }
-            else {
-                outx &= ~0x7FF;
-            }
-            //outx:4bitデータ*Range
-            
-            switch( mVoice[v].filter ) {
-                case 0:
-                    break;
-                    
-                case 1:
-                    outx += filter1(mVoice[v].smp1);
-                    break;
-                    
-                case 2:
-                    outx += filter2(mVoice[v].smp1,mVoice[v].smp2);
-                    break;
-                    
-                case 3:
-                    outx += filter3(mVoice[v].smp1,mVoice[v].smp2);
-                    break;
-            }
-            
-            // フィルタ後にクリップ
-            if ( outx < -32768 ) {
-                outx = -32768;
-            }
-            else if ( outx > 32767 ) {
-                outx = 32767;
-            }
-            // y[-1]へ送る際に２倍されたらクランプ
+            int fracPos = mVoice[v].mixfrac >> 4;
+            int smpl = ( ( G4[ -fracPos - 1 ] * mVoice[v].sampbuf[ mVoice[v].sampptr ] ) >> 11 ) & ~1;
+            smpl += ( ( G3[ -fracPos ]
+                       * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 1 ) & 3 ] ) >> 11 ) & ~1;
+            smpl += ( ( G2[ fracPos ]
+                       * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 2 ) & 3 ] ) >> 11 ) & ~1;
+            // openspcではなぜかここでもクランプさせていた
+            // ここも無いと実機と違ってしまう
             if (mNewADPCM) {
-                mVoice[v].smp2 = mVoice[v].smp1;
-                mVoice[v].smp1 = ( signed short )( outx << 1 );
+                smpl = ( signed short )smpl;
             }
-            else {
-                // 古いエミュレータの一部にはクランプを行わないものもある
-                // 音は実機と異なる
-                mVoice[v].smp2 = mVoice[v].smp1;
-                mVoice[v].smp1 = outx << 1;
+            smpl += ( ( G1[ fracPos ]
+                       * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 3 ) & 3 ] ) >> 11 ) & ~1;
+            
+            // ガウス補間後にクリップ
+            if ( smpl > 32767 ) {
+                smpl = 32767;
             }
-            mVoice[v].sampbuf[mVoice[v].sampptr] = mVoice[v].smp1;
-            mVoice[v].sampptr = ( mVoice[v].sampptr + 1 ) & 3;
+            else if ( smpl < -32768 ) {
+                smpl = -32768;
+            }
+            outx = smpl;
+            
+            mVoice[v].mixfrac += mVoice[v].pitch;
+            
+            outx = ( ( outx * mVoice[v].envx ) >> 11 ) & ~1;
+            
+            // ゲイン値の反映
+            int vl = ( mVoice[v].vol_l * outx ) >> 7;
+            int vr = ( mVoice[v].vol_r * outx ) >> 7;
+            
+            // エコー処理
+            if ( mVoice[v].ecen ) {
+                mEcho[0].Input(vl);
+                mEcho[1].Input(vr);
+            }
+            //メインボリュームの反映
+            outl += ( vl * mMainVolume_L ) >> 7;
+            outr += ( vr * mMainVolume_R ) >> 7;
         }
-        
-        int fracPos = mVoice[v].mixfrac >> 4;
-        int smpl = ( ( G4[ -fracPos - 1 ] * mVoice[v].sampbuf[ mVoice[v].sampptr ] ) >> 11 ) & ~1;
-        smpl += ( ( G3[ -fracPos ]
-                   * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 1 ) & 3 ] ) >> 11 ) & ~1;
-        smpl += ( ( G2[ fracPos ]
-                   * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 2 ) & 3 ] ) >> 11 ) & ~1;
-        // openspcではなぜかここでもクランプさせていた
-        // ここも無いと実機と違ってしまう
-        if (mNewADPCM) {
-            smpl = ( signed short )smpl;
-        }
-        smpl += ( ( G1[ fracPos ]
-                   * mVoice[v].sampbuf[ ( mVoice[v].sampptr + 3 ) & 3 ] ) >> 11 ) & ~1;
-        
-        // ガウス補間後にクリップ
-        if ( smpl > 32767 ) {
-            smpl = 32767;
-        }
-        else if ( smpl < -32768 ) {
-            smpl = -32768;
-        }
-        outx = smpl;
-        
-        mVoice[v].mixfrac += mVoice[v].pitch;
-        
-        outx = ( ( outx * mVoice[v].envx ) >> 11 ) & ~1;
-
-        // ゲイン値の反映
-        int vl = ( mVoice[v].vol_l * outx ) >> 7;
-        int vr = ( mVoice[v].vol_r * outx ) >> 7;
-        
-        // エコー処理
-        if ( mVoice[v].ecen ) {
-            mEcho[0].Input(vl);
-            mEcho[1].Input(vr);
-        }
-        //メインボリュームの反映
-        outl += ( vl * mMainVolume_L ) >> 7;
-        outr += ( vr * mMainVolume_R ) >> 7;
+        outl += mEcho[0].GetFxOut();
+        outr += mEcho[1].GetFxOut();
     }
-    outl += mEcho[0].GetFxOut();
-    outr += mEcho[1].GetFxOut();
-#else
-    /*
-    if (mEchoEnableWait > 0) {
-        if (mEchoEnableWait == 1) {
-            timeval nowTime;
-            gettimeofday(&nowTime, NULL);
-            int elapsedTime = (nowTime.tv_sec - mEchoChangeTime.tv_sec) * 1e6 + (nowTime.tv_usec - mEchoChangeTime.tv_usec);
-            if (elapsedTime >= mEchoChangeWaitusec) {
-                mDsp.WriteDsp(DSP_FLG, 0x00, false);
-                mDsp.WriteDsp(DSP_EFB, static_cast<unsigned char>(mEchoFeedBack), false);
-                mDsp.WriteDsp(DSP_EVOLL, static_cast<unsigned char>(mEchoVolL), false);
-                mDsp.WriteDsp(DSP_EVOLR, static_cast<unsigned char>(mEchoVolR), false);
-                mEchoEnableWait--;
-            }
-        }
-        else {
-            mEchoEnableWait--;
-        }
+    else {
+        outl = 0;
+        outr = 0;
     }
-     */
-    mDsp.Process1Sample(outl, outr);
-#endif
 }
 
 void C700DSP::BeginFrameProcess()

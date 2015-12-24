@@ -167,8 +167,18 @@ bool C700Kernel::SetParameter( int id, float value )
 			mGenerator.ProgramChange(0, value, 0);
 			break;
 			
-		case kParam_newadpcm:
-			mGenerator.SetADPCMMode( value==0 ? false:true );
+		case kParam_engine:
+            switch ( (int)value ) {
+                case 0:
+                    mGenerator.SetEngineType(kEngineType_Old);
+                    break;
+                case 1:
+                    mGenerator.SetEngineType(kEngineType_Light);
+                    break;
+                case 2:
+                    mGenerator.SetEngineType(kEngineType_Real);
+                    break;
+            }
 			break;
 			
 		case kParam_bankAmulti:

@@ -52,6 +52,7 @@ public:
     
     void init();
     
+    bool IsHwAvailable() { return mIsHwAvailable; }
     void WriteRam(int addr, const unsigned char *data, int size);
     void WriteRam(int addr, unsigned char data, bool nonRealtime);
     bool WriteDsp(int addr, unsigned char data, bool nonRealtime);
