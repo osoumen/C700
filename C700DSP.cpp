@@ -654,5 +654,11 @@ void C700DSP::onDeviceReady(void *ref)
 
 void C700DSP::onDeviceStop(void *ref)
 {
-    //C700DSP   *This = reinterpret_cast<C700DSP*>(ref);
+    C700DSP   *This = reinterpret_cast<C700DSP*>(ref);
+    
+    int writeBytes = This->mBrrEndAddr - This->mBrrStartAddr;
+    if (writeBytes > 0) {
+        // もしハード側にだけ書き込まれていたような場合のためにDIR領域を転送
+        This->mDsp.WriteRam(0x200, &This->mRam[0x200], 0x400);
+    }
 }
