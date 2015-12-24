@@ -324,9 +324,22 @@ void C700Driver::SetPBRange( int ch, float value )
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::SetADPCMMode( bool value )
+void C700Driver::SetEngineType( engine_type type )
 {
-    mDSP.SetNewADPCM(value);
+    switch (type) {
+        case kEngineType_Old:
+            mDSP.SetNewADPCM(false);
+            mDSP.SetRealEmulation(false);
+            break;
+        case kEngineType_Light:
+            mDSP.SetNewADPCM(true);
+            mDSP.SetRealEmulation(false);
+            break;
+        case kEngineType_Real:
+            mDSP.SetNewADPCM(true);
+            mDSP.SetRealEmulation(true);
+            break;
+    }
 }
 
 //-----------------------------------------------------------------------------

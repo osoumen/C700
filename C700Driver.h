@@ -22,7 +22,13 @@ typedef enum
     kVelocityMode_Square,
     kVelocityMode_Linear
 } velocity_mode;
-
+//-----------------------------------------------------------------------------
+typedef enum
+{
+    kEngineType_Old = 0,
+    kEngineType_Light,
+    kEngineType_Real
+} engine_type;
 //-----------------------------------------------------------------------------
 class C700Driver
 {
@@ -120,7 +126,7 @@ public:
 	void		SetVoiceLimit( int value );
 	void		SetPBRange( float value );
 	void		SetPBRange( int ch, float value );
-	void		SetADPCMMode( bool value );
+	void		SetEngineType( engine_type type );
 	void		SetMultiMode( int bank, bool value );
 	bool		GetMultiMode( int bank ) const;
 	void		SetVelocityMode( velocity_mode value );

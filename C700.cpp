@@ -238,8 +238,8 @@ AudioUnitParameterUnit getParameterUnit( int id )
 			return kAudioUnitParameterUnit_Generic;
 		case kParam_velocity:
 			return kAudioUnitParameterUnit_Indexed;
-		case kParam_newadpcm:
-			return kAudioUnitParameterUnit_Boolean;
+		case kParam_engine:
+			return kAudioUnitParameterUnit_Indexed;
 		case kParam_bendrange:
 			return kAudioUnitParameterUnit_Indexed;
 		case kParam_program:

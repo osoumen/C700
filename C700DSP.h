@@ -33,6 +33,7 @@ public:
     
     void SetVoiceLimit(int value);
     void SetNewADPCM(bool value);
+    void SetRealEmulation(bool value);
     void SetMainVolumeL(int value);
     void SetMainVolumeR(int value);
     void SetEchoVol_L( int value );
@@ -106,6 +107,7 @@ private:
 	int				mMainVolume_R;
     int             mDirAddr;
 	bool			mNewADPCM;
+    bool            mUseRealEmulation;
     
     int             mEchoVolL;
     int             mEchoVolR;
