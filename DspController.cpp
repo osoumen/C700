@@ -517,46 +517,44 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
 
 void DspController::Process1Sample(int &outl, int &outr)
 {
-    pthread_mutex_lock(&mEmuMtx);
-    if (mWaitPort >= 0) {
-#ifndef USE_OPENSPC
-        if (mDsp.read_port(0, mWaitPort) == mWaitByte) {
-            mWaitPort = -1;
-        }
-#else
-        unsigned char read = OSPC_ReadPort0();
-        if (read == mWaitByte) {
-            mWaitPort = -1;
-        }
-#endif
-        pthread_mutex_unlock(&mEmuMtx);
-    }
-    else {
-        pthread_mutex_unlock(&mEmuMtx);
-        bool nowrite = false;
-        do {
-            size_t numWrites = mEmuFifo.GetNumWrites();
-            if (numWrites > 0) {
-                DspRegFIFO::DspWrite write = mEmuFifo.PopFront();
-                if (write.isRam) {
-                    WriteRam(write.addr, write.data, true);
-                }
-                else {
-                    nowrite = !WriteDsp(write.addr, write.data, true);
-                }
-            }
-            else {
-                nowrite = false;
-            }
-        } while (nowrite);
-    }
-    outl = mOutSamples[0];
-    outr = mOutSamples[1];
     if (mIsHwAvailable) {
         outl = 0;
         outr = 0;
     }
     else {
+        pthread_mutex_lock(&mEmuMtx);
+        if (mWaitPort >= 0) {
+#ifndef USE_OPENSPC
+            if (mDsp.read_port(0, mWaitPort) == mWaitByte) {
+                mWaitPort = -1;
+            }
+#else
+            unsigned char read = OSPC_ReadPort0();
+            if (read == mWaitByte) {
+                mWaitPort = -1;
+            }
+#endif
+            pthread_mutex_unlock(&mEmuMtx);
+        }
+        else {
+            pthread_mutex_unlock(&mEmuMtx);
+            bool nowrite = false;
+            do {
+                size_t numWrites = mEmuFifo.GetNumWrites();
+                if (numWrites > 0) {
+                    DspRegFIFO::DspWrite write = mEmuFifo.PopFront();
+                    if (write.isRam) {
+                        WriteRam(write.addr, write.data, true);
+                    }
+                    else {
+                        nowrite = !WriteDsp(write.addr, write.data, true);
+                    }
+                }
+                else {
+                    nowrite = false;
+                }
+            } while (nowrite);
+        }
         pthread_mutex_lock(&mEmuMtx);
 #ifndef USE_OPENSPC
         blargg_err_t err = mDsp.play(2, mOutSamples);
@@ -565,6 +563,9 @@ void DspController::Process1Sample(int &outl, int &outr)
         OSPC_Run(32, mOutSamples, dspOutBufSize);
 #endif
         pthread_mutex_unlock(&mEmuMtx);
+        
+        outl = mOutSamples[0];
+        outr = mOutSamples[1];
     }
     mSampleInFrame++;
 }
