@@ -157,6 +157,7 @@ private:
 	static const int INTERNAL_CLOCK = 32000;
     static const int CYCLES_PER_SAMPLE = 21168;
     static const int PORTAMENT_CYCLE_SAMPLES = 32;  // ポルタメント処理を行うサンプル数(32kHz換算)
+    static const int PITCH_CYCLE_SAMPLES = 32;  // ピッチ変更を行うサンプル数(32kHz換算)
     static const int CLOCKS_PER_SAMPLE = 32;
     
     static const int VOLUME_DEFAULT = 100;
@@ -200,6 +201,8 @@ private:
 	float			mVibdepth;
 
     int             mPortamentCount;        // DSP処理が1サンプル出力される毎にカウントされ、ポルタメント処理されるとPORTAMENT_CYCLE_SAMPLES 減らす
+    int             mPitchCount[kMaximumVoices];// DSP処理が1サンプル出力される毎にカウントされ、ピッチ変更されるとPITCH_CYCLE_SAMPLES 減らす、ノートオン時にも0にする
+
     int             mEventDelaySamples;     // 動作遅延サンプル(処理サンプリングレート)
     int             mEventDelayClocks;      // 動作遅延クロック
 	

@@ -128,6 +128,9 @@ void C700Driver::Reset()
 	mProcessFrac=0;
 	mProcessbufPtr=0;
     mPortamentCount=0;
+    for (int i=0; i<kMaximumVoices; i++) {
+        mPitchCount[i] = 0;
+    }
 	
     mVoiceManager.Reset();
     
@@ -347,7 +350,7 @@ void C700Driver::SetVelocityMode( velocity_mode value )
 //-----------------------------------------------------------------------------
 void C700Driver::SetVibFreq( int ch, float value )
 {
-	mVibfreq = value*((onepi*2)/INTERNAL_CLOCK);
+	mVibfreq = value*((onepi*2)/(INTERNAL_CLOCK / PITCH_CYCLE_SAMPLES));
 }
 
 //-----------------------------------------------------------------------------
@@ -908,6 +911,9 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         // キーオン
         mKeyOnFlag[v] = true;
         
+        // 強制ピッチが再計算
+        mPitchCount[v] = 0;
+        
         // 最後に発音したノート番号を保存
         mChStat[midiCh].lastNote = note;
     }
@@ -1180,25 +1186,28 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
             int kon = 0;
             for ( int v=0; v<kMaximumVoices; v++ ) {
 				//ピッチの算出
-                int voicePitch = static_cast<int>(mVoiceStat[v].portaPitch + 0.5f);
-                
-				int pitch = (voicePitch + mVoiceStat[v].pb) & 0x3fff;
-				
-				if (mVoiceStat[v].reg_pmod) {
-					mVoiceStat[v].vibPhase += mVibfreq;
-					if (mVoiceStat[v].vibPhase > onepi) {
-						mVoiceStat[v].vibPhase -= onepi*2;
-					}
-					
-					float vibwave = VibratoWave(mVoiceStat[v].vibPhase);
-					int pitchRatio = (vibwave*mVibdepth)*VOLUME_CURB[mVoiceStat[v].vibdepth];
-					
-					pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
-					if (pitch <= 0) {
-						pitch=1;
-					}
-				}
-                mDSP.SetPitch(v, pitch);
+                if (mPitchCount[v] >= 0) {
+                    int voicePitch = static_cast<int>(mVoiceStat[v].portaPitch + 0.5f);
+                    
+                    int pitch = (voicePitch + mVoiceStat[v].pb) & 0x3fff;
+                    
+                    if (mVoiceStat[v].reg_pmod) {
+                        mVoiceStat[v].vibPhase += mVibfreq;
+                        if (mVoiceStat[v].vibPhase > onepi) {
+                            mVoiceStat[v].vibPhase -= onepi*2;
+                        }
+                        
+                        float vibwave = VibratoWave(mVoiceStat[v].vibPhase);
+                        int pitchRatio = (vibwave*mVibdepth)*VOLUME_CURB[mVoiceStat[v].vibdepth];
+                        
+                        pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
+                        if (pitch <= 0) {
+                            pitch=1;
+                        }
+                    }
+                    mDSP.SetPitch(v, pitch);
+                    mPitchCount[v] = -PITCH_CYCLE_SAMPLES;
+                }
                 
                 // パンのボリューム値への反映
                 int volL = mVoiceStat[v].vol_l;
@@ -1224,6 +1233,7 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
                     kon |= 1 << v;
                     mKeyOnFlag[v] = false;
                 }
+                mPitchCount[v]++;
             }
             
             if (kon) {
