@@ -58,6 +58,8 @@ public:
     bool WriteDsp(int addr, unsigned char data, bool nonRealtime);
     void Process1Sample(int &outl, int &outr);
     void BeginFrameProcess();
+    void StartMuteEmulation();
+    void EndMuteEmulation();
     
     void setDeviceReadyFunc( void (*func) (void* ownerClass), void* ownerClass );
 	void setDeviceExitFunc( void (*func) (void* ownerClass) , void* ownerClass );
@@ -69,6 +71,7 @@ private:
     static unsigned char dspregAccCode[];
     
     bool                mIsHwAvailable;
+    bool                mMuteEmulation;
     DspRegFIFO          mEmuFifo;
     DspRegFIFO          mHwFifo;
     int                 mDspMirror[128];
