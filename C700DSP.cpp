@@ -145,6 +145,13 @@ void C700DSP::SetNewADPCM(bool value)
 void C700DSP::SetRealEmulation(bool value)
 {
     mUseRealEmulation = value;
+    if (value) {
+        mDsp.EndMuteEmulation();
+        mDsp.WriteRam(0x200, &mRam[0x200], 0x400);
+    }
+    else {
+        mDsp.StartMuteEmulation();
+    }
 }
 
 void C700DSP::SetMainVolumeL(int value)
@@ -649,9 +656,6 @@ void C700DSP::onDeviceStop(void *ref)
 {
     C700DSP   *This = reinterpret_cast<C700DSP*>(ref);
     
-    int writeBytes = This->mBrrEndAddr - This->mBrrStartAddr;
-    if (writeBytes > 0) {
-        // もしハード側にだけ書き込まれていたような場合のためにDIR領域を転送
-        This->mDsp.WriteRam(0x200, &This->mRam[0x200], 0x400);
-    }
+    // もしハード側にだけ書き込まれていたような場合のためにDIR領域を転送
+    This->mDsp.WriteRam(0x200, &This->mRam[0x200], 0x400);
 }

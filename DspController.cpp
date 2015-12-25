@@ -89,6 +89,7 @@ unsigned char DspController::dspregAccCode[] =
 DspController::DspController()
 {
     mIsHwAvailable = false;
+    mMuteEmulation = false;
     mSampleInFrame = 0;
     gettimeofday(&mFrameStartTime, NULL);
     
@@ -467,7 +468,7 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
             long int frameTime = (mSampleInFrame * 1e6) / 32000;
             mHwFifo.AddRamWrite(frameTime, addr, data);
         }
-        else {
+        else if (!mMuteEmulation) {
             mEmuFifo.AddRamWrite(0, addr, data);
         }
     }
@@ -507,7 +508,7 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
                 long int frameTime = (mSampleInFrame * 1e6) / 32000;
                 mHwFifo.AddDspWrite(frameTime, addr, data);
             }
-            else {
+            else if (!mMuteEmulation) {
                 mEmuFifo.AddDspWrite(0, addr, data);
             }
         }
@@ -584,6 +585,35 @@ void DspController::BeginFrameProcess()
     //std::cout << elapsedTime << std::endl;
 #endif
     mFrameStartTime = nowTime;
+}
+
+void DspController::StartMuteEmulation()
+{
+    mMuteEmulation = true;
+    mWaitPort = -1;
+    mWaitByte = 0;
+    mEmuFifo.Clear();
+}
+
+void DspController::EndMuteEmulation()
+{
+    mMuteEmulation = false;
+    // 動作状態ならDSPの復元
+    mWaitPort = -1;
+    if (!mIsHwAvailable) {
+        for (int i=0; i<128; i++) {
+            if (mDspMirror[i] == 0xefefefef) {
+                continue;
+            }
+            if (i == DSP_FLG) {
+                continue;
+            }
+            if (i == DSP_KON) {
+                continue;
+            }
+            WriteDsp(i, mDspMirror[i], true);
+        }
+    }
 }
 
 void *DspController::writeHwThreadFunc(void *arg)
