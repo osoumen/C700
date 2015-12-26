@@ -51,6 +51,7 @@ bool PlistBRRFile::Load()
 		}
 		CFReadStreamClose(filestream);
 	}
+    CFRelease(path);
 	CFRelease(filestream);
 	
 	return mIsLoaded;

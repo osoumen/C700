@@ -334,6 +334,10 @@ int	RenumberKeyMap( unsigned char *snum, int size )
 	static const int MAX_PROGS = 128;
 	int progs[MAX_PROGS];
 	int num_progs = 0;
+    
+    for (int i=0; i<MAX_PROGS; i++) {
+        progs[i] = 0;
+    }
 	// ‘ƒvƒƒOƒ‰ƒ€”‚ð’²‚×‚é
 	for ( int i=0; i<size; i++ ) {
 		bool exist = false;

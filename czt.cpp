@@ -255,7 +255,9 @@ int estimatebasefreq(short *src, int length)
 	}
 	error = czt_init(&cztd, length, length);
 	if (error) {
+#ifdef DEBUG_PRINT
 		printf("error:%d\n",error);
+#endif
 		return 0;
 	}
 	czt(&cztd, FFT_FORWARD, &temp);

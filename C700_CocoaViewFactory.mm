@@ -164,8 +164,8 @@ AudioUnitParameterValue		inParameterValue
 					char	pgname[PROGRAMNAME_MAX_LEN];
 					CFStringGetCString(cfpgname, pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
 					editor->SetProgramName( pgname );
+                    CFRelease(cfpgname);
 				}
-				CFRelease(cfpgname);
 				outDataSize = 0;
 				break;
 			}

@@ -86,6 +86,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	
 	CFReadStreamRef	filestream = CFReadStreamCreateWithFile(NULL, url);
 	if (CFReadStreamOpen(filestream) == false) {
+        CFRelease( filestream );
 		CFRelease( url );
 		return false;
 	}
@@ -93,6 +94,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	CFIndex	readbytes=CFReadStreamRead(filestream, mFileData+dataOffset, MAX_FILE_SIZE);
 	mFileSize = readbytes+dataOffset;
 	CFReadStreamClose(filestream);
+    CFRelease( filestream );
 	CFRelease( url );
 #else
 	//VST‚Ì‚Æ‚«‚Ìƒtƒ@ƒCƒ‹“Ç‚İ‚İˆ—

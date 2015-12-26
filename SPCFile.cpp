@@ -33,6 +33,7 @@ bool SPCFile::Load()
 	
 	CFReadStreamRef	filestream = CFReadStreamCreateWithFile(NULL, url);
 	if (CFReadStreamOpen(filestream) == false) {
+        CFRelease( filestream );
 		CFRelease( url );
 		return false;
 	}
@@ -41,9 +42,11 @@ bool SPCFile::Load()
 	if (readbytes < SPC_READ_SIZE) {
 		CFRelease( url );
 		CFReadStreamClose(filestream);
+        CFRelease( filestream );
 		return false;
 	}
 	CFReadStreamClose(filestream);
+    CFRelease( filestream );
 	CFRelease( url );
 #else
 	//WindowsVST‚Ì‚Æ‚«‚ÌSPCƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ýˆ—

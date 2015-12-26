@@ -411,7 +411,7 @@
 		8ACF4CE90B2148CF00EC1825 /* CACFString.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; path = CACFString.cpp; sourceTree = "<group>"; };
 		8AD362300AFE59F900FC48D2 /* brrcodec.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = brrcodec.h; sourceTree = "<group>"; };
 		8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = brrcodec.cpp; sourceTree = "<group>"; };
-		8AEECD2D0B020BC6002C9BB7 /* czt.cpp */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.cpp.cpp; path = czt.cpp; sourceTree = "<group>"; };
+		8AEECD2D0B020BC6002C9BB7 /* czt.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = czt.cpp; sourceTree = "<group>"; };
 		8AEECD2E0B020BC6002C9BB7 /* czt.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = czt.h; sourceTree = "<group>"; };
 		8AF717CF0AE3DD5900C79293 /* gauss.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = gauss.h; sourceTree = "<group>"; };
 		8BA05A660720730100365D66 /* C700.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700.cpp; sourceTree = "<group>"; };
