@@ -277,6 +277,7 @@ bool AudioFile::Load()
 		//NSLog(@"AudioConverterGetProperty failed");
 		delete [] fileBuffer;
 		AudioConverterDispose(converter);
+        return false;
 	}
     m_pAudioData = new short[outputSize/sizeof(short)];
     

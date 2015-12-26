@@ -102,6 +102,9 @@ MemManager::~MemManager()
 bool MemManager::WriteData(int srcn, const unsigned char *data, int size, int loopPoint)
 {
     BrrRegion newRegion(data, size, loopPoint);
+    if (data == NULL) {
+        return false;
+    }
     pthread_mutex_lock(&mMapMtx);
     // 容量不足ではfalseを返す
     if ((mTotalSize+size) > CalcBrrSize()) {

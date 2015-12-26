@@ -441,7 +441,7 @@ void C700DSP::Process1Sample(int &outl, int &outr)
         int		outx;
         
         for ( int v=0; v<kMaximumVoices; v++ ) {
-            outx = 0;
+            //outx = 0;
             //--
             {
                 switch( mVoice[v].envstate ) {
@@ -495,7 +495,7 @@ void C700DSP::Process1Sample(int &outl, int &outr)
             }
             
             if ( mVoice[v].envx < 0 ) {
-                outx = 0;
+                //outx = 0;
                 continue;
             }
             
@@ -509,7 +509,7 @@ void C700DSP::Process1Sample(int &outl, int &outr)
                             mVoice[v].envx = 0;
                             while( mVoice[v].mixfrac >= 0 ) {
                                 mVoice[v].sampbuf[mVoice[v].sampptr] = 0;
-                                outx = 0;
+                                //outx = 0;
                                 mVoice[v].sampptr  = ( mVoice[v].sampptr + 1 ) & 3;
                                 mVoice[v].mixfrac -= 4096;
                             }
