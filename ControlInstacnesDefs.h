@@ -15,7 +15,7 @@ ControlInstances	sCntl[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		__DATE__,	//title
+		"C89 Limited",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
