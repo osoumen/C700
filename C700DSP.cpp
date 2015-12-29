@@ -716,9 +716,9 @@ void *C700DSP::startupThreadFunc(void *arg)
     This->mDsp.WriteDsp(DSP_KOF, 0, false);
     
     int at[] = {8192, 8192, 8192};
-    int ar[] = {14, 8, 13};
-    int dur[] = {8000, 15000, 10000};
-    int vol[] = {48, 64, 80};
+    int ar[] = {8, 13, 14};
+    int dur[] = {15000, 10000, 8000};
+    int vol[] = {64, 64, 80};
     for (int i=0; i<3; i++) {
         This->SetAR(0, ar[i]);
         This->mDsp.WriteDsp(DSP_VOL, vol[i], false);
