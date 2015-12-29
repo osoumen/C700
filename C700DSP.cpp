@@ -6,9 +6,11 @@
 //
 //
 
+#include "samplebrr.h"
 #include "C700DSP.h"
 #include "gauss.h"
 //#include <iomanip>
+#include <pthread.h>
 
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
 #define filter2(a1,a2)	(a1 + ( ( -( a1 + ( a1 >> 1 ) ) ) >> 5 ) - ( a2 >> 1 ) + ( a2 >> 5 ))
@@ -79,6 +81,10 @@ mUseRealEmulation( true )
     mEchoDelay = 0;
     mEchoFeedBack = 0;
     mEchoEnableWait = 0;
+    
+    mDisablePitch = false;
+    mOnPlugin = false;
+    mOnPlugOut = false;
     /*
     mEchoEnableWait = 8000;
     gettimeofday(&mEchoChangeTime, NULL);
@@ -156,6 +162,9 @@ void C700DSP::SetRealEmulation(bool value)
 
 void C700DSP::SetMainVolumeL(int value)
 {
+    if (mDisablePitch) {
+        return;
+    }
     if (mMainVolume_L != value) {
         mMainVolume_L = value;
         mDsp.WriteDsp(DSP_MVOLL, static_cast<unsigned char>(value & 0xff), false);
@@ -164,6 +173,9 @@ void C700DSP::SetMainVolumeL(int value)
 
 void C700DSP::SetMainVolumeR(int value)
 {
+    if (mDisablePitch) {
+        return;
+    }
     if (mMainVolume_R != value) {
         mMainVolume_R = value;
         mDsp.WriteDsp(DSP_MVOLR, static_cast<unsigned char>(value & 0xff), false);
@@ -330,6 +342,9 @@ void C700DSP::SetSR(int v, int value)
 
 void C700DSP::SetVol_L(int v, int value)
 {
+    if (mDisablePitch) {
+        return;
+    }
     if (mVoice[v].vol_l != value) {
         mVoice[v].vol_l = value;
         if (v < 8) {
@@ -340,6 +355,9 @@ void C700DSP::SetVol_L(int v, int value)
 
 void C700DSP::SetVol_R(int v, int value)
 {
+    if (mDisablePitch) {
+        return;
+    }
     if (mVoice[v].vol_r != value) {
         mVoice[v].vol_r = value;
         if (v < 8) {
@@ -350,6 +368,9 @@ void C700DSP::SetVol_R(int v, int value)
 
 void C700DSP::SetPitch(int v, int value)
 {
+    if (mDisablePitch) {
+        return;
+    }
     if (mVoice[v].pitch != value) {
         mVoice[v].pitch = value;
         if (v < 8) {
@@ -632,6 +653,15 @@ void C700DSP::Process1Sample(int &outl, int &outr)
         outl = 0;
         outr = 0;
     }
+    
+    if (mOnPlugin) {
+        pthread_create(&mStartupThread, NULL, startupThreadFunc, this);
+        pthread_detach(mStartupThread);
+        mOnPlugin = false;
+    }
+    if (mOnPlugOut) {
+        mOnPlugOut = false;
+    }
 }
 
 void C700DSP::BeginFrameProcess()
@@ -650,6 +680,84 @@ void C700DSP::onDeviceReady(void *ref)
         // 波形領域を転送
         This->mDsp.WriteRam(This->mBrrStartAddr, &This->mRam[This->mBrrStartAddr], writeBytes);
     }
+
+    This->mOnPlugin = true;
+    int testBrrAddr = 0x90; // プログラムのすぐ後
+    This->mDsp.WriteRam(testBrrAddr, sinewave_brr, sizeof(sinewave_brr));
+    
+}
+
+void *C700DSP::startupThreadFunc(void *arg)
+{
+    C700DSP   *This = reinterpret_cast<C700DSP*>(arg);
+    
+    This->mDisablePitch = true;
+    
+    int testBrrAddr = 0x90; // プログラムのすぐ後
+    unsigned char addrLoop[4];
+    addrLoop[0] = testBrrAddr & 0xff;
+    addrLoop[1] = (testBrrAddr >> 8) & 0xff;
+    addrLoop[2] = (testBrrAddr + 18) & 0xff;
+    addrLoop[3] = ((testBrrAddr + 18) >> 8) & 0xff;
+    This->mDsp.WriteRam(0x200 + 255 * 4, addrLoop[0], false);
+    This->mDsp.WriteRam(0x200 + 255 * 4+1, addrLoop[1], false);
+    This->mDsp.WriteRam(0x200 + 255 * 4+2, addrLoop[2], false);
+    This->mDsp.WriteRam(0x200 + 255 * 4+3, addrLoop[3], false);
+    
+    This->mDsp.WriteDsp(DSP_DIR, 0x02, false);
+    This->mDsp.WriteDsp(DSP_EON, 0, false);
+    This->mDsp.WriteDsp(DSP_MVOLL, 64, false);
+    This->mDsp.WriteDsp(DSP_MVOLR, 64, false);
+    This->mDsp.WriteDsp(DSP_SRCN, 255, false);
+    This->mDsp.WriteDsp(DSP_SRCN + 0x10, 255, false);
+    This->SetDR(0, 7);
+    This->SetSL(0, 7);
+    This->SetSR(0, 0);
+    This->mDsp.WriteDsp(DSP_KOF, 0, false);
+    
+    int at[] = {8192, 8192, 8192};
+    int ar[] = {14, 8, 13};
+    int dur[] = {8000, 15000, 10000};
+    int vol[] = {48, 64, 80};
+    for (int i=0; i<3; i++) {
+        This->SetAR(0, ar[i]);
+        This->mDsp.WriteDsp(DSP_VOL, vol[i], false);
+        This->mDsp.WriteDsp(DSP_VOL+1, vol[i], false);
+        This->mDsp.WriteDsp(DSP_P, at[i]&0xff, false);
+        This->mDsp.WriteDsp(DSP_P+1, (at[i]>>8)&0x3f, false);
+        This->mDsp.WriteDsp(DSP_KON, 0x01, false);
+        usleep(dur[i]);
+        This->mDsp.WriteDsp(DSP_KOF, 0x01, false);
+        This->mDsp.WriteDsp(DSP_KOF, 0x00, false);
+        usleep(90000-dur[i]);
+    }
+    usleep(20000);
+    This->SetAR(0, 12);
+    This->SetDR(0, 0);
+    This->SetSL(0, 0);
+    This->SetSR(0, 10);
+    This->SetAR(1, 5);
+    This->SetDR(1, 7);
+    This->SetSL(1, 7);
+    This->SetSR(1, 20);
+    This->mDsp.WriteDsp(DSP_VOL, 0, false);
+    This->mDsp.WriteDsp(DSP_VOL+1, 0, false);
+    This->mDsp.WriteDsp(DSP_VOL + 0x10, 20, false);
+    This->mDsp.WriteDsp(DSP_VOL+1 + 0x10, 20, false);
+    This->mDsp.WriteDsp(DSP_PMON, 0xff, false);
+    This->mDsp.WriteDsp(DSP_KON, 0x03, false);
+    for (int i=0; i<50; i++) {
+        int pitch = i * 256;
+        This->mDsp.WriteDsp(DSP_P, pitch&0xff, false);
+        This->mDsp.WriteDsp(DSP_P+1, (pitch>>8)&0x3f, false);
+        This->mDsp.WriteDsp(DSP_P + 0x10, 8192&0xff, false);
+        This->mDsp.WriteDsp(DSP_P+1 + 0x10, (8192>>8)&0x3f, false);
+        usleep(10000);
+    }
+    usleep(200000);
+    This->mDsp.WriteDsp(DSP_PMON, 0x00, false);
+    This->mDisablePitch = false;
+    return 0;
 }
 
 void C700DSP::onDeviceStop(void *ref)
@@ -658,4 +766,6 @@ void C700DSP::onDeviceStop(void *ref)
     
     // もしハード側にだけ書き込まれていたような場合のためにDIR領域を転送
     This->mDsp.WriteRam(0x200, &This->mRam[0x200], 0x400);
+    
+    This->mOnPlugOut = true;
 }

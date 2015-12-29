@@ -70,6 +70,9 @@ private:
     static void onDeviceReady(void *ref);
     static void onDeviceStop(void *ref);
     
+    static void *startupThreadFunc(void *arg);
+    pthread_t   mStartupThread;
+    
 private:
     struct DSPState {
         // 音源内部状態
@@ -124,6 +127,9 @@ private:
     
     DspController   mDsp;
 
+    bool            mDisablePitch;
+    bool            mOnPlugin;
+    bool            mOnPlugOut;
 };
 
 #endif /* defined(__C700__C700DSP__) */
