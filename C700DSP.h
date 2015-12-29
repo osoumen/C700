@@ -62,6 +62,8 @@ public:
     void Process1Sample(int &outl, int &outr);
     void BeginFrameProcess();
     
+    bool IsHwAvailable() { return mDsp.IsHwAvailable(); }
+    
 private:
     void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint);
     

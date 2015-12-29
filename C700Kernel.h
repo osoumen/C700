@@ -89,6 +89,8 @@ private:
 	
 	C700Driver      mGenerator;
     
+    bool            mIsHwAvailable;
+    
     void            setRPNLSB(int ch, int value);
     void            setRPNMSB(int ch, int value);
     void            setNRPNLSB(int ch, int value);

@@ -505,6 +505,11 @@ ComponentResult		C700::GetPropertyInfo (AudioUnitPropertyID	inID,
                 outDataSize = sizeof(int);
                 outWritable = false;
                 return noErr;
+                
+            case kAudioUnitCustomProperty_IsHwConnected:
+                outDataSize = sizeof(bool);
+                outWritable = false;
+                return noErr;
 		}
 	}
 	
@@ -604,6 +609,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
             case kAudioUnitCustomProperty_SustainMode:
             case kAudioUnitCustomProperty_MonoMode:
             case kAudioUnitCustomProperty_PortamentoOn:
+            case kAudioUnitCustomProperty_IsHwConnected:
 				*((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
 				return noErr;
 				
@@ -799,6 +805,9 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 				mEfx->SetSourceFilePath(path);
 				return noErr;
 			}
+                
+            case kAudioUnitCustomProperty_IsHwConnected:
+                return noErr;
 		}
 	}
 	return MusicDeviceBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
