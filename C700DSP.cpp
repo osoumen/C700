@@ -715,10 +715,10 @@ void *C700DSP::startupThreadFunc(void *arg)
     This->SetSR(0, 0);
     This->mDsp.WriteDsp(DSP_KOF, 0, false);
     
-    int at[] = {8192, 8192, 8192};
-    int ar[] = {8, 13, 14};
-    int dur[] = {15000, 10000, 8000};
-    int vol[] = {64, 64, 80};
+    int at[] = {5462, 5462, 5462};
+    int ar[] = {14, 13, 14};
+    int dur[] = {10000, 6000, 4000};
+    int vol[] = {100, 112, 90};
     for (int i=0; i<3; i++) {
         This->SetAR(0, ar[i]);
         This->mDsp.WriteDsp(DSP_VOL, vol[i], false);
@@ -729,21 +729,21 @@ void *C700DSP::startupThreadFunc(void *arg)
         usleep(dur[i]);
         This->mDsp.WriteDsp(DSP_KOF, 0x01, false);
         This->mDsp.WriteDsp(DSP_KOF, 0x00, false);
-        usleep(90000-dur[i]);
+        usleep(80000);
     }
-    usleep(20000);
+    usleep(10000);
     This->SetAR(0, 12);
     This->SetDR(0, 0);
     This->SetSL(0, 0);
     This->SetSR(0, 10);
-    This->SetAR(1, 5);
+    This->SetAR(1, 7);
     This->SetDR(1, 7);
     This->SetSL(1, 7);
-    This->SetSR(1, 20);
+    This->SetSR(1, 18);
     This->mDsp.WriteDsp(DSP_VOL, 0, false);
     This->mDsp.WriteDsp(DSP_VOL+1, 0, false);
-    This->mDsp.WriteDsp(DSP_VOL + 0x10, 20, false);
-    This->mDsp.WriteDsp(DSP_VOL+1 + 0x10, 20, false);
+    This->mDsp.WriteDsp(DSP_VOL + 0x10, 22, false);
+    This->mDsp.WriteDsp(DSP_VOL+1 + 0x10, 22, false);
     This->mDsp.WriteDsp(DSP_PMON, 0xff, false);
     This->mDsp.WriteDsp(DSP_KON, 0x03, false);
     for (int i=0; i<50; i++) {
