@@ -57,6 +57,7 @@ public:
 	void			SetParameterSetFunc( void (*func) (int paramID, float value, void* userData) , void* userData );
 	
 	const InstParams* GetVP() { return mVPset; }
+    void              SetVP(int pg, const InstParams *vp) { mVPset[pg] = *vp; }
     
     void            CorrectLoopFlagForSave(int pgnum);
     
