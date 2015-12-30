@@ -706,32 +706,13 @@ void *C700DSP::startupThreadFunc(void *arg)
     
     This->mDsp.WriteDsp(DSP_DIR, 0x02, false);
     This->mDsp.WriteDsp(DSP_EON, 0, false);
-    This->mDsp.WriteDsp(DSP_MVOLL, 64, false);
-    This->mDsp.WriteDsp(DSP_MVOLR, 64, false);
+    This->mDsp.WriteDsp(DSP_MVOLL, 127, false);
+    This->mDsp.WriteDsp(DSP_MVOLR, 127, false);
     This->mDsp.WriteDsp(DSP_SRCN, 255, false);
     This->mDsp.WriteDsp(DSP_SRCN + 0x10, 255, false);
-    This->SetDR(0, 7);
-    This->SetSL(0, 7);
-    This->SetSR(0, 0);
+    This->mDsp.WriteDsp(DSP_SRCN + 0x20, 255, false);
     This->mDsp.WriteDsp(DSP_KOF, 0, false);
-    
-    int at[] = {5462, 5462, 5462};
-    int ar[] = {14, 13, 14};
-    int dur[] = {10000, 6000, 4000};
-    int vol[] = {100, 112, 90};
-    for (int i=0; i<3; i++) {
-        This->SetAR(0, ar[i]);
-        This->mDsp.WriteDsp(DSP_VOL, vol[i], false);
-        This->mDsp.WriteDsp(DSP_VOL+1, vol[i], false);
-        This->mDsp.WriteDsp(DSP_P, at[i]&0xff, false);
-        This->mDsp.WriteDsp(DSP_P+1, (at[i]>>8)&0x3f, false);
-        This->mDsp.WriteDsp(DSP_KON, 0x01, false);
-        usleep(dur[i]);
-        This->mDsp.WriteDsp(DSP_KOF, 0x01, false);
-        This->mDsp.WriteDsp(DSP_KOF, 0x00, false);
-        usleep(80000);
-    }
-    usleep(10000);
+
     This->SetAR(0, 12);
     This->SetDR(0, 0);
     This->SetSL(0, 0);
@@ -744,9 +725,9 @@ void *C700DSP::startupThreadFunc(void *arg)
     This->mDsp.WriteDsp(DSP_VOL+1, 0, false);
     This->mDsp.WriteDsp(DSP_VOL + 0x10, 22, false);
     This->mDsp.WriteDsp(DSP_VOL+1 + 0x10, 22, false);
-    This->mDsp.WriteDsp(DSP_PMON, 0xff, false);
+    This->mDsp.WriteDsp(DSP_PMON, 0x02, false);
     This->mDsp.WriteDsp(DSP_KON, 0x03, false);
-    for (int i=0; i<50; i++) {
+    for (int i=0; i<46; i++) {
         int pitch = i * 256;
         This->mDsp.WriteDsp(DSP_P, pitch&0xff, false);
         This->mDsp.WriteDsp(DSP_P+1, (pitch>>8)&0x3f, false);
@@ -754,8 +735,30 @@ void *C700DSP::startupThreadFunc(void *arg)
         This->mDsp.WriteDsp(DSP_P+1 + 0x10, (8192>>8)&0x3f, false);
         usleep(10000);
     }
-    usleep(200000);
+    
+    This->SetDR(2, 7);
+    This->SetSL(2, 7);
+    This->SetSR(2, 0);
     This->mDsp.WriteDsp(DSP_PMON, 0x00, false);
+    
+    int at[] = {8192, 8192, 8192};
+    int ar[] = {11, 13, 14};
+    int dur[] = {10000, 6000, 4000};
+    int vol[] = {100, 112, 90};
+    for (int i=0; i<3; i++) {
+        This->SetAR(2, ar[i]);
+        This->mDsp.WriteDsp(DSP_VOL + 0x20, vol[i], false);
+        This->mDsp.WriteDsp(DSP_VOL+1 + 0x20, vol[i], false);
+        This->mDsp.WriteDsp(DSP_P + 0x20, at[i]&0xff, false);
+        This->mDsp.WriteDsp(DSP_P+1 + 0x20, (at[i]>>8)&0x3f, false);
+        This->mDsp.WriteDsp(DSP_KON, 0x04, false);
+        usleep(dur[i]);
+        This->mDsp.WriteDsp(DSP_KOF, 0x04, false);
+        This->mDsp.WriteDsp(DSP_KOF, 0x00, false);
+        usleep(80000);
+    }
+    This->mDsp.WriteDsp(DSP_MVOLL, static_cast<unsigned char>(This->mMainVolume_L & 0xff), false);
+    This->mDsp.WriteDsp(DSP_MVOLR, static_cast<unsigned char>(This->mMainVolume_R & 0xff), false);
     This->mDisablePitch = false;
     return 0;
 }
