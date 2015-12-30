@@ -19,7 +19,7 @@ public:
 	PGChunk( const void *data, int dataSize );
 	virtual ~PGChunk();
 	
-	bool				AppendDataFromVP( InstParams *vp );
+	bool				AppendDataFromVP( const InstParams *vp );
 	bool				ReadDataToVP( InstParams *vp );
 	
 	bool				writeChunk( int type, const void* data, int byte );	//—e—Ê•s‘«‚Å‘S•”‚ğ‘‚«‚ß‚È‚¢‚Æ‚«‚Ífalse
