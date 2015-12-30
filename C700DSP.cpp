@@ -704,6 +704,8 @@ void *C700DSP::startupThreadFunc(void *arg)
     This->mDsp.WriteRam(0x200 + 255 * 4+2, addrLoop[2], false);
     This->mDsp.WriteRam(0x200 + 255 * 4+3, addrLoop[3], false);
     
+    usleep(100000);
+    
     This->mDsp.WriteDsp(DSP_DIR, 0x02, false);
     This->mDsp.WriteDsp(DSP_EON, 0, false);
     This->mDsp.WriteDsp(DSP_MVOLL, 127, false);
@@ -711,7 +713,6 @@ void *C700DSP::startupThreadFunc(void *arg)
     This->mDsp.WriteDsp(DSP_SRCN, 255, false);
     This->mDsp.WriteDsp(DSP_SRCN + 0x10, 255, false);
     This->mDsp.WriteDsp(DSP_SRCN + 0x20, 255, false);
-    This->mDsp.WriteDsp(DSP_KOF, 0, false);
 
     This->SetAR(0, 12);
     This->SetDR(0, 0);
@@ -726,6 +727,7 @@ void *C700DSP::startupThreadFunc(void *arg)
     This->mDsp.WriteDsp(DSP_VOL + 0x10, 22, false);
     This->mDsp.WriteDsp(DSP_VOL+1 + 0x10, 22, false);
     This->mDsp.WriteDsp(DSP_PMON, 0x02, false);
+    This->mDsp.WriteDsp(DSP_KOF, 0, false);
     This->mDsp.WriteDsp(DSP_KON, 0x03, false);
     for (int i=0; i<46; i++) {
         int pitch = i * 256;
