@@ -68,7 +68,7 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 #else
 	//VSTŽž‚Ìˆ—
 	int	editProg = GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
-	InstParams	*inst = mEfx->mEfx->GetVP();
+	const InstParams	*inst = mEfx->mEfx->GetVP();
 	if ( inst ) {
 		RawBRRFile	*file = new RawBRRFile(NULL,true);
 		file->StoreInst(&inst[editProg]);
@@ -331,7 +331,7 @@ bool EfxAccess::SetBRRData( const BRRData *data )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
-	mEfx->mEfx->SetBRRData(data);
+	mEfx->mEfx->SetBRRData(data->data, data->size);
 	mEfx->PropertyNotifyFunc(kAudioUnitCustomProperty_BRRData, mEfx);
 	return true;
 #endif

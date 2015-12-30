@@ -874,13 +874,13 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 	
 	efxAcc->SetBRRData(inst.getBRRData());
 	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint,inst.lp);
-	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		inst.loop ? 1.0f:.0f);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		inst.isLoop() ? 1.0f:.0f);
 	
 	unsigned int	hasFlg = file->GetHasFlag();
 	if ( hasFlg & HAS_PGNAME ) efxAcc->SetProgramName( inst.pgname );
 	if ( hasFlg & HAS_RATE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate,		inst.rate);
 	else {
-		if ( inst.loop ) {
+		if ( inst.isLoop() ) {
 			double	samplerate = 32000.0;
 			short	*buffer;
 			int		pitch;
