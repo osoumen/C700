@@ -33,6 +33,21 @@ static CFontDesc g_LabelFont("Helvetica", 9, kBoldFace);
 CFontRef kLabelFont = &g_LabelFont;
 
 //-----------------------------------------------------------------------------
+#define MAXMENUITEM 20
+int splitMenuItem( char *str, const char *delim, char *outlist[] )
+{
+    char    *tk;
+    int     cnt = 0;
+    
+    tk = strtok( str, delim );
+    while( tk != NULL && cnt < MAXMENUITEM ) {
+        outlist[cnt++] = tk;
+        tk = strtok( NULL, delim );
+    }
+    return cnt;
+}
+
+//-----------------------------------------------------------------------------
 void getFileNameDeletingPathExt( const char *path, char *out, int maxLen )
 {
 #if MAC
@@ -118,6 +133,29 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
                     splash = new CSplashScreen(cntlSize, this, desc->id, helpPicture, toDisplay);
                     helpPicture->forget();
                     cntl = splash;
+                    break;
+                }
+                case 'menu':
+                {
+                    long style = kCheckStyle;
+                    COptionMenu *optionMenu = new COptionMenu(cntlSize, this, desc->id, 0, 0, style);
+                    if (optionMenu)
+                    {
+                        CFontRef fontDesc = new CFontDesc(kLabelFont->getName(), desc->fontsize);
+                        optionMenu->setFont(fontDesc);
+                        optionMenu->setFontColor(MakeCColor(180, 248, 255, 255));
+                        optionMenu->setBackColor(kBlackCColor);
+                        optionMenu->setFrameColor(kBlackCColor);
+                        optionMenu->setHoriAlign(desc->fontalign);
+                        char    *menuItemList[MAXMENUITEM];
+                        char    itemText[512];
+                        strcpy(itemText, desc->title);
+                        int itemNum = splitMenuItem(itemText, ";", menuItemList);
+                        for (int i=0; i<itemNum; i++) {
+                            optionMenu->addEntry(menuItemList[i]);
+                        }
+                    }
+                    cntl = optionMenu;
                     break;
                 }
 				default:
@@ -381,6 +419,31 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	
 	//以下テストコード
 #if 0
+    //--COptionMenu--------------------------------------
+	CRect size (0, 0, 50, 14);
+	size.offset (10, 30);
+    
+	long style = kCheckStyle;
+	COptionMenu *cOptionMenu = new COptionMenu(size, this, -1, 0, 0, style);
+	if (cOptionMenu)
+	{
+        CFontRef fontDesc = new CFontDesc(kLabelFont->getName(), 9);
+		cOptionMenu->setFont(fontDesc);
+		cOptionMenu->setFontColor(kWhiteCColor);
+		cOptionMenu->setBackColor(kBlackCColor);
+		cOptionMenu->setFrameColor(kBlackCColor);
+		cOptionMenu->setHoriAlign(kLeftText);
+		for (int i = 0; i < 3; i++)
+		{
+			char txt[256];
+			sprintf(txt, "Entry %d", i);
+			cOptionMenu->addEntry(txt);
+		}
+		addView(cOptionMenu);
+		//cOptionMenu->setAttribute(kCViewTooltipAttribute,strlen("COptionMenu")+1,"COptionMenu");
+        fontDesc->forget();
+	}
+    
 	//--CMyKnob--------------------------------------
 	CBitmap *bgKnob = new CBitmap("knobBack.png");
 	
