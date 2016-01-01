@@ -100,6 +100,7 @@ AudioUnitParameterValue		inParameterValue
             case kAudioUnitCustomProperty_SustainMode:
             case kAudioUnitCustomProperty_MonoMode:
             case kAudioUnitCustomProperty_PortamentoOn:
+            case kAudioUnitCustomProperty_IsHwConnected:
 				value = *((bool*)outDataPtr);
 				break;
 								

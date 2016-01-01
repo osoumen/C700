@@ -31,6 +31,8 @@ C700Kernel::C700Kernel()
 	
 	mEditProg = 0;
 	mEditChannel = 0;
+    
+    mIsHwAvailable = false;
 	
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
@@ -395,6 +397,9 @@ float C700Kernel::GetPropertyValue( int inID )
             
         case kAudioUnitCustomProperty_ReleasePriority:
             return mVPset[mEditProg].releasePriority;
+            
+        case kAudioUnitCustomProperty_IsHwConnected:
+            return mGenerator.IsHwAvailable() ? 1.0f:.0f;
 			
 		case kAudioUnitCustomProperty_SourceFileRef:
 		case kAudioUnitCustomProperty_BRRData:
@@ -625,6 +630,9 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
         case kAudioUnitCustomProperty_ReleasePriority:
             mVPset[mEditProg].releasePriority = value;
             mGenerator.AllNotesOff();
+            return true;
+            
+        case kAudioUnitCustomProperty_IsHwConnected:
             return true;
 
 		case kAudioUnitCustomProperty_SourceFileRef:
@@ -898,6 +906,11 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
                 }
             }
         }
+    }
+    
+    if (mIsHwAvailable != mGenerator.IsHwAvailable()) {
+        mIsHwAvailable = mGenerator.IsHwAvailable();
+        propertyNotifyFunc( kAudioUnitCustomProperty_IsHwConnected, propNotifyUserData );
     }
 }
 

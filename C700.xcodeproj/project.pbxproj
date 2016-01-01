@@ -99,6 +99,8 @@
 		F527FFA11BEE323F0083E355 /* MemManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F527FF9E1BEE323F0083E355 /* MemManager.cpp */; };
 		F527FFA21BEE323F0083E355 /* MemManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F527FF9F1BEE323F0083E355 /* MemManager.h */; };
 		F527FFA31BEE323F0083E355 /* MemManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F527FF9F1BEE323F0083E355 /* MemManager.h */; };
+		F529ABBA1C3199ED0023A689 /* hwconn.png in Resources */ = {isa = PBXBuildFile; fileRef = F529ABB91C3199ED0023A689 /* hwconn.png */; };
+		F529ABBB1C3199ED0023A689 /* hwconn.png in Resources */ = {isa = PBXBuildFile; fileRef = F529ABB91C3199ED0023A689 /* hwconn.png */; };
 		F53602A11984CEC60079A9BE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602A01984CEC60079A9BE /* Cocoa.framework */; };
 		F53602A21984CEC60079A9BE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602A01984CEC60079A9BE /* Cocoa.framework */; };
 		F53602A71984CF600079A9BE /* aeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602A31984CF600079A9BE /* aeffect.h */; };
@@ -462,6 +464,7 @@
 		F52674351C01E914006B0276 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		F527FF9E1BEE323F0083E355 /* MemManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemManager.cpp; sourceTree = "<group>"; };
 		F527FF9F1BEE323F0083E355 /* MemManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemManager.h; sourceTree = "<group>"; };
+		F529ABB91C3199ED0023A689 /* hwconn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hwconn.png; path = graphics/hwconn.png; sourceTree = "<group>"; };
 		F53602A01984CEC60079A9BE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		F53602A31984CF600079A9BE /* aeffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aeffect.h; path = pluginterfaces/vst2.x/aeffect.h; sourceTree = "<group>"; };
 		F53602A41984CF600079A9BE /* aeffectx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aeffectx.h; path = pluginterfaces/vst2.x/aeffectx.h; sourceTree = "<group>"; };
@@ -678,6 +681,7 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F529ABB91C3199ED0023A689 /* hwconn.png */,
 				F56A752819C6B65B00348177 /* bt_khaos.png */,
 				F5BEFCA419BC4F8C0083F8D9 /* help.png */,
 				8ACF4C260B2144FD00EC1825 /* AUBackground.png */,
@@ -1327,6 +1331,7 @@
 				F55D64FC161EB76D001CF9AB /* bt_copy.png in Resources */,
 				F55D64FE161EB7CD001CF9AB /* bt_calc.png in Resources */,
 				F55D6500161EB8CE001CF9AB /* bt_load.png in Resources */,
+				F529ABBA1C3199ED0023A689 /* hwconn.png in Resources */,
 				F56A752919C6B65B00348177 /* bt_khaos.png in Resources */,
 				F55D6502161EB957001CF9AB /* bt_save.png in Resources */,
 				F55D6504161EB9B6001CF9AB /* bt_unload.png in Resources */,
@@ -1370,6 +1375,7 @@
 				F54331C416296E0200863A0B /* bt_copy.png in Resources */,
 				F54331C516296E0200863A0B /* bt_calc.png in Resources */,
 				F54331C616296E0200863A0B /* bt_load.png in Resources */,
+				F529ABBB1C3199ED0023A689 /* hwconn.png in Resources */,
 				F56A752A19C6B65B00348177 /* bt_khaos.png in Resources */,
 				F54331C716296E0200863A0B /* bt_save.png in Resources */,
 				F54331C816296E0200863A0B /* bt_unload.png in Resources */,

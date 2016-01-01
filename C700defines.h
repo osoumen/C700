@@ -159,6 +159,8 @@ enum
     kAudioUnitCustomProperty_NoteOnPriority,
     kAudioUnitCustomProperty_ReleasePriority,
     
+    kAudioUnitCustomProperty_IsHwConnected,     // read only
+    
     kAudioUnitCustomProperty_End,
     kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
 };
