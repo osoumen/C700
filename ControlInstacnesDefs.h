@@ -2889,4 +2889,21 @@ ControlInstances	sCntl[] = {
 		0,	//style
 		0	//future use
 	},
+    {
+		'airy',	//sig
+		'valp',	//kind
+		"hwconn",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		0,	//sig
+		kAudioUnitCustomProperty_IsHwConnected,	//id
+		'abcd',	//command
+		474, 330, 60, 60,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
 };

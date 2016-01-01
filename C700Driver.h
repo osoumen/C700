@@ -158,6 +158,8 @@ public:
 	void		SetVPSet( InstParams *vp );
     
 	void		RefreshKeyMap(void);
+    
+    bool        IsHwAvailable() { return mDSP.IsHwAvailable(); }
 	
 private:
 	static const int INTERNAL_CLOCK = 32000;
