@@ -240,6 +240,9 @@ static const int NUM_OUTPUTS = 2;
 static const int PROGRAMNAME_MAX_LEN = 256;
 static const int PATH_LEN_MAX = 1024;
 
+static const int BRR_STARTADDR = 0x600;
+static const int BRR_ENDADDR = 0x10000;
+
 static const int CKID_PROGRAM_TOTAL = 0x20000;
 static const int CKID_PROGRAM_DATA  = 0x30000;
 

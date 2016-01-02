@@ -179,6 +179,20 @@ void C700Edit::setParameter(int index, float value)
         cntl->setDirty();
 		cntl->setValue(value);
 		//printf("tag=%d, value=%f\n",tag,value);
+        
+        // 使用RAMが実機の容量を超えたら赤字に変える
+        if (tag == kAudioUnitCustomProperty_TotalRAM) {
+            int ramMax = BRR_ENDADDR - BRR_STARTADDR;
+            CMyParamDisplay *paramdisp = reinterpret_cast<CMyParamDisplay*>(cntl);
+            if (value > ramMax) {
+                // 数値を赤くする
+                paramdisp->setFontColor(MakeCColor(255, 0, 0, 255));
+            }
+            else {
+                // 数値を通常の色に戻す
+                paramdisp->setFontColor(MakeCColor(180, 248, 255, 255));
+            }
+        }
 		
 		tag += 1000;
 		cntl = m_pUIView->FindControlByTag(tag);

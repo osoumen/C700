@@ -88,8 +88,8 @@ MemManager::MemManager(int size)
 {
     mMemSize = size;
     mDirAddr = 0x200;
-    mBrrStartAddr = 0x600;
-    mBrrEndAddr = 0x10000;
+    mBrrStartAddr = BRR_STARTADDR;
+    mBrrEndAddr = BRR_ENDADDR;
     
     pthread_mutex_init(&mMapMtx, 0);
 }
