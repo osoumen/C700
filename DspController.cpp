@@ -170,6 +170,8 @@ void DspController::onDeviceAdded(void *ref)
     
     int err = 0;
     
+    // TODO: SPCモジュールがあるかチェック
+    
     MutexLock(This->mHwMtx);
     
     // ハードウェアリセット
@@ -615,7 +617,11 @@ void DspController::EndMuteEmulation()
     }
 }
 
+#ifdef _MSC_VER
+DWORD WINAPI *DspController::writeHwThreadFunc(LPVOID)
+#else
 void *DspController::writeHwThreadFunc(void *arg)
+#endif
 {
     DspController   *This = reinterpret_cast<DspController*>(arg);
     while (This->mIsHwAvailable) {

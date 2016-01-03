@@ -29,7 +29,29 @@ inline void WaitMicroSeconds(MSTime usec) {
 	std::this_thread::sleep_for(std::chrono::microseconds(usec));
 }
 
-// TODO: Windows標準のスレッド処理
+// Windows標準のスレッド処理
+typedef HANDLE ThreadObject;
+typedef DWORD WINAPI *(*ThreadFunc)(LPVOID);
+inline void ThreadCreate(HANDLE &obj, ThreadFunc start_routine, LPVOID arg) {
+    DWORD dwID;
+	mCommThread = CreateThread(NULL, 0, start_routine, arg, 0, &dwID);
+}
+inline void ThreadJoin(HANDLE &obj) {
+    WaitForSingleObject(obj, INFINITE);
+}
+typedef CRITICAL_SECTION MutexObject;
+inline void MutexInit(MutexObject &obj) {
+    InitializeCriticalSection(&obj);
+}
+inline void MutexDestroy(MutexObject &obj) {
+    DeleteCriticalSection(&obj);
+}
+inline void MutexLock(MutexObject &obj) {
+    EnterCriticalSection(&obj);
+}
+inline void MutexUnlock(MutexObject &obj) {
+    LeaveCriticalSection(&obj);
+}
 
 #else
 // timeval による時間計測(unix系)
@@ -58,23 +80,24 @@ inline void WaitMicroSeconds(MSTime usec) {
 
 // pthread によるスレッド、同期処理
 typedef pthread_t ThreadObject;
-inline void ThreadCreate(pthread_t &obj, void *(*start_routine)(void*), void *arg) {
+typedef void *(*ThreadFunc)(void*);
+inline void ThreadCreate(ThreadObject &obj, ThreadFunc start_routine, void *arg) {
     pthread_create(&obj, NULL, start_routine, arg);
 }
-inline void ThreadJoin(pthread_t &obj) {
+inline void ThreadJoin(ThreadObject &obj) {
     pthread_join(obj, NULL);
 }
 typedef pthread_mutex_t MutexObject;
-inline void MutexInit(pthread_mutex_t &obj) {
+inline void MutexInit(MutexObject &obj) {
     pthread_mutex_init(&obj, 0);
 }
-inline void MutexDestroy(pthread_mutex_t &obj) {
+inline void MutexDestroy(MutexObject &obj) {
     pthread_mutex_destroy(&obj);
 }
-inline void MutexLock(pthread_mutex_t &obj) {
+inline void MutexLock(MutexObject &obj) {
     pthread_mutex_lock(&obj);
 }
-inline void MutexUnlock(pthread_mutex_t &obj) {
+inline void MutexUnlock(MutexObject &obj) {
     pthread_mutex_unlock(&obj);
 }
 
