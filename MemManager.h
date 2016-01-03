@@ -11,7 +11,7 @@
 
 #include "C700DSP.h"
 #include <map>
-#include <pthread.h>
+#include "C700TimeThread.h"
 
 class BrrRegion {
 public:
@@ -53,7 +53,7 @@ public:
     int CalcBrrSize() { return (mBrrEndAddr - mBrrStartAddr); }
     
 private:
-    pthread_mutex_t                     mMapMtx;
+    MutexObject                         mMapMtx;
     std::map<int, BrrRegion>            mRegions;
     // mMapMtx
     int                                 mMemSize;

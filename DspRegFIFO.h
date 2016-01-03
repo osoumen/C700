@@ -11,7 +11,6 @@
 
 #include <iostream>
 #include <list>
-#include <pthread.h>
 #include "C700TimeThread.h"
 
 class DspRegFIFO {
@@ -34,7 +33,7 @@ public:
     void AddTime(long time);
     void Clear();
     
-    pthread_mutex_t     mListMtx;
+    MutexObject         mListMtx;
     std::list<DspWrite> mDspWrite;
     // mListMtx
     

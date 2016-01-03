@@ -75,7 +75,7 @@ C700Driver::C700Driver()
   mVelocityMode( kVelocityMode_Square ),
   mVPset(NULL)
 {
-    pthread_mutex_init(&mMIDIEvtMtx, 0);
+    MutexInit(mMIDIEvtMtx);
     
 	for ( int i=0; i<NUM_BANKS; i++ ) {
 		mDrumMode[i] = false;
@@ -116,7 +116,7 @@ C700Driver::C700Driver()
 //-----------------------------------------------------------------------------
 C700Driver::~C700Driver()
 {
-    pthread_mutex_destroy(&mMIDIEvtMtx);
+    MutexDestroy(mMIDIEvtMtx);
 }
 //-----------------------------------------------------------------------------
 void C700Driver::Reset()
@@ -147,9 +147,9 @@ void C700Driver::NoteOn( int ch, int note, int velo, unsigned int uniqueID, int 
 	evt.velo = velo;
 	evt.uniqueID = uniqueID;
 	evt.remain_samples = inFrame;
-    pthread_mutex_lock(&mMIDIEvtMtx);
+    MutexLock(mMIDIEvtMtx);
 	mMIDIEvt.push_back( evt );
-    pthread_mutex_unlock(&mMIDIEvtMtx);
+    MutexUnlock(mMIDIEvtMtx);
 }
 
 //-----------------------------------------------------------------------------
@@ -162,9 +162,9 @@ void C700Driver::NoteOff( int ch, int note, int velo, unsigned int uniqueID, int
 	evt.velo = velo;
 	evt.uniqueID = uniqueID;
 	evt.remain_samples = inFrame;
-    pthread_mutex_lock(&mMIDIEvtMtx);
+    MutexLock(mMIDIEvtMtx);
 	mMIDIEvt.push_back( evt );
-    pthread_mutex_unlock(&mMIDIEvtMtx);
+    MutexUnlock(mMIDIEvtMtx);
 }
 
 
@@ -178,9 +178,9 @@ void C700Driver::ControlChange( int ch, int controlNum, int value, int inFrame )
 	evt.velo = value;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
-    pthread_mutex_lock(&mMIDIEvtMtx);
+    MutexLock(mMIDIEvtMtx);
 	mMIDIEvt.push_back( evt );
-    pthread_mutex_unlock(&mMIDIEvtMtx);
+    MutexUnlock(mMIDIEvtMtx);
 }
 
 //-----------------------------------------------------------------------------
@@ -234,9 +234,9 @@ void C700Driver::ProgramChange( int ch, int value, int inFrame )
 	evt.velo = 0;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
-    pthread_mutex_lock(&mMIDIEvtMtx);
+    MutexLock(mMIDIEvtMtx);
 	mMIDIEvt.push_back( evt );
-    pthread_mutex_unlock(&mMIDIEvtMtx);
+    MutexUnlock(mMIDIEvtMtx);
 }
 //-----------------------------------------------------------------------------
 void C700Driver::doProgramChange( int ch, int value )
@@ -266,9 +266,9 @@ void C700Driver::PitchBend( int ch, int value1, int value2, int inFrame )
 	evt.velo = value2;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
-    pthread_mutex_lock(&mMIDIEvtMtx);
+    MutexLock(mMIDIEvtMtx);
 	mMIDIEvt.push_back( evt );
-    pthread_mutex_unlock(&mMIDIEvtMtx);
+    MutexUnlock(mMIDIEvtMtx);
 }
 
 //-----------------------------------------------------------------------------
@@ -1141,7 +1141,7 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
     
 	for (unsigned int frame=0; frame<frames; ++frame) {
 		//ƒCƒxƒ“ƒgˆ—
-        pthread_mutex_lock(&mMIDIEvtMtx);
+        MutexLock(mMIDIEvtMtx);
 		if ( mMIDIEvt.size() != 0 ) {
 			std::list<MIDIEvt>::iterator	it = mMIDIEvt.begin();
 			while ( it != mMIDIEvt.end() ) {
@@ -1157,7 +1157,7 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 				it++;
 			}
 		}
-        pthread_mutex_unlock(&mMIDIEvtMtx);
+        MutexUnlock(mMIDIEvtMtx);
         if ( mDelayedEvt.size() != 0 ) {
 			std::list<MIDIEvt>::iterator	it = mDelayedEvt.begin();
 			while ( it != mDelayedEvt.end() ) {

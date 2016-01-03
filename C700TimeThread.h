@@ -13,7 +13,7 @@
 
 #include <thread>
 #include <chrono>
-
+// std::chrono による時間計測(非unix系)
 typedef long long MSTime;
 typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::system_clock::duration> OSTime;
 inline MSTime calcusTime(const OSTime &end, const OSTime &st) {
@@ -29,8 +29,10 @@ inline void WaitMicroSeconds(MSTime usec) {
 	std::this_thread::sleep_for(std::chrono::microseconds(usec));
 }
 
-#else
+// TODO: Windows標準のスレッド処理
 
+#else
+// timeval による時間計測(unix系)
 #include <unistd.h>
 #include <sys/time.h>
 #include <pthread.h>
@@ -54,7 +56,28 @@ inline void WaitMicroSeconds(MSTime usec) {
 	usleep(usec);
 }
 
-#endif
+// pthread によるスレッド、同期処理
+typedef pthread_t ThreadObject;
+inline void ThreadCreate(pthread_t &obj, void *(*start_routine)(void*), void *arg) {
+    pthread_create(&obj, NULL, start_routine, arg);
+}
+inline void ThreadJoin(pthread_t &obj) {
+    pthread_join(obj, NULL);
+}
+typedef pthread_mutex_t MutexObject;
+inline void MutexInit(pthread_mutex_t &obj) {
+    pthread_mutex_init(&obj, 0);
+}
+inline void MutexDestroy(pthread_mutex_t &obj) {
+    pthread_mutex_destroy(&obj);
+}
+inline void MutexLock(pthread_mutex_t &obj) {
+    pthread_mutex_lock(&obj);
+}
+inline void MutexUnlock(pthread_mutex_t &obj) {
+    pthread_mutex_unlock(&obj);
+}
 
+#endif
 
 #endif
