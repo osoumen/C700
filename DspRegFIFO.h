@@ -12,6 +12,7 @@
 #include <iostream>
 #include <list>
 #include <pthread.h>
+#include "C700TimeThread.h"
 
 class DspRegFIFO {
 public:

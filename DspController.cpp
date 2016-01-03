@@ -91,7 +91,7 @@ DspController::DspController()
     mIsHwAvailable = false;
     mMuteEmulation = false;
     mSampleInFrame = 0;
-    gettimeofday(&mFrameStartTime, NULL);
+    getNowOSTime(mFrameStartTime);
     
     mDeviceReadyFunc = NULL;
     mDeviceExitFunc = NULL;
@@ -230,7 +230,7 @@ void DspController::onDeviceAdded(void *ref)
     if (err < 0) {
         return;
     }
-    usleep(240000); // EDL,ESAを変更したので240ms待ち
+    WaitMicroSeconds(240000); // EDL,ESAを変更したので240ms待ち
     
     // DSPアクセス用コードを転送
     err = This->mSpcDev.UploadRAMDataIPL(dspregAccCode, dspAccCodeAddr, sizeof(dspregAccCode), err+1);
@@ -245,7 +245,7 @@ void DspController::onDeviceAdded(void *ref)
     }
 #if 1
     while (This->mSpcDev.PortRead(3) != p3waitValue) {
-        usleep(10000);
+        WaitMicroSeconds(10000);
     }
 #else
     This->mSpcDev.ReadAndWait(3, p3waitValue);
@@ -367,10 +367,10 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
         mSpcDev.BlockWrite(0, mPort0stateHw | 0x80);
         mSpcDev.WriteBuffer();
         while (mSpcDev.PortRead(0) != 0xaa) {
-            usleep(1000);
+            WaitMicroSeconds(1000);
         }
         while (mSpcDev.PortRead(1) != 0xbb) {
-            usleep(1000);
+            WaitMicroSeconds(1000);
         }
         //mSpcDev.ReadAndWait(1, 0xbb);
         
@@ -382,7 +382,7 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
         }
         mSpcDev.JumpToCode(dspAccCodeAddr, mPort0stateHw + 1);
         while (mSpcDev.PortRead(3) != p3waitValue) {
-            usleep(1000);
+            WaitMicroSeconds(1000);
         }
         //mSpcDev.ReadAndWait(3, p3waitValue);
         //mSpcDev.WriteBuffer();
@@ -408,7 +408,7 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
         mPort0stateHw = mPort0stateHw ^ 0x01;
         /*
         while (mSpcDev.PortRead(3) != p3waitValue) {
-            usleep(5000);
+            WaitMicroSeconds(5000);
         }
          */
         addr += num * 3;
@@ -576,10 +576,9 @@ void DspController::BeginFrameProcess()
     mSampleInFrame = 0;
     
     // バッファにに残っている分の時間を進める
-    timeval nowTime;
-    gettimeofday(&nowTime, NULL);
-    int elapsedTime = (nowTime.tv_sec - mFrameStartTime.tv_sec) * 1e6 +
-    (nowTime.tv_usec - mFrameStartTime.tv_usec);
+    OSTime nowTime;
+    getNowOSTime(nowTime);
+    MSTime elapsedTime = calcusTime(nowTime, mFrameStartTime);
     mHwFifo.AddTime(-elapsedTime);
 #ifdef DEBUG_PRINT
     //std::cout << elapsedTime << std::endl;
@@ -620,10 +619,9 @@ void *DspController::writeHwThreadFunc(void *arg)
 {
     DspController   *This = reinterpret_cast<DspController*>(arg);
     while (This->mIsHwAvailable) {
-        timeval nowTime;
-        gettimeofday(&nowTime, NULL);
-        int elapsedTime = (nowTime.tv_sec - This->mFrameStartTime.tv_sec) * 1e6 +
-        (nowTime.tv_usec - This->mFrameStartTime.tv_usec);
+        OSTime nowTime;
+        getNowOSTime(nowTime);
+        MSTime elapsedTime = calcusTime(nowTime, This->mFrameStartTime);
         
         pthread_mutex_lock(&This->mHwMtx);
         while ((This->mHwFifo.GetNumWrites() > 0) &&
@@ -639,7 +637,7 @@ void *DspController::writeHwThreadFunc(void *arg)
         This->mSpcDev.WriteBuffer();
         pthread_mutex_unlock(&This->mHwMtx);
         
-        usleep(500);
+        WaitMicroSeconds(500);
     }
     return 0;
 }
