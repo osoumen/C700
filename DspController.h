@@ -19,7 +19,7 @@
 #include "SNES_SPC.h"
 #endif
 #include <pthread.h>
-#include <sys/time.h>
+#include "C700TimeThread.h"
 
 #define DSP_VOL		(0x00)
 #define DSP_P		(0x02)
@@ -97,7 +97,7 @@ private:
 #endif
     
     int                 mSampleInFrame;
-    timeval             mFrameStartTime;
+    OSTime              mFrameStartTime;
     pthread_t           mWriteHwThread;
     
     void               (*mDeviceReadyFunc) (void* ownerClass);

@@ -302,6 +302,8 @@
 		F569C6E0162644AE006C91AD /* PlistBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */; };
 		F56A752919C6B65B00348177 /* bt_khaos.png in Resources */ = {isa = PBXBuildFile; fileRef = F56A752819C6B65B00348177 /* bt_khaos.png */; };
 		F56A752A19C6B65B00348177 /* bt_khaos.png in Resources */ = {isa = PBXBuildFile; fileRef = F56A752819C6B65B00348177 /* bt_khaos.png */; };
+		F56AC10C1C393EC500787F85 /* C700TimeThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F56AC10B1C393EC500787F85 /* C700TimeThread.h */; };
+		F56AC10D1C393EC500787F85 /* C700TimeThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F56AC10B1C393EC500787F85 /* C700TimeThread.h */; };
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
@@ -562,6 +564,7 @@
 		F569C6DD162644AE006C91AD /* PlistBRRFile.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = PlistBRRFile.h; sourceTree = "<group>"; };
 		F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = PlistBRRFile.cpp; sourceTree = "<group>"; };
 		F56A752819C6B65B00348177 /* bt_khaos.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bt_khaos.png; path = graphics/bt_khaos.png; sourceTree = "<group>"; };
+		F56AC10B1C393EC500787F85 /* C700TimeThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700TimeThread.h; sourceTree = "<group>"; };
 		F56D351F156A0EA000038960 /* encodetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = encodetest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
 		F56D359F156A185300038960 /* libMiniAiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMiniAiff.a; path = encodetest/libMiniAiff.a; sourceTree = "<group>"; };
@@ -904,6 +907,7 @@
 			children = (
 				F557ACE619CD159300CF9792 /* MersenneTwister.h */,
 				8A77F1030ADE785100F2B2BE /* C700defines.h */,
+				F56AC10B1C393EC500787F85 /* C700TimeThread.h */,
 				8AF717CF0AE3DD5900C79293 /* gauss.h */,
 				8A10AB550AE2855600271511 /* samplebrr.h */,
 				F5432FF0162915F900863A0B /* C700Parameters.cpp */,
@@ -1145,6 +1149,7 @@
 				F569C40B16254B6E006C91AD /* XIFile.h in Headers */,
 				F569C6DF162644AE006C91AD /* PlistBRRFile.h in Headers */,
 				F5432C261627AE4200863A0B /* EchoKernel.h in Headers */,
+				F56AC10C1C393EC500787F85 /* C700TimeThread.h in Headers */,
 				F5432F311628117D00863A0B /* C700Kernel.h in Headers */,
 				F5432FF3162915F900863A0B /* C700Parameters.h in Headers */,
 				F59D91A71BF720EA00E5EFC6 /* dsp.h in Headers */,
@@ -1200,6 +1205,7 @@
 				F54331AF16296E0200863A0B /* SeparatorLine.h in Headers */,
 				F54331B016296E0200863A0B /* MyParamDisplay.h in Headers */,
 				F54331B116296E0200863A0B /* MyTextEdit.h in Headers */,
+				F56AC10D1C393EC500787F85 /* C700TimeThread.h in Headers */,
 				F527FFA31BEE323F0083E355 /* MemManager.h in Headers */,
 				F53602AB1984CF600079A9BE /* vstfxstore.h in Headers */,
 				F59D918A1BF71FCE00E5EFC6 /* DspController.h in Headers */,
