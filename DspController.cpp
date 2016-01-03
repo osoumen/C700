@@ -96,8 +96,8 @@ DspController::DspController()
     mDeviceReadyFunc = NULL;
     mDeviceExitFunc = NULL;
     
-    pthread_mutex_init(&mEmuMtx, 0);
-    pthread_mutex_init(&mHwMtx, 0);
+    MutexInit(mEmuMtx);
+    MutexInit(mHwMtx);
 }
 
 void DspController::init()
@@ -155,13 +155,13 @@ DspController::~DspController()
 {
     if (mIsHwAvailable) {
         mIsHwAvailable = false;
-        pthread_join(mWriteHwThread, NULL);
+        ThreadJoin(mWriteHwThread);
     }
     mSpcDev.Close();
     mEmuFifo.Clear();
     mHwFifo.Clear();
-    pthread_mutex_destroy(&mHwMtx);
-    pthread_mutex_destroy(&mEmuMtx);
+    MutexDestroy(mHwMtx);
+    MutexDestroy(mEmuMtx);
 }
 
 void DspController::onDeviceAdded(void *ref)
@@ -170,7 +170,7 @@ void DspController::onDeviceAdded(void *ref)
     
     int err = 0;
     
-    pthread_mutex_lock(&This->mHwMtx);
+    MutexLock(This->mHwMtx);
     
     // ハードウェアリセット
     This->mSpcDev.HwReset();
@@ -272,20 +272,20 @@ void DspController::onDeviceAdded(void *ref)
     
     This->mIsHwAvailable = true;
     
-    pthread_mutex_unlock(&This->mHwMtx);
+    MutexUnlock(This->mHwMtx);
     
     if (This->mDeviceReadyFunc) {
         This->mDeviceReadyFunc(This->mDeviceReadyFuncClass);
     }
     
-    pthread_mutex_lock(&This->mEmuMtx);
+    MutexLock(This->mEmuMtx);
     This->mWaitPort = -1;
     This->mWaitByte = 0;
     This->mEmuFifo.Clear();
-    pthread_mutex_unlock(&This->mEmuMtx);
+    MutexUnlock(This->mEmuMtx);
     
     // スレッドの開始
-    pthread_create(&This->mWriteHwThread, NULL, writeHwThreadFunc, This);
+    ThreadCreate(This->mWriteHwThread, writeHwThreadFunc, This);
 }
 
 void DspController::onDeviceRemoved(void *ref)
@@ -295,7 +295,7 @@ void DspController::onDeviceRemoved(void *ref)
     This->mIsHwAvailable = false;
     
     // スレッドの停止
-    pthread_join(This->mWriteHwThread, NULL);
+    ThreadJoin(This->mWriteHwThread);
     
     // DSPの復元
     This->mWaitPort = -1;
@@ -325,7 +325,7 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
         return;
     }
     
-    pthread_mutex_lock(&mEmuMtx);
+    MutexLock(mEmuMtx);
     for (int i=0; i<size; i++) {
 #ifndef USE_OPENSPC
         /*
@@ -357,10 +357,10 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
 #endif
         mWaitPort = -1;
     }
-    pthread_mutex_unlock(&mEmuMtx);
+    MutexUnlock(mEmuMtx);
 
     if (mIsHwAvailable) {
-        pthread_mutex_lock(&mHwMtx);
+        MutexLock(mHwMtx);
 #if 0
         // IPLに戻るために0x0004に非０を書き込む
         mSpcDev.BlockWrite(1, 0x01, 0x04, 0x00);
@@ -430,7 +430,7 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
         }
         mSpcDev.WriteBuffer();
 #endif
-        pthread_mutex_unlock(&mHwMtx);
+        MutexUnlock(mHwMtx);
     }
 }
 
@@ -442,7 +442,7 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
             Process1Sample(outl, outr);
         }
         
-        pthread_mutex_lock(&mEmuMtx);
+        MutexLock(mEmuMtx);
 #ifndef USE_OPENSPC
         /*
          mDsp.write_port(0, 1, write.data);
@@ -460,7 +460,7 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
         mWaitByte = mPort0stateEmu | 0x80;
         mPort0stateEmu = mPort0stateEmu ^ 0x01;
 #endif
-        pthread_mutex_unlock(&mEmuMtx);
+        MutexUnlock(mEmuMtx);
     }
     else {
         // mHwFifoに追加
@@ -484,7 +484,7 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
             int outl ,outr;
             Process1Sample(outl, outr);
         }
-        pthread_mutex_lock(&mEmuMtx);
+        MutexLock(mEmuMtx);
 #ifndef USE_OPENSPC
         mDsp.write_port(0, 1, data);
         mDsp.write_port(0, 2, addr);
@@ -497,7 +497,7 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
         mWaitPort = 0;
         mWaitByte = mPort0stateEmu;
         mPort0stateEmu = mPort0stateEmu ^ 0x01;
-        pthread_mutex_unlock(&mEmuMtx);
+        MutexUnlock(mEmuMtx);
         doWrite = true;
     }
     else {
@@ -523,7 +523,7 @@ void DspController::Process1Sample(int &outl, int &outr)
         outr = 0;
     }
     else {
-        pthread_mutex_lock(&mEmuMtx);
+        MutexLock(mEmuMtx);
         if (mWaitPort >= 0) {
 #ifndef USE_OPENSPC
             if (mDsp.read_port(0, mWaitPort) == mWaitByte) {
@@ -535,10 +535,10 @@ void DspController::Process1Sample(int &outl, int &outr)
                 mWaitPort = -1;
             }
 #endif
-            pthread_mutex_unlock(&mEmuMtx);
+            MutexUnlock(mEmuMtx);
         }
         else {
-            pthread_mutex_unlock(&mEmuMtx);
+            MutexUnlock(mEmuMtx);
             bool nowrite = false;
             do {
                 size_t numWrites = mEmuFifo.GetNumWrites();
@@ -556,14 +556,14 @@ void DspController::Process1Sample(int &outl, int &outr)
                 }
             } while (nowrite);
         }
-        pthread_mutex_lock(&mEmuMtx);
+        MutexLock(mEmuMtx);
 #ifndef USE_OPENSPC
         blargg_err_t err = mDsp.play(2, mOutSamples);
         assert(err == NULL);
 #else
         OSPC_Run(32, mOutSamples, dspOutBufSize);
 #endif
-        pthread_mutex_unlock(&mEmuMtx);
+        MutexUnlock(mEmuMtx);
         
         outl = mOutSamples[0];
         outr = mOutSamples[1];
@@ -623,7 +623,7 @@ void *DspController::writeHwThreadFunc(void *arg)
         getNowOSTime(nowTime);
         MSTime elapsedTime = calcusTime(nowTime, This->mFrameStartTime);
         
-        pthread_mutex_lock(&This->mHwMtx);
+        MutexLock(This->mHwMtx);
         while ((This->mHwFifo.GetNumWrites() > 0) &&
                (This->mHwFifo.GetFrontTime() < elapsedTime)) {
             DspRegFIFO::DspWrite writeData = This->mHwFifo.PopFront();
@@ -635,7 +635,7 @@ void *DspController::writeHwThreadFunc(void *arg)
             }
         }
         This->mSpcDev.WriteBuffer();
-        pthread_mutex_unlock(&This->mHwMtx);
+        MutexUnlock(This->mHwMtx);
         
         WaitMicroSeconds(500);
     }

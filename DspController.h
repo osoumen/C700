@@ -18,7 +18,6 @@
 #else
 #include "SNES_SPC.h"
 #endif
-#include <pthread.h>
 #include "C700TimeThread.h"
 
 #define DSP_VOL		(0x00)
@@ -76,7 +75,7 @@ private:
     DspRegFIFO          mHwFifo;
     int                 mDspMirror[128];
     
-    pthread_mutex_t     mEmuMtx;
+    MutexObject         mEmuMtx;
 #ifndef USE_OPENSPC
     SNES_SPC            mDsp;
 #endif
@@ -85,7 +84,7 @@ private:
     int                 mWaitByte;
     // mEmuMtx
     
-    pthread_mutex_t     mHwMtx;
+    MutexObject         mHwMtx;
     SpcControlDevice    mSpcDev;
     int                 mPort0stateHw;
     // mHwMtx
@@ -98,7 +97,7 @@ private:
     
     int                 mSampleInFrame;
     OSTime              mFrameStartTime;
-    pthread_t           mWriteHwThread;
+    ThreadObject        mWriteHwThread;
     
     void               (*mDeviceReadyFunc) (void* ownerClass);
 	void               *mDeviceReadyFuncClass;

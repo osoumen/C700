@@ -13,7 +13,7 @@
 #include "C700defines.h"
 #include "C700DSP.h"
 #include "DynamicVoiceManager.h"
-#include <pthread.h>
+#include "C700TimeThread.h"
 
 //-----------------------------------------------------------------------------
 typedef enum
@@ -195,7 +195,7 @@ private:
 	int				mProcessbuf[2][16];		//リサンプリング用バッファ
 	int				mProcessbufPtr;			//リサンプリング用バッファ書き込み位置
 	
-    pthread_mutex_t     mMIDIEvtMtx;
+    MutexObject         mMIDIEvtMtx;
 	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
 	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
     bool                mKeyOnFlag[kMaximumVoices]; // 次のProcessでKeyOnする
