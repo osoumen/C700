@@ -1,4 +1,4 @@
-//
+﻿//
 //  SpcControlDevice.cpp
 //  gimicUsbSpcPlay
 //
@@ -6,10 +6,19 @@
 //  Copyright (c) 2014年 osoumen. All rights reserved.
 //
 
-#include "unistd.h"
 #include "SpcControlDevice.h"
 #include <iomanip>
 #include <iostream>
+#ifdef _MSC_VER
+#include <Windows.h>
+// デバイスドライバのinf内で定義したGUID
+// (WinUSB.sys使用デバイスに対する識別子）
+// {63275336-530B-4069-92B6-5F8AE3465462}
+DEFINE_GUID(GUID_DEVINTERFACE_WINUSBTESTTARGET,
+	0x63275336, 0x530b, 0x4069, 0x92, 0xb6, 0x5f, 0x8a, 0xe3, 0x46, 0x54, 0x62);
+#else
+#include <unistd.h>
+#endif
 
 void printBytes(const unsigned char *data, int bytes)
 {
@@ -34,11 +43,21 @@ SpcControlDevice::~SpcControlDevice()
 int SpcControlDevice::Init()
 {
     mWriteBytes = BLOCKWRITE_CMD_LEN;    // 0xFD,0xB2,0xNN分
+
+#ifdef _MSC_VER
+	mUsbDev->BeginPortWait((LPGUID)&GUID_DEVINTERFACE_WINUSBTESTTARGET);
+#else
     mUsbDev->BeginPortWait(GIMIC_USBVID, GIMIC_USBPID, 1, 2);
+#endif
+
 #ifdef USB_CONSOLE_TEST
     int retryRemain = 100;
     while (!mUsbDev->isPlugged() && retryRemain > 0) {
+#ifdef _MSC_VER
+		::Sleep(10);
+#else
         usleep(10000);
+#endif
         retryRemain--;
     }
     if (!mUsbDev->isPlugged()) {

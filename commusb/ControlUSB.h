@@ -84,24 +84,59 @@ private:
 };
 
 #else
+
+#include <string>
+#include <Windows.h>
+#include <winusb.h>
+
 class ControlUSB {
 public:
-	ControlUSB() {}
-	virtual ~ControlUSB() {}
+	ControlUSB();
+	virtual ~ControlUSB();
 	
-	void	BeginPortWait(int vendor, int product) {}
-	void	EndPortWait() {}
+	void	BeginPortWait(LPGUID guid);
+	void	EndPortWait();
 
-	bool		isPlugged() { return false; }
-	void		removeDevice() {}
-	bool		resetrPipe() {}
-	bool		resetwPipe() {}
-	int			bulkWrite(unsigned char *buf, unsigned int size) { return -1; }
-	int			bulkWriteAsync(unsigned char *buf, unsigned int size) { return -1; }
-	int			bulkRead(unsigned char *buf, unsigned int size) { return -1; }
+	bool		isPlugged() { return mIsPlugged; }
+	void		removeDevice();
+	bool		resetrPipe();
+	bool		resetwPipe();
+	int			bulkWrite(UINT8 *buf, UINT32 size);
+	int			bulkWriteAsync(UINT8 *buf, UINT32 size);
+	int			bulkRead(UINT8 *buf, UINT32 size, UINT32 timeout);
+	int		    read(UINT8 *buf, UINT32 size);
+	int		    getReadableBytes();
+
+	void		setDeviceAddedFunc(void(*func) (void* ownerClass), void* ownerClass);
+	void		setDeviceRemovedFunc(void(*func) (void* ownerClass), void* ownerClass);
 
 private:
-	virtual void		onDeviceAdded() {}
-	virtual void		onDeviceRemoved() {}
+	static const int			WRITE_BUFFER_SIZE = 4096;
+	static const int			READ_BUFFER_SIZE = 4096;
+
+	bool						mIsRun;
+	volatile bool				mIsPlugged;
+
+	HANDLE						m_hDev;
+	WINUSB_INTERFACE_HANDLE		m_hWinUsb;
+	std::basic_string<TCHAR>	mDevPath;
+	UCHAR						mInPipeId;
+	USHORT						mInPipeMaxPktSize;
+	UCHAR						mOutPipeId;
+	USHORT						mOutPipeMaxPktSize;
+
+
+	UINT8						mWriteBuffer[WRITE_BUFFER_SIZE];
+	int							mWriteBufferPtr;
+	UINT8						mReadBuffer[READ_BUFFER_SIZE];
+	int							mReadBufferReadPtr;
+	int							mReadBufferWritePtr;
+
+	void(*mDeviceAddedFunc)		(void* ownerClass);
+	void                        *mDeviceAddedFuncClass;
+	void(*mDeviceRemovedFunc)	(void* ownerClass);
+	void                        *mDeviceRemovedFuncClass;
+
+	bool openDevice(std::basic_string<TCHAR> devpath);
 };
 #endif
