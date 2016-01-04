@@ -261,7 +261,7 @@ static const int kDefaultValue_ReleasePriority = 0;
 typedef struct BRRData {
     int             size;
     unsigned char   *data;
-    BRRData() : size(0), data(NULL) {}
+    BRRData() : size(0), data(0L) {}
     int samples() const { return (size/9)*16; }
 } BRRData;
 
@@ -287,7 +287,7 @@ public:
     
     bool        hasBrrData() const
     {
-        return (brr.data != NULL)?true:false;
+        return (brr.data != 0L)?true:false;
     }
     void        setLoop()
     {
@@ -311,7 +311,7 @@ public:
         if (brr.data) {
             delete [] brr.data;
         }
-        brr.data = NULL;
+        brr.data = 0L;
         brr.size = 0;
     }
 private:

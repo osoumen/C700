@@ -1,0 +1,345 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{59248302-52E0-4CC0-9BBE-E475BA4A9B41}</ProjectGuid>
+    <RootNamespace>C700</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4244;4305;4005;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ForcedIncludeFiles>C700_Prefix_VST.pch;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>vstplug.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4244;4305;4005;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ForcedIncludeFiles>C700_Prefix_VST.pch;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>vstplug.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level2</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4244;4305;4005;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ForcedIncludeFiles>C700_Prefix_VST.pch;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>vstplug.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4244;4305;4005;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ForcedIncludeFiles>C700_Prefix_VST.pch;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>vstplug.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\AudioFile.h" />
+    <ClInclude Include="..\brrcodec.h" />
+    <ClInclude Include="..\C700defines.h" />
+    <ClInclude Include="..\C700Driver.h" />
+    <ClInclude Include="..\C700DSP.h" />
+    <ClInclude Include="..\C700Edit.h" />
+    <ClInclude Include="..\C700GUI.h" />
+    <ClInclude Include="..\C700Kernel.h" />
+    <ClInclude Include="..\C700Parameters.h" />
+    <ClInclude Include="..\c700timethread.h" />
+    <ClInclude Include="..\C700VST.h" />
+    <ClInclude Include="..\commusb\ControlUSB.h" />
+    <ClInclude Include="..\commusb\SpcControlDevice.h" />
+    <ClInclude Include="..\ControlInstacnesDefs.h" />
+    <ClInclude Include="..\ControlInstances.h" />
+    <ClInclude Include="..\DataBuffer.h" />
+    <ClInclude Include="..\DspController.h" />
+    <ClInclude Include="..\DspRegFIFO.h" />
+    <ClInclude Include="..\DummyCntl.h" />
+    <ClInclude Include="..\DynamicVoiceManager.h" />
+    <ClInclude Include="..\EchoKernel.h" />
+    <ClInclude Include="..\EfxAccess.h" />
+    <ClInclude Include="..\FileAccess.h" />
+    <ClInclude Include="..\gauss.h" />
+    <ClInclude Include="..\LabelOnOffButton.h" />
+    <ClInclude Include="..\libpng\png.h" />
+    <ClInclude Include="..\libpng\pngconf.h" />
+    <ClInclude Include="..\libpng\pngpriv.h" />
+    <ClInclude Include="..\MemManager.h" />
+    <ClInclude Include="..\MyKnob.h" />
+    <ClInclude Include="..\MyParamDisplay.h" />
+    <ClInclude Include="..\MySlider.h" />
+    <ClInclude Include="..\MyTextEdit.h" />
+    <ClInclude Include="..\noveclib\fft_czt.h" />
+    <ClInclude Include="..\PGChunk.h" />
+    <ClInclude Include="..\PlistBRRFile.h" />
+    <ClInclude Include="..\RawBRRFile.h" />
+    <ClInclude Include="..\samplebrr.h" />
+    <ClInclude Include="..\SeparatorLine.h" />
+    <ClInclude Include="..\snes_spc\blargg_common.h" />
+    <ClInclude Include="..\snes_spc\blargg_config.h" />
+    <ClInclude Include="..\snes_spc\blargg_endian.h" />
+    <ClInclude Include="..\snes_spc\blargg_source.h" />
+    <ClInclude Include="..\snes_spc\dsp.h" />
+    <ClInclude Include="..\snes_spc\SNES_SPC.h" />
+    <ClInclude Include="..\snes_spc\spc.h" />
+    <ClInclude Include="..\snes_spc\SPC_CPU.h" />
+    <ClInclude Include="..\snes_spc\SPC_DSP.h" />
+    <ClInclude Include="..\snes_spc\SPC_Filter.h" />
+    <ClInclude Include="..\SPCFile.h" />
+    <ClInclude Include="..\vstgui\aeffguieditor.h" />
+    <ClInclude Include="..\vstgui\cfileselector.h" />
+    <ClInclude Include="..\vstgui\ctooltipsupport.h" />
+    <ClInclude Include="..\vstgui\cvstguitimer.h" />
+    <ClInclude Include="..\vstgui\vstcontrols.h" />
+    <ClInclude Include="..\vstgui\vstgui.h" />
+    <ClInclude Include="..\vstsdk2.4\pluginterfaces\vst2.x\aeffect.h" />
+    <ClInclude Include="..\vstsdk2.4\pluginterfaces\vst2.x\aeffectx.h" />
+    <ClInclude Include="..\vstsdk2.4\pluginterfaces\vst2.x\vstfxstore.h" />
+    <ClInclude Include="..\vstsdk2.4\public.sdk\source\vst2.x\aeffeditor.h" />
+    <ClInclude Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.h" />
+    <ClInclude Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.h" />
+    <ClInclude Include="..\WaveView.h" />
+    <ClInclude Include="..\XIFile.h" />
+    <ClInclude Include="..\zlib\crc32.h" />
+    <ClInclude Include="..\zlib\deflate.h" />
+    <ClInclude Include="..\zlib\inffast.h" />
+    <ClInclude Include="..\zlib\inffixed.h" />
+    <ClInclude Include="..\zlib\inflate.h" />
+    <ClInclude Include="..\zlib\inftrees.h" />
+    <ClInclude Include="..\zlib\trees.h" />
+    <ClInclude Include="..\zlib\zconf.h" />
+    <ClInclude Include="..\zlib\zlib.h" />
+    <ClInclude Include="..\zlib\zutil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\AudioFile.cpp" />
+    <ClCompile Include="..\brrcodec.cpp" />
+    <ClCompile Include="..\C700Driver.cpp" />
+    <ClCompile Include="..\C700DSP.cpp" />
+    <ClCompile Include="..\C700Edit.cpp" />
+    <ClCompile Include="..\C700GUI.cpp" />
+    <ClCompile Include="..\C700Kernel.cpp" />
+    <ClCompile Include="..\C700Parameters.cpp" />
+    <ClCompile Include="..\C700VST.cpp" />
+    <ClCompile Include="..\commusb\ControlUSB.cpp" />
+    <ClCompile Include="..\commusb\SpcControlDevice.cpp" />
+    <ClCompile Include="..\DataBuffer.cpp" />
+    <ClCompile Include="..\DspController.cpp" />
+    <ClCompile Include="..\DspRegFIFO.cpp" />
+    <ClCompile Include="..\DummyCntl.cpp" />
+    <ClCompile Include="..\DynamicVoiceManager.cpp" />
+    <ClCompile Include="..\EchoKernel.cpp" />
+    <ClCompile Include="..\EfxAccess.cpp" />
+    <ClCompile Include="..\FileAccess.cpp" />
+    <ClCompile Include="..\LabelOnOffButton.cpp" />
+    <ClCompile Include="..\libpng\png.c" />
+    <ClCompile Include="..\libpng\pngerror.c" />
+    <ClCompile Include="..\libpng\pngget.c" />
+    <ClCompile Include="..\libpng\pngmem.c" />
+    <ClCompile Include="..\libpng\pngpread.c" />
+    <ClCompile Include="..\libpng\pngread.c" />
+    <ClCompile Include="..\libpng\pngrio.c" />
+    <ClCompile Include="..\libpng\pngrtran.c" />
+    <ClCompile Include="..\libpng\pngrutil.c" />
+    <ClCompile Include="..\libpng\pngset.c" />
+    <ClCompile Include="..\libpng\pngtrans.c" />
+    <ClCompile Include="..\libpng\pngwio.c" />
+    <ClCompile Include="..\libpng\pngwrite.c" />
+    <ClCompile Include="..\libpng\pngwtran.c" />
+    <ClCompile Include="..\libpng\pngwutil.c" />
+    <ClCompile Include="..\MemManager.cpp" />
+    <ClCompile Include="..\MyKnob.cpp" />
+    <ClCompile Include="..\MyParamDisplay.cpp" />
+    <ClCompile Include="..\MySlider.cpp" />
+    <ClCompile Include="..\MyTextEdit.cpp" />
+    <ClCompile Include="..\noveclib\czt.cpp" />
+    <ClCompile Include="..\noveclib\fft.cpp" />
+    <ClCompile Include="..\PGChunk.cpp" />
+    <ClCompile Include="..\PlistBRRFile.cpp" />
+    <ClCompile Include="..\RawBRRFile.cpp" />
+    <ClCompile Include="..\SeparatorLine.cpp" />
+    <ClCompile Include="..\snes_spc\dsp.cpp" />
+    <ClCompile Include="..\snes_spc\SNES_SPC.cpp" />
+    <ClCompile Include="..\snes_spc\SNES_SPC_misc.cpp" />
+    <ClCompile Include="..\snes_spc\SNES_SPC_state.cpp" />
+    <ClCompile Include="..\snes_spc\spc.cpp" />
+    <ClCompile Include="..\snes_spc\SPC_DSP.cpp" />
+    <ClCompile Include="..\snes_spc\SPC_Filter.cpp" />
+    <ClCompile Include="..\SPCFile.cpp" />
+    <ClCompile Include="..\vstgui\aeffguieditor.cpp" />
+    <ClCompile Include="..\vstgui\cfileselector.cpp" />
+    <ClCompile Include="..\vstgui\ctooltipsupport.cpp" />
+    <ClCompile Include="..\vstgui\cvstguitimer.cpp" />
+    <ClCompile Include="..\vstgui\vstcontrols.cpp" />
+    <ClCompile Include="..\vstgui\vstgui.cpp" />
+    <ClCompile Include="..\vstgui\winfileselector.cpp" />
+    <ClCompile Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp" />
+    <ClCompile Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.cpp" />
+    <ClCompile Include="..\vstsdk2.4\public.sdk\source\vst2.x\vstplugmain.cpp" />
+    <ClCompile Include="..\WaveView.cpp" />
+    <ClCompile Include="..\XIFile.cpp" />
+    <ClCompile Include="..\zlib\adler32.c" />
+    <ClCompile Include="..\zlib\compress.c" />
+    <ClCompile Include="..\zlib\crc32.c" />
+    <ClCompile Include="..\zlib\deflate.c" />
+    <ClCompile Include="..\zlib\gzclose.c" />
+    <ClCompile Include="..\zlib\gzlib.c" />
+    <ClCompile Include="..\zlib\gzread.c" />
+    <ClCompile Include="..\zlib\gzwrite.c" />
+    <ClCompile Include="..\zlib\infback.c" />
+    <ClCompile Include="..\zlib\inffast.c" />
+    <ClCompile Include="..\zlib\inflate.c" />
+    <ClCompile Include="..\zlib\inftrees.c" />
+    <ClCompile Include="..\zlib\trees.c" />
+    <ClCompile Include="..\zlib\uncompr.c" />
+    <ClCompile Include="..\zlib\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\graphics\C700.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\C700_Prefix_VST.pch" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

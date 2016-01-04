@@ -1,4 +1,4 @@
-//
+﻿//
 //  DspController.cpp
 //  C700
 //
@@ -618,7 +618,7 @@ void DspController::EndMuteEmulation()
 }
 
 #ifdef _MSC_VER
-DWORD WINAPI *DspController::writeHwThreadFunc(LPVOID)
+DWORD WINAPI DspController::writeHwThreadFunc(LPVOID arg)
 #else
 void *DspController::writeHwThreadFunc(void *arg)
 #endif

@@ -1,4 +1,4 @@
-//
+﻿//
 //  C700TimeThread.h
 //  C700
 //
@@ -13,6 +13,7 @@
 
 #include <thread>
 #include <chrono>
+#include <Windows.h>
 // std::chrono による時間計測(非unix系)
 typedef long long MSTime;
 typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::system_clock::duration> OSTime;
@@ -31,10 +32,10 @@ inline void WaitMicroSeconds(MSTime usec) {
 
 // Windows標準のスレッド処理
 typedef HANDLE ThreadObject;
-typedef DWORD WINAPI *(*ThreadFunc)(LPVOID);
+typedef LPTHREAD_START_ROUTINE ThreadFunc;
 inline void ThreadCreate(HANDLE &obj, ThreadFunc start_routine, LPVOID arg) {
     DWORD dwID;
-	mCommThread = CreateThread(NULL, 0, start_routine, arg, 0, &dwID);
+	obj = CreateThread(NULL, 0, start_routine, arg, 0, &dwID);
 }
 inline void ThreadJoin(HANDLE &obj) {
     WaitForSingleObject(obj, INFINITE);
