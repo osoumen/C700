@@ -1,4 +1,4 @@
-//
+﻿//
 //  DynamicVoiceManager.h
 //  C700
 //

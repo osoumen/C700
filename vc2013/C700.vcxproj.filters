@@ -1,0 +1,517 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\vst2.x">
+      <UniqueIdentifier>{b48992f5-3b13-460c-b262-71a8f59fc41e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{45668a5a-37ae-4af1-b1ec-de161b1c2728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C700source">
+      <UniqueIdentifier>{219af010-7e3f-4a7e-90c2-813ccaf328aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C700source\VST Source">
+      <UniqueIdentifier>{3d0d72d0-bfe0-444b-820d-175320cf544c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C700source\Common Source">
+      <UniqueIdentifier>{28960f4c-fec2-4e02-ba78-524b7fd83aab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C700source\Common Source\commusb">
+      <UniqueIdentifier>{810fa470-a788-4248-aaa2-1f4abe30ffbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C700source\UI">
+      <UniqueIdentifier>{3584b551-8787-4f0b-b650-e6d9a45b4499}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C700source\snes_spc">
+      <UniqueIdentifier>{b0c79906-06d7-499a-ad23-0ed9f063a8d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VSTGUI">
+      <UniqueIdentifier>{697f4cf9-cdfd-440e-a888-1c335f11be18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libpng">
+      <UniqueIdentifier>{65b46592-5a1e-4466-b782-e42c9b12e680}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zlib">
+      <UniqueIdentifier>{fe8a6391-463f-4d1c-b208-2e63bf48f83b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\vstsdk2.4\public.sdk\source\vst2.x\aeffeditor.h">
+      <Filter>Source Files\vst2.x</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.h">
+      <Filter>Source Files\vst2.x</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.h">
+      <Filter>Source Files\vst2.x</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstsdk2.4\pluginterfaces\vst2.x\aeffect.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstsdk2.4\pluginterfaces\vst2.x\aeffectx.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstsdk2.4\pluginterfaces\vst2.x\vstfxstore.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\C700VST.h">
+      <Filter>C700source\VST Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGChunk.h">
+      <Filter>C700source\VST Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AudioFile.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\brrcodec.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\C700defines.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\C700Driver.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\C700DSP.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\C700Kernel.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\C700Parameters.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DataBuffer.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DspController.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DspRegFIFO.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DynamicVoiceManager.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EchoKernel.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\noveclib\fft_czt.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gauss.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MemManager.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RawBRRFile.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\samplebrr.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\commusb\ControlUSB.h">
+      <Filter>C700source\Common Source\commusb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\commusb\SpcControlDevice.h">
+      <Filter>C700source\Common Source\commusb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\C700Edit.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\C700GUI.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ControlInstacnesDefs.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ControlInstances.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DummyCntl.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EfxAccess.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\FileAccess.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LabelOnOffButton.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MyKnob.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MyParamDisplay.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MySlider.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MyTextEdit.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PlistBRRFile.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SeparatorLine.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPCFile.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WaveView.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XIFile.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\blargg_common.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\blargg_config.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\blargg_endian.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\blargg_source.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\dsp.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\SNES_SPC.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\spc.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\SPC_CPU.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\SPC_DSP.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\SPC_Filter.h">
+      <Filter>C700source\snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstgui\aeffguieditor.h">
+      <Filter>VSTGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstgui\cfileselector.h">
+      <Filter>VSTGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstgui\ctooltipsupport.h">
+      <Filter>VSTGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstgui\cvstguitimer.h">
+      <Filter>VSTGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstgui\vstcontrols.h">
+      <Filter>VSTGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vstgui\vstgui.h">
+      <Filter>VSTGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libpng\png.h">
+      <Filter>libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libpng\pngconf.h">
+      <Filter>libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libpng\pngpriv.h">
+      <Filter>libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\crc32.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\deflate.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\inffast.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\inffixed.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\inflate.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\inftrees.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\trees.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\zconf.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\zlib.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\zlib\zutil.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\c700timethread.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp">
+      <Filter>Source Files\vst2.x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.cpp">
+      <Filter>Source Files\vst2.x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vstsdk2.4\public.sdk\source\vst2.x\vstplugmain.cpp">
+      <Filter>Source Files\vst2.x</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C700VST.cpp">
+      <Filter>C700source\VST Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PGChunk.cpp">
+      <Filter>C700source\VST Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AudioFile.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\brrcodec.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C700Driver.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C700DSP.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C700Kernel.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C700Parameters.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\noveclib\czt.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DataBuffer.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DspController.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DspRegFIFO.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DynamicVoiceManager.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\EchoKernel.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\noveclib\fft.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MemManager.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RawBRRFile.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\commusb\ControlUSB.cpp">
+      <Filter>C700source\Common Source\commusb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\commusb\SpcControlDevice.cpp">
+      <Filter>C700source\Common Source\commusb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C700Edit.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C700GUI.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DummyCntl.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\EfxAccess.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\FileAccess.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LabelOnOffButton.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MyKnob.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MyParamDisplay.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MySlider.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MyTextEdit.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PlistBRRFile.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SeparatorLine.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SPCFile.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\WaveView.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XIFile.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\dsp.cpp">
+      <Filter>C700source\snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SNES_SPC.cpp">
+      <Filter>C700source\snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SNES_SPC_misc.cpp">
+      <Filter>C700source\snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SNES_SPC_state.cpp">
+      <Filter>C700source\snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\spc.cpp">
+      <Filter>C700source\snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SPC_DSP.cpp">
+      <Filter>C700source\snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SPC_Filter.cpp">
+      <Filter>C700source\snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vstgui\aeffguieditor.cpp">
+      <Filter>VSTGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vstgui\cfileselector.cpp">
+      <Filter>VSTGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vstgui\ctooltipsupport.cpp">
+      <Filter>VSTGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vstgui\cvstguitimer.cpp">
+      <Filter>VSTGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vstgui\vstcontrols.cpp">
+      <Filter>VSTGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vstgui\vstgui.cpp">
+      <Filter>VSTGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vstgui\winfileselector.cpp">
+      <Filter>VSTGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\png.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngerror.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngget.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngmem.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngpread.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngread.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngrio.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngrtran.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngrutil.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngset.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngtrans.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngwio.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngwrite.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngwtran.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libpng\pngwutil.c">
+      <Filter>libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\adler32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\compress.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\crc32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\deflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\gzclose.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\gzlib.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\gzread.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\gzwrite.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\infback.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\inffast.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\inflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\inftrees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\trees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\uncompr.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\zlib\zutil.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\graphics\C700.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\C700_Prefix_VST.pch" />
+  </ItemGroup>
+</Project>

@@ -104,8 +104,11 @@ private:
     void               (*mDeviceExitFunc) (void* ownerClass);
 	void               *mDeviceExitFuncClass;
     
+#ifdef _MSC_VER
+	static DWORD WINAPI writeHwThreadFunc(LPVOID);
+#else
     static void *writeHwThreadFunc(void *arg);
-    
+#endif
     void doWriteDspHw(int addr, unsigned char data);
     void doWriteRamHw(int addr, unsigned char data);
     

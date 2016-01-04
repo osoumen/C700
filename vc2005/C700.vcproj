@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\;..\libpng;..\zlib;..\vstgui;..\vstsdk2.4;..\vstsdk2.4\pluginterfaces\vst2.x;..\vstsdk2.4\public.sdk\source\vst2.x"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -124,7 +124,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\;..\libpng;..\zlib;..\vstgui;..\vstsdk2.4;..\vstsdk2.4\pluginterfaces\vst2.x;..\vstsdk2.4\public.sdk\source\vst2.x"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -203,7 +203,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\;..\libpng;..\zlib;..\vstgui;..\vstsdk2.4;..\vstsdk2.4\pluginterfaces\vst2.x;..\vstsdk2.4\public.sdk\source\vst2.x"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -283,7 +283,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\;..\libpng;..\zlib;..\vstgui;..\vstsdk2.4;..\vstsdk2.4\pluginterfaces\vst2.x;..\vstsdk2.4\public.sdk\source\vst2.x"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -438,11 +438,19 @@
 					>
 				</File>
 				<File
-					RelativePath="..\C700Generator.cpp"
+					RelativePath="..\C700Driver.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\C700Generator.h"
+					RelativePath="..\C700Driver.h"
+					>
+				</File>
+				<File
+					RelativePath="..\C700DSP.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\C700DSP.h"
 					>
 				</File>
 				<File
@@ -474,6 +482,30 @@
 					>
 				</File>
 				<File
+					RelativePath="..\DspController.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DspController.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DspRegFIFO.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DspRegFIFO.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DynamicVoiceManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DynamicVoiceManager.h"
+					>
+				</File>
+				<File
 					RelativePath="..\EchoKernel.cpp"
 					>
 				</File>
@@ -494,6 +526,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\MemManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\MemManager.h"
+					>
+				</File>
+				<File
 					RelativePath="..\RawBRRFile.cpp"
 					>
 				</File>
@@ -505,6 +545,26 @@
 					RelativePath="..\samplebrr.h"
 					>
 				</File>
+				<Filter
+					Name="commusb"
+					>
+					<File
+						RelativePath="..\commusb\ControlUSB.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\commusb\ControlUSB.h"
+						>
+					</File>
+					<File
+						RelativePath="..\commusb\SpcControlDevice.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\commusb\SpcControlDevice.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="UI"
@@ -635,6 +695,78 @@
 				</File>
 				<File
 					RelativePath="..\XIFile.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="snes_spc"
+				>
+				<File
+					RelativePath="..\snes_spc\blargg_common.h"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\blargg_config.h"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\blargg_endian.h"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\blargg_source.h"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\dsp.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\dsp.h"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\SNES_SPC.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\SNES_SPC.h"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\SNES_SPC_misc.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\SNES_SPC_state.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\spc.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\spc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\SPC_CPU.h"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\SPC_DSP.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\SPC_DSP.h"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\SPC_Filter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\snes_spc\SPC_Filter.h"
 					>
 				</File>
 			</Filter>
