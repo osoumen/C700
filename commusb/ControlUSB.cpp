@@ -744,14 +744,16 @@ void ControlUSB::EndPortWait()
 
 void ControlUSB::removeDevice()
 {
-	WinUsb_Free(m_hWinUsb);
-	CloseHandle(m_hDev);
-	m_hDev = NULL;
-	m_hWinUsb = NULL;
+	if (mIsPlugged) {
+		WinUsb_Free(m_hWinUsb);
+		CloseHandle(m_hDev);
+		m_hDev = NULL;
+		m_hWinUsb = NULL;
+		mIsPlugged = false;
 
-	mIsPlugged = false;
-	if (mDeviceRemovedFunc) {
-		mDeviceRemovedFunc(mDeviceRemovedFuncClass);
+		if (mDeviceRemovedFunc) {
+			mDeviceRemovedFunc(mDeviceRemovedFuncClass);
+		}
 	}
 }
 bool ControlUSB::resetrPipe()
