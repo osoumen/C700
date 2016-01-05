@@ -422,11 +422,17 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
             InstParams inst;
 			if ( isPreset ) {
 				pg->ReadDataToVP(&inst);
+				mEfx->SetBRRData(inst.brrData(), inst.brrSize(), editProg);
                 mEfx->SetVP(editProg, &inst);
+				mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
+				mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, inst.lp);
 			}
 			else {
 				pg->ReadDataToVP(&inst);
+				mEfx->SetBRRData(inst.brrData(), inst.brrSize(), pgnum);
                 mEfx->SetVP(pgnum, &inst);
+				mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, pgnum);
+				mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, inst.lp);
 			}
 			delete pg;
 			saveChunk->AdvDataPos(ckSize);
