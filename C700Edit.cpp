@@ -132,7 +132,7 @@ void C700Edit::close()
 	}
 	if (frame)
 	{
-		frame->removeAll();
+		//frame->removeAll();
 		frame->forget();
 	}
 	frame = NULL;
