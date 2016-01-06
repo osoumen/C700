@@ -89,7 +89,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;DEBUG_PRINT;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -114,7 +114,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;DEBUG_PRINT;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
