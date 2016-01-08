@@ -11,23 +11,24 @@
 
 #ifdef _MSC_VER
 
-#include <thread>
-#include <chrono>
 #include <Windows.h>
-// std::chrono による時間計測(非unix系)
+// QueryPerformanceCounter による時間計測(Windows)
 typedef long long MSTime;
-typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::system_clock::duration> OSTime;
+typedef LARGE_INTEGER OSTime;
 inline MSTime calcusTime(const OSTime &end, const OSTime &st) {
-	return std::chrono::duration_cast<std::chrono::microseconds>(end - st).count();
+	LARGE_INTEGER nFreq;
+	QueryPerformanceFrequency(&nFreq);
+	return (MSTime)((end.QuadPart - st.QuadPart) * 1000000 / nFreq.QuadPart);
 }
 inline void getNowOSTime(OSTime &time) {
-	time = std::chrono::system_clock::now();
+	QueryPerformanceCounter(&time);
 }
+/*
 inline void operator += (OSTime &time, MSTime addus) {
 	time += std::chrono::microseconds(addus);
-}
+}*/
 inline void WaitMicroSeconds(MSTime usec) {
-	std::this_thread::sleep_for(std::chrono::microseconds(usec));
+	::Sleep(usec / 1000);	// 現状1ms未満の箇所は無い
 }
 
 // Windows標準のスレッド処理
