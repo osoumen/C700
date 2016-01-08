@@ -628,7 +628,7 @@ void *DspController::writeHwThreadFunc(void *arg)
         OSTime nowTime;
         getNowOSTime(nowTime);
         MSTime elapsedTime = calcusTime(nowTime, This->mFrameStartTime);
-        
+		bool write = false;
         MutexLock(This->mHwMtx);
         while ((This->mHwFifo.GetNumWrites() > 0) &&
                (This->mHwFifo.GetFrontTime() < elapsedTime)) {
@@ -639,11 +639,14 @@ void *DspController::writeHwThreadFunc(void *arg)
             else {
                 This->doWriteDspHw(writeData.addr, writeData.data);
             }
+			write = true;
         }
         This->mSpcDev.WriteBuffer();
         MutexUnlock(This->mHwMtx);
         
-        WaitMicroSeconds(500);
+		if (!write) {
+			WaitMicroSeconds(1000);
+		}
     }
     return 0;
 }
