@@ -246,7 +246,7 @@ void C700Driver::doProgramChange( int ch, int value )
         mChStat[ch].changeFlg = 0;
         mChStat[ch].changedVP = mVPset[mChStat[ch].prog];
         
-        SetPortamentTime(ch, value);
+        SetPortamentTime(ch, mVPset[mChStat[ch].prog].portamentoRate);
     }
 }
 
