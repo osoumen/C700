@@ -147,7 +147,9 @@ void C700DSP::SetRealEmulation(bool value)
     mUseRealEmulation = value;
     if (value) {
         mDsp.EndMuteEmulation();
-        mDsp.WriteRam(0x200, &mRam[0x200], 0x400);
+        if (!mDsp.IsHwAvailable()) {
+            mDsp.WriteRam(0x200, &mRam[0x200], 0x400);
+        }
     }
     else {
         mDsp.StartMuteEmulation();

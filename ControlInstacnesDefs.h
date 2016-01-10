@@ -2926,7 +2926,7 @@ ControlInstances	sCntl[] = {
     {
 		'VeMa',	//sig
 		'menu',	//kind
-		"Old;Relaxed;Real",	//title
+		"Old;Relaxed;Accurate",	//title
 		2,	//Value
 		0,	//Minimum
 		2,	//Maximum
