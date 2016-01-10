@@ -1137,7 +1137,7 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
     }
     */
     
-    mDSP.BeginFrameProcess();
+    mDSP.BeginFrameProcess((double)frames / mSampleRate);
     
 	for (unsigned int frame=0; frame<frames; ++frame) {
 		//ƒCƒxƒ“ƒgˆ—

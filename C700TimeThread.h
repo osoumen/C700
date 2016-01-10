@@ -23,10 +23,11 @@ inline MSTime calcusTime(const OSTime &end, const OSTime &st) {
 inline void getNowOSTime(OSTime &time) {
 	QueryPerformanceCounter(&time);
 }
-/*
 inline void operator += (OSTime &time, MSTime addus) {
-	time += std::chrono::microseconds(addus);
-}*/
+    LARGE_INTEGER nFreq;
+	QueryPerformanceFrequency(&nFreq);
+	time.QuadPart += (addus * nFreq.QuadPart) / 1000000;
+}
 inline void WaitMicroSeconds(MSTime usec) {
 	::Sleep(usec / 1000);	// 現状1ms未満の箇所は無い
 }

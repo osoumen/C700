@@ -56,7 +56,7 @@ public:
     void WriteRam(int addr, unsigned char data, bool nonRealtime);
     bool WriteDsp(int addr, unsigned char data, bool nonRealtime);
     void Process1Sample(int &outl, int &outr);
-    void BeginFrameProcess();
+    void BeginFrameProcess(double frameTime);
     void StartMuteEmulation();
     void EndMuteEmulation();
     
@@ -96,7 +96,11 @@ private:
 #endif
     
     int                 mSampleInFrame;
+    OSTime              mPrevFrameStartTime;
     OSTime              mFrameStartTime;
+    OSTime              mNextFrameStartTime;
+    MSTime              mHwDelayTime;
+    double              mFrameTime;
     ThreadObject        mWriteHwThread;
     
     void               (*mDeviceReadyFunc) (void* ownerClass);
