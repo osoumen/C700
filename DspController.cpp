@@ -471,7 +471,7 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
     else {
         // mHwFifoに追加
         if (mIsHwAvailable) {
-            long int frameTime = (mSampleInFrame * 1e6) / 32000;
+			long int frameTime = (mSampleInFrame * 1e6) / 32000 + mHwDelayTime;
             mHwFifo.AddRamWrite(frameTime, addr, data);
         }
         else if (!mMuteEmulation) {
@@ -511,7 +511,7 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
             mDspMirror[addr] = data;
             // mHwFifoに追加
             if (mIsHwAvailable) {
-                long int frameTime = (mSampleInFrame * 1e6) / 32000;
+				long int frameTime = (mSampleInFrame * 1e6) / 32000 + mHwDelayTime;
                 mHwFifo.AddDspWrite(frameTime, addr, data);
             }
             else if (!mMuteEmulation) {
@@ -609,7 +609,7 @@ void DspController::BeginFrameProcess(double frameTime)
         mFrameTime = 0;
     }
     MutexUnlock(mHwMtx);
-    mHwDelayTime = advTime / 4;
+	mHwDelayTime = 0;
     mPrevFrameStartTime = nowTime;
 }
 
@@ -652,7 +652,7 @@ void *DspController::writeHwThreadFunc(void *arg)
     while (This->mIsHwAvailable) {
         OSTime nowTime;
         getNowOSTime(nowTime);
-        MSTime elapsedTime = calcusTime(nowTime, This->mFrameStartTime) - This->mHwDelayTime;  // 1msのバッファ
+        MSTime elapsedTime = calcusTime(nowTime, This->mFrameStartTime);
 		bool write = false;
         MutexLock(This->mHwMtx);
         while ((This->mHwFifo.GetNumWrites() > 0) &&
