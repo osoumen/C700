@@ -38,6 +38,7 @@ typedef LPTHREAD_START_ROUTINE ThreadFunc;
 inline void ThreadCreate(HANDLE &obj, ThreadFunc start_routine, LPVOID arg) {
     DWORD dwID;
 	obj = CreateThread(NULL, 0, start_routine, arg, 0, &dwID);
+	SetThreadPriority(obj, THREAD_PRIORITY_HIGHEST);
 }
 inline void ThreadJoin(HANDLE &obj) {
     WaitForSingleObject(obj, INFINITE);
