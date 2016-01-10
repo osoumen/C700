@@ -60,7 +60,7 @@ public:
     void KeyOnVoiceFlg(int flg);
     
     void Process1Sample(int &outl, int &outr);
-    void BeginFrameProcess();
+    void BeginFrameProcess(double frameTime);
     
     bool IsHwAvailable() { return mDsp.IsHwAvailable(); }
     

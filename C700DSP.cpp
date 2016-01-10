@@ -636,9 +636,9 @@ void C700DSP::Process1Sample(int &outl, int &outr)
     }
 }
 
-void C700DSP::BeginFrameProcess()
+void C700DSP::BeginFrameProcess(double frameTime)
 {
-    mDsp.BeginFrameProcess();
+    mDsp.BeginFrameProcess(frameTime);
 }
 
 void C700DSP::onDeviceReady(void *ref)

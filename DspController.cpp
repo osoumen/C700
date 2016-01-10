@@ -91,7 +91,11 @@ DspController::DspController()
     mIsHwAvailable = false;
     mMuteEmulation = false;
     mSampleInFrame = 0;
+    getNowOSTime(mPrevFrameStartTime);
     getNowOSTime(mFrameStartTime);
+    getNowOSTime(mNextFrameStartTime);
+    mFrameTime = .0;
+    mHwDelayTime = 0;
     
     mDeviceReadyFunc = NULL;
     mDeviceExitFunc = NULL;
@@ -573,19 +577,40 @@ void DspController::Process1Sample(int &outl, int &outr)
     mSampleInFrame++;
 }
 
-void DspController::BeginFrameProcess()
+void DspController::BeginFrameProcess(double frameTime)
 {
     mSampleInFrame = 0;
     
     // バッファにに残っている分の時間を進める
     OSTime nowTime;
     getNowOSTime(nowTime);
-    MSTime elapsedTime = calcusTime(nowTime, mFrameStartTime);
-    mHwFifo.AddTime(-elapsedTime);
+    MSTime elapsedTime = calcusTime(nowTime, mPrevFrameStartTime);
 #ifdef DEBUG_PRINT
     //std::cout << elapsedTime << std::endl;
 #endif
-    mFrameStartTime = nowTime;
+    MutexLock(mHwMtx);
+    if (calcusTime(mNextFrameStartTime, nowTime) > 0) {
+        mFrameStartTime = mNextFrameStartTime;
+    }
+    else {
+        mFrameStartTime = nowTime;
+        mFrameTime = 0;
+    }
+    mNextFrameStartTime = mFrameStartTime;
+    mFrameTime += frameTime;
+    MSTime advTime = mFrameTime * 1e6;
+    mFrameTime -= advTime / 1000000.0;
+    // 経過時間がフレーム時間の半分以下のときはオフライン処理とみなして加算しない
+    if (elapsedTime > (advTime / 2)) {
+        mNextFrameStartTime += advTime;
+        mHwFifo.AddTime(-advTime);
+    }
+    else {
+        mFrameTime = 0;
+    }
+    MutexUnlock(mHwMtx);
+    mHwDelayTime = advTime / 4;
+    mPrevFrameStartTime = nowTime;
 }
 
 void DspController::StartMuteEmulation()
@@ -627,7 +652,7 @@ void *DspController::writeHwThreadFunc(void *arg)
     while (This->mIsHwAvailable) {
         OSTime nowTime;
         getNowOSTime(nowTime);
-        MSTime elapsedTime = calcusTime(nowTime, This->mFrameStartTime);
+        MSTime elapsedTime = calcusTime(nowTime, This->mFrameStartTime) - This->mHwDelayTime;  // 1msのバッファ
 		bool write = false;
         MutexLock(This->mHwMtx);
         while ((This->mHwFifo.GetNumWrites() > 0) &&
