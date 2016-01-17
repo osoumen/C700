@@ -609,7 +609,7 @@ void DspController::BeginFrameProcess(double frameTime)
         mFrameTime = 0;
     }
     MutexUnlock(mHwMtx);
-	mHwDelayTime = advTime * 10;
+	mHwDelayTime = advTime / 4;
     mPrevFrameStartTime = nowTime;
 }
 
