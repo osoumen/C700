@@ -9,6 +9,7 @@
 
 #include "MyParamDisplay.h"
 #include <stdio.h>
+#include <cmath>
 
 //------------------------------------------------------------------------
 CMyParamDisplay::CMyParamDisplay(const CRect& size, long tag, float valueMultipler, char *unitStr, CBitmap* background, const long style)
@@ -40,7 +41,7 @@ CMyParamDisplay::~CMyParamDisplay()
 void CMyParamDisplay::stringConvert(float value, char *string, void *userData)
 {
 	CMyParamDisplay	*This = static_cast<CMyParamDisplay*>(userData);
-	int intValue = value * This->mValueMultipler + 0.5f;
+	int intValue = roundf(value * This->mValueMultipler);
 	sprintf(string, "%d%s", intValue, This->mUnitStr);
 }
 
