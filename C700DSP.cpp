@@ -633,6 +633,7 @@ void C700DSP::Process1Sample(int &outl, int &outr)
     else {
         outl = 0;
         outr = 0;
+		mDsp.IncSampleInFrame();
     }
 }
 
