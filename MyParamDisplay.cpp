@@ -40,7 +40,7 @@ CMyParamDisplay::~CMyParamDisplay()
 void CMyParamDisplay::stringConvert(float value, char *string, void *userData)
 {
 	CMyParamDisplay	*This = static_cast<CMyParamDisplay*>(userData);
-	int intValue = value * This->mValueMultipler;
+	int intValue = value * This->mValueMultipler + 0.5f;
 	sprintf(string, "%d%s", intValue, This->mUnitStr);
 }
 
