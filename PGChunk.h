@@ -29,7 +29,7 @@ public:
 
 	typedef struct {
 		int		type;
-		long	size;	//ヘッダを除いたデータサイズ
+		int     size;	//ヘッダを除いたデータサイズ
 	} MyChunkHead;
 	
 private:	
