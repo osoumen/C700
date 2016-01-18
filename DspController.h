@@ -56,6 +56,7 @@ public:
     void WriteRam(int addr, unsigned char data, bool nonRealtime);
     bool WriteDsp(int addr, unsigned char data, bool nonRealtime);
     void Process1Sample(int &outl, int &outr);
+	void IncSampleInFrame() { mSampleInFrame++; }
     void BeginFrameProcess(double frameTime);
     void StartMuteEmulation();
     void EndMuteEmulation();
