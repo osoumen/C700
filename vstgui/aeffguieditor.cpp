@@ -177,7 +177,9 @@ bool AEffGUIEditor::onWheel (float distance)
 void AEffGUIEditor::wait (unsigned long ms)
 {
 	#if MAC
-	RunCurrentEventLoop (kEventDurationMillisecond * ms);
+	//RunCurrentEventLoop (kEventDurationMillisecond * ms);
+    unsigned long ticks;
+	Delay (ms * 60 / 1000, &ticks);
 	
 	#elif WINDOWS
 	Sleep (ms);
@@ -260,6 +262,33 @@ END_NAMESPACE_VSTGUI
 #define VSTGUI_BUNDLEREF gBundleRef
 #endif
 
+#if PLUGGUI_STANDALONE
+void InitMachOLibrary ()
+{
+	VSTGUI_BUNDLEREF = CFBundleGetMainBundle ();
+}
+
+void ExitMachOLibrary () {}
+#else
+#if 1
+#include "getpluginbundle.h"
+// -----------------------------------------------------------------------------
+BEGIN_NAMESPACE_VSTGUI
+void InitMachOLibrary ();
+void InitMachOLibrary ()
+{
+	gBundleRef = GetPluginBundle ();
+}
+
+// -----------------------------------------------------------------------------
+void ExitMachOLibrary ();
+void ExitMachOLibrary ()
+{
+	if (gBundleRef)
+		CFRelease (gBundleRef);
+}
+END_NAMESPACE_VSTGUI
+#else
 // -----------------------------------------------------------------------------
 static CFBundleRef _CFXBundleCreateFromImageName (CFAllocatorRef allocator, const char* image_name);
 static CFBundleRef _CFXBundleCreateFromImageName (CFAllocatorRef allocator, const char* image_name)
@@ -320,4 +349,6 @@ void ExitMachOLibrary ()
 		CFRelease (VSTGUI_BUNDLEREF);
 }
 
+#endif
+#endif
 #endif
