@@ -26,8 +26,8 @@ typedef enum
 typedef enum
 {
     kEngineType_Old = 0,
-    kEngineType_Light,
-    kEngineType_Real
+    kEngineType_Relaxed,
+    kEngineType_Accurate
 } engine_type;
 //-----------------------------------------------------------------------------
 class C700Driver
@@ -220,6 +220,9 @@ private:
     MemManager      mMemManager;
     C700DSP         mDSP;
     VoiceStatus		mVoiceStat[kMaximumVoices];
+    
+    int             mVoiceLimit;
+    bool            mIsFixedVoiceLimitMode;
 	
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
