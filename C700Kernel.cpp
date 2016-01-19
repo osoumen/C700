@@ -175,10 +175,10 @@ bool C700Kernel::SetParameter( int id, float value )
                     mGenerator.SetEngineType(kEngineType_Old);
                     break;
                 case 1:
-                    mGenerator.SetEngineType(kEngineType_Light);
+                    mGenerator.SetEngineType(kEngineType_Relaxed);
                     break;
                 case 2:
-                    mGenerator.SetEngineType(kEngineType_Real);
+                    mGenerator.SetEngineType(kEngineType_Accurate);
                     break;
             }
 			break;

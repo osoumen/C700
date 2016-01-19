@@ -88,6 +88,9 @@ C700Driver::C700Driver()
 	//Initialize
     mVibfreq = 0.00137445;
 	mVibdepth = 0.5;
+    
+    mVoiceLimit = 8;
+    mIsFixedVoiceLimitMode = false;
 
     mEventDelayClocks = 8192;   // 8ms
     mEventDelaySamples = calcEventDelaySamples();
@@ -306,8 +309,11 @@ void C700Driver::Damper( int ch, bool on )
 //-----------------------------------------------------------------------------
 void C700Driver::SetVoiceLimit( int value )
 {
-	mVoiceManager.ChangeVoiceLimit(value);
-    mDSP.SetVoiceLimit(value);
+    mVoiceLimit = value;
+    if (!mIsFixedVoiceLimitMode) {
+        mVoiceManager.ChangeVoiceLimit(value);
+        mDSP.SetVoiceLimit(value);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -330,14 +336,23 @@ void C700Driver::SetEngineType( engine_type type )
         case kEngineType_Old:
             mDSP.SetNewADPCM(false);
             mDSP.SetRealEmulation(false);
+            mIsFixedVoiceLimitMode = false;
+            mVoiceManager.ChangeVoiceLimit(mVoiceLimit);
+            mDSP.SetVoiceLimit(mVoiceLimit);
             break;
-        case kEngineType_Light:
+        case kEngineType_Relaxed:
             mDSP.SetNewADPCM(true);
             mDSP.SetRealEmulation(false);
+            mIsFixedVoiceLimitMode = false;
+            mVoiceManager.ChangeVoiceLimit(mVoiceLimit);
+            mDSP.SetVoiceLimit(mVoiceLimit);
             break;
-        case kEngineType_Real:
+        case kEngineType_Accurate:
             mDSP.SetNewADPCM(true);
             mDSP.SetRealEmulation(true);
+            mIsFixedVoiceLimitMode = true;
+            mVoiceManager.ChangeVoiceLimit(8);
+            mDSP.SetVoiceLimit(8);
             break;
     }
 }
