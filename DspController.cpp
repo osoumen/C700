@@ -174,7 +174,10 @@ void DspController::onDeviceAdded(void *ref)
     
     int err = 0;
     
-    // TODO: SPCモジュールがあるかチェック
+    // SPCモジュールがあるかチェック
+    if (This->mSpcDev.CheckHasRequiredModule() == false) {
+        return;
+    }
     
     MutexLock(This->mHwMtx);
     
@@ -297,6 +300,10 @@ void DspController::onDeviceAdded(void *ref)
 void DspController::onDeviceRemoved(void *ref)
 {
     DspController   *This = reinterpret_cast<DspController*>(ref);
+    
+    if (This->mIsHwAvailable == false) {
+        return;
+    }
     
     This->mIsHwAvailable = false;
     

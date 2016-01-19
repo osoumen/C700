@@ -19,6 +19,7 @@ DEFINE_GUID(GUID_DEVINTERFACE_WINUSBTESTTARGET,
 #else
 #include <unistd.h>
 #endif
+#include <string.h>
 
 void printBytes(const unsigned char *data, int bytes)
 {
@@ -92,6 +93,39 @@ void SpcControlDevice::SwReset()
     mUsbDev->bulkWrite(cmd, wb);
     
     printBytes(cmd, wb);
+}
+
+bool SpcControlDevice::CheckHasRequiredModule()
+{
+    // SPCモジュールとFWバージョンのチェック
+    {
+        unsigned char cmd[] = {0xfd, 0x91, 0x00, 0xff};
+        int wb = sizeof(cmd);
+        mUsbDev->bulkWrite(cmd, wb);
+        
+        int rb = 64;
+        mUsbDev->bulkRead(mReadBuf, rb, 500);
+        
+        if (::strncmp((char*)mReadBuf, "GMC-SPC", 7) != 0) {
+            return false;
+        }
+    }
+    
+    {
+        unsigned char cmd[] = {0xfd, 0x92, 0xff};
+        int wb = sizeof(cmd);
+        mUsbDev->bulkWrite(cmd, wb);
+        
+        int rb = 64;
+        mUsbDev->bulkRead(mReadBuf, rb, 500);
+        
+        int verNum = mReadBuf[0] * 100 + mReadBuf[4];
+        
+        if (verNum < 504) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void SpcControlDevice::PortWrite(int addr, unsigned char data)

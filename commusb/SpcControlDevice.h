@@ -20,6 +20,7 @@ public:
     int Close();
     void HwReset();
     void SwReset();
+    bool CheckHasRequiredModule();
     void PortWrite(int addr, unsigned char data);
     unsigned char PortRead(int addr);
     void BlockWrite(int addr, unsigned char data);
