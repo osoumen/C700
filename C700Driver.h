@@ -222,7 +222,7 @@ private:
     VoiceStatus		mVoiceStat[kMaximumVoices];
     
     int             mVoiceLimit;
-    bool            mIsFixedVoiceLimitMode;
+    bool            mIsAccurateMode;
 	
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);

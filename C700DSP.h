@@ -64,9 +64,9 @@ public:
     
     bool IsHwAvailable() { return mDsp.IsHwAvailable(); }
     
-private:
     void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint);
-    
+private:
+
     static void onDeviceReady(void *ref);
     static void onDeviceStop(void *ref);
     
