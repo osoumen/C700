@@ -108,6 +108,7 @@ bool MemManager::WriteData(int srcn, const unsigned char *data, int size, int lo
     MutexLock(mMapMtx);
     // 容量不足ではfalseを返す
     if ((mTotalSize+size) > CalcBrrSize()) {
+        MutexUnlock(mMapMtx);
         return false;
     }
     mTotalSize += size;
