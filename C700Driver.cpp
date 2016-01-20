@@ -90,7 +90,7 @@ C700Driver::C700Driver()
 	mVibdepth = 0.5;
     
     mVoiceLimit = 8;
-    mIsFixedVoiceLimitMode = false;
+    mIsAccurateMode = false;
 
     mEventDelayClocks = 8192;   // 8ms
     mEventDelaySamples = calcEventDelaySamples();
@@ -310,7 +310,7 @@ void C700Driver::Damper( int ch, bool on )
 void C700Driver::SetVoiceLimit( int value )
 {
     mVoiceLimit = value;
-    if (!mIsFixedVoiceLimitMode) {
+    if (!mIsAccurateMode) {
         mVoiceManager.ChangeVoiceLimit(value);
         mDSP.SetVoiceLimit(value);
     }
@@ -336,21 +336,21 @@ void C700Driver::SetEngineType( engine_type type )
         case kEngineType_Old:
             mDSP.SetNewADPCM(false);
             mDSP.SetRealEmulation(false);
-            mIsFixedVoiceLimitMode = false;
+            mIsAccurateMode = false;
             mVoiceManager.ChangeVoiceLimit(mVoiceLimit);
             mDSP.SetVoiceLimit(mVoiceLimit);
             break;
         case kEngineType_Relaxed:
             mDSP.SetNewADPCM(true);
             mDSP.SetRealEmulation(false);
-            mIsFixedVoiceLimitMode = false;
+            mIsAccurateMode = false;
             mVoiceManager.ChangeVoiceLimit(mVoiceLimit);
             mDSP.SetVoiceLimit(mVoiceLimit);
             break;
         case kEngineType_Accurate:
             mDSP.SetNewADPCM(true);
             mDSP.SetRealEmulation(true);
-            mIsFixedVoiceLimitMode = true;
+            mIsAccurateMode = true;
             mVoiceManager.ChangeVoiceLimit(8);
             mDSP.SetVoiceLimit(8);
             break;
@@ -924,6 +924,9 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         }
         mVoiceStat[v].srcn = srcn;
         mDSP.SetSrcn(v, srcn);
+        if (!mIsAccurateMode) {
+            mDSP.setBrr(v, vp.brrData(), vp.lp);
+        }
         
         mDSP.SetEchoOn(v, vp.echo);
         mDSP.SetAR(v, vp.ar);
