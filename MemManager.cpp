@@ -101,17 +101,21 @@ MemManager::~MemManager()
 
 bool MemManager::WriteData(int srcn, const unsigned char *data, int size, int loopPoint)
 {
-    BrrRegion newRegion(data, size, loopPoint);
     if (data == NULL) {
         return false;
     }
     MutexLock(mMapMtx);
-    // 容量不足ではfalseを返す
-    if ((mTotalSize+size) > CalcBrrSize()) {
+    // 容量不足で全く読み込めない場合はfalseを返す
+    int writeSize = CalcBrrSize() - mTotalSize;
+    if (writeSize > size) {
+        writeSize = size;
+    }
+    if (writeSize <= 0) {
         MutexUnlock(mMapMtx);
         return false;
     }
-    mTotalSize += size;
+    BrrRegion newRegion(data, writeSize, loopPoint);
+    mTotalSize += writeSize;
     mRegions[srcn & 0xff] = newRegion;
     MutexUnlock(mMapMtx);
     return true;
