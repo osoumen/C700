@@ -634,6 +634,7 @@ void DspController::EndMuteEmulation()
     // 動作状態ならDSPの復元
     mWaitPort = -1;
     if (!mIsHwAvailable) {
+        WriteDsp(0, mDspMirror[0], true);   // 最初の書き込みだけが失敗する場合があるのでダミー書き込み
         for (int i=0; i<128; i++) {
             if (mDspMirror[i] == 0xefefefef) {
                 continue;
