@@ -39,6 +39,9 @@ void DynamicVoiceManager::Reset()
     for(int i=0;i<mVoiceLimit;i++){
         pushWaitVo(i);
 	}
+    for (int i=0; i<16; i++) {
+        mChNoteOns[i] = 0;
+    }
     for (int i=0; i<MAX_VOICE; i++) {
         mVoCh[i] = 0;
         mVoPrio[i] = 64;
