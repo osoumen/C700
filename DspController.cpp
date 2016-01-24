@@ -367,41 +367,13 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
         do {
             OSPC_Run(32, NULL, 0);
         } while ((unsigned char)OSPC_ReadPort0() != mWaitByte);
-#endif
         mWaitPort = -1;
+#endif
     }
     MutexUnlock(mEmuMtx);
 
     if (mIsHwAvailable) {
         MutexLock(mHwMtx);
-#if 0
-        // IPLに戻るために0x0004に非０を書き込む
-        mSpcDev.BlockWrite(1, 0x01, 0x04, 0x00);
-        mSpcDev.BlockWrite(0, mPort0stateHw | 0x80);
-        mSpcDev.WriteBuffer();
-        while (mSpcDev.PortRead(0) != 0xaa) {
-            WaitMicroSeconds(1000);
-        }
-        while (mSpcDev.PortRead(1) != 0xbb) {
-            WaitMicroSeconds(1000);
-        }
-        //mSpcDev.ReadAndWait(1, 0xbb);
-        
-        // IPLを使用してRAMにデータを転送する
-        mPort0stateHw = mSpcDev.UploadRAMDataIPL(data, addr, size, 0xcc);
-        // メインプログラムに戻る
-        if (mPort0stateHw == 0xff) {
-            mPort0stateHw++;
-        }
-        mSpcDev.JumpToCode(dspAccCodeAddr, mPort0stateHw + 1);
-        while (mSpcDev.PortRead(3) != p3waitValue) {
-            WaitMicroSeconds(1000);
-        }
-        //mSpcDev.ReadAndWait(3, p3waitValue);
-        //mSpcDev.WriteBuffer();
-        mPort0stateHw = 1;
-#endif
-#if 1
         mSpcDev.BlockWrite(2, addr & 0xff, (addr>>8) & 0xff);
         mSpcDev.WriteAndWait(0, mPort0stateHw | 0xc0);
         mSpcDev.WriteBuffer();
@@ -435,14 +407,6 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
         
         // 直後のDSP書き込みが失敗する場合があるので無意味なDSP書き込みを１回行う
         doWriteDspHw(0x1d, 0);
-#else
-        for (int i=0; i<size; i++) {
-            mSpcDev.BlockWrite(1, data[i], (addr + i) & 0xff, ((addr + i)>>8) & 0xff);
-            mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
-            mPort0stateHw = mPort0stateHw ^ 0x01;
-        }
-        mSpcDev.WriteBuffer();
-#endif
         MutexUnlock(mHwMtx);
     }
 }
@@ -623,8 +587,10 @@ void DspController::BeginFrameProcess(double frameTime)
 void DspController::StartMuteEmulation()
 {
     mMuteEmulation = true;
-    mWaitPort = -1;
-    mWaitByte = 0;
+    while (mWaitPort >= 0) {
+        int outl ,outr;
+        Process1Sample(outl, outr);
+    }
     mEmuFifo.Clear();
 }
 
@@ -632,9 +598,7 @@ void DspController::EndMuteEmulation()
 {
     mMuteEmulation = false;
     // 動作状態ならDSPの復元
-    mWaitPort = -1;
     if (!mIsHwAvailable) {
-        WriteDsp(0, mDspMirror[0], true);   // 最初の書き込みだけが失敗する場合があるのでダミー書き込み
         for (int i=0; i<128; i++) {
             if (mDspMirror[i] == 0xefefefef) {
                 continue;
