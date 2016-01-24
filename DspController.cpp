@@ -417,6 +417,7 @@ void DspController::WriteRam(int addr, unsigned char data, bool nonRealtime)
         while (mWaitPort >= 0) {
             int outl ,outr;
             Process1Sample(outl, outr);
+            mSampleInFrame--;
         }
         
         MutexLock(mEmuMtx);
@@ -460,6 +461,7 @@ bool DspController::WriteDsp(int addr, unsigned char data, bool nonRealtime)
         while (mWaitPort >= 0) {
             int outl ,outr;
             Process1Sample(outl, outr);
+            mSampleInFrame--;
         }
         MutexLock(mEmuMtx);
 #ifndef USE_OPENSPC
@@ -590,6 +592,7 @@ void DspController::StartMuteEmulation()
     while (mWaitPort >= 0) {
         int outl ,outr;
         Process1Sample(outl, outr);
+        mSampleInFrame--;
     }
     mEmuFifo.Clear();
 }
