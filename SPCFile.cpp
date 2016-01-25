@@ -15,19 +15,19 @@
 SPCFile::SPCFile( const char *path, bool isWriteable )
 : FileAccess(path, isWriteable)
 {
-	m_pFileData = new unsigned char[SPC_READ_SIZE];
-	m_pRamData = m_pFileData + 0x100;
+    mSpcPlay.init();
 }
 
 //-----------------------------------------------------------------------------
 SPCFile::~SPCFile()
 {
-	delete [] m_pFileData;
 }
 
 //-----------------------------------------------------------------------------
 bool SPCFile::Load()
 {
+    unsigned char fileData[SPC_READ_SIZE];
+    
 #if MAC
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)mPath, strlen(mPath), false);
 	
@@ -38,7 +38,7 @@ bool SPCFile::Load()
 		return false;
 	}
 	
-	CFIndex	readbytes=CFReadStreamRead(filestream, m_pFileData, SPC_READ_SIZE);
+	CFIndex	readbytes=CFReadStreamRead(filestream, fileData, SPC_READ_SIZE);
 	if (readbytes < SPC_READ_SIZE) {
 		CFRelease( url );
 		CFReadStreamClose(filestream);
@@ -55,28 +55,30 @@ bool SPCFile::Load()
 	hFile = CreateFile( mPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
 	if ( hFile != INVALID_HANDLE_VALUE ) {
 		DWORD	readSize;
-		ReadFile( hFile, m_pFileData, SPC_READ_SIZE, &readSize, NULL );
+		ReadFile( hFile, fileData, SPC_READ_SIZE, &readSize, NULL );
 		CloseHandle( hFile );
 	}
 #endif
 	
-	//ファイルチェック
-//	if ( strncmp((char*)m_pFileData, "SNES-SPC700 Sound File Data v0.30", 33) != 0 ) {
-	if ( strncmp((char*)m_pFileData, "SNES-SPC700 Sound File Data v", 29) != 0 ) {
-		return false;
-	}
+    blargg_err_t err;
+    err = mSpcPlay.load_spc(fileData, SPC_READ_SIZE);
+    if (err) {
+        return false;
+    }
+    err = mSpcPlay.play(32000*5, NULL);   //空動作させる
+    unsigned char *ramData = mSpcPlay.GetRam();
 	
-	mSrcTableAddr = (int)m_pRamData[0x1005d] << 8;
+	mSrcTableAddr = (int)mSpcPlay.GetDspReg(0x5d) << 8;
 	for (int i=0; i<128; i++ ) {
 		int	startaddr;
 		int	loopaddr;
-		startaddr	= (int)m_pRamData[mSrcTableAddr + i*4];
-		startaddr	+= (int)m_pRamData[mSrcTableAddr + i*4 + 1] << 8;
-		loopaddr	= (int)m_pRamData[mSrcTableAddr + i*4 + 2];
-		loopaddr	+= (int)m_pRamData[mSrcTableAddr + i*4 + 3] << 8;
+		startaddr	= (int)ramData[mSrcTableAddr + i*4];
+		startaddr	+= (int)ramData[mSrcTableAddr + i*4 + 1] << 8;
+		loopaddr	= (int)ramData[mSrcTableAddr + i*4 + 2];
+		loopaddr	+= (int)ramData[mSrcTableAddr + i*4 + 3] << 8;
 		mSampleStart[i]	= startaddr;
 		mLoopSize[i]	= loopaddr-startaddr;
-		mIsLoop[i]		= checkbrrsize(&m_pRamData[startaddr], &mSampleBytes[i]) == 1?true:false;
+		mIsLoop[i]		= checkbrrsize(&ramData[startaddr], &mSampleBytes[i]) == 1?true:false;
 		
 		if ( startaddr == 0 || startaddr == 0xffff ||
 			mLoopSize[i] < 0 || mSampleBytes[i] < mLoopSize[i] || (mLoopSize[i]%9) != 0 ) {
@@ -93,13 +95,14 @@ bool SPCFile::Load()
 unsigned char *SPCFile::GetSampleIndex( int sampleIndex, int *size )
 {
 	if ( mIsLoaded ) {
+        unsigned char *ramData = mSpcPlay.GetRam();
 		if ( size ) {
 			*size = mSampleBytes[sampleIndex];
 		}
 		if ( mSampleBytes[sampleIndex] == 0 ) {
 			return NULL;
 		}
-		return &m_pRamData[mSampleStart[sampleIndex]];
+		return &ramData[mSampleStart[sampleIndex]];
 	}
 	return NULL;
 }

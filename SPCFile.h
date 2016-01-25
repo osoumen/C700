@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "SNES_SPC.h"
 #include "FileAccess.h"
 
 class SPCFile : public FileAccess {
@@ -16,7 +17,7 @@ public:
 	SPCFile( const char *path, bool isWriteable );
 	virtual ~SPCFile();
 	
-	unsigned char	*GetRamData() { return m_pRamData; }
+	unsigned char	*GetRamData() { return mSpcPlay.GetRam(); }
 	unsigned char	*GetSampleIndex( int sampleIndex, int *size );
 	int				GetLoopSizeIndex( int samleIndex );	//ïâêîÇ≈ÉãÅ[Évñ≥Çµ
 	
@@ -25,9 +26,8 @@ public:
 private:
 	static const int SPC_READ_SIZE = 0x101c0;
 	
-	unsigned char	*m_pFileData;
-	unsigned char	*m_pRamData;
-	
+    SNES_SPC        mSpcPlay;
+    
 	int				mSrcTableAddr;
 	int				mSampleStart[128];
 	int				mLoopSize[128];
