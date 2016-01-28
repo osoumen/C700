@@ -2899,7 +2899,7 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		kAudioUnitCustomProperty_IsHwConnected,	//id
 		0,	//command
-		474, 330, 60, 60,	//x,y,w,h
+		520, 376, 16, 16,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
