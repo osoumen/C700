@@ -302,7 +302,7 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 		delete mSaveChunk;
 	}
 	
-	InstParams	*vp = mEfx->GetVP();
+	const InstParams	*vp = mEfx->GetVP();
 	int		totalSize = 0;
 	int		totalProgs = 0;
 	
@@ -344,8 +344,16 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 	}
 	
 	if ( isPreset ) {
-		if ( vp[editProg].brr.data ) {
+		if ( vp[editProg].hasBrrData() ) {
 			PGChunk		*pg = new PGChunk( PGChunk::getPGChunkSize( &vp[editProg] ) );
+            //最終ブロックをループフラグにする
+            /*
+            if (vp[editProg].isLoop()) {
+                vp[editProg].setLoop();
+            }
+            else {
+                vp[editProg].unsetLoop();
+            }*/
 			pg->AppendDataFromVP(&vp[editProg]);
 			saveChunk->writeChunk(CKID_PROGRAM_DATA+editProg, pg->GetDataPtr(), pg->GetDataSize());
 			delete pg;
@@ -353,7 +361,7 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 	}
 	else {
 		for ( int i=0; i<128; i++ ) {
-			if ( vp[i].brr.data ) {
+			if ( vp[i].hasBrrData() ) {
 				PGChunk		*pg = new PGChunk( PGChunk::getPGChunkSize( &vp[i] ) );
 				pg->AppendDataFromVP(&vp[i]);
 				saveChunk->writeChunk(CKID_PROGRAM_DATA+i, pg->GetDataPtr(), pg->GetDataSize());
@@ -379,7 +387,7 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 #endif
 	int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
 	int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
-	InstParams	*vp = mEfx->GetVP();
+	//const InstParams	*vp = mEfx->GetVP();
 	
 	PGChunk		*saveChunk;
 	saveChunk = new PGChunk( data, byteSize );
@@ -411,11 +419,20 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 			//CKID_PROGRAM_DATA+pgnumのチャンクに入れ子でプログラムデータが入っている
 			int pgnum = ckType - CKID_PROGRAM_DATA;
 			PGChunk	*pg = new PGChunk( saveChunk->GetDataPtr()+saveChunk->GetDataPos(), ckSize );
+            InstParams inst;
 			if ( isPreset ) {
-				pg->ReadDataToVP(&vp[editProg]);
+				pg->ReadDataToVP(&inst);
+                mEfx->SetVP(editProg, &inst);
+				mEfx->SetBRRData(inst.brrData(), inst.brrSize(), editProg);
+				mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
+				mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, inst.lp);
 			}
 			else {
-				pg->ReadDataToVP(&vp[pgnum]);
+				pg->ReadDataToVP(&inst);
+                mEfx->SetVP(pgnum, &inst);
+				mEfx->SetBRRData(inst.brrData(), inst.brrSize(), pgnum);
+				mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, pgnum);
+				mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, inst.lp);
 			}
 			delete pg;
 			saveChunk->AdvDataPos(ckSize);

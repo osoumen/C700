@@ -923,7 +923,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		84, 55, 58, 11,	//x,y,w,h
+		84, 45, 58, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1297,7 +1297,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		34, 55, 23, 11,	//x,y,w,h
+		34, 45, 23, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1773,7 +1773,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		7,	//id
 		0,	//command
-		142, 53, 18, 12,	//x,y,w,h
+		142, 43, 18, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2555,7 +2555,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		0,	//id
 		0,	//command
-		58, 53, 18, 12,	//x,y,w,h
+		58, 43, 18, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2885,6 +2885,57 @@ ControlInstances	sCntl[] = {
 		502, 80, 33, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'valp',	//kind
+		"hwconn",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		0,	//sig
+		kAudioUnitCustomProperty_IsHwConnected,	//id
+		0,	//command
+		520, 376, 16, 16,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+		"Engine",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		50, 63, 40, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'VeMa',	//sig
+		'menu',	//kind
+		"Old;Relaxed;Accurate",	//title
+		2,	//Value
+		0,	//Minimum
+		2,	//Maximum
+		0,	//sig
+		kParam_engine,	//id
+		0,	//command
+		84, 61, 50, 12,	//x,y,w,h
+		"",	//fontname
+		9,	//fontsize
 		kCenterText,	//fontalign
 		0,	//style
 		0	//future use

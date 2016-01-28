@@ -1,8 +1,8 @@
 #pragma once
 
-#include "AUInstrumentBase.h"
+#include "MusicDeviceBase.h"
 #include "C700Version.h"
-#include "C700Generator.h"
+#include "C700Driver.h"
 
 #ifdef USE_CARBON_UI
 #include "AUCarbonViewBase.h"
@@ -16,7 +16,7 @@
 #include "C700Kernel.h"
 
 #pragma mark ____C700
-class C700 : public AUInstrumentBase
+class C700 : public MusicDeviceBase
 {
 public:
 	C700(AudioUnit component);
@@ -65,14 +65,16 @@ public:
  	virtual	bool				SupportsTail() {return true;}
     virtual Float64				GetLatency() {return mEfx->GetProcessDelayTime();}
 	
-	virtual OSStatus			RealTimeStartNote(		SynthGroupElement 			*inGroup,
-														NoteInstanceID 				inNoteInstanceID, 
-														UInt32 						inOffsetSampleFrame, 
-														const MusicDeviceNoteParams &inParams);
+	virtual OSStatus			StartNote(		MusicDeviceInstrumentID 	inInstrument,
+                                                MusicDeviceGroupID 			inGroupID,
+                                                NoteInstanceID *			outNoteInstanceID,
+                                                UInt32 						inOffsetSampleFrame,
+                                                const MusicDeviceNoteParams &inParams);
 	
-	virtual OSStatus			RealTimeStopNote(		MusicDeviceGroupID 			inGroup, 
-														NoteInstanceID 				inNoteInstanceID, 
-														UInt32 						inOffsetSampleFrame);
+	virtual OSStatus			StopNote(		MusicDeviceGroupID 			inGroupID,
+                                                NoteInstanceID 				inNoteInstanceID,
+                                                UInt32 						inOffsetSampleFrame);
+    
 
 	virtual OSStatus			HandlePitchWheel(	UInt8 	inChannel,
 								   UInt8 	inPitch1,
@@ -98,6 +100,9 @@ public:
 										const AudioTimeStamp &			inTimeStamp,
 									   UInt32							inNumberFrames);
 	
+
+    virtual bool				StreamFormatWritable(	AudioUnitScope					scope,
+                                                        AudioUnitElement				element);
 	/*! @method Version */
 	virtual OSStatus	Version() { return kC700Version; }
 	

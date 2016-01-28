@@ -86,6 +86,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	
 	CFReadStreamRef	filestream = CFReadStreamCreateWithFile(NULL, url);
 	if (CFReadStreamOpen(filestream) == false) {
+        CFRelease( filestream );
 		CFRelease( url );
 		return false;
 	}
@@ -93,6 +94,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	CFIndex	readbytes=CFReadStreamRead(filestream, mFileData+dataOffset, MAX_FILE_SIZE);
 	mFileSize = readbytes+dataOffset;
 	CFReadStreamClose(filestream);
+    CFRelease( filestream );
 	CFRelease( url );
 #else
 	//VSTのときのファイル読み込み処理
@@ -114,18 +116,20 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	}
 	
 	//ループポイントの次のバイトから9バイトずつ進め、エンドフラグを探す
-	mInst.brr.data = mFileData+2;
-	mInst.brr.size = mFileSize-2;
+    BRRData fileBrr;
+	fileBrr.data = mFileData+2;
+	fileBrr.size = mFileSize-2;
 	int	endflag_pos = 0;
 	int	num_endflag = 0;
-	for ( int i=0; i<mInst.brr.size; i+=9 ) {
-		int end_flag = mInst.brr.data[i] & 0x01;
+	for ( int i=0; i<fileBrr.size; i+=9 ) {
+		int end_flag = fileBrr.data[i] & 0x01;
 		if ( end_flag ) {
 			endflag_pos = i;
-			mInst.loop = (mInst.brr.data[i] & 0x02)?true:false;	//最終ブロックのループフラグでループ有り無しを判断
+			mInst.loop = (fileBrr.data[i] & 0x02)?true:false;	//最終ブロックのループフラグでループ有り無しを判断
 			num_endflag++;
 		}
 	}
+    mInst.setBRRData(&fileBrr);
 	
 	//エンドフラグの数が１つ以外だとエラー
 	if ( num_endflag != 1 ) {
@@ -356,7 +360,7 @@ void RawBRRFile::StoreInst( const InstParams *inst )
 	}
 	
 	//データサイズにループポイントを加えたサイズがファイルサイズ
-	mFileSize = mInst.brr.size + 2;
+	mFileSize = mInst.brrSize() + 2;
 	//ファイルサイズに一応上限を設ける
 	if ( mFileSize > MAX_FILE_SIZE ) mFileSize = MAX_FILE_SIZE;
 	
@@ -364,15 +368,17 @@ void RawBRRFile::StoreInst( const InstParams *inst )
 	mFileData[0] = mInst.lp & 0xff;
 	mFileData[1] = (mInst.lp >> 8) & 0xff;
 	
-	memcpy(mFileData+2, mInst.brr.data, mFileSize-2);
+	memcpy(mFileData+2, mInst.brrData(), mFileSize-2);
 	
-	mInst.brr.data = mFileData+2;
+    BRRData brr = *mInst.getBRRData();
+    brr.data = mFileData+2;
+    mInst.setBRRData(&brr);
 	
 	if (mInst.loop) {
-		mInst.brr.data[mInst.brr.size - 9] |= 2;
+        mInst.setLoop();
 	}
 	else {
-		mInst.brr.data[mInst.brr.size - 9] &= ~2;
+        mInst.unsetLoop();
 	}
 	
 	mIsLoaded = true;

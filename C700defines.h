@@ -21,7 +21,7 @@ enum {
     kParam_velocity,
     kParam_bendrange,
     kParam_program,
-    kParam_newadpcm,
+    kParam_engine,
     kParam_bankAmulti,
     
     kParam_program_2,
@@ -159,6 +159,8 @@ enum
     kAudioUnitCustomProperty_NoteOnPriority,
     kAudioUnitCustomProperty_ReleasePriority,
     
+    kAudioUnitCustomProperty_IsHwConnected,     // read only
+    
     kAudioUnitCustomProperty_End,
     kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
 };
@@ -238,6 +240,9 @@ static const int NUM_OUTPUTS = 2;
 static const int PROGRAMNAME_MAX_LEN = 256;
 static const int PATH_LEN_MAX = 1024;
 
+static const int BRR_STARTADDR = 0x600;
+static const int BRR_ENDADDR = 0x10000;
+
 static const int CKID_PROGRAM_TOTAL = 0x20000;
 static const int CKID_PROGRAM_DATA  = 0x30000;
 
@@ -253,12 +258,15 @@ static const int kDefaultValue_PortamentoRate = 0;
 static const int kDefaultValue_NoteOnPriority = 64;
 static const int kDefaultValue_ReleasePriority = 0;
 
-typedef struct {
+typedef struct BRRData {
     int             size;
     unsigned char   *data;
+    BRRData() : size(0), data(0L) {}
+    int samples() const { return (size/9)*16; }
 } BRRData;
 
 typedef struct {
+public:
     char        pgname[PROGRAMNAME_MAX_LEN];
     int         ar,dr,sl,sr;
     int         volL,volR;
@@ -268,7 +276,6 @@ typedef struct {
     bool        loop;
     bool        echo;
     int         bank;
-    BRRData     brr;
     char        sourceFile[PATH_LEN_MAX];
     bool        isEmphasized;
     bool        sustainMode;
@@ -277,6 +284,38 @@ typedef struct {
     int         portamentoRate;
     int         noteOnPriority;
     int         releasePriority;
+    
+    bool        hasBrrData() const
+    {
+        return (brr.data != 0L)?true:false;
+    }
+    void        setLoop()
+    {
+        brr.data[brr.size - 9] |= 2;
+    }
+    void        unsetLoop()
+    {
+        brr.data[brr.size - 9] &= ~2;
+    }
+    bool        isLoop() const
+    {
+        return (brr.data[brr.size - 9] & 2)?true:false;
+    }
+    unsigned char *brrData() const { return brr.data; }
+    int brrSize() const { return brr.size; }
+    int brrSamples() const { return (brr.size/9)*16; }
+    int brrLpSamples() const { return (lp/9)*16; }
+    const BRRData *getBRRData() const { return &brr; }
+    void setBRRData(const BRRData *srcbrr) { brr = *srcbrr; }
+    void releaseBrr() {
+        if (brr.data) {
+            delete [] brr.data;
+        }
+        brr.data = 0L;
+        brr.size = 0;
+    }
+private:
+    BRRData     brr;    
 } InstParams;
 
 float ConvertToVSTValue( float value, float min, float max );

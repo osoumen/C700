@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "brrcodec.h"
 
 int IntAbs( int value ) { return value < 0 ? -value : value; }
@@ -31,7 +32,7 @@ int IntAbs( int value ) { return value < 0 ? -value : value; }
 #ifdef XMSNES_LIKE_ENC
 int ComputeFilter( int x_2, int x_1, int filter )
 {
-	int cp;
+	int cp = 0;
 	switch( filter )
 	{
 		case 0:											// 0, 0
@@ -101,12 +102,12 @@ int brrencode(short *input_data, unsigned char *output_data, long inputframes, b
 	int				numblocks;
 	int				current_block;
 	int				loopstart_block = (pad_frames+loop_point)/16;
-	int				loopstart_sample;
+	int				loopstart_sample=0;
 	int				blockout[16];
 	int				blockdec[16];
 	bool			use_filter0;
 	bool			redo_loopf;
-	int				adv_frame;
+	int				adv_frame=0;
 	
 	//frame_offset = (16-(inputframes % 16))%16;
 	frame_offset = pad_frames;

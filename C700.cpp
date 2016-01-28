@@ -39,7 +39,7 @@ COMPONENT_ENTRY(C700)
 //	C700::C700
 //-----------------------------------------------------------------------------
 C700::C700(AudioUnit component)
-: AUInstrumentBase(component, 0, 1)
+: MusicDeviceBase(component, 0, 1, 32, 0)
 , mEfx(NULL)
 {
 	CreateElements();
@@ -63,6 +63,7 @@ C700::C700(AudioUnit component)
 	//デフォルト値を設定する
 	for ( int i=0; i<kNumberOfParameters; i++ ) {
 		Globals()->SetParameter(i, C700Kernel::GetParameterDefault(i) );
+        mParameterHasChanged[i] = false;
 	}
 	
 #if AU_DEBUG_DISPATCHER
@@ -111,10 +112,7 @@ void C700::ParameterSetFunc(int paramID, float value, void* userData)
 //-----------------------------------------------------------------------------
 ComponentResult C700::Initialize()
 {	
-	AUInstrumentBase::Initialize();
-    for (int i=0; i<kNumberOfParameters; i++) {
-        mParameterHasChanged[i] = true;
-    }
+	MusicDeviceBase::Initialize();
 	return noErr;
 }
 
@@ -130,15 +128,21 @@ ComponentResult C700::Reset(	AudioUnitScope 		inScope,
 //	if (inScope == kAudioUnitScope_Global) {
 		mEfx->Reset();
 //	}
-	return AUInstrumentBase::Reset(inScope, inElement);
+	return MusicDeviceBase::Reset(inScope, inElement);
 }
 
+//-----------------------------------------------------------------------------
+bool C700::StreamFormatWritable(	AudioUnitScope				scope,
+                                   AudioUnitElement				element)
+{
+	return IsInitialized() ? false : true;
+}
 //-----------------------------------------------------------------------------
 OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 												const AudioTimeStamp &			inTimeStamp,
 												UInt32							inNumberFrames)
 {
-	OSStatus result = AUInstrumentBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
+	OSStatus result = MusicDeviceBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
 	
 	CallHostBeatAndTempo(NULL, &mTempo);
 	mEfx->SetTempo( mTempo );
@@ -146,6 +150,16 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 	float				*output[2];
 	AudioBufferList&	bufferList = GetOutput(0)->GetBufferList();
 	
+    UInt32 numOutputs = Outputs().GetNumberOfElements();
+	for (UInt32 j = 0; j < numOutputs; ++j)
+	{
+		AudioBufferList& bufferList = GetOutput(j)->GetBufferList();
+		for (UInt32 k = 0; k < bufferList.mNumberBuffers; ++k)
+		{
+			memset(bufferList.mBuffers[k].mData, 0, bufferList.mBuffers[k].mDataByteSize);
+		}
+	}
+    
 	int numChans = bufferList.mNumberBuffers;
 	if (numChans > 2) return -1;
 	output[0] = (float*)bufferList.mBuffers[0].mData;
@@ -179,7 +193,7 @@ OSStatus C700::SetParameter(	AudioUnitParameterID			inID,
 								 Float32						inValue,
 								 UInt32							inBufferOffsetInFrames)
 {
-	OSStatus result = AUInstrumentBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
+	OSStatus result = MusicDeviceBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
 	if ( inScope == kAudioUnitScope_Global ) {
 		//mEfx->SetParameter(inID, inValue);
         if (inID < kNumberOfParameters) {
@@ -224,8 +238,8 @@ AudioUnitParameterUnit getParameterUnit( int id )
 			return kAudioUnitParameterUnit_Generic;
 		case kParam_velocity:
 			return kAudioUnitParameterUnit_Indexed;
-		case kParam_newadpcm:
-			return kAudioUnitParameterUnit_Boolean;
+		case kParam_engine:
+			return kAudioUnitParameterUnit_Indexed;
 		case kParam_bendrange:
 			return kAudioUnitParameterUnit_Indexed;
 		case kParam_program:
@@ -491,10 +505,15 @@ ComponentResult		C700::GetPropertyInfo (AudioUnitPropertyID	inID,
                 outDataSize = sizeof(int);
                 outWritable = false;
                 return noErr;
+                
+            case kAudioUnitCustomProperty_IsHwConnected:
+                outDataSize = sizeof(bool);
+                outWritable = false;
+                return noErr;
 		}
 	}
 	
-	return AUInstrumentBase::GetPropertyInfo(inID, inScope, inElement, outDataSize, outWritable);
+	return MusicDeviceBase::GetPropertyInfo(inID, inScope, inElement, outDataSize, outWritable);
 }
 
 //-----------------------------------------------------------------------------
@@ -590,6 +609,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
             case kAudioUnitCustomProperty_SustainMode:
             case kAudioUnitCustomProperty_MonoMode:
             case kAudioUnitCustomProperty_PortamentoOn:
+            case kAudioUnitCustomProperty_IsHwConnected:
 				*((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
 				return noErr;
 				
@@ -655,7 +675,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 				
 		}
 	}
-	return AUInstrumentBase::GetProperty(inID, inScope, inElement, outData);
+	return MusicDeviceBase::GetProperty(inID, inScope, inElement, outData);
 }
 
 //-----------------------------------------------------------------------------
@@ -673,7 +693,7 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 			case kAudioUnitCustomProperty_BRRData:
 			{
 				BRRData *brr = (BRRData *)inData;
-				mEfx->SetBRRData(brr);
+				mEfx->SetBRRData(brr->data, brr->size);
 				return noErr;
 			}
 
@@ -785,9 +805,12 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 				mEfx->SetSourceFilePath(path);
 				return noErr;
 			}
+                
+            case kAudioUnitCustomProperty_IsHwConnected:
+                return noErr;
 		}
 	}
-	return AUInstrumentBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
+	return MusicDeviceBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
 }
 
 //-----------------------------------------------------------------------------
@@ -850,7 +873,7 @@ static void AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key,
 ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 {
 	ComponentResult result;
-	result = AUInstrumentBase::SaveState(outData);
+	result = MusicDeviceBase::SaveState(outData);
 	CFMutableDictionaryRef	dict=(CFMutableDictionaryRef)*outData;
 	if (result == noErr) {
 		CFDictionaryRef	pgdata;
@@ -887,7 +910,10 @@ ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 ComponentResult	C700::RestoreState(CFPropertyListRef plist)
 {
 	ComponentResult result;
-	result = AUInstrumentBase::RestoreState(plist);
+	result = MusicDeviceBase::RestoreState(plist);
+    for (int i=0; i<kNumberOfParameters; i++) {
+        mParameterHasChanged[i] = true;
+    }
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(plist);
 	if (result == noErr) {
 		//波形情報の復元
@@ -929,13 +955,8 @@ int C700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 								&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 	const InstParams	*vpSet = mEfx->GetVP();
 	
-	if (vpSet[pgnum].loop) {
-		vpSet[pgnum].brr.data[vpSet[pgnum].brr.size - 9] |= 2;
-	}
-	else {
-		vpSet[pgnum].brr.data[vpSet[pgnum].brr.size - 9] &= ~2;
-	}
-	CFDataRef	brrdata = CFDataCreate(NULL, vpSet[pgnum].brr.data, vpSet[pgnum].brr.size);
+    mEfx->CorrectLoopFlagForSave(pgnum);
+	CFDataRef	brrdata = CFDataCreate(NULL, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
 	CFDictionarySetValue(dict, kSaveKey_brrdata, brrdata);
 	CFRelease(brrdata);
 	
@@ -993,22 +1014,19 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(data);
 	CFNumberRef cfnum;
 	
-	CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_brrdata));
-	int	size = CFDataGetLength(cfdata);
-	const UInt8	*dataptr = CFDataGetBytePtr(cfdata);
-	BRRData		brr;
-	brr.data = const_cast<unsigned char*>(dataptr);
-	brr.size = size;
-	mEfx->SetBRRData(&brr);
-	mEfx->SetPropertyValue(kAudioUnitCustomProperty_Loop, 
-						   brr.data[brr.size-9]&2?true:false);
-	
 	int	value;
 	if (CFDictionaryContainsKey(dict, kSaveKey_looppoint)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_looppoint));
 		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, value);
 	}
+	
+	CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_brrdata));
+	int	size = CFDataGetLength(cfdata);
+	const UInt8	*dataptr = CFDataGetBytePtr(cfdata);
+	mEfx->SetBRRData(dataptr, size);
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_Loop, 
+						   dataptr[size-9]&2?true:false);
 	
 	double	dvalue;
 	if (CFDictionaryContainsKey(dict, kSaveKey_samplerate)) {
@@ -1066,12 +1084,11 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SR, value);
 	}
 	
+    bool isSustainModeSet = false;
     if (CFDictionaryContainsKey(dict, kSaveKey_SustainMode)) {
 		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_SustainMode));
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
+        isSustainModeSet = true;
 	}
 	
     if (CFDictionaryContainsKey(dict, kSaveKey_volL)) {
@@ -1176,10 +1193,20 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		
 		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_IsEmphasized));
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, CFBooleanGetValue(cfbool) ? 1.0f:.0f);
+        
+        // SRをリリース時に使用するけどSustainModeの設定項目は無い過渡的なバージョン
+        if (!isSustainModeSet) {
+            mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
+        }
 	}
 	else {
 		mEfx->SetSourceFilePath("");
 		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, .0f);
+        
+        // SRをそのまま使う古いバージョン
+        if (!isSustainModeSet) {
+            mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, .0f);
+        }
 	}
 	
 	//UIに変更を反映
@@ -1190,26 +1217,26 @@ void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	mEfx->GetGenerator()->RefreshKeyMap();
 }
 //-----------------------------------------------------------------------------
-ComponentResult C700::RealTimeStartNote(	SynthGroupElement 			*inGroup,
-											NoteInstanceID 				inNoteInstanceID, 
-											UInt32 						inOffsetSampleFrame, 
-											const MusicDeviceNoteParams &inParams)
+OSStatus C700::StartNote(	MusicDeviceInstrumentID 	inInstrument,
+                            MusicDeviceGroupID 			inGroupID,
+                            NoteInstanceID *			outNoteInstanceID,
+                            UInt32 						inOffsetSampleFrame,
+                            const MusicDeviceNoteParams &inParams)
 {
 	//MIDIチャンネルの取得
-	unsigned int		chID = inGroup->GroupID() % 16;
+	unsigned int		chID = inGroupID % 16;
 	
-	mEfx->HandleNoteOn(chID, inParams.mPitch, inParams.mVelocity, inNoteInstanceID+chID*256, inOffsetSampleFrame);
+	mEfx->HandleNoteOn(chID, inParams.mPitch, inParams.mVelocity, inParams.mPitch+chID*256, inOffsetSampleFrame);
 	return noErr;
 }
 
 //-----------------------------------------------------------------------------
-ComponentResult C700::RealTimeStopNote( MusicDeviceGroupID 			inGroup, 
-										   NoteInstanceID 				inNoteInstanceID, 
-										   UInt32 						inOffsetSampleFrame)
+OSStatus C700::StopNote(	MusicDeviceGroupID 			inGroupID,
+                            NoteInstanceID 				inNoteInstanceID,
+                            UInt32 						inOffsetSampleFrame)
 {
-	AUInstrumentBase::RealTimeStopNote( inGroup, inNoteInstanceID, inOffsetSampleFrame );
 	//MIDIチャンネルの取得
-	unsigned int		chID = inGroup % 16;
+	unsigned int		chID = inGroupID % 16;
 	
 	mEfx->HandleNoteOff(chID, inNoteInstanceID, inNoteInstanceID+chID*256, inOffsetSampleFrame);
 	return noErr;
@@ -1234,7 +1261,7 @@ OSStatus C700::HandleControlChange(	UInt8 	inChannel,
 									UInt32	inStartFrame)
 {
 	mEfx->HandleControlChange(inChannel, inController, inValue, inStartFrame);
-	return AUInstrumentBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
+	return MusicDeviceBase::HandleControlChange(inChannel, inController, inValue, inStartFrame);
 }
 
 //-----------------------------------------------------------------------------
@@ -1244,27 +1271,27 @@ OSStatus C700::HandleProgramChange(	UInt8	inChannel,
                                     UInt8	inValue,
                                     UInt32  inStartFrame)
 {
-	mEfx->HandleProgramChange(inChannel, inValue, 0);
-	return AUInstrumentBase::HandleProgramChange(inChannel, inValue, inStartFrame);
+	mEfx->HandleProgramChange(inChannel, inValue, inStartFrame);
+	return MusicDeviceBase::HandleProgramChange(inChannel, inValue, inStartFrame);
 }
 
 //-----------------------------------------------------------------------------
 OSStatus C700::HandleResetAllControllers( UInt8 	inChannel)
 {
 	mEfx->HandleResetAllControllers(inChannel, 0);
-	return AUInstrumentBase::HandleResetAllControllers( inChannel);
+	return MusicDeviceBase::HandleResetAllControllers( inChannel);
 }
 
 //-----------------------------------------------------------------------------
 OSStatus C700::HandleAllNotesOff( UInt8 inChannel )
 {
 	mEfx->HandleAllNotesOff(inChannel, 0);
-	return AUInstrumentBase::HandleAllNotesOff( inChannel);
+	return MusicDeviceBase::HandleAllNotesOff( inChannel);
 }
 
 //-----------------------------------------------------------------------------
 OSStatus C700::HandleAllSoundOff( UInt8 inChannel )
 {
 	mEfx->HandleAllSoundOff(inChannel, 0);
-	return AUInstrumentBase::HandleAllSoundOff( inChannel);
+	return MusicDeviceBase::HandleAllSoundOff( inChannel);
 }
