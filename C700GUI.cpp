@@ -33,6 +33,21 @@ static CFontDesc g_LabelFont("Helvetica", 9, kBoldFace);
 CFontRef kLabelFont = &g_LabelFont;
 
 //-----------------------------------------------------------------------------
+#define MAXMENUITEM 20
+int splitMenuItem( char *str, const char *delim, char *outlist[] )
+{
+    char    *tk;
+    int     cnt = 0;
+    
+    tk = strtok( str, delim );
+    while( tk != NULL && cnt < MAXMENUITEM ) {
+        outlist[cnt++] = tk;
+        tk = strtok( NULL, delim );
+    }
+    return cnt;
+}
+
+//-----------------------------------------------------------------------------
 void getFileNameDeletingPathExt( const char *path, char *out, int maxLen )
 {
 #if MAC
@@ -118,6 +133,29 @@ CControl *C700GUI::makeControlFrom( const ControlInstances *desc, CFrame *frame 
                     splash = new CSplashScreen(cntlSize, this, desc->id, helpPicture, toDisplay);
                     helpPicture->forget();
                     cntl = splash;
+                    break;
+                }
+                case 'menu':
+                {
+                    long style = kCheckStyle;
+                    COptionMenu *optionMenu = new COptionMenu(cntlSize, this, desc->id, 0, 0, style);
+                    if (optionMenu)
+                    {
+                        CFontRef fontDesc = new CFontDesc(kLabelFont->getName(), desc->fontsize);
+                        optionMenu->setFont(fontDesc);
+                        optionMenu->setFontColor(MakeCColor(180, 248, 255, 255));
+                        optionMenu->setBackColor(kBlackCColor);
+                        optionMenu->setFrameColor(kBlackCColor);
+                        optionMenu->setHoriAlign(desc->fontalign);
+                        char    *menuItemList[MAXMENUITEM];
+                        char    itemText[512];
+                        strcpy(itemText, desc->title);
+                        int itemNum = splitMenuItem(itemText, ";", menuItemList);
+                        for (int i=0; i<itemNum; i++) {
+                            optionMenu->addEntry(menuItemList[i]);
+                        }
+                    }
+                    cntl = optionMenu;
                     break;
                 }
 				default:
@@ -381,6 +419,31 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	
 	//以下テストコード
 #if 0
+    //--COptionMenu--------------------------------------
+	CRect size (0, 0, 50, 14);
+	size.offset (10, 30);
+    
+	long style = kCheckStyle;
+	COptionMenu *cOptionMenu = new COptionMenu(size, this, -1, 0, 0, style);
+	if (cOptionMenu)
+	{
+        CFontRef fontDesc = new CFontDesc(kLabelFont->getName(), 9);
+		cOptionMenu->setFont(fontDesc);
+		cOptionMenu->setFontColor(kWhiteCColor);
+		cOptionMenu->setBackColor(kBlackCColor);
+		cOptionMenu->setFrameColor(kBlackCColor);
+		cOptionMenu->setHoriAlign(kLeftText);
+		for (int i = 0; i < 3; i++)
+		{
+			char txt[256];
+			sprintf(txt, "Entry %d", i);
+			cOptionMenu->addEntry(txt);
+		}
+		addView(cOptionMenu);
+		//cOptionMenu->setAttribute(kCViewTooltipAttribute,strlen("COptionMenu")+1,"COptionMenu");
+        fontDesc->forget();
+	}
+    
 	//--CMyKnob--------------------------------------
 	CBitmap *bgKnob = new CBitmap("knobBack.png");
 	
@@ -872,23 +935,23 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 	//RawBRRFileからデータを取得してエフェクタ側へ反映
 	InstParams	inst = *(file->GetLoadedInst());
 	
-	efxAcc->SetBRRData(&inst.brr);
+	efxAcc->SetBRRData(inst.getBRRData());
 	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint,inst.lp);
-	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		inst.loop ? 1.0f:.0f);
+	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		inst.isLoop() ? 1.0f:.0f);
 	
 	unsigned int	hasFlg = file->GetHasFlag();
 	if ( hasFlg & HAS_PGNAME ) efxAcc->SetProgramName( inst.pgname );
 	if ( hasFlg & HAS_RATE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate,		inst.rate);
 	else {
-		if ( inst.loop ) {
+		if ( inst.isLoop() ) {
 			double	samplerate = 32000.0;
 			short	*buffer;
 			int		pitch;
 			int		length;
-			buffer = new short[(inst.brr.size*2)/9*16];
-			brrdecode(inst.brr.data, buffer, inst.lp, 2);
-			length = ((inst.brr.size-inst.lp)*2)/9*16;
-			pitch = estimatebasefreq(buffer+inst.lp/9*16, length);
+			buffer = new short[inst.brrSamples()*2];
+			brrdecode(inst.brrData(), buffer, inst.lp, 2);
+			length = (inst.brrSamples()-inst.brrLpSamples())*2;
+			pitch = estimatebasefreq(buffer+inst.brrLpSamples(), length);
 			if (pitch > 0) {
 				samplerate = length/(double)pitch * 440.0*pow(2.0,-9.0/12);
 			}
@@ -1007,7 +1070,7 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 		
 		samplerate = 32000;
 		if (loop) {
-			buffer = new short[(brr.size*2)/9*16];
+			buffer = new short[brr.samples()*2];
 			brrdecode(brr.data, buffer, looppoint, 2);
 			length = ((brr.size-looppoint)*2)/9*16;
 			pitch = estimatebasefreq(buffer+looppoint/9*16, length);
@@ -1035,7 +1098,7 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 
 		cEditNum++;
 	}
-	efxAcc->SetParameter(this, kParam_newadpcm, 1);
+	//efxAcc->SetParameter(this, kParam_engine, 1);
 	
 	return true;
 }
@@ -1203,7 +1266,7 @@ void C700GUI::autocalcCurrentProgramSampleRate()
 	
 	key = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_BaseKey);
 	
-	buffer = new short[brr.size/9*16];
+	buffer = new short[brr.samples()];
 	brrdecode(brr.data, buffer, 0, 0);
 	length = (brr.size-looppoint)/9*16;
 	pitch = estimatebasefreq(buffer+looppoint/9*16, length);
@@ -1236,7 +1299,7 @@ void C700GUI::autocalcCurrentProgramBaseKey()
 	
 	samplerate = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_Rate);
 	
-	buffer = new short[brr.size/9*16];
+	buffer = new short[brr.samples()];
 	brrdecode(brr.data, buffer, 0, 0);
 	length = (brr.size-looppoint)/9*16;
 	pitch = estimatebasefreq(buffer+looppoint/9*16, length);

@@ -19,7 +19,7 @@ public:
 	PGChunk( const void *data, int dataSize );
 	virtual ~PGChunk();
 	
-	bool				AppendDataFromVP( InstParams *vp );
+	bool				AppendDataFromVP( const InstParams *vp );
 	bool				ReadDataToVP( InstParams *vp );
 	
 	bool				writeChunk( int type, const void* data, int byte );	//容量不足で全部を書き込めないときはfalse
@@ -29,7 +29,7 @@ public:
 
 	typedef struct {
 		int		type;
-		long	size;	//ヘッダを除いたデータサイズ
+		int     size;	//ヘッダを除いたデータサイズ
 	} MyChunkHead;
 	
 private:	

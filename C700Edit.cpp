@@ -132,7 +132,7 @@ void C700Edit::close()
 	}
 	if (frame)
 	{
-		frame->removeAll();
+		//frame->removeAll();
 		frame->forget();
 	}
 	frame = NULL;
@@ -179,6 +179,20 @@ void C700Edit::setParameter(int index, float value)
         cntl->setDirty();
 		cntl->setValue(value);
 		//printf("tag=%d, value=%f\n",tag,value);
+        
+        // 使用RAMが実機の容量を超えたら赤字に変える
+        if (tag == kAudioUnitCustomProperty_TotalRAM) {
+            int ramMax = BRR_ENDADDR - BRR_STARTADDR;
+            CMyParamDisplay *paramdisp = reinterpret_cast<CMyParamDisplay*>(cntl);
+            if (value > ramMax) {
+                // 数値を赤くする
+                paramdisp->setFontColor(MakeCColor(255, 0, 0, 255));
+            }
+            else {
+                // 数値を通常の色に戻す
+                paramdisp->setFontColor(MakeCColor(180, 248, 255, 255));
+            }
+        }
 		
 		tag += 1000;
 		cntl = m_pUIView->FindControlByTag(tag);
@@ -246,9 +260,9 @@ void C700Edit::SetLoopPoint( int lp )
 	
 	int		start;
 	int		length;
-	wavedata = new short[brr.size/9*16];
+	wavedata = new short[brr.samples()];
 	brrdecode(brr.data, wavedata,0,0);
-	numSamples = brr.size/9*16;
+	numSamples = brr.samples();
 	start = looppoint;
 	length = ((start+headView->getWidth())<numSamples?headView->getWidth():(numSamples-start));
 	headView->setWave(wavedata+start, length);

@@ -1,5 +1,5 @@
 /*
- *  C700Generator.h
+ *  C700Driver.h
  *  C700
  *
  *  Created by osoumen on 06/09/06.
@@ -9,19 +9,11 @@
 
 #pragma once
 
+#include "MemManager.h"
 #include "C700defines.h"
-#include "EchoKernel.h"
-#include <list>
-
-//-----------------------------------------------------------------------------
-typedef enum
-{
-    ATTACK,
-    DECAY,
-    SUSTAIN,
-    RELEASE,
-//	FASTRELEASE
-} env_state_t32;
+#include "C700DSP.h"
+#include "DynamicVoiceManager.h"
+#include "C700TimeThread.h"
 
 //-----------------------------------------------------------------------------
 typedef enum
@@ -30,9 +22,15 @@ typedef enum
     kVelocityMode_Square,
     kVelocityMode_Linear
 } velocity_mode;
-
 //-----------------------------------------------------------------------------
-class C700Generator
+typedef enum
+{
+    kEngineType_Old = 0,
+    kEngineType_Relaxed,
+    kEngineType_Accurate
+} engine_type;
+//-----------------------------------------------------------------------------
+class C700Driver
 {
 public:
     typedef struct {
@@ -48,19 +46,42 @@ public:
         float       portaStartPitch;
         int         lastNote;
         bool        damper;
-        //bool        monoMode;
-        
-        //int         priority;
-        int         limit;
-        int         noteOns;
-        //int         releasePriority;
         
         unsigned int changeFlg;
         InstParams  changedVP;
     } ChannelStatus;
     
-	C700Generator();
-	virtual				~C700Generator() {}
+    typedef struct VoiceStatus {
+		int				pb;
+		int				vibdepth;
+		bool			reg_pmod;
+		float			vibPhase;
+        float           portaPitch;
+		
+		//int				ar,dr,sl,sr,vol_l,vol_r;    // ミラー
+        int             vol_l,vol_r;
+		
+		int				velo;
+        int             volume;
+        int             expression;
+        int             pan;
+        int             srcn;
+        //unsigned char	*brrdata;    // ミラー
+		//unsigned int	loopPoint;    // ミラー
+		//bool			loop;    // ミラー
+        
+		//bool			echoOn;    // ミラー
+        
+        int				targetPitch;
+        
+        VoiceStatus() : pb(0), vibdepth(0), reg_pmod(0), vibPhase(0), portaPitch(0),
+                        vol_l(0), vol_r(0), velo(0), volume(0), expression(0), pan(0), srcn(0),
+                        targetPitch(0) {}
+        void Reset();
+	} VoiceStatus;
+    
+	C700Driver();
+	virtual				~C700Driver();
 	
 	virtual void		Reset();
 
@@ -87,8 +108,8 @@ public:
     void        ChangeChDR(int ch, int dr);
     void        ChangeChSL(int ch, int sl);
     void        ChangeChSR(int ch, int sr);
-    void        ChangeChVolL(int ch, int voll);
-    void        ChangeChVolR(int ch, int volr);
+    //void        ChangeChVolL(int ch, int voll);
+    //void        ChangeChVolR(int ch, int volr);
     void        ChangeChEcho(int ch, int echo);
     void        ChangeChBank(int ch, int bank);
     void        ChangeChSustainMode(int ch, int sustainMode);
@@ -105,7 +126,7 @@ public:
 	void		SetVoiceLimit( int value );
 	void		SetPBRange( float value );
 	void		SetPBRange( int ch, float value );
-	void		SetADPCMMode( bool value );
+	void		SetEngineType( engine_type type );
 	void		SetMultiMode( int bank, bool value );
 	bool		GetMultiMode( int bank ) const;
 	void		SetVelocityMode( velocity_mode value );
@@ -119,32 +140,32 @@ public:
 	void		SetDelayTime( int value );
 	int			GetDelayTime();
 	void		SetFIRTap( int tap, int value );
-	
-	void		SetSampleRate( double samplerate ) {
-        mSampleRate = samplerate;
-        mEventDelaySamples = calcEventDelaySamples();
-    }
     
+    void        SetBrrSample( int prog, const unsigned char *data, int size, int loopPoint);
+    void        DelBrrSample( int prog );
+    void        UpdateLoopPoint( int prog );
+    void        UpdateLoopFlag( int prog );
+	
+	void		SetSampleRate( double samplerate );
+    void        SetEventDelayClocks(int clocks);
+    double      GetProcessDelayTime();
+    int         GetNoteOnNotes(int ch) { return mVoiceManager.GetNoteOns(ch); }
+	    
 	void		Process( unsigned int frames, float *output[2] );
 	int			GetKeyMap( int bank, int key ) const { return mKeyMap[bank][key]; }
-	InstParams	*getVP(int pg) const { return &mVPset[pg]; }
-	InstParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
+	const InstParams	*getVP(int pg) const { return &mVPset[pg]; }
+	const InstParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
 	void		SetVPSet( InstParams *vp );
     
-    void        SetEventDelayClocks(int clocks) {
-        mEventDelayClocks = clocks;
-        mEventDelaySamples = calcEventDelaySamples();
-    }
-    
-    double      GetProcessDelayTime();
-    int         GetNoteOnNotes(int ch) { return mChStat[ch].noteOns; }
-	
 	void		RefreshKeyMap(void);
+    
+    bool        IsHwAvailable() { return mDSP.IsHwAvailable(); }
 	
 private:
 	static const int INTERNAL_CLOCK = 32000;
     static const int CYCLES_PER_SAMPLE = 21168;
     static const int PORTAMENT_CYCLE_SAMPLES = 32;  // ポルタメント処理を行うサンプル数(32kHz換算)
+    static const int PITCH_CYCLE_SAMPLES = 32;  // ピッチ変更を行うサンプル数(32kHz換算)
     static const int CLOCKS_PER_SAMPLE = 32;
     
     static const int VOLUME_DEFAULT = 100;
@@ -168,83 +189,40 @@ private:
 		int				remain_samples;
 	} MIDIEvt;
 	
-	struct VoiceState {
-		int				midi_ch;
-        int             priority;
-		unsigned int	uniqueID;
-        
-        bool            isKeyOn;       // キーオンされているかどうか
-		
-		int				pb;
-		int				vibdepth;
-		bool			reg_pmod;
-		float			vibPhase;
-        float           portaPitch;
-		
-		int				ar,dr,sl,sr,vol_l,vol_r;
-		
-		int				velo;
-        int             volume;
-        int             expression;
-        int             pan;
-		unsigned int	loopPoint;
-		bool			loop;
-        
-		bool			echoOn;
-		
-
-        // 音源内部状態
-		unsigned char	*brrdata;
-		int				memPtr;        /* Sample data memory pointer   */
-		int             end;            /* End or loop after block      */
-		int             envcnt;         /* Counts to envelope update    */
-		env_state_t32   envstate;       /* Current envelope state       */
-		int             envx;           /* Last env height (0-0x7FFF)   */
-		int             filter;         /* Last header's filter         */
-		int             half;           /* Active nybble of BRR         */
-		int             headerCnt;     /* Bytes before new header (0-8)*/
-		int             mixfrac;        /* Fractional part of smpl pstn */	//サンプル間を4096分割した位置
-		int				pitch;          /* Sample pitch (4096->32000Hz) */
-		int             range;          /* Last header's range          */
-		int             sampptr;        /* Where in sampbuf we are      */
-		int				smp1;           /* Last sample (for BRR filter) */
-		int				smp2;           /* Second-to-last sample decoded*/
-		int				sampbuf[4];   /* Buffer for Gaussian interp   */
-
-		void Reset();
-	};
-	
 	double			mSampleRate;
 	
 	int				mProcessFrac;
 	int				mProcessbuf[2][16];		//リサンプリング用バッファ
 	int				mProcessbufPtr;			//リサンプリング用バッファ書き込み位置
-	EchoKernel		mEcho[2];
 	
+    MutexObject         mMIDIEvtMtx;
 	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
 	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
-    //bool            mClearEvent;            //次のRenderでFIFOをクリアするフラグ
+    bool                mKeyOnFlag[kMaximumVoices]; // 次のProcessでKeyOnする
 	
-	std::list<int>	mPlayVo;				//ノートオン状態のボイス
-	std::list<int>	mWaitVo;				//ノートオフ状態のボイス
-	
-	VoiceState		mVoice[kMaximumVoices];		//ボイスの状況
-	
-	int				mVoiceLimit;
-	int				mMainVolume_L;
-	int				mMainVolume_R;
-	float			mVibfreq;
-	float			mVibdepth;
-	bool			mNewADPCM;
+    DynamicVoiceManager mVoiceManager;
+	    
 	bool			mDrumMode[NUM_BANKS];
 	velocity_mode	mVelocityMode;
     ChannelStatus   mChStat[16];
+    float			mVibfreq;
+	float			mVibdepth;
+
     int             mPortamentCount;        // DSP処理が1サンプル出力される毎にカウントされ、ポルタメント処理されるとPORTAMENT_CYCLE_SAMPLES 減らす
+    int             mPitchCount[kMaximumVoices];// DSP処理が1サンプル出力される毎にカウントされ、ピッチ変更されるとPITCH_CYCLE_SAMPLES 減らす、ノートオン時にも0にする
+
     int             mEventDelaySamples;     // 動作遅延サンプル(処理サンプリングレート)
     int             mEventDelayClocks;      // 動作遅延クロック
 	
 	int				mKeyMap[NUM_BANKS][128];	//各キーに対応するプログラムNo.
-	InstParams		*mVPset;
+	const InstParams *mVPset;
+    
+    MemManager      mMemManager;
+    C700DSP         mDSP;
+    VoiceStatus		mVoiceStat[kMaximumVoices];
+    
+    int             mVoiceLimit;
+    bool            mIsAccurateMode;
 	
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
@@ -259,10 +237,6 @@ private:
 	int		doNoteOff( const MIDIEvt *evt );
     bool doEvents1( const MIDIEvt *evt );
     bool doEvents2( const MIDIEvt *evt );
-	int		FindFreeVoice();
-    bool    IsPlayingVoice(int v);
-    int     StealVoice(int ch);
-    int     FindVoice(int ch=-1);
     int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }
     float calcGM2PortamentCurve(int value);
 };

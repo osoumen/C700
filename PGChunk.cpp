@@ -32,7 +32,7 @@ PGChunk::~PGChunk()
 }
 
 //-----------------------------------------------------------------------------
-bool PGChunk::AppendDataFromVP( InstParams *vp )
+bool PGChunk::AppendDataFromVP( const InstParams *vp )
 {
 	if ( mReadOnly ) {
 		return false;
@@ -46,15 +46,8 @@ bool PGChunk::AppendDataFromVP( InstParams *vp )
 		writeChunk(kAudioUnitCustomProperty_ProgramName, vp->pgname, PROGRAMNAME_MAX_LEN);
 	}
 
-	int	brrSize = vp->brr.size;
-	//最終ブロックをループフラグにする
-	if (vp->loop) {
-		vp->brr.data[brrSize - 9] |= 2;
-	}
-	else {
-		vp->brr.data[brrSize - 9] &= ~2;
-	}
-	writeChunk(kAudioUnitCustomProperty_BRRData, vp->brr.data, brrSize);
+	int	brrSize = vp->brrSize();
+	writeChunk(kAudioUnitCustomProperty_BRRData, vp->brrData(), brrSize);
 	doubleValue = vp->rate;
 	writeChunk(kAudioUnitCustomProperty_Rate, &doubleValue, sizeof(double));
 	intValue = vp->basekey;
@@ -119,13 +112,13 @@ bool PGChunk::AppendDataFromVP( InstParams *vp )
 int PGChunk::getPGChunkSize( const InstParams *vp )
 {
 	int cksize = 0;
-	if ( vp->brr.data ) {
+	if ( vp->hasBrrData() ) {
 		cksize += sizeof( MyChunkHead ) * 23;
 		cksize += sizeof( int ) * 19;	//int型データ×14
 		cksize += sizeof(double);		//double型データ１つ
 		cksize += PROGRAMNAME_MAX_LEN;
 		cksize += PATH_LEN_MAX;
-		cksize += vp->brr.size;
+		cksize += vp->brrSize();
 	}
 	return cksize;
 }
@@ -143,14 +136,14 @@ bool PGChunk::ReadDataToVP( InstParams *vp )
 				break;
 			case kAudioUnitCustomProperty_BRRData:
 			{
-				if ( vp->brr.data ) {
-					delete [] vp->brr.data;
-				}
-				vp->brr.data = new unsigned char[ckSize];
+				vp->releaseBrr();
+                BRRData brr;
+                brr.data = new unsigned char[ckSize];
 				long	actSize;
-				readData(vp->brr.data, ckSize, &actSize);
-				vp->brr.size = actSize;
-				vp->loop = vp->brr.data[actSize-9]&2?true:false;
+				readData(brr.data, ckSize, &actSize);
+				brr.size = actSize;
+				vp->loop = brr.data[actSize-9]&2?true:false;
+				vp->setBRRData(&brr);
 				break;
 			}
 			case kAudioUnitCustomProperty_Rate:

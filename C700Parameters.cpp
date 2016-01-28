@@ -29,7 +29,7 @@ static const float kMinimumValue_vibrate = 0.01;
 static const float kMaximumValue_vibrate = 35;
 static const float kDefaultValue_vibdepth2 = 1;
 static const float kDefaultValue_velocity = 1;
-static const float kDefaultValue_clipnoise = 1;
+static const float kDefaultValue_engine = 2;
 static const float kDefaultValue_bendrange = 2;
 static const float kDefaultValue_program = 0;
 static const float kDefaultValue_bankAmulti = 0;
@@ -125,7 +125,7 @@ const char *C700Parameters::GetParameterName( int id )
 		"Velocity",
 		"Bend Range",
 		"Program",
-		"New ADPCM",
+		"Engine",
 		"Bank A Multi",
 		
 		"Program2",
@@ -212,8 +212,8 @@ const char *C700Parameters::GetParameterName( int id )
 			return kMaximumValue_15;
 		case kParam_velocity:
 			return 2;
-		case kParam_newadpcm:
-			return 1;
+		case kParam_engine:
+			return 2;
 		case kParam_bendrange:
 			return 24;
 		case kParam_program:
@@ -312,7 +312,7 @@ const char *C700Parameters::GetParameterName( int id )
 			return kMinimumValue_1;
 		case kParam_velocity:
 			return kMinimumValue_0;
-		case kParam_newadpcm:
+		case kParam_engine:
 			return kMinimumValue_0;
 		case kParam_bendrange:
 			return 1;
@@ -412,8 +412,8 @@ const char *C700Parameters::GetParameterName( int id )
 			return kDefaultValue_vibdepth2;
 		case kParam_velocity:
 			return kDefaultValue_velocity;
-		case kParam_newadpcm:
-			return kDefaultValue_clipnoise;
+		case kParam_engine:
+			return kDefaultValue_engine;
 		case kParam_bendrange:
 			return kDefaultValue_bendrange;
 		case kParam_program:
