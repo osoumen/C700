@@ -722,8 +722,8 @@
 				F55D655A161EBF1B001CF9AB /* track15_.png */,
 				F55D655B161EBF1B001CF9AB /* track16_.png */,
 				8D01CCD10486CAD60068D4B7 /* Info.plist */,
-				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 				F543322916296E0200863A0B /* Info_vst.plist */,
+				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1240,6 +1240,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3E0BED020898391C00E1F0F7 /* Build configuration list for PBXNativeTarget "C700 AU" */;
 			buildPhases = (
+				F5007BC11C5BCBF40082DFE5 /* ShellScript */,
 				8D01CCC70486CAD60068D4B7 /* Headers */,
 				8D01CCC90486CAD60068D4B7 /* Resources */,
 				8D01CCCB0486CAD60068D4B7 /* Sources */,
@@ -1261,6 +1262,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F543322516296E0200863A0B /* Build configuration list for PBXNativeTarget "C700 VST" */;
 			buildPhases = (
+				F5007BC21C5BDB850082DFE5 /* ShellScript */,
 				F543317816296E0200863A0B /* Headers */,
 				F54331BD16296E0200863A0B /* Resources */,
 				F54331E016296E0200863A0B /* Sources */,
@@ -1432,6 +1434,32 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		F5007BC11C5BCBF40082DFE5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "plistBuddy=\"/usr/libexec/PlistBuddy\"\ninfoPlistFileSource=\"${SRCROOT}/${INFOPLIST_FILE}\"\ninfoPlistFileDestination=\"${TEMP_DIR}/Preprocessed-Info.plist\"\n\nif [ ${CONFIGURATION} = \"Development\" ]; then\nversionPrefix=\"dev-\"\nelse\nversionPrefix=\"\"\nfi\nlastCommitDate=$(git log -1 --date=short --pretty=format:\"%cd\" | sed -e 's/^.\\{2\\}//g' -e 's/\\-//g')\n\nnowYear=$(date \"+%Y\")\nversionString=$versionPrefix$lastCommitDate\ngetInfoString=\"C700 version $versionString, Copyright 2006-$nowYear osoumen\"\n\n$plistBuddy -c \"Set :CFBundleVersion $versionString\" \"$infoPlistFileDestination\"\n$plistBuddy -c \"Set :CFBundleShortVersionString $versionString\" \"$infoPlistFileDestination\"\n$plistBuddy -c \"Set :CFBundleGetInfoString $getInfoString\" \"$infoPlistFileDestination\"\n";
+		};
+		F5007BC21C5BDB850082DFE5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "plistBuddy=\"/usr/libexec/PlistBuddy\"\ninfoPlistFileSource=\"${SRCROOT}/${INFOPLIST_FILE}\"\ninfoPlistFileDestination=\"${TEMP_DIR}/Preprocessed-Info.plist\"\n\nif [ ${CONFIGURATION} = \"Development\" ]; then\nversionPrefix=\"dev-\"\nelse\nversionPrefix=\"\"\nfi\nlastCommitDate=$(git log -1 --date=short --pretty=format:\"%cd\" | sed -e 's/^.\\{2\\}//g' -e 's/\\-//g')\n\nnowYear=$(date \"+%Y\")\nversionString=$versionPrefix$lastCommitDate\ngetInfoString=\"C700 version $versionString, Copyright 2006-$nowYear osoumen\"\n\n$plistBuddy -c \"Set :CFBundleVersion $versionString\" \"$infoPlistFileDestination\"\n$plistBuddy -c \"Set :CFBundleShortVersionString $versionString\" \"$infoPlistFileDestination\"\n$plistBuddy -c \"Set :CFBundleGetInfoString $getInfoString\" \"$infoPlistFileDestination\"\n";
+		};
 		F543322416296E0200863A0B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 12;
@@ -1443,7 +1471,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$HOME/Library/Audio/Plug-Ins/VST/\" \n";
+			shellScript = "if [ ${CONFIGURATION} = \"Development\" ]; then\nln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$HOME/Library/Audio/Plug-Ins/VST/\"\nelse\ncp -a -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$PROJECT_DIR/dist/macosx/\"\nfi";
 		};
 		F55B68CB15863F4600FDA7C2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1456,7 +1484,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$HOME/Library/Audio/Plug-Ins/Components/\" \n";
+			shellScript = "if [ ${CONFIGURATION} = \"Development\" ]; then\nln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$HOME/Library/Audio/Plug-Ins/Components/\"\nelse\ncp -a -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$PROJECT_DIR/dist/macosx/\"\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1727,6 +1755,7 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
+				INFOPLIST_PREPROCESS = YES;
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1748,6 +1777,7 @@
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
+				INFOPLIST_PREPROCESS = YES;
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = NO;
