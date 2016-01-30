@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;;&quot;$(SolutionDir)..\snes_spc&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -124,7 +124,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;;&quot;$(SolutionDir)..\snes_spc&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -203,7 +203,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;;&quot;$(SolutionDir)..\snes_spc&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -283,7 +283,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)..\&quot;;&quot;$(SolutionDir)..\libpng&quot;;&quot;$(SolutionDir)..\zlib&quot;;&quot;$(SolutionDir)..\vstgui&quot;;&quot;$(SolutionDir)..\vstsdk2.4&quot;;&quot;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(SolutionDir)..\commusb&quot;;&quot;$(SolutionDir)..\snes_spc&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
