@@ -124,6 +124,7 @@ private:
     
     DspController   mDsp;
 
+    int             mKeyOnBit;
 };
 
 #endif /* defined(__C700__C700DSP__) */

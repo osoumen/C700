@@ -99,19 +99,22 @@ C700DSP::~C700DSP()
 
 void C700DSP::ResetVoice(int voice)
 {
+    mKeyOnBit &= ~(1 << (voice%4));
+    
     mVoice[voice].Reset();
     if (voice < 8) {
-        mDsp.WriteDsp(DSP_KOF, 1 << voice, false);
-        //mDsp.WriteDsp(DSP_KOF, 0x00, false);
+        mDsp.WriteDsp(0x15, mKeyOnBit, false);
     }
 }
 
 void C700DSP::KeyOffAll()
 {
+    mKeyOnBit = 0;
+    
     for (int i=0; i<kMaximumVoices; i++) {
         mVoice[i].Reset();
     }
-    mDsp.WriteDsp(DSP_KOF, 0xff, false);
+    mDsp.WriteDsp(0x15, mKeyOnBit, false);
 }
 
 void C700DSP::ResetEcho()
@@ -160,7 +163,7 @@ void C700DSP::SetMainVolumeL(int value)
 {
     if (mMainVolume_L != value) {
         mMainVolume_L = value;
-        mDsp.WriteDsp(DSP_MVOLL, static_cast<unsigned char>(value & 0xff), false);
+        //mDsp.WriteDsp(DSP_MVOLL, static_cast<unsigned char>(value & 0xff), false);
     }
 }
 
@@ -168,7 +171,7 @@ void C700DSP::SetMainVolumeR(int value)
 {
     if (mMainVolume_R != value) {
         mMainVolume_R = value;
-        mDsp.WriteDsp(DSP_MVOLR, static_cast<unsigned char>(value & 0xff), false);
+        //mDsp.WriteDsp(DSP_MVOLR, static_cast<unsigned char>(value & 0xff), false);
     }
 }
 
@@ -178,7 +181,7 @@ void C700DSP::SetEchoVol_L( int value )
         mEchoVolL = value & 0xff;
         mEcho[0].SetEchoVol( value );
         if (mEchoEnableWait <= 0) {
-            mDsp.WriteDsp(DSP_EVOLL, static_cast<unsigned char>(mEchoVolL), false);
+            //mDsp.WriteDsp(DSP_EVOLL, static_cast<unsigned char>(mEchoVolL), false);
         }
     }
 }
@@ -189,7 +192,7 @@ void C700DSP::SetEchoVol_R( int value )
         mEchoVolR = value & 0xff;
         mEcho[1].SetEchoVol( value );
         if (mEchoEnableWait <= 0) {
-            mDsp.WriteDsp(DSP_EVOLR, static_cast<unsigned char>(mEchoVolR), false);
+            //mDsp.WriteDsp(DSP_EVOLR, static_cast<unsigned char>(mEchoVolR), false);
         }
     }
 }
@@ -201,7 +204,7 @@ void C700DSP::SetFeedBackLevel( int value )
         mEcho[0].SetFBLevel( value );
         mEcho[1].SetFBLevel( value );
         if (mEchoEnableWait <= 0) {
-            mDsp.WriteDsp(DSP_EFB, static_cast<unsigned char>(mEchoFeedBack), false);
+            //mDsp.WriteDsp(DSP_EFB, static_cast<unsigned char>(mEchoFeedBack), false);
         }
     }
 }
@@ -223,7 +226,7 @@ void C700DSP::SetDelayTime( int value )
         //mDsp.WriteDsp(DSP_EDL, 0, false);
         
         //mDsp.WriteDsp(DSP_ESA, static_cast<unsigned char>(mEchoStartAddr), false);
-        mDsp.WriteDsp(DSP_EDL, static_cast<unsigned char>(mEchoDelay), false);
+        //mDsp.WriteDsp(DSP_EDL, static_cast<unsigned char>(mEchoDelay), false);
         /*
         mEchoEnableWait = 8000; // 250ms
         gettimeofday(&mEchoChangeTime, NULL);
@@ -236,14 +239,15 @@ void C700DSP::SetFIRTap( int tap, int value )
 {
 	mEcho[0].SetFIRTap(tap, value);
 	mEcho[1].SetFIRTap(tap, value);
-    mDsp.WriteDsp(DSP_FIR + 0x10*tap, static_cast<unsigned char>(value & 0xff), false);
+    //mDsp.WriteDsp(DSP_FIR + 0x10*tap, static_cast<unsigned char>(value & 0xff), false);
 }
 
 void C700DSP::KeyOffVoice(int v)
 {
     mVoice[v].envstate = RELEASE;
-    mDsp.WriteDsp(DSP_KOF, static_cast<unsigned char>(0x01 << v), false);
-    mDsp.WriteDsp(DSP_KOF, 0, false);  // 本当に必要？
+    
+    //mKeyOnBit &= ~(1 << (v%4));
+    //mDsp.WriteDsp(0x15, mKeyOnBit, false);
 }
 
 void C700DSP::KeyOnVoice(int v)
@@ -257,7 +261,9 @@ void C700DSP::KeyOnVoice(int v)
     mVoice[v].mixfrac = 3 * 4096;
     mVoice[v].envcnt = CNT_INIT;
     mVoice[v].envstate = ATTACK;
-    mDsp.WriteDsp(DSP_KON, static_cast<unsigned char>(0x01 << v), false);
+    
+    mKeyOnBit |= 1 << (v%4);
+    mDsp.WriteDsp(0x15, mKeyOnBit, false);
 }
 
 void C700DSP::KeyOnVoiceFlg(int flg)
@@ -275,7 +281,9 @@ void C700DSP::KeyOnVoiceFlg(int flg)
             mVoice[v].envstate = ATTACK;
         }
     }
-    mDsp.WriteDsp(DSP_KON, static_cast<unsigned char>(flg & 0xff), false);
+    mKeyOnBit = flg & 0x0f;
+    mKeyOnBit |= (flg >> 4) & 0x0f;
+    mDsp.WriteDsp(0x15, mKeyOnBit, false);
 }
 
 void C700DSP::SetAR(int v, int value)
@@ -286,7 +294,7 @@ void C700DSP::SetAR(int v, int value)
         data |= mVoice[v].ar & 0x0f;
         data |= (mVoice[v].dr & 0x07) << 4;
         if (v < 8) {
-            mDsp.WriteDsp(DSP_ADSR + 0x10*v, data, false);
+            //mDsp.WriteDsp(DSP_ADSR + 0x10*v, data, false);
         }
     }
 }
@@ -299,7 +307,7 @@ void C700DSP::SetDR(int v, int value)
         data |= mVoice[v].ar & 0x0f;
         data |= (mVoice[v].dr & 0x07) << 4;
         if (v < 8) {
-            mDsp.WriteDsp(DSP_ADSR + 0x10*v, data, false);
+            //mDsp.WriteDsp(DSP_ADSR + 0x10*v, data, false);
         }
     }
 }
@@ -312,7 +320,7 @@ void C700DSP::SetSL(int v, int value)
         data |= mVoice[v].sr & 0x1f;
         data |= (mVoice[v].sl & 0x07) << 5;
         if (v < 8) {
-            mDsp.WriteDsp(DSP_ADSR+1 + 0x10*v, data, false);
+            //mDsp.WriteDsp(DSP_ADSR+1 + 0x10*v, data, false);
         }
     }
 }
@@ -325,7 +333,7 @@ void C700DSP::SetSR(int v, int value)
         data |= mVoice[v].sr & 0x1f;
         data |= (mVoice[v].sl & 0x07) << 5;
         if (v < 8) {
-            mDsp.WriteDsp(DSP_ADSR+1 + 0x10*v, data, false);
+            //mDsp.WriteDsp(DSP_ADSR+1 + 0x10*v, data, false);
         }
     }
 }
@@ -335,7 +343,9 @@ void C700DSP::SetVol_L(int v, int value)
     if (mVoice[v].vol_l != value) {
         mVoice[v].vol_l = value;
         if (v < 8) {
-            mDsp.WriteDsp(DSP_VOL + 0x10*v, static_cast<unsigned char>(value), false);
+            v = v % 4;
+            value ^= ~(mVoice[v].ar << 4);
+            mDsp.WriteDsp(0x00 + 0x4*v, static_cast<unsigned char>(value), false);
         }
     }
 }
@@ -345,7 +355,9 @@ void C700DSP::SetVol_R(int v, int value)
     if (mVoice[v].vol_r != value) {
         mVoice[v].vol_r = value;
         if (v < 8) {
-            mDsp.WriteDsp(DSP_VOL+1 + 0x10*v, static_cast<unsigned char>(value), false);
+            v = v % 4;
+            value ^= ~(mVoice[v].dr << 5);
+            mDsp.WriteDsp(0x01 + 0x04*v, static_cast<unsigned char>(value&0xff), false);
         }
     }
 }
@@ -355,8 +367,10 @@ void C700DSP::SetPitch(int v, int value)
     if (mVoice[v].pitch != value) {
         mVoice[v].pitch = value;
         if (v < 8) {
-            mDsp.WriteDsp(DSP_P + 0x10*v, static_cast<unsigned char>(value&0xff), false);
-            mDsp.WriteDsp(DSP_P+1 + 0x10*v, static_cast<unsigned char>((value>>8)&0x3f), false);
+            v = v % 4;
+            value *= 4;
+            mDsp.WriteDsp(0x02 + 0x04*v, static_cast<unsigned char>(value&0xff), false);
+            mDsp.WriteDsp(0x03 + 0x04*v, static_cast<unsigned char>((value>>8)&0x3f), false);
         }
     }
 }
@@ -372,7 +386,7 @@ void C700DSP::SetEchoOn(int v, bool isOn)
                 data |= 1 << i;
             }
         }
-        mDsp.WriteDsp(DSP_EON, data, false);
+        //mDsp.WriteDsp(DSP_EON, data, false);
     }
 }
 
@@ -386,14 +400,15 @@ void C700DSP::SetSrcn(int v, int value)
     
     setBrr( v, &mRam[brrAddr], loopAddr - brrAddr);
     if (v < 8) {
-        mDsp.WriteDsp(DSP_SRCN + 0x10*v, static_cast<unsigned char>(value&0xff), false);
+        v = v % 4;
+        //mDsp.WriteDsp(0x01 + 0x04*v, static_cast<unsigned char>(value&0xff), false);
     }
 }
 
 void C700DSP::SetDir(int value)
 {
     mDirAddr = (value & 0xff) << 8;
-    mDsp.WriteDsp(DSP_DIR, static_cast<unsigned char>(value&0xff), false);
+    //mDsp.WriteDsp(DSP_DIR, static_cast<unsigned char>(value&0xff), false);
 }
 
 void C700DSP::setBrr(int v, unsigned char *brrdata, unsigned int loopPoint)

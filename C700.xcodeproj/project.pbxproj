@@ -373,6 +373,20 @@
 		F5BEFCA619BC4F8C0083F8D9 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = F5BEFCA419BC4F8C0083F8D9 /* help.png */; };
 		F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
 		F5C1B32316F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
+		F5DD51EA1CA5A00A00B0B519 /* edControlFTDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5DD51E81CA5A00A00B0B519 /* edControlFTDI.cpp */; };
+		F5DD51EB1CA5A00A00B0B519 /* edControlFTDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5DD51E81CA5A00A00B0B519 /* edControlFTDI.cpp */; };
+		F5DD51EC1CA5A00A00B0B519 /* edControlFTDI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD51E91CA5A00A00B0B519 /* edControlFTDI.h */; };
+		F5DD51ED1CA5A00A00B0B519 /* edControlFTDI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD51E91CA5A00A00B0B519 /* edControlFTDI.h */; };
+		F5DD51FC1CA5A08200B0B519 /* ftd2xx.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD51F21CA5A08200B0B519 /* ftd2xx.h */; };
+		F5DD51FD1CA5A08200B0B519 /* ftd2xx.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD51F21CA5A08200B0B519 /* ftd2xx.h */; };
+		F5DD52001CA5A08200B0B519 /* libftd2xx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5DD51F61CA5A08200B0B519 /* libftd2xx.a */; };
+		F5DD52011CA5A08200B0B519 /* libftd2xx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5DD51F61CA5A08200B0B519 /* libftd2xx.a */; };
+		F5DD52021CA5A08200B0B519 /* WinTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD51F71CA5A08200B0B519 /* WinTypes.h */; };
+		F5DD52031CA5A08200B0B519 /* WinTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD51F71CA5A08200B0B519 /* WinTypes.h */; };
+		F5DD52081CA5B49300B0B519 /* firmData.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD52061CA5B49300B0B519 /* firmData.h */; };
+		F5DD52091CA5B49300B0B519 /* firmData.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD52061CA5B49300B0B519 /* firmData.h */; };
+		F5DD520A1CA5B49300B0B519 /* romData.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD52071CA5B49300B0B519 /* romData.h */; };
+		F5DD520B1CA5B49300B0B519 /* romData.h in Headers */ = {isa = PBXBuildFile; fileRef = F5DD52071CA5B49300B0B519 /* romData.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -611,6 +625,13 @@
 		F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DspRegFIFO.h; sourceTree = "<group>"; };
 		F5BEFCA419BC4F8C0083F8D9 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = help.png; path = graphics/help.png; sourceTree = "<group>"; };
 		F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstacnesDefs.h; sourceTree = "<group>"; };
+		F5DD51E81CA5A00A00B0B519 /* edControlFTDI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = edControlFTDI.cpp; sourceTree = "<group>"; };
+		F5DD51E91CA5A00A00B0B519 /* edControlFTDI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = edControlFTDI.h; sourceTree = "<group>"; };
+		F5DD51F21CA5A08200B0B519 /* ftd2xx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftd2xx.h; sourceTree = "<group>"; };
+		F5DD51F61CA5A08200B0B519 /* libftd2xx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libftd2xx.a; sourceTree = "<group>"; };
+		F5DD51F71CA5A08200B0B519 /* WinTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WinTypes.h; sourceTree = "<group>"; };
+		F5DD52061CA5B49300B0B519 /* firmData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = firmData.h; sourceTree = "<group>"; };
+		F5DD52071CA5B49300B0B519 /* romData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = romData.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -618,6 +639,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5DD52001CA5A08200B0B519 /* libftd2xx.a in Frameworks */,
 				F52674361C01E914006B0276 /* IOKit.framework in Frameworks */,
 				F57D96C61984D1E900F2FE06 /* Carbon.framework in Frameworks */,
 				8BA05AFC072074E100365D66 /* AudioToolbox.framework in Frameworks */,
@@ -634,6 +656,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F52674371C01E91E006B0276 /* IOKit.framework in Frameworks */,
+				F5DD52011CA5A08200B0B519 /* libftd2xx.a in Frameworks */,
 				F543321F16296E0200863A0B /* Accelerate.framework in Frameworks */,
 				F54338BE1629748300863A0B /* AudioToolbox.framework in Frameworks */,
 				F53602A21984CEC60079A9BE /* Cocoa.framework in Frameworks */,
@@ -734,6 +757,7 @@
 				32BAE0B30371A71500C91783 /* C700_Prefix.pch */,
 				F543325E16296FB600863A0B /* C700_Prefix_VST.pch */,
 				F59D918B1BF720EA00E5EFC6 /* snes_spc */,
+				F5DD51EE1CA5A08200B0B519 /* ftd2xx */,
 				F54331441629649D00863A0B /* Common Source */,
 				F54338CE1629750100863A0B /* VST Source */,
 				8BA05A56072072A900365D66 /* AU Source */,
@@ -894,6 +918,10 @@
 		F52674281C01E8A2006B0276 /* commusb */ = {
 			isa = PBXGroup;
 			children = (
+				F5DD52061CA5B49300B0B519 /* firmData.h */,
+				F5DD52071CA5B49300B0B519 /* romData.h */,
+				F5DD51E81CA5A00A00B0B519 /* edControlFTDI.cpp */,
+				F5DD51E91CA5A00A00B0B519 /* edControlFTDI.h */,
 				F52674291C01E8A2006B0276 /* ControlUSB.cpp */,
 				F526742A1C01E8A2006B0276 /* ControlUSB.h */,
 				F526742B1C01E8A2006B0276 /* SpcControlDevice.cpp */,
@@ -1065,6 +1093,25 @@
 			path = snes_spc;
 			sourceTree = "<group>";
 		};
+		F5DD51EE1CA5A08200B0B519 /* ftd2xx */ = {
+			isa = PBXGroup;
+			children = (
+				F5DD51F21CA5A08200B0B519 /* ftd2xx.h */,
+				F5DD51F51CA5A08200B0B519 /* static64 */,
+				F5DD51F71CA5A08200B0B519 /* WinTypes.h */,
+			);
+			name = ftd2xx;
+			path = ../../../Dropbox/working/stktest/ftd2xx;
+			sourceTree = "<group>";
+		};
+		F5DD51F51CA5A08200B0B519 /* static64 */ = {
+			isa = PBXGroup;
+			children = (
+				F5DD51F61CA5A08200B0B519 /* libftd2xx.a */,
+			);
+			path = static64;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1086,6 +1133,7 @@
 				8BA05AD7072073D300365D66 /* AUSilentTimeout.h in Headers */,
 				8BA05AD8072073D300365D66 /* AUTimestampGenerator.h in Headers */,
 				8BA05AE60720742100365D66 /* CAAudioChannelLayout.h in Headers */,
+				F5DD52081CA5B49300B0B519 /* firmData.h in Headers */,
 				8BA05AE80720742100365D66 /* CAMutex.h in Headers */,
 				8BA05AEA0720742100365D66 /* CAStreamBasicDescription.h in Headers */,
 				8BA05B080720754400365D66 /* CAAUParameter.h in Headers */,
@@ -1094,6 +1142,7 @@
 				3E0BECFD0898391C00E1F0F7 /* CAVectorUnitTypes.h in Headers */,
 				8AA4CF3F0AAE7C4000AA021C /* CAAUMIDIMap.h in Headers */,
 				8AA4CF410AAE7C4000AA021C /* CAAUMIDIMapManager.h in Headers */,
+				F5DD520A1CA5B49300B0B519 /* romData.h in Headers */,
 				8AA4CF500AAE7CFC00AA021C /* AUMIDIBase.h in Headers */,
 				8AA4CF520AAE7CFC00AA021C /* MusicDeviceBase.h in Headers */,
 				F557ACE719CD159300CF9792 /* MersenneTwister.h in Headers */,
@@ -1113,6 +1162,7 @@
 				F59D919D1BF720EA00E5EFC6 /* blargg_common.h in Headers */,
 				8ACF4CD90B2145CB00EC1825 /* CarbonEventHandler.h in Headers */,
 				8ACF4CDC0B2145E800EC1825 /* AUViewLocalizedStringKeys.h in Headers */,
+				F5DD52021CA5A08200B0B519 /* WinTypes.h in Headers */,
 				F59D91891BF71FCE00E5EFC6 /* DspController.h in Headers */,
 				8A3E63210B22DD9C0091886F /* czt.h in Headers */,
 				8A3E63230B22DD9E0091886F /* brrcodec.h in Headers */,
@@ -1126,6 +1176,7 @@
 				F597AD3F160B67860003E710 /* cfileselector.h in Headers */,
 				F597AD40160B67860003E710 /* plugguieditor.h in Headers */,
 				F597AD43160B67860003E710 /* vstgui.h in Headers */,
+				F5DD51EC1CA5A00A00B0B519 /* edControlFTDI.h in Headers */,
 				F59D91B31BF720EA00E5EFC6 /* spc.h in Headers */,
 				F569A3F61619527F006C91AD /* C700_CocoaViewFactory.h in Headers */,
 				F569A40516195488006C91AD /* C700Edit.h in Headers */,
@@ -1145,6 +1196,7 @@
 				F569C38A162515ED006C91AD /* DataBuffer.h in Headers */,
 				F569C3AD162518B9006C91AD /* AudioFile.h in Headers */,
 				F569C3B1162518BF006C91AD /* SPCFile.h in Headers */,
+				F5DD51FC1CA5A08200B0B519 /* ftd2xx.h in Headers */,
 				F569C3B5162518C6006C91AD /* RawBRRFile.h in Headers */,
 				F569C40B16254B6E006C91AD /* XIFile.h in Headers */,
 				F569C6DF162644AE006C91AD /* PlistBRRFile.h in Headers */,
@@ -1166,11 +1218,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5DD520B1CA5B49300B0B519 /* romData.h in Headers */,
 				F58DCD811A2B4586004BD426 /* C700DSP.h in Headers */,
 				F557ACE819CD159300CF9792 /* MersenneTwister.h in Headers */,
 				F543317916296E0200863A0B /* C700_Prefix.pch in Headers */,
 				F543319716296E0200863A0B /* C700defines.h in Headers */,
 				F543319816296E0200863A0B /* samplebrr.h in Headers */,
+				F5DD52031CA5A08200B0B519 /* WinTypes.h in Headers */,
 				F59D91A21BF720EA00E5EFC6 /* blargg_endian.h in Headers */,
 				F59D91AC1BF720EA00E5EFC6 /* SNES_SPC.h in Headers */,
 				F543319916296E0200863A0B /* gauss.h in Headers */,
@@ -1197,11 +1251,13 @@
 				F54331A916296E0200863A0B /* MyKnob.h in Headers */,
 				F54331AA16296E0200863A0B /* MySlider.h in Headers */,
 				F54331AB16296E0200863A0B /* LabelOnOffButton.h in Headers */,
+				F5DD52091CA5B49300B0B519 /* firmData.h in Headers */,
 				F55680301A2AA8550031451C /* DynamicVoiceManager.h in Headers */,
 				F54331AC16296E0200863A0B /* WaveView.h in Headers */,
 				F53602A91984CF600079A9BE /* aeffectx.h in Headers */,
 				F54331AD16296E0200863A0B /* DummyCntl.h in Headers */,
 				F54331AE16296E0200863A0B /* ControlInstances.h in Headers */,
+				F5DD51FD1CA5A08200B0B519 /* ftd2xx.h in Headers */,
 				F54331AF16296E0200863A0B /* SeparatorLine.h in Headers */,
 				F54331B016296E0200863A0B /* MyParamDisplay.h in Headers */,
 				F54331B116296E0200863A0B /* MyTextEdit.h in Headers */,
@@ -1229,6 +1285,7 @@
 				F510B704163266CB00A844B4 /* FileAccess.h in Headers */,
 				F59D91A01BF720EA00E5EFC6 /* blargg_config.h in Headers */,
 				F53602B71984CF7D0079A9BE /* audioeffect.h in Headers */,
+				F5DD51ED1CA5A00A00B0B519 /* edControlFTDI.h in Headers */,
 				F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1556,6 +1613,7 @@
 				F569C38B162515ED006C91AD /* DataBuffer.cpp in Sources */,
 				F569C3AE162518B9006C91AD /* AudioFile.cpp in Sources */,
 				F569C3B2162518BF006C91AD /* SPCFile.cpp in Sources */,
+				F5DD51EA1CA5A00A00B0B519 /* edControlFTDI.cpp in Sources */,
 				F569C3B6162518C6006C91AD /* RawBRRFile.cpp in Sources */,
 				F527FFA01BEE323F0083E355 /* MemManager.cpp in Sources */,
 				F569C40C16254B6E006C91AD /* XIFile.cpp in Sources */,
@@ -1581,6 +1639,7 @@
 				F54331FF16296E0200863A0B /* cocoasupport.mm in Sources */,
 				F543320116296E0200863A0B /* cvstguitimer.cpp in Sources */,
 				F543320216296E0200863A0B /* cfileselector.cpp in Sources */,
+				F5DD51EB1CA5A00A00B0B519 /* edControlFTDI.cpp in Sources */,
 				F543320316296E0200863A0B /* vstcontrols.cpp in Sources */,
 				F556802E1A2AA8550031451C /* DynamicVoiceManager.cpp in Sources */,
 				F59D91B01BF720EA00E5EFC6 /* SNES_SPC_state.cpp in Sources */,
@@ -1674,7 +1733,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /Users/osoumen/Dropbox/working/stktest/ftd2xx/static64;
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
@@ -1698,7 +1757,7 @@
 		3E0BED040898391C00E1F0F7 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_LOCATION = NO;
@@ -1721,7 +1780,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /Users/osoumen/Dropbox/working/stktest/ftd2xx/static64;
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
@@ -1813,7 +1872,11 @@
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"/Users/osoumen/Dropbox/working/stktest/ftd2xx/10.5-10.7",
+					/Users/osoumen/Dropbox/working/stktest/ftd2xx/static32,
+					/Users/osoumen/Dropbox/working/stktest/ftd2xx/static64,
+				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
@@ -1866,7 +1929,11 @@
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"/Users/osoumen/Dropbox/working/stktest/ftd2xx/10.5-10.7",
+					/Users/osoumen/Dropbox/working/stktest/ftd2xx/static32,
+					/Users/osoumen/Dropbox/working/stktest/ftd2xx/static64,
+				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";

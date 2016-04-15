@@ -11,7 +11,7 @@
 
 //#define USE_OPENSPC
 
-#include "SpcControlDevice.h"
+#include "edControlFTDI.h"
 #include "DspRegFIFO.h"
 #ifdef USE_OPENSPC
 #include "openspc.h"
@@ -75,7 +75,7 @@ private:
     DspRegFIFO          mEmuFifo;
     DspRegFIFO          mHwFifo;
     int                 mDspMirror[128];
-    
+    /*
     MutexObject         mEmuMtx;
 #ifndef USE_OPENSPC
     SNES_SPC            mDsp;
@@ -84,9 +84,9 @@ private:
     int                 mWaitPort;
     int                 mWaitByte;
     // mEmuMtx
-    
+    */
     MutexObject         mHwMtx;
-    SpcControlDevice    mSpcDev;
+    edControlFTDI       mEdDev;
     int                 mPort0stateHw;
     // mHwMtx
     
