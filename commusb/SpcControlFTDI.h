@@ -1,20 +1,22 @@
-﻿//
-//  SpcControlDevice.h
+//
+//  SpcControlFTDI.h
 //  gimicUsbSpcPlay
 //
-//  Created by osoumen on 2014/06/14.
-//  Copyright (c) 2014年 osoumen. All rights reserved.
+//  Created by osoumen on 2016/02/13.
+//  Copyright (c) 2016年 osoumen. All rights reserved.
 //
 
-#ifndef __gimicUsbSpcPlay__SpcControlDevice__
-#define __gimicUsbSpcPlay__SpcControlDevice__
+#ifndef __gimicUsbSpcPlay__SpcControlFTDI__
+#define __gimicUsbSpcPlay__SpcControlFTDI__
 
-#include "ControlUSB.h"
+#include "SpcControlDevice.h"
 
-class SpcControlDevice {
+#include "ftd2xx.h"
+
+class SpcControlFTDI : public SpcControlDevice {
 public:
-    SpcControlDevice();
-    virtual ~SpcControlDevice();
+    SpcControlFTDI();
+    virtual ~SpcControlFTDI() {}
     
     virtual bool InitUsb();
     virtual bool CloseUsb();
@@ -31,30 +33,35 @@ public:
     virtual void ReadAndWait(int addr, unsigned char waitValue);
     virtual void WriteAndWait(int addr, unsigned char waitValue);
     virtual void WriteBuffer();
-    virtual void WriteBufferAsync();
     virtual int CatchTransferError();
+
+    SInt32		bulkWrite(UInt8 *buf, UInt32 size);
+    SInt32		bulkRead(UInt8 *buf, UInt32 size);
     
-    int UploadRAMDataIPL(const unsigned char *ram, int addr, int size, unsigned char initialP0state);
-    int WaitReady();
-    int JumpToCode(int addr, unsigned char initialP0state);
     virtual void setDeviceAddedFunc( void (*func) (void* ownerClass), void* ownerClass );
 	virtual void setDeviceRemovedFunc( void (*func) (void* ownerClass) , void* ownerClass );
-
+    
 private:
-    static const int GIMIC_USBVID = 0x16c0;
-    static const int GIMIC_USBPID = 0x05e5;
-    static const int GIMIC_USBWPIPE = 0x02;
-    static const int GIMIC_USBRPIPE = 0x85;
-    static const int BLOCKWRITE_CMD_LEN = 4;
-    static const int MAX_ASYNC_READ = 64;
     static const int PACKET_SIZE = 64;
-
-    ControlUSB      *mUsbDev;
+    
     unsigned char   mWriteBuf[64];
-    unsigned char   mReadBuf[64];
     int             mWriteBytes;
     
-    //int mNumReads;  // Read待ちのパケット数
+    volatile bool	mIsPlugged;
+    
+    FT_HANDLE       ftHandle;
+    
+    UInt8           mBuf[128];
+    
+    void(*mDeviceAddedFunc)		(void* ownerClass);
+	void                        *mDeviceAddedFuncClass;
+	void(*mDeviceRemovedFunc)	(void* ownerClass);
+	void                        *mDeviceRemovedFuncClass;
+    
+    void		printErr(IOReturn kr);
+    
+    FT_STATUS	resetrPipe();
+	FT_STATUS	resetwPipe();
 };
 
-#endif /* defined(__gimicUsbSpcPlay__SpcControlDevice__) */
+#endif /* defined(__gimicUsbSpcPlay__SpcControlFTDI__) */

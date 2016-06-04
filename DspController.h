@@ -86,7 +86,7 @@ private:
     // mEmuMtx
     
     MutexObject         mHwMtx;
-    SpcControlDevice    mSpcDev;
+    SpcControlDevice    *mSpcDev;
     int                 mPort0stateHw;
     // mHwMtx
     

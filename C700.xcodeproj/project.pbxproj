@@ -309,6 +309,18 @@
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
 		F5710731162EB3D40043EF00 /* PGChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = F571072F162EB3D40043EF00 /* PGChunk.h */; };
 		F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5710730162EB3D40043EF00 /* PGChunk.cpp */; };
+		F575B5BD1D02EFDB0058D71B /* ftd2xx.h in Headers */ = {isa = PBXBuildFile; fileRef = F575B5B31D02EFDB0058D71B /* ftd2xx.h */; };
+		F575B5BE1D02EFDB0058D71B /* ftd2xx.h in Headers */ = {isa = PBXBuildFile; fileRef = F575B5B31D02EFDB0058D71B /* ftd2xx.h */; };
+		F575B5C31D02EFDC0058D71B /* WinTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F575B5B81D02EFDB0058D71B /* WinTypes.h */; };
+		F575B5C41D02EFDC0058D71B /* WinTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = F575B5B81D02EFDB0058D71B /* WinTypes.h */; };
+		F575B5C71D02F1A40058D71B /* SpcControlFTDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F575B5C51D02F1A40058D71B /* SpcControlFTDI.cpp */; };
+		F575B5C81D02F1A40058D71B /* SpcControlFTDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F575B5C51D02F1A40058D71B /* SpcControlFTDI.cpp */; };
+		F575B5C91D02F1A40058D71B /* SpcControlFTDI.h in Headers */ = {isa = PBXBuildFile; fileRef = F575B5C61D02F1A40058D71B /* SpcControlFTDI.h */; };
+		F575B5CA1D02F1A40058D71B /* SpcControlFTDI.h in Headers */ = {isa = PBXBuildFile; fileRef = F575B5C61D02F1A40058D71B /* SpcControlFTDI.h */; };
+		F575B5CF1D02F2BD0058D71B /* libftd2xx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F575B5CC1D02F2BD0058D71B /* libftd2xx.a */; };
+		F575B5D01D02F2BD0058D71B /* libftd2xx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F575B5CC1D02F2BD0058D71B /* libftd2xx.a */; };
+		F575B5D11D02F2BD0058D71B /* libftd2xx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F575B5CE1D02F2BD0058D71B /* libftd2xx.a */; };
+		F575B5D21D02F2BD0058D71B /* libftd2xx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F575B5CE1D02F2BD0058D71B /* libftd2xx.a */; };
 		F57D96C61984D1E900F2FE06 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D96C51984D1E900F2FE06 /* Carbon.framework */; };
 		F57D96C71984D1E900F2FE06 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D96C51984D1E900F2FE06 /* Carbon.framework */; };
 		F58DCD7E1A2B4586004BD426 /* C700DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58DCD7C1A2B4586004BD426 /* C700DSP.cpp */; };
@@ -571,6 +583,12 @@
 		F56D35A1156A185D00038960 /* MiniAiff.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = MiniAiff.h; path = encodetest/MiniAiff.h; sourceTree = "<group>"; };
 		F571072F162EB3D40043EF00 /* PGChunk.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = PGChunk.h; sourceTree = "<group>"; };
 		F5710730162EB3D40043EF00 /* PGChunk.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = PGChunk.cpp; sourceTree = "<group>"; };
+		F575B5B31D02EFDB0058D71B /* ftd2xx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ftd2xx.h; sourceTree = "<group>"; };
+		F575B5B81D02EFDB0058D71B /* WinTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WinTypes.h; sourceTree = "<group>"; };
+		F575B5C51D02F1A40058D71B /* SpcControlFTDI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpcControlFTDI.cpp; sourceTree = "<group>"; };
+		F575B5C61D02F1A40058D71B /* SpcControlFTDI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpcControlFTDI.h; sourceTree = "<group>"; };
+		F575B5CC1D02F2BD0058D71B /* libftd2xx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libftd2xx.a; sourceTree = "<group>"; };
+		F575B5CE1D02F2BD0058D71B /* libftd2xx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libftd2xx.a; sourceTree = "<group>"; };
 		F57D96C51984D1E900F2FE06 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		F58DCD7C1A2B4586004BD426 /* C700DSP.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C700DSP.cpp; sourceTree = "<group>"; };
 		F58DCD7D1A2B4586004BD426 /* C700DSP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700DSP.h; sourceTree = "<group>"; };
@@ -620,12 +638,14 @@
 			files = (
 				F52674361C01E914006B0276 /* IOKit.framework in Frameworks */,
 				F57D96C61984D1E900F2FE06 /* Carbon.framework in Frameworks */,
+				F575B5CF1D02F2BD0058D71B /* libftd2xx.a in Frameworks */,
 				8BA05AFC072074E100365D66 /* AudioToolbox.framework in Frameworks */,
 				F53602BF1984CFF80079A9BE /* Foundation.framework in Frameworks */,
 				F53602A11984CEC60079A9BE /* Cocoa.framework in Frameworks */,
 				8BA05AFD072074E100365D66 /* AudioUnit.framework in Frameworks */,
 				8BA05B02072074F900365D66 /* CoreServices.framework in Frameworks */,
 				8A21340B0B199D8500DC9811 /* Accelerate.framework in Frameworks */,
+				F575B5D11D02F2BD0058D71B /* libftd2xx.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -634,11 +654,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F52674371C01E91E006B0276 /* IOKit.framework in Frameworks */,
+				F575B5D21D02F2BD0058D71B /* libftd2xx.a in Frameworks */,
 				F543321F16296E0200863A0B /* Accelerate.framework in Frameworks */,
 				F54338BE1629748300863A0B /* AudioToolbox.framework in Frameworks */,
 				F53602A21984CEC60079A9BE /* Cocoa.framework in Frameworks */,
 				F57D96C71984D1E900F2FE06 /* Carbon.framework in Frameworks */,
 				F53602C01984CFF80079A9BE /* Foundation.framework in Frameworks */,
+				F575B5D01D02F2BD0058D71B /* libftd2xx.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -657,6 +679,7 @@
 			isa = PBXGroup;
 			children = (
 				F52674351C01E914006B0276 /* IOKit.framework */,
+				F575B5AF1D02EFDB0058D71B /* ftd2xx */,
 				08FB77ADFE841716C02AAC07 /* Source */,
 				089C167CFE841241C02AAC07 /* Resources */,
 				089C1671FE841209C02AAC07 /* External Frameworks and Libraries */,
@@ -898,6 +921,8 @@
 				F526742A1C01E8A2006B0276 /* ControlUSB.h */,
 				F526742B1C01E8A2006B0276 /* SpcControlDevice.cpp */,
 				F526742C1C01E8A2006B0276 /* SpcControlDevice.h */,
+				F575B5C51D02F1A40058D71B /* SpcControlFTDI.cpp */,
+				F575B5C61D02F1A40058D71B /* SpcControlFTDI.h */,
 			);
 			path = commusb;
 			sourceTree = "<group>";
@@ -1018,6 +1043,33 @@
 			name = encodetest;
 			sourceTree = "<group>";
 		};
+		F575B5AF1D02EFDB0058D71B /* ftd2xx */ = {
+			isa = PBXGroup;
+			children = (
+				F575B5CB1D02F2BD0058D71B /* i386 */,
+				F575B5CD1D02F2BD0058D71B /* x86_64 */,
+				F575B5B31D02EFDB0058D71B /* ftd2xx.h */,
+				F575B5B81D02EFDB0058D71B /* WinTypes.h */,
+			);
+			path = ftd2xx;
+			sourceTree = "<group>";
+		};
+		F575B5CB1D02F2BD0058D71B /* i386 */ = {
+			isa = PBXGroup;
+			children = (
+				F575B5CC1D02F2BD0058D71B /* libftd2xx.a */,
+			);
+			path = i386;
+			sourceTree = "<group>";
+		};
+		F575B5CD1D02F2BD0058D71B /* x86_64 */ = {
+			isa = PBXGroup;
+			children = (
+				F575B5CE1D02F2BD0058D71B /* libftd2xx.a */,
+			);
+			path = x86_64;
+			sourceTree = "<group>";
+		};
 		F597AD27160B67860003E710 /* vstgui */ = {
 			isa = PBXGroup;
 			children = (
@@ -1086,8 +1138,10 @@
 				8BA05AD7072073D300365D66 /* AUSilentTimeout.h in Headers */,
 				8BA05AD8072073D300365D66 /* AUTimestampGenerator.h in Headers */,
 				8BA05AE60720742100365D66 /* CAAudioChannelLayout.h in Headers */,
+				F575B5BD1D02EFDB0058D71B /* ftd2xx.h in Headers */,
 				8BA05AE80720742100365D66 /* CAMutex.h in Headers */,
 				8BA05AEA0720742100365D66 /* CAStreamBasicDescription.h in Headers */,
+				F575B5C31D02EFDC0058D71B /* WinTypes.h in Headers */,
 				8BA05B080720754400365D66 /* CAAUParameter.h in Headers */,
 				8BC6025C073B072D006C4272 /* C700.h in Headers */,
 				3E0BECFC0898391C00E1F0F7 /* CAVectorUnit.h in Headers */,
@@ -1120,6 +1174,7 @@
 				F52674331C01E8A2006B0276 /* SpcControlDevice.h in Headers */,
 				F543D0AD147D285F00DC53A3 /* C700Driver.h in Headers */,
 				F526742F1C01E8A2006B0276 /* ControlUSB.h in Headers */,
+				F575B5C91D02F1A40058D71B /* SpcControlFTDI.h in Headers */,
 				F597AD37160B67860003E710 /* getpluginbundle.h in Headers */,
 				F597AD39160B67860003E710 /* vstkeycode.h in Headers */,
 				F597AD3A160B67860003E710 /* cocoasupport.h in Headers */,
@@ -1181,11 +1236,13 @@
 				F59D91C41BF721CE00E5EFC6 /* DspRegFIFO.h in Headers */,
 				F543319E16296E0200863A0B /* C700Driver.h in Headers */,
 				F59D91BE1BF720EA00E5EFC6 /* SPC_Filter.h in Headers */,
+				F575B5CA1D02F1A40058D71B /* SpcControlFTDI.h in Headers */,
 				F543319F16296E0200863A0B /* getpluginbundle.h in Headers */,
 				F54331A016296E0200863A0B /* vstkeycode.h in Headers */,
 				F59D91A41BF720EA00E5EFC6 /* blargg_source.h in Headers */,
 				F59D91BA1BF720EA00E5EFC6 /* SPC_DSP.h in Headers */,
 				F54331A116296E0200863A0B /* cocoasupport.h in Headers */,
+				F575B5BE1D02EFDB0058D71B /* ftd2xx.h in Headers */,
 				F54331A216296E0200863A0B /* cfileselector.h in Headers */,
 				F54331A416296E0200863A0B /* vstgui.h in Headers */,
 				F54331A616296E0200863A0B /* C700Edit.h in Headers */,
@@ -1194,6 +1251,7 @@
 				F54331A816296E0200863A0B /* ctooltipsupport.h in Headers */,
 				F59D91A81BF720EA00E5EFC6 /* dsp.h in Headers */,
 				F59D91B61BF720EA00E5EFC6 /* SPC_CPU.h in Headers */,
+				F575B5C41D02EFDC0058D71B /* WinTypes.h in Headers */,
 				F54331A916296E0200863A0B /* MyKnob.h in Headers */,
 				F54331AA16296E0200863A0B /* MySlider.h in Headers */,
 				F54331AB16296E0200863A0B /* LabelOnOffButton.h in Headers */,
@@ -1512,6 +1570,7 @@
 				8AA4CF400AAE7C4000AA021C /* CAAUMIDIMapManager.cpp in Sources */,
 				8AA4CF4F0AAE7CFC00AA021C /* AUMIDIBase.cpp in Sources */,
 				8AA4CF510AAE7CFC00AA021C /* MusicDeviceBase.cpp in Sources */,
+				F575B5C71D02F1A40058D71B /* SpcControlFTDI.cpp in Sources */,
 				8AA4CF600AAE7D7A00AA021C /* AUInstrumentBase.cpp in Sources */,
 				8AA4CF630AAE7D7A00AA021C /* SynthElement.cpp in Sources */,
 				8AA4CF660AAE7D7A00AA021C /* SynthNote.cpp in Sources */,
@@ -1582,6 +1641,7 @@
 				F543320116296E0200863A0B /* cvstguitimer.cpp in Sources */,
 				F543320216296E0200863A0B /* cfileselector.cpp in Sources */,
 				F543320316296E0200863A0B /* vstcontrols.cpp in Sources */,
+				F575B5C81D02F1A40058D71B /* SpcControlFTDI.cpp in Sources */,
 				F556802E1A2AA8550031451C /* DynamicVoiceManager.cpp in Sources */,
 				F59D91B01BF720EA00E5EFC6 /* SNES_SPC_state.cpp in Sources */,
 				F543320416296E0200863A0B /* vstgui.cpp in Sources */,
@@ -1674,7 +1734,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/ftd2xx/$(CURRENT_ARCH)";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
@@ -1721,7 +1781,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/ftd2xx/$(CURRENT_ARCH)";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
@@ -1813,7 +1873,13 @@
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/ftd2xx/10.5-10.7",
+					"$(PROJECT_DIR)/ftd2xx/static32",
+					"$(PROJECT_DIR)/ftd2xx/static64",
+					"$(PROJECT_DIR)/ftd2xx/i386",
+					"$(PROJECT_DIR)/ftd2xx/x86_64",
+				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
@@ -1866,7 +1932,13 @@
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/ftd2xx/10.5-10.7",
+					"$(PROJECT_DIR)/ftd2xx/static32",
+					"$(PROJECT_DIR)/ftd2xx/static64",
+					"$(PROJECT_DIR)/ftd2xx/i386",
+					"$(PROJECT_DIR)/ftd2xx/x86_64",
+				);
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";

@@ -19,7 +19,6 @@ DEFINE_GUID(GUID_DEVINTERFACE_WINUSBTESTTARGET,
 #else
 #include <unistd.h>
 #endif
-#include <string.h>
 
 void printBytes(const unsigned char *data, int bytes)
 {
@@ -33,12 +32,24 @@ void printBytes(const unsigned char *data, int bytes)
 
 SpcControlDevice::SpcControlDevice()
 {
-    mUsbDev = new ControlUSB();
+    InitUsb();
 }
 
 SpcControlDevice::~SpcControlDevice()
 {
+    CloseUsb();
+}
+
+bool SpcControlDevice::InitUsb()
+{
+    mUsbDev = new ControlUSB();
+    return true;
+}
+
+bool SpcControlDevice::CloseUsb()
+{
     delete mUsbDev;
+    return true;
 }
 
 int SpcControlDevice::Init()
@@ -74,7 +85,7 @@ int SpcControlDevice::Close()
     return 0;
 }
 
-void SpcControlDevice::HwReset()
+void SpcControlDevice::Reset()
 {
     mUsbDev->resetrPipe();
     mUsbDev->resetwPipe();
@@ -84,15 +95,12 @@ void SpcControlDevice::HwReset()
     mUsbDev->bulkWrite(cmd, wb);
     
     printBytes(cmd, wb);
-}
-
-void SpcControlDevice::SwReset()
-{
-    unsigned char cmd[] = {0xfd, 0x82, 0xff};
-    int wb = sizeof(cmd);
-    mUsbDev->bulkWrite(cmd, wb);
     
-    printBytes(cmd, wb);
+    unsigned char cmd2[] = {0xfd, 0x82, 0xff};
+    wb = sizeof(cmd2);
+    mUsbDev->bulkWrite(cmd2, wb);
+    
+    printBytes(cmd2, wb);
 }
 
 bool SpcControlDevice::CheckHasRequiredModule()
@@ -374,7 +382,9 @@ int SpcControlDevice::UploadRAMDataIPL(const unsigned char *ram, int addr, int s
         WriteAndWait(0, port0State);
         port0State++;
         if ((i % 256) == 255) {
-            //std::cout << ".";
+#ifdef USB_CONSOLE_TEST
+            std::cout << ".";
+#endif
         }
         if (i == (size-1)) {
             WriteBuffer();

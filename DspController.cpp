@@ -6,6 +6,7 @@
 //
 //
 
+#include "SpcControlFTDI.h"
 #include "DspController.h"
 #include <iomanip>
 
@@ -87,6 +88,7 @@ unsigned char DspController::dspregAccCode[] =
 };
 
 DspController::DspController()
+: mSpcDev(NULL)
 {
     mIsHwAvailable = false;
     mMuteEmulation = false;
@@ -102,6 +104,8 @@ DspController::DspController()
     
     MutexInit(mEmuMtx);
     MutexInit(mHwMtx);
+    
+    mSpcDev = new SpcControlFTDI();
 }
 
 void DspController::init()
@@ -150,9 +154,9 @@ void DspController::init()
     WriteDsp(DSP_PMON, 0x00, true);
     mDspMirror[DSP_PMON] = 0;
     
-    mSpcDev.setDeviceAddedFunc(onDeviceAdded, this);
-    mSpcDev.setDeviceRemovedFunc(onDeviceRemoved, this);
-    mSpcDev.Init();
+    mSpcDev->setDeviceAddedFunc(onDeviceAdded, this);
+    mSpcDev->setDeviceRemovedFunc(onDeviceRemoved, this);
+    mSpcDev->Init();
 }
 
 DspController::~DspController()
@@ -161,11 +165,16 @@ DspController::~DspController()
         mIsHwAvailable = false;
         ThreadJoin(mWriteHwThread);
     }
-    mSpcDev.Close();
+    mSpcDev->Close();
     mEmuFifo.Clear();
     mHwFifo.Clear();
     MutexDestroy(mHwMtx);
     MutexDestroy(mEmuMtx);
+    
+    if (mSpcDev != NULL) {
+        delete mSpcDev;
+        mSpcDev = NULL;
+    }
 }
 
 void DspController::onDeviceAdded(void *ref)
@@ -175,19 +184,17 @@ void DspController::onDeviceAdded(void *ref)
     int err = 0;
     
     // SPCモジュールがあるかチェック
-    if (This->mSpcDev.CheckHasRequiredModule() == false) {
+    if (This->mSpcDev->CheckHasRequiredModule() == false) {
         return;
     }
     
     MutexLock(This->mHwMtx);
     
-    // ハードウェアリセット
-    This->mSpcDev.HwReset();
-    // ソフトウェアリセット
-    This->mSpcDev.SwReset();
+    // リセット
+    This->mSpcDev->Reset();
     
     // $BBAA 待ち
-    err = This->mSpcDev.WaitReady();
+    err = This->mSpcDev->WaitReady();
     if (err) {
         return;
     }
@@ -197,25 +204,25 @@ void DspController::onDeviceAdded(void *ref)
     err = 0xcc-1;
     dspWrite[0] = DSP_MVOLL;
     dspWrite[1] = 0;
-    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
+    err = This->mSpcDev->UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
     }
     dspWrite[0] = DSP_MVOLR;
     dspWrite[1] = 0;
-    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
+    err = This->mSpcDev->UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
     }
     dspWrite[0] = DSP_EVOLL;
     dspWrite[1] = 0;
-    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
+    err = This->mSpcDev->UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
     }
     dspWrite[0] = DSP_EVOLR;
     dspWrite[1] = 0;
-    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
+    err = This->mSpcDev->UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
     }
@@ -223,42 +230,44 @@ void DspController::onDeviceAdded(void *ref)
     // EDL,ESAを初期化
     dspWrite[0] = DSP_FLG;
     dspWrite[1] = 0x20;
-    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
+    err = This->mSpcDev->UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
     }
     dspWrite[0] = DSP_EDL;
     dspWrite[1] = 0;
-    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
+    err = This->mSpcDev->UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
     }
     dspWrite[0] = DSP_ESA;
     dspWrite[1] = 0x06; // DIRの直後
-    err = This->mSpcDev.UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
+    err = This->mSpcDev->UploadRAMDataIPL(dspWrite, 0x00f2, 2, err+1);
     if (err < 0) {
         return;
     }
     WaitMicroSeconds(240000); // EDL,ESAを変更したので240ms待ち
     
     // DSPアクセス用コードを転送
-    err = This->mSpcDev.UploadRAMDataIPL(dspregAccCode, dspAccCodeAddr, sizeof(dspregAccCode), err+1);
+    err = This->mSpcDev->UploadRAMDataIPL(dspregAccCode, dspAccCodeAddr, sizeof(dspregAccCode), err+1);
     if (err < 0) {
         return;
     }
     
     // 転送済みコードへジャンプ
-    err = This->mSpcDev.JumpToCode(dspAccCodeAddr, err+1);
+    err = This->mSpcDev->JumpToCode(dspAccCodeAddr, err+1);
     if (err < 0) {
         return;
     }
-#if 1
-    while (This->mSpcDev.PortRead(3) != p3waitValue) {
+#if 0
+    while (This->mSpcDev->PortRead(3) != p3waitValue) {
         WaitMicroSeconds(10000);
     }
 #else
-    This->mSpcDev.ReadAndWait(3, p3waitValue);
-    This->mSpcDev.WriteBuffer();
+    for (int i=0; i<5; i++) {
+        This->mSpcDev->ReadAndWait(3, p3waitValue);
+        This->mSpcDev->WriteBuffer();
+    }
 #endif
     This->mPort0stateHw = 1;
     
@@ -273,11 +282,11 @@ void DspController::onDeviceAdded(void *ref)
         if (i == DSP_KON) {
             continue;
         }
-        This->mSpcDev.BlockWrite(1, This->mDspMirror[i], i);
-        This->mSpcDev.WriteAndWait(0, This->mPort0stateHw);
+        This->mSpcDev->BlockWrite(1, This->mDspMirror[i], i);
+        This->mSpcDev->WriteAndWait(0, This->mPort0stateHw);
         This->mPort0stateHw = This->mPort0stateHw ^ 1;
     }
-    This->mSpcDev.WriteBuffer();
+    This->mSpcDev->WriteBuffer();
     
     This->mIsHwAvailable = true;
     
@@ -374,22 +383,22 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
 
     if (mIsHwAvailable) {
         MutexLock(mHwMtx);
-        mSpcDev.BlockWrite(2, addr & 0xff, (addr>>8) & 0xff);
-        mSpcDev.WriteAndWait(0, mPort0stateHw | 0xc0);
-        mSpcDev.WriteBuffer();
+        mSpcDev->BlockWrite(2, addr & 0xff, (addr>>8) & 0xff);
+        mSpcDev->WriteAndWait(0, mPort0stateHw | 0xc0);
+        mSpcDev->WriteBuffer();
         mPort0stateHw = mPort0stateHw ^ 0x01;
         int num = size / 3;
         int rest = size - num * 3;
         int ptr = 0;
         for (int i=0; i<num; i++) {
-            mSpcDev.BlockWrite(1, data[ptr], data[ptr+1], data[ptr+2]);
+            mSpcDev->BlockWrite(1, data[ptr], data[ptr+1], data[ptr+2]);
             ptr += 3;
-            mSpcDev.WriteAndWait(0, mPort0stateHw);
+            mSpcDev->WriteAndWait(0, mPort0stateHw);
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
-        mSpcDev.BlockWrite(0, mPort0stateHw | 0x80);
-        mSpcDev.ReadAndWait(3, p3waitValue);
-        mSpcDev.WriteBuffer();
+        mSpcDev->BlockWrite(0, mPort0stateHw | 0x80);
+        mSpcDev->ReadAndWait(3, p3waitValue);
+        mSpcDev->WriteBuffer();
         mPort0stateHw = mPort0stateHw ^ 0x01;
         /*
         while (mSpcDev.PortRead(3) != p3waitValue) {
@@ -398,10 +407,10 @@ void DspController::WriteRam(int addr, const unsigned char *data, int size)
          */
         addr += num * 3;
         for (int i=0; i<rest; i++) {
-            mSpcDev.BlockWrite(1, data[ptr], (addr + i) & 0xff, ((addr + i)>>8) & 0xff);
+            mSpcDev->BlockWrite(1, data[ptr], (addr + i) & 0xff, ((addr + i)>>8) & 0xff);
             ptr++;
-            mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
-            mSpcDev.WriteBuffer();
+            mSpcDev->WriteAndWait(0, mPort0stateHw | 0x80);
+            mSpcDev->WriteBuffer();
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
         
@@ -641,7 +650,7 @@ void *DspController::writeHwThreadFunc(void *arg)
             }
 			write = true;
         }
-        This->mSpcDev.WriteBuffer();
+        This->mSpcDev->WriteBuffer();
         MutexUnlock(This->mHwMtx);
         
 		if (!write) {
@@ -669,8 +678,8 @@ void DspController::doWriteDspHw(int addr, unsigned char data)
             rewrite = 1;
         }
         for (int i=0; i<rewrite; i++) {
-            mSpcDev.BlockWrite(1, data, addr & 0xff);
-            mSpcDev.WriteAndWait(0, mPort0stateHw);
+            mSpcDev->BlockWrite(1, data, addr & 0xff);
+            mSpcDev->WriteAndWait(0, mPort0stateHw);
             mPort0stateHw = mPort0stateHw ^ 0x01;
         }
         //mSpcDev.WriteBuffer();
@@ -682,8 +691,8 @@ void DspController::doWriteRamHw(int addr, unsigned char data)
 {
     if (mIsHwAvailable) {
         //pthread_mutex_lock(&mHwMtx);
-        mSpcDev.BlockWrite(1, data, addr & 0xff, (addr>>8) & 0xff);
-        mSpcDev.WriteAndWait(0, mPort0stateHw | 0x80);
+        mSpcDev->BlockWrite(1, data, addr & 0xff, (addr>>8) & 0xff);
+        mSpcDev->WriteAndWait(0, mPort0stateHw | 0x80);
         //mSpcDev.WriteBuffer();
         mPort0stateHw = mPort0stateHw ^ 0x01;
         //pthread_mutex_unlock(&mHwMtx);
