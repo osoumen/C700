@@ -69,26 +69,30 @@
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>C:\repo\C700\ftd2xx\i386;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>C:\repo\C700\ftd2xx\amd64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>C:\repo\C700\ftd2xx\i386;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>C:\repo\C700\ftd2xx\amd64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\ftd2xx;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;DEBUG_PRINT;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -113,7 +117,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\ftd2xx;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;DEBUG_PRINT;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -133,7 +137,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\ftd2xx;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -159,7 +163,7 @@
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\ftd2xx;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -194,6 +198,7 @@
     <ClInclude Include="..\C700VST.h" />
     <ClInclude Include="..\commusb\ControlUSB.h" />
     <ClInclude Include="..\commusb\SpcControlDevice.h" />
+    <ClInclude Include="..\commusb\SpcControlFTDI.h" />
     <ClInclude Include="..\ControlInstacnesDefs.h" />
     <ClInclude Include="..\ControlInstances.h" />
     <ClInclude Include="..\DataBuffer.h" />
@@ -268,6 +273,7 @@
     <ClCompile Include="..\C700VST.cpp" />
     <ClCompile Include="..\commusb\ControlUSB.cpp" />
     <ClCompile Include="..\commusb\SpcControlDevice.cpp" />
+    <ClCompile Include="..\commusb\SpcControlFTDI.cpp" />
     <ClCompile Include="..\DataBuffer.cpp" />
     <ClCompile Include="..\DspController.cpp" />
     <ClCompile Include="..\DspRegFIFO.cpp" />

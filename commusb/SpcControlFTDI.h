@@ -35,8 +35,8 @@ public:
     virtual void WriteBuffer();
     virtual int CatchTransferError();
 
-    SInt32		bulkWrite(UInt8 *buf, UInt32 size);
-    SInt32		bulkRead(UInt8 *buf, UInt32 size);
+    int		bulkWrite(unsigned char *buf, unsigned int size);
+    int		bulkRead(unsigned char *buf, unsigned int size);
     
     virtual void setDeviceAddedFunc( void (*func) (void* ownerClass), void* ownerClass );
 	virtual void setDeviceRemovedFunc( void (*func) (void* ownerClass) , void* ownerClass );
@@ -51,14 +51,14 @@ private:
     
     FT_HANDLE       ftHandle;
     
-    UInt8           mBuf[128];
+    unsigned char   mBuf[128];
     
     void(*mDeviceAddedFunc)		(void* ownerClass);
 	void                        *mDeviceAddedFuncClass;
 	void(*mDeviceRemovedFunc)	(void* ownerClass);
 	void                        *mDeviceRemovedFuncClass;
     
-    void		printErr(IOReturn kr);
+    //void		printErr(IOReturn kr);
     
     FT_STATUS	resetrPipe();
 	FT_STATUS	resetwPipe();

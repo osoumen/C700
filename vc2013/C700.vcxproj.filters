@@ -262,6 +262,9 @@
     <ClInclude Include="..\c700timethread.h">
       <Filter>C700source\Common Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\commusb\SpcControlFTDI.h">
+      <Filter>C700source\Common Source\commusb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp">
@@ -506,6 +509,9 @@
     </ClCompile>
     <ClCompile Include="..\zlib\zutil.c">
       <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\commusb\SpcControlFTDI.cpp">
+      <Filter>C700source\Common Source\commusb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

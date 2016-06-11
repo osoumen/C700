@@ -1,4 +1,4 @@
-//
+﻿//
 //  SpcControlFTDI.cpp
 //  gimicUsbSpcPlay
 //
@@ -8,6 +8,10 @@
 
 #include "SpcControlFTDI.h"
 #include <iostream>
+
+#ifdef _MSC_VER
+#pragma comment(lib, "ftd2xx.lib")
+#endif
 
 SpcControlFTDI::SpcControlFTDI()
 {
@@ -85,7 +89,7 @@ FT_STATUS	SpcControlFTDI::resetrPipe()
 {
 	if (!mIsPlugged) return -1;
 	
-	FT_STATUS kr = noErr;
+	FT_STATUS kr = 0;
 	
 	kr = FT_Purge(ftHandle, FT_PURGE_RX);
 	
@@ -96,7 +100,7 @@ FT_STATUS	SpcControlFTDI::resetwPipe()
 {
 	if (!mIsPlugged) return -1;
 	
-	FT_STATUS kr = noErr;
+	FT_STATUS kr = 0;
 	
 	kr = FT_Purge(ftHandle, FT_PURGE_TX);
 	
@@ -115,13 +119,13 @@ bool SpcControlFTDI::CheckHasRequiredModule()
     return true;
 }
 
-SInt32		SpcControlFTDI::bulkWrite(UInt8 *buf, UInt32 size)
+int		SpcControlFTDI::bulkWrite(unsigned char *buf, unsigned int size)
 {
 	if (!mIsPlugged) return -1;
-	FT_STATUS			kr = noErr;
+	FT_STATUS			kr = 0;
     DWORD               len;
     
-    UInt32      writeSize = size;
+    int      writeSize = size;
     for (int i=0; i<writeSize; i++) {
         mBuf[i] = buf[i];
     }
@@ -130,13 +134,13 @@ SInt32		SpcControlFTDI::bulkWrite(UInt8 *buf, UInt32 size)
 	return len;
 }
 
-SInt32		SpcControlFTDI::bulkRead(UInt8 *buf, UInt32 size)
+int		SpcControlFTDI::bulkRead(unsigned char *buf, unsigned int size)
 {
 	if (!mIsPlugged) return -1;
-	FT_STATUS			kr = noErr;
+	FT_STATUS			kr = 0;
     DWORD               len;
     
-    UInt32      readSize = size;
+    int      readSize = size;
     kr = FT_Read(ftHandle, buf, readSize, &len);
 	
 	return len;
