@@ -1873,13 +1873,7 @@
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/ftd2xx/10.5-10.7",
-					"$(PROJECT_DIR)/ftd2xx/static32",
-					"$(PROJECT_DIR)/ftd2xx/static64",
-					"$(PROJECT_DIR)/ftd2xx/i386",
-					"$(PROJECT_DIR)/ftd2xx/x86_64",
-				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/ftd2xx/$(CURRENT_ARCH)";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
@@ -1932,13 +1926,7 @@
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
-				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/ftd2xx/10.5-10.7",
-					"$(PROJECT_DIR)/ftd2xx/static32",
-					"$(PROJECT_DIR)/ftd2xx/static64",
-					"$(PROJECT_DIR)/ftd2xx/i386",
-					"$(PROJECT_DIR)/ftd2xx/x86_64",
-				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/ftd2xx/$(CURRENT_ARCH)";
 				LIBRARY_STYLE = Bundle;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
