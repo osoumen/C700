@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BuildMachineOSBuild</key>
-	<string>12F2560</string>
+	<string>14F1808</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDocumentTypes</key>
@@ -11,7 +11,7 @@
 	<key>CFBundleExecutable</key>
 	<string>C700</string>
 	<key>CFBundleGetInfoString</key>
-	<string>C700 version 160129, Copyright 2006-2016 osoumen</string>
+	<string>C700 version 160611, Copyright 2006-2016 osoumen</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.picopicose.audiounit.C700</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -21,11 +21,11 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>160129</string>
+	<string>160611</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>160129</string>
+	<string>160611</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>DTCompiler</key>

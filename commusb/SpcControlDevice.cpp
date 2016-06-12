@@ -357,11 +357,11 @@ void SpcControlDevice::setDeviceRemovedFunc( void (*func) (void* ownerClass) , v
 
 int SpcControlDevice::WaitReady()
 {
-    if (mUsbDev->isPlugged()) {
+    //if (mUsbDev->isPlugged()) {
         ReadAndWait(0, 0xaa);
         ReadAndWait(1, 0xbb);
         WriteBuffer();
-    }
+    //}
     
     int err = CatchTransferError();
     if (err) {

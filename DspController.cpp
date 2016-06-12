@@ -52,14 +52,19 @@ unsigned char DspController::dspregAccCode[] =
     ,0x2F ,0xE0       //     	bra loop	; 4
     // toram:
     ,0x5D             //   	mov x,a
-    ,0x28 ,0x40       //     	and a,#$40
-    ,0xD0 ,0x0B       //     	bne blockTrans
+    //
+    ,0x80             //   	setc
+    ,0xA8 ,0x40       //     	sbc a,#P0FLG_BLKTRAS
+    ,0x30 ,0x0F       //     	bmi blockTrans
+    ,0x28 ,0x20       //     	and a,#P0FLG_P0RST
+    ,0xD0 ,0x39       //     	bne resetP0
+    //
     ,0x8D ,0x00       //     	mov y,#0
     ,0xE4 ,0xF5       //     	mov a,SPC_PORT1
     ,0xD7 ,0xF6       //     	mov [SPC_PORT2]+y,a
     ,0x7D             //   	mov a,x
     ,0xC4 ,0xF4       //     	mov SPC_PORT0,a
-    ,0x2F ,0xD0       //     	bra loop
+    ,0x2F ,0xCB       //     	bra loop
     // blockTrans:
     ,0x8F ,0x00 ,0xF7 //       	mov SPC_PORT3,#$0
     ,0xFA ,0xF6 ,0x04 //       	mov $04,SPC_PORT2
@@ -71,7 +76,7 @@ unsigned char DspController::dspregAccCode[] =
     ,0x64 ,0xF4       //     	cmp a,SPC_PORT0
     ,0xF0 ,0xFC       //     	beq loop2
     ,0xE4 ,0xF4       //     	mov a,SPC_PORT0
-    ,0x30 ,0xB7       //     	bmi ack
+    ,0x30 ,0xB2       //     	bmi ack
     ,0x5D             //   	mov x,a
     ,0xE4 ,0xF5       //     	mov a,SPC_PORT1
     ,0xD7 ,0x04       //     	mov [$04]+y,a
@@ -85,6 +90,10 @@ unsigned char DspController::dspregAccCode[] =
     ,0x7D             //   	mov a,x
     ,0xC4 ,0xF4       //     	mov SPC_PORT0,a
     ,0x2F ,0xE0       //     	bra loop2
+    // resetP0:
+    ,0x8F ,0xB0 ,0xF1 //       	mov SPC_CONTROL,#$b0
+    ,0xD8 ,0xF4       //     	mov SPC_PORT0,x
+    ,0x5F ,0xC0 ,0xFF //       	jmp !$ffc0
 };
 
 DspController::DspController()
@@ -181,7 +190,7 @@ void DspController::onDeviceAdded(void *ref)
 {
     DspController   *This = reinterpret_cast<DspController*>(ref);
     
-    int err = 0;
+    //int err = 0;
     
     // SPCモジュールがあるかチェック
     if (This->mSpcDev->CheckHasRequiredModule() == false) {
@@ -190,15 +199,15 @@ void DspController::onDeviceAdded(void *ref)
     
     MutexLock(This->mHwMtx);
     
+#if 0   // プログラムの転送は実機側で行う
     // リセット
     This->mSpcDev->Reset();
-    
+
     // $BBAA 待ち
     err = This->mSpcDev->WaitReady();
     if (err) {
         return;
     }
-    
     // ノイズ回避のため音量を0に
     unsigned char dspWrite[2];
     err = 0xcc-1;
@@ -264,12 +273,14 @@ void DspController::onDeviceAdded(void *ref)
         WaitMicroSeconds(10000);
     }
 #else
-    for (int i=0; i<5; i++) {
-        This->mSpcDev->ReadAndWait(3, p3waitValue);
-        This->mSpcDev->WriteBuffer();
-    }
+    This->mSpcDev->ReadAndWait(3, p3waitValue);
+    This->mSpcDev->WriteBuffer();
+#endif
 #endif
     This->mPort0stateHw = 1;
+    
+    // ダミー書き込み
+    This->doWriteDspHw(0x1d, 0);
     
     // DSPの復元
     for (int i=0; i<128; i++) {
