@@ -688,7 +688,7 @@ void C700DSP::EndRegisterLog()
 		mLogger.EndDump( static_cast<int>((mLoggerSamplePos * mTickPerSec) / 32000 + 0.5) );
 		mIsLoggerRunning = false;
         
-#if DEBUG
+#if 1
         // テスト出力
         SaveRegisterLog("/Users/osoumen/Desktop/spclog.dat");
 #endif
