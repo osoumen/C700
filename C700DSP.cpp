@@ -90,6 +90,9 @@ mUseRealEmulation( true )
     mDsp.setDeviceReadyFunc(onDeviceReady, this);
     mDsp.setDeviceExitFunc(onDeviceStop, this);
     mDsp.init();
+    
+    mIsLoggerRunning = false;
+    mTickPerSec = 15734;
 }
 
 C700DSP::~C700DSP()
@@ -635,6 +638,9 @@ void C700DSP::Process1Sample(int &outl, int &outr)
         outr = 0;
 		mDsp.IncSampleInFrame();
     }
+    if ( mIsLoggerRunning ) {
+        mLoggerSamplePos++;
+    }
 }
 
 void C700DSP::BeginFrameProcess(double frameTime)
@@ -644,7 +650,61 @@ void C700DSP::BeginFrameProcess(double frameTime)
 
 bool C700DSP::writeDsp(int addr, unsigned char data)
 {
+    //レジスタをログへ
+	if ( mIsLoggerRunning ) {
+		mLogger.DumpReg(0, addr, data, static_cast<int>((mLoggerSamplePos * mTickPerSec) / 32000 + 0.5) );
+	}
+    
     return mDsp.WriteDsp(addr, data, false);
+}
+
+void C700DSP::BeginS98Log()
+{
+	mLoggerSamplePos = 0;
+	mTickPerSec = 15734;    // Hsync
+	mLogger.SetResolution(1, static_cast<int>(mTickPerSec));
+	mLogger.BeginDump(0);
+	mIsLoggerRunning = true;
+}
+
+void C700DSP::MarkRegisterLogLoop()
+{
+	if ( mIsLoggerRunning ) {
+		mLogger.MarkLoopPoint();
+	}
+}
+
+void C700DSP::EndRegisterLog()
+{
+	if ( mIsLoggerRunning ) {
+		mLogger.EndDump( static_cast<int>((mLoggerSamplePos * mTickPerSec) / 32000 + 0.5) );
+		mIsLoggerRunning = false;
+        
+#if DEBUG
+        // テスト出力
+        SaveRegisterLog("/Users/osoumen/Desktop/spclog.dat");
+#endif
+	}
+}
+
+int C700DSP::SaveRegisterLog(const char *path)
+{
+	if ( *path == 0 ) {
+		return(-1);
+	}
+	if ( CanSaveRegisterLog() == false ) {
+		return(-1);
+	}
+	mLogger.SaveToFile(path);
+	return(0);
+}
+
+bool C700DSP::CanSaveRegisterLog()
+{
+	if ( mIsLoggerRunning == false && mLogger.IsEnded() ) {
+		return true;
+	}
+	return false;
 }
 
 void C700DSP::onDeviceReady(void *ref)

@@ -12,6 +12,7 @@
 #include "DspController.h"
 #include "EchoKernel.h"
 #include "C700defines.h"
+#include "RegisterLogger.h"
 
 //-----------------------------------------------------------------------------
 typedef enum
@@ -65,6 +66,13 @@ public:
     bool IsHwAvailable() { return mDsp.IsHwAvailable(); }
     
     void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint);
+    
+    void BeginS98Log();
+    void MarkRegisterLogLoop();
+    void EndRegisterLog();
+    int SaveRegisterLog(const char *path);
+    bool CanSaveRegisterLog();
+    
 private:
     bool writeDsp(int addr, unsigned char data);
 
@@ -124,6 +132,11 @@ private:
     int             mBrrEndAddr;
     
     DspController   mDsp;
+    
+    RegisterLogger  mLogger;
+    bool            mIsLoggerRunning;
+    double          mTickPerSec;
+    int             mLoggerSamplePos;
 
 };
 
