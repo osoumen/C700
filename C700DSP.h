@@ -67,7 +67,7 @@ public:
     
     void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint);
     
-    void BeginS98Log();
+    void BeginRegisterLog();
     void MarkRegisterLogLoop();
     void EndRegisterLog();
     int SaveRegisterLog(const char *path);

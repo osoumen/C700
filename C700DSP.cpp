@@ -658,13 +658,21 @@ bool C700DSP::writeDsp(int addr, unsigned char data)
     return mDsp.WriteDsp(addr, data, false);
 }
 
-void C700DSP::BeginS98Log()
+void C700DSP::BeginRegisterLog()
 {
 	mLoggerSamplePos = 0;
 	mTickPerSec = 15734;    // Hsync
 	mLogger.SetResolution(1, static_cast<int>(mTickPerSec));
 	mLogger.BeginDump(0);
 	mIsLoggerRunning = true;
+    
+    // 現在のレジスタ値を出力
+    for (int i=0; i<128; i++) {
+        int reg = mDsp.GetDspMirror(i);
+        if (reg >= 0 && reg <= 0xff) {
+            mLogger.DumpReg(0, i, reg, 0);
+        }
+    }
 }
 
 void C700DSP::MarkRegisterLogLoop()

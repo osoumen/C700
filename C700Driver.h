@@ -93,6 +93,10 @@ public:
 	void		AllNotesOff();
 	void		AllSoundOff();
 	void		ResetAllControllers();
+    
+    void        StartRegisterLog( int inFrame );
+    void        MarkLoopRegisterLog( int inFrame );
+    void        EndRegisterLog( int inFrame );
 	
     // channel params
 	void		ModWheel( int ch, int value );
@@ -177,7 +181,10 @@ private:
 		NOTE_OFF,
         PROGRAM_CHANGE,
         PITCH_BEND,
-        CONTROL_CHANGE
+        CONTROL_CHANGE,
+        START_REGLOG,
+        MARKLOOP_REGLOG,
+        END_REGLOG
 	};
 	
 	typedef struct {
