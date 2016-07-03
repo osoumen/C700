@@ -85,6 +85,10 @@
 		F510B705163266CB00A844B4 /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510B703163266CB00A844B4 /* FileAccess.cpp */; };
 		F510B706163266CB00A844B4 /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F510B702163266CB00A844B4 /* FileAccess.h */; };
 		F510B707163266CB00A844B4 /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510B703163266CB00A844B4 /* FileAccess.cpp */; };
+		F51D83D11D295E8B00A23008 /* RegisterLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F51D83CF1D295E8B00A23008 /* RegisterLogger.cpp */; };
+		F51D83D21D295E8B00A23008 /* RegisterLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F51D83CF1D295E8B00A23008 /* RegisterLogger.cpp */; };
+		F51D83D31D295E8B00A23008 /* RegisterLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = F51D83D01D295E8B00A23008 /* RegisterLogger.h */; };
+		F51D83D41D295E8B00A23008 /* RegisterLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = F51D83D01D295E8B00A23008 /* RegisterLogger.h */; };
 		F526742D1C01E8A2006B0276 /* ControlUSB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52674291C01E8A2006B0276 /* ControlUSB.cpp */; };
 		F526742E1C01E8A2006B0276 /* ControlUSB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52674291C01E8A2006B0276 /* ControlUSB.cpp */; };
 		F526742F1C01E8A2006B0276 /* ControlUSB.h in Headers */ = {isa = PBXBuildFile; fileRef = F526742A1C01E8A2006B0276 /* ControlUSB.h */; };
@@ -459,6 +463,8 @@
 		8D01CCD20486CAD60068D4B7 /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		F510B702163266CB00A844B4 /* FileAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileAccess.h; sourceTree = "<group>"; };
 		F510B703163266CB00A844B4 /* FileAccess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileAccess.cpp; sourceTree = "<group>"; };
+		F51D83CF1D295E8B00A23008 /* RegisterLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = RegisterLogger.cpp; sourceTree = "<group>"; };
+		F51D83D01D295E8B00A23008 /* RegisterLogger.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = RegisterLogger.h; sourceTree = "<group>"; };
 		F52674291C01E8A2006B0276 /* ControlUSB.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = ControlUSB.cpp; sourceTree = "<group>"; };
 		F526742A1C01E8A2006B0276 /* ControlUSB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlUSB.h; sourceTree = "<group>"; };
 		F526742B1C01E8A2006B0276 /* SpcControlDevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpcControlDevice.cpp; sourceTree = "<group>"; };
@@ -923,6 +929,8 @@
 				F52674281C01E8A2006B0276 /* commusb */,
 				F59D91BF1BF721CE00E5EFC6 /* DspRegFIFO.cpp */,
 				F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */,
+				F51D83CF1D295E8B00A23008 /* RegisterLogger.cpp */,
+				F51D83D01D295E8B00A23008 /* RegisterLogger.h */,
 				F527FF9E1BEE323F0083E355 /* MemManager.cpp */,
 				F527FF9F1BEE323F0083E355 /* MemManager.h */,
 				F5432C251627AE4200863A0B /* EchoKernel.cpp */,
@@ -1139,6 +1147,7 @@
 				F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */,
 				F55D6448161D7A94001CF9AB /* ControlInstances.h in Headers */,
 				F55D65BE161EC9D0001CF9AB /* SeparatorLine.h in Headers */,
+				F51D83D31D295E8B00A23008 /* RegisterLogger.h in Headers */,
 				F55D6602161ECFD1001CF9AB /* MyParamDisplay.h in Headers */,
 				F55D6608161ECFE3001CF9AB /* MyTextEdit.h in Headers */,
 				F569BEC21622B5F8006C91AD /* EfxAccess.h in Headers */,
@@ -1191,6 +1200,7 @@
 				F54331A616296E0200863A0B /* C700Edit.h in Headers */,
 				F53602A71984CF600079A9BE /* aeffect.h in Headers */,
 				F54331A716296E0200863A0B /* C700GUI.h in Headers */,
+				F51D83D41D295E8B00A23008 /* RegisterLogger.h in Headers */,
 				F54331A816296E0200863A0B /* ctooltipsupport.h in Headers */,
 				F59D91A81BF720EA00E5EFC6 /* dsp.h in Headers */,
 				F59D91B61BF720EA00E5EFC6 /* SPC_CPU.h in Headers */,
@@ -1497,6 +1507,7 @@
 				8BA05AAE072073D300365D66 /* AUBase.cpp in Sources */,
 				8BA05AB0072073D300365D66 /* AUDispatch.cpp in Sources */,
 				8BA05AB2072073D300365D66 /* AUInputElement.cpp in Sources */,
+				F51D83D11D295E8B00A23008 /* RegisterLogger.cpp in Sources */,
 				8BA05AB4072073D300365D66 /* AUOutputElement.cpp in Sources */,
 				8BA05AB7072073D300365D66 /* AUScopeElement.cpp in Sources */,
 				8BA05AB9072073D300365D66 /* ComponentBase.cpp in Sources */,
@@ -1601,6 +1612,7 @@
 				F543321016296E0200863A0B /* MyTextEdit.cpp in Sources */,
 				F526742E1C01E8A2006B0276 /* ControlUSB.cpp in Sources */,
 				F59D91BC1BF720EA00E5EFC6 /* SPC_Filter.cpp in Sources */,
+				F51D83D21D295E8B00A23008 /* RegisterLogger.cpp in Sources */,
 				F543321116296E0200863A0B /* EfxAccess.cpp in Sources */,
 				F53602BD1984CF7D0079A9BE /* vstplugmain.cpp in Sources */,
 				F543321216296E0200863A0B /* DataBuffer.cpp in Sources */,
