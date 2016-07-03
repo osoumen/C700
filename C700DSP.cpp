@@ -691,6 +691,51 @@ void C700DSP::EndRegisterLog()
 #if 1
         // テスト出力
         SaveRegisterLog("/Users/osoumen/Desktop/spclog.dat");
+        
+        int startAddr = 0x200;
+        int writeBytes = 0x400;
+        unsigned char header[4];
+        unsigned char *data = &mRam[0x200];
+        header[0] = startAddr & 0xff;
+        header[1] = (startAddr >> 8) & 0xff;
+        header[2] = writeBytes & 0xff;
+        header[3] = (writeBytes >> 8) & 0xff;
+        // DIR領域を保存
+        {
+            char dirRegionDataPath[] = "/Users/osoumen/Desktop/dirregion.dat";
+            CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)dirRegionDataPath, strlen(dirRegionDataPath), false);
+            
+            CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
+            if (CFWriteStreamOpen(filestream)) {
+                CFWriteStreamWrite(filestream, header, 4 );
+                CFWriteStreamWrite(filestream, data, writeBytes );
+                CFWriteStreamClose(filestream);
+            }
+            CFRelease(filestream);
+            CFRelease(savefile);
+        }
+        
+        startAddr = mBrrStartAddr;
+        writeBytes = mBrrEndAddr - mBrrStartAddr;
+        data = &mRam[mBrrStartAddr];
+        header[0] = startAddr & 0xff;
+        header[1] = (startAddr >> 8) & 0xff;
+        header[2] = writeBytes & 0xff;
+        header[3] = (writeBytes >> 8) & 0xff;
+        if (writeBytes > 0) {
+            // 波形領域を保存
+            char dirRegionDataPath[] = "/Users/osoumen/Desktop/brrregion.dat";
+            CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)dirRegionDataPath, strlen(dirRegionDataPath), false);
+            
+            CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
+            if (CFWriteStreamOpen(filestream)) {
+                CFWriteStreamWrite(filestream, header, 4 );
+                CFWriteStreamWrite(filestream, data, writeBytes );
+                CFWriteStreamClose(filestream);
+            }
+            CFRelease(filestream);
+            CFRelease(savefile);
+        }
 #endif
 	}
 }
