@@ -66,6 +66,7 @@ public:
     
     void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint);
 private:
+    bool writeDsp(int addr, unsigned char data);
 
     static void onDeviceReady(void *ref);
     static void onDeviceStop(void *ref);
