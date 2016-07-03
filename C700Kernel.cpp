@@ -918,14 +918,28 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 
 void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFrame )
 {
-	mGenerator.NoteOn(ch, note, vel, uniqueID, inFrame);
+    // TODO: ログ開始終了のノート番号を設定出来るようにする
+    if (note == 0) {
+        mGenerator.StartRegisterLog(inFrame);
+    }
+    else if (note == 1) {
+        mGenerator.MarkLoopRegisterLog(inFrame);
+    }
+    else if (note == 2) {
+        mGenerator.EndRegisterLog(inFrame);
+    }
+    else {
+        mGenerator.NoteOn(ch, note, vel, uniqueID, inFrame);
+    }
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 {
-	mGenerator.NoteOff(ch, note, 0, uniqueID, inFrame);
+    if (note > 2) {
+        mGenerator.NoteOff(ch, note, 0, uniqueID, inFrame);
+    }
 }
 
 //-----------------------------------------------------------------------------
