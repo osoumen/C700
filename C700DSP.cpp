@@ -163,16 +163,16 @@ void C700DSP::SetMainVolumeL(int value)
 {
     if (mMainVolume_L != value) {
         mMainVolume_L = value;
-        writeDsp(DSP_MVOLL, static_cast<unsigned char>(value & 0xff));
     }
+    writeDsp(DSP_MVOLL, static_cast<unsigned char>(value & 0xff));
 }
 
 void C700DSP::SetMainVolumeR(int value)
 {
     if (mMainVolume_R != value) {
         mMainVolume_R = value;
-        writeDsp(DSP_MVOLR, static_cast<unsigned char>(value & 0xff));
     }
+    writeDsp(DSP_MVOLR, static_cast<unsigned char>(value & 0xff));
 }
 
 void C700DSP::SetEchoVol_L( int value )
@@ -180,9 +180,9 @@ void C700DSP::SetEchoVol_L( int value )
     if (mEchoVolL != value) {
         mEchoVolL = value & 0xff;
         mEcho[0].SetEchoVol( value );
-        if (mEchoEnableWait <= 0) {
-            writeDsp(DSP_EVOLL, static_cast<unsigned char>(mEchoVolL));
-        }
+    }
+    if (mEchoEnableWait <= 0) {
+        writeDsp(DSP_EVOLL, static_cast<unsigned char>(mEchoVolL));
     }
 }
 
@@ -191,9 +191,9 @@ void C700DSP::SetEchoVol_R( int value )
     if (mEchoVolR != value) {
         mEchoVolR = value & 0xff;
         mEcho[1].SetEchoVol( value );
-        if (mEchoEnableWait <= 0) {
-            writeDsp(DSP_EVOLR, static_cast<unsigned char>(mEchoVolR));
-        }
+    }
+    if (mEchoEnableWait <= 0) {
+        writeDsp(DSP_EVOLR, static_cast<unsigned char>(mEchoVolR));
     }
 }
 
@@ -203,9 +203,9 @@ void C700DSP::SetFeedBackLevel( int value )
         mEchoFeedBack = value & 0xff;
         mEcho[0].SetFBLevel( value );
         mEcho[1].SetFBLevel( value );
-        if (mEchoEnableWait <= 0) {
-            writeDsp(DSP_EFB, static_cast<unsigned char>(mEchoFeedBack));
-        }
+    }
+    if (mEchoEnableWait <= 0) {
+        writeDsp(DSP_EFB, static_cast<unsigned char>(mEchoFeedBack));
     }
 }
 
@@ -219,20 +219,20 @@ void C700DSP::SetDelayTime( int value )
         
         mEcho[0].SetDelayTime( value );
         mEcho[1].SetDelayTime( value );
-        //writeDsp(DSP_EVOLL, 0);
-        //writeDsp(DSP_EVOLR, 0);
-        //writeDsp(DSP_EFB, 0);
-        //writeDsp(DSP_FLG, 0x20);
-        //writeDsp(DSP_EDL, 0);
-        
-        //writeDsp(DSP_ESA, static_cast<unsigned char>(mEchoStartAddr));
-        writeDsp(DSP_EDL, static_cast<unsigned char>(mEchoDelay));
-        /*
-        mEchoEnableWait = 8000; // 250ms
-        gettimeofday(&mEchoChangeTime, NULL);
-        mEchoChangeWaitusec = 250000;
-         */
     }
+    //writeDsp(DSP_EVOLL, 0);
+    //writeDsp(DSP_EVOLR, 0);
+    //writeDsp(DSP_EFB, 0);
+    //writeDsp(DSP_FLG, 0x20);
+    //writeDsp(DSP_EDL, 0);
+    
+    //writeDsp(DSP_ESA, static_cast<unsigned char>(mEchoStartAddr));
+    writeDsp(DSP_EDL, static_cast<unsigned char>(mEchoDelay));
+    /*
+     mEchoEnableWait = 8000; // 250ms
+     gettimeofday(&mEchoChangeTime, NULL);
+     mEchoChangeWaitusec = 250000;
+     */
 }
 
 void C700DSP::SetFIRTap( int tap, int value )
@@ -283,53 +283,53 @@ void C700DSP::KeyOnVoiceFlg(int flg)
 
 void C700DSP::SetAR(int v, int value)
 {
+    unsigned char data = 0x80;
+    data |= value & 0x0f;
+    data |= (mVoice[v].dr & 0x07) << 4;
     if (mVoice[v].ar != value) {
         mVoice[v].ar = value;
-        unsigned char data = 0x80;
-        data |= mVoice[v].ar & 0x0f;
-        data |= (mVoice[v].dr & 0x07) << 4;
-        if (v < 8) {
-            writeDsp(DSP_ADSR + 0x10*v, data);
-        }
+    }
+    if (v < 8) {
+        writeDsp(DSP_ADSR + 0x10*v, data);
     }
 }
 
 void C700DSP::SetDR(int v, int value)
 {
+    unsigned char data = 0x80;
+    data |= mVoice[v].ar & 0x0f;
+    data |= (value & 0x07) << 4;
     if (mVoice[v].dr != value) {
         mVoice[v].dr = value;
-        unsigned char data = 0x80;
-        data |= mVoice[v].ar & 0x0f;
-        data |= (mVoice[v].dr & 0x07) << 4;
-        if (v < 8) {
-            writeDsp(DSP_ADSR + 0x10*v, data);
-        }
+    }
+    if (v < 8) {
+        writeDsp(DSP_ADSR + 0x10*v, data);
     }
 }
 
 void C700DSP::SetSL(int v, int value)
 {
+    unsigned char data = 0;
+    data |= mVoice[v].sr & 0x1f;
+    data |= (value & 0x07) << 5;
     if (mVoice[v].sl != value) {
         mVoice[v].sl = value;
-        unsigned char data = 0;
-        data |= mVoice[v].sr & 0x1f;
-        data |= (mVoice[v].sl & 0x07) << 5;
-        if (v < 8) {
-            writeDsp(DSP_ADSR+1 + 0x10*v, data);
-        }
+    }
+    if (v < 8) {
+        writeDsp(DSP_ADSR+1 + 0x10*v, data);
     }
 }
 
 void C700DSP::SetSR(int v, int value)
 {
+    unsigned char data = 0;
+    data |= value & 0x1f;
+    data |= (mVoice[v].sl & 0x07) << 5;
     if (mVoice[v].sr != value) {
         mVoice[v].sr = value;
-        unsigned char data = 0;
-        data |= mVoice[v].sr & 0x1f;
-        data |= (mVoice[v].sl & 0x07) << 5;
-        if (v < 8) {
-            writeDsp(DSP_ADSR+1 + 0x10*v, data);
-        }
+    }
+    if (v < 8) {
+        writeDsp(DSP_ADSR+1 + 0x10*v, data);
     }
 }
 
@@ -337,9 +337,9 @@ void C700DSP::SetVol_L(int v, int value)
 {
     if (mVoice[v].vol_l != value) {
         mVoice[v].vol_l = value;
-        if (v < 8) {
-            writeDsp(DSP_VOL + 0x10*v, static_cast<unsigned char>(value));
-        }
+    }
+    if (v < 8) {
+        writeDsp(DSP_VOL + 0x10*v, static_cast<unsigned char>(value));
     }
 }
 
@@ -347,9 +347,9 @@ void C700DSP::SetVol_R(int v, int value)
 {
     if (mVoice[v].vol_r != value) {
         mVoice[v].vol_r = value;
-        if (v < 8) {
-            writeDsp(DSP_VOL+1 + 0x10*v, static_cast<unsigned char>(value));
-        }
+    }
+    if (v < 8) {
+        writeDsp(DSP_VOL+1 + 0x10*v, static_cast<unsigned char>(value));
     }
 }
 
@@ -357,10 +357,10 @@ void C700DSP::SetPitch(int v, int value)
 {
     if (mVoice[v].pitch != value) {
         mVoice[v].pitch = value;
-        if (v < 8) {
-            writeDsp(DSP_P + 0x10*v, static_cast<unsigned char>(value&0xff));
-            writeDsp(DSP_P+1 + 0x10*v, static_cast<unsigned char>((value>>8)&0x3f));
-        }
+    }
+    if (v < 8) {
+        writeDsp(DSP_P + 0x10*v, static_cast<unsigned char>(value&0xff));
+        writeDsp(DSP_P+1 + 0x10*v, static_cast<unsigned char>((value>>8)&0x3f));
     }
 }
 
@@ -369,14 +369,14 @@ void C700DSP::SetEchoOn(int v, bool isOn)
     if ((mVoice[v].ecen != isOn) || mVoice[v].ecenNotWrited) {
         mVoice[v].ecen = isOn;
         mVoice[v].ecenNotWrited = false;
-        unsigned char data = 0;
-        for (int i=0; i<8; i++) {
-            if (mVoice[i].ecen) {
-                data |= 1 << i;
-            }
-        }
-        writeDsp(DSP_EON, data);
     }
+    unsigned char data = 0;
+    for (int i=0; i<8; i++) {
+        if (mVoice[i].ecen) {
+            data |= 1 << i;
+        }
+    }
+    writeDsp(DSP_EON, data);
 }
 
 void C700DSP::SetSrcn(int v, int value)
@@ -678,6 +678,7 @@ void C700DSP::BeginRegisterLog()
 void C700DSP::MarkRegisterLogLoop()
 {
 	if ( mIsLoggerRunning ) {
+        
 		mLogger.MarkLoopPoint();
 	}
 }
@@ -692,49 +693,60 @@ void C700DSP::EndRegisterLog()
         // テスト出力
         SaveRegisterLog("/Users/osoumen/Desktop/spclog.dat");
         
-        int startAddr = 0x200;
-        int writeBytes = 0x400;
-        unsigned char header[4];
-        unsigned char *data = &mRam[0x200];
-        header[0] = startAddr & 0xff;
-        header[1] = (startAddr >> 8) & 0xff;
-        header[2] = writeBytes & 0xff;
-        header[3] = (writeBytes >> 8) & 0xff;
-        // DIR領域を保存
         {
-            char dirRegionDataPath[] = "/Users/osoumen/Desktop/dirregion.dat";
-            CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)dirRegionDataPath, strlen(dirRegionDataPath), false);
-            
-            CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
-            if (CFWriteStreamOpen(filestream)) {
-                CFWriteStreamWrite(filestream, header, 4 );
-                CFWriteStreamWrite(filestream, data, writeBytes );
-                CFWriteStreamClose(filestream);
+            int startAddr = 0x200;
+            int writeBytes = 0x400;
+            unsigned char header[4];
+            unsigned char *data = &mRam[0x200];
+            header[0] = startAddr & 0xff;
+            header[1] = (startAddr >> 8) & 0xff;
+            header[2] = writeBytes & 0xff;
+            header[3] = (writeBytes >> 8) & 0xff;
+            // DIR領域を保存
+            {
+                char dirRegionDataPath[] = "/Users/osoumen/Desktop/dirregion.dat";
+                CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)dirRegionDataPath, strlen(dirRegionDataPath), false);
+                
+                CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
+                if (CFWriteStreamOpen(filestream)) {
+                    CFWriteStreamWrite(filestream, header, 4 );
+                    CFWriteStreamWrite(filestream, data, writeBytes );
+                    CFWriteStreamClose(filestream);
+                }
+                CFRelease(filestream);
+                CFRelease(savefile);
             }
-            CFRelease(filestream);
-            CFRelease(savefile);
         }
         
-        startAddr = mBrrStartAddr;
-        writeBytes = mBrrEndAddr - mBrrStartAddr;
-        data = &mRam[mBrrStartAddr];
-        header[0] = startAddr & 0xff;
-        header[1] = (startAddr >> 8) & 0xff;
-        header[2] = writeBytes & 0xff;
-        header[3] = (writeBytes >> 8) & 0xff;
-        if (writeBytes > 0) {
-            // 波形領域を保存
-            char dirRegionDataPath[] = "/Users/osoumen/Desktop/brrregion.dat";
-            CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)dirRegionDataPath, strlen(dirRegionDataPath), false);
+        {
+            int startAddr = mBrrStartAddr;
+            int writeBytes = mBrrEndAddr - mBrrStartAddr;
             
-            CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
-            if (CFWriteStreamOpen(filestream)) {
-                CFWriteStreamWrite(filestream, header, 4 );
-                CFWriteStreamWrite(filestream, data, writeBytes );
-                CFWriteStreamClose(filestream);
+            if (writeBytes > 0) {
+                // 波形領域を保存
+                char dirRegionDataPath[] = "/Users/osoumen/Desktop/brrregion.dat";
+                CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)dirRegionDataPath, strlen(dirRegionDataPath), false);
+                
+                CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
+                if (CFWriteStreamOpen(filestream)) {
+                    while (writeBytes > 0) {
+                        unsigned char header[4];
+                        unsigned char *data = &mRam[startAddr];
+                        int toWrite = (writeBytes>(0x8000-4))?(0x8000-4):writeBytes;
+                        header[0] = startAddr & 0xff;
+                        header[1] = (startAddr >> 8) & 0xff;
+                        header[2] = toWrite & 0xff;
+                        header[3] = (toWrite >> 8) & 0xff;
+                        CFWriteStreamWrite(filestream, header, 4 );
+                        CFWriteStreamWrite(filestream, data, toWrite);
+                        writeBytes -= toWrite;
+                        startAddr += toWrite;
+                    }
+                    CFWriteStreamClose(filestream);
+                }
+                CFRelease(filestream);
+                CFRelease(savefile);
             }
-            CFRelease(filestream);
-            CFRelease(savefile);
         }
 #endif
 	}
