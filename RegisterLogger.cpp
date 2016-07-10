@@ -77,6 +77,11 @@ bool RegisterLogger::SaveToFile( const char *path, int clock )
 	
 	char	tag[] = "[S98]title=Title\nartist=Artist\ncopyright=(c)\n";
      */
+    int loopAddr = mLoopPoint + 3;
+    unsigned char loopStart[3];
+    loopStart[0] = loopAddr & 0xff;
+    loopStart[1] = ((loopAddr >> 8) & 0x7f) + 0x80;
+    loopStart[2] = (loopAddr >> 15) & 0xff;
 	
 #if __APPLE_CC__
 	CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
@@ -84,6 +89,7 @@ bool RegisterLogger::SaveToFile( const char *path, int clock )
 	CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
 	if (CFWriteStreamOpen(filestream)) {
 		//CFWriteStreamWrite(filestream, reinterpret_cast<UInt8*> (&header), sizeof(S98Header) );
+        CFWriteStreamWrite(filestream, loopStart, 3 );
 		CFWriteStreamWrite(filestream, m_pData, mDataUsed );
 		//CFWriteStreamWrite(filestream, reinterpret_cast<UInt8*> (tag), sizeof(tag) );
 		CFWriteStreamClose(filestream);
@@ -99,6 +105,7 @@ bool RegisterLogger::SaveToFile( const char *path, int clock )
 	if ( hFile != INVALID_HANDLE_VALUE ) {
 		DWORD	writeSize;
 		//WriteFile( hFile, &header, sizeof(S98Header), &writeSize, NULL );
+        WriteFile( hFile, loopStart, 3, &writeSize, NULL );
 		WriteFile( hFile, m_pData, mDataUsed, &writeSize, NULL );
 		//WriteFile( hFile, tag, sizeof(tag), &writeSize, NULL );
 		CloseHandle( hFile );
@@ -120,7 +127,7 @@ void RegisterLogger::BeginDump( int time )
 	mDumpBeginTime = time;
 	mPrevTime = mDumpBeginTime;
 	for ( int i=0; i<256; i++ ) {
-		mReg[i] = -1;
+        mReg[i] = -1;
 	}
 	mDataUsed = 0;
 	mDataPos = 0;
@@ -221,36 +228,63 @@ bool RegisterLogger::writeWaitFromPrev(int time)
 		adv_time = 0;
 	}
 	
-	if ( adv_time == 1 ) {
-		result = writeByte( 0xff );	// 1SYNC
-		if ( result == false ) return false;
-	}
-	if ( adv_time > 1 ) {
-		adv_time -= 2;		//(n-2)で表現される
-		int	write_len = 0;
-		result = writeByte( 0xfe );	// nSYNC
-		if ( result == false ) return false;
-		write_len++;
-		do {
-			unsigned char	vv;
-			vv = adv_time & 0x7f;
-			adv_time >>= 7;
-			if ( adv_time > 0 ) {
-				vv |= 0x80;		//まだ残っているなら継続フラグをONに
-			}
-			result = writeByte( vv );
-			if ( result == false ) {
-				//書き込んだ分を巻き戻す
-				mDataPos -= write_len;
-				mDataUsed = mDataPos;
-				return false;
-			}
-			write_len++;		//問題無く書き込めたら１増やす
-		} while ( adv_time > 0 );
-	}
+    long div = adv_time >> 16;
+    long mod = adv_time & 0xffff;
+    
+    for (int i=0; i<div; i++) {
+        result = writeByte(0xfe);
+        if ( result == false ) return false;
+        result = writeByte(0xff);
+        if ( result == false ) {
+            //書き込んだ分を巻き戻す
+            mDataPos -= 1;
+            mDataUsed = mDataPos;
+            return false;
+        }
+        result = writeByte(0xff);
+        if ( result == false ) {
+            //書き込んだ分を巻き戻す
+            mDataPos -= 2;
+            mDataUsed = mDataPos;
+            return false;
+        }
+    }
+    if (mod > 0) {
+        if (mod < 0x100) {
+            result = writeByte(0xfc);
+            if ( result == false ) return false;
+            result = writeByte(mod & 0xff);
+            if ( result == false ) {
+                //書き込んだ分を巻き戻す
+                mDataPos -= 1;
+                mDataUsed = mDataPos;
+                return false;
+            }
+        }
+        else {
+            result = writeByte(0xfe);
+            if ( result == false ) return false;
+            result = writeByte(mod & 0xff);
+            if ( result == false ) {
+                //書き込んだ分を巻き戻す
+                mDataPos -= 1;
+                mDataUsed = mDataPos;
+                return false;
+            }
+            result = writeByte(mod >> 8);
+            if ( result == false ) {
+                //書き込んだ分を巻き戻す
+                mDataPos -= 2;
+                mDataUsed = mDataPos;
+                return false;
+            }
+        }
+    }
+    
 	mPrevTime = time;
+    /*
 	if ( adv_time < 0 ) {
 		mPrevTime -= adv_time;
-	}
+	}*/
 	return true;
 }
