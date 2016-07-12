@@ -152,7 +152,6 @@ bool RegisterLogger::DumpReg( int device, int addr, unsigned char data, int time
 			writeWaitFromPrev(time);
 			
 			if ( GetWritableSize() >= 3 ) {
-				writeByte( device );
 				writeByte( addr );
 				writeByte( data );
 			}
@@ -206,7 +205,7 @@ bool RegisterLogger::writeEndByte()
 	if ( ( mDataPos + 1 ) > mDataSize) {
 		return false;
 	}
-	m_pData[mDataPos] = 0xfd;
+	m_pData[mDataPos] = 0x9e;
 	mDataPos++;
 	if ( mDataPos > mDataUsed ) {
 		mDataUsed = mDataPos;
@@ -232,7 +231,7 @@ bool RegisterLogger::writeWaitFromPrev(int time)
     long mod = adv_time & 0xffff;
     
     for (int i=0; i<div; i++) {
-        result = writeByte(0xfe);
+        result = writeByte(0x94);
         if ( result == false ) return false;
         result = writeByte(0xff);
         if ( result == false ) {
@@ -251,7 +250,7 @@ bool RegisterLogger::writeWaitFromPrev(int time)
     }
     if (mod > 0) {
         if (mod < 0x100) {
-            result = writeByte(0xfc);
+            result = writeByte(0x92);
             if ( result == false ) return false;
             result = writeByte(mod & 0xff);
             if ( result == false ) {
@@ -262,7 +261,8 @@ bool RegisterLogger::writeWaitFromPrev(int time)
             }
         }
         else {
-            result = writeByte(0xfe);
+#if 1
+            result = writeByte(0x94);
             if ( result == false ) return false;
             result = writeByte(mod & 0xff);
             if ( result == false ) {
@@ -278,6 +278,25 @@ bool RegisterLogger::writeWaitFromPrev(int time)
                 mDataUsed = mDataPos;
                 return false;
             }
+#else
+            result = writeByte(0xc0);
+            if ( result == false ) return false;
+            result = writeByte(mod & 0xff);
+            if ( result == false ) {
+                //‘‚«‚ñ‚¾•ª‚ğŠª‚«–ß‚·
+                mDataPos -= 1;
+                mDataUsed = mDataPos;
+                return false;
+            }
+            result = writeByte(mod >> 8);
+            if ( result == false ) {
+                //‘‚«‚ñ‚¾•ª‚ğŠª‚«–ß‚·
+                mDataPos -= 2;
+                mDataUsed = mDataPos;
+                return false;
+            }
+            result = writeByte(0xa0);
+#endif
         }
     }
     
