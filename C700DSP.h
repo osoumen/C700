@@ -44,6 +44,8 @@ public:
     void SetFIRTap( int tap, int value );
     void SetAR(int v, int value);
     void SetDR(int v, int value);
+    void SetARDR(int v, int ar, int dr);
+    void SetSLSR(int v, int sl, int sr);
     void SetSL(int v, int value);
     void SetSR(int v, int value);
     void SetVol_L(int v, int value);
