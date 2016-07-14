@@ -880,14 +880,12 @@ bool C700Driver::doNoteOn1( MIDIEvt dEvt )
                 mDSP.KeyOffVoice(v);
                 
                 //mDSP.SetEchoOn(v, vp.echo);
-                mDSP.SetAR(v, vp.ar);
-                mDSP.SetDR(v, vp.dr);
-                mDSP.SetSL(v, vp.sl);
+                mDSP.SetARDR(v, vp.ar, vp.dr);
                 if (vp.sustainMode) {
-                    mDSP.SetSR(v, 0);		//ノートオフ時に設定値になる
+                    mDSP.SetSLSR(v, vp.sl, 0);		//ノートオフ時に設定値になる
                 }
                 else {
-                    mDSP.SetSR(v, vp.sr);
+                    mDSP.SetSLSR(v, vp.sl, vp.sr);
                 }
             }
             // 上位4bitに確保したボイス番号を入れる
@@ -974,14 +972,12 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         }
         
         mDSP.SetEchoOn(v, vp.echo);
-        mDSP.SetAR(v, vp.ar);
-        mDSP.SetDR(v, vp.dr);
-        mDSP.SetSL(v, vp.sl);
+        mDSP.SetARDR(v, vp.ar, vp.dr);
         if (vp.sustainMode) {
-            mDSP.SetSR(v, 0);		//ノートオフ時に設定値になる
+            mDSP.SetSLSR(v, vp.sl, 0);		//ノートオフ時に設定値になる
         }
         else {
-            mDSP.SetSR(v, vp.sr);
+            mDSP.SetSLSR(v, vp.sl, vp.sr);
         }
         
         // キーオン

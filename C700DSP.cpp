@@ -307,6 +307,22 @@ void C700DSP::SetDR(int v, int value)
     }
 }
 
+void C700DSP::SetARDR(int v, int ar, int dr)
+{
+    unsigned char data = 0x80;
+    data |= ar & 0x0f;
+    data |= (dr & 0x07) << 4;
+    if (mVoice[v].ar != ar) {
+        mVoice[v].ar = ar;
+    }
+    if (mVoice[v].dr != dr) {
+        mVoice[v].dr = dr;
+    }
+    if (v < 8) {
+        writeDsp(DSP_ADSR + 0x10*v, data);
+    }
+}
+
 void C700DSP::SetSL(int v, int value)
 {
     unsigned char data = 0;
@@ -327,6 +343,22 @@ void C700DSP::SetSR(int v, int value)
     data |= (mVoice[v].sl & 0x07) << 5;
     if (mVoice[v].sr != value) {
         mVoice[v].sr = value;
+    }
+    if (v < 8) {
+        writeDsp(DSP_ADSR+1 + 0x10*v, data);
+    }
+}
+
+void C700DSP::SetSLSR(int v, int sl, int sr)
+{
+    unsigned char data = 0;
+    data |= sr & 0x1f;
+    data |= (sl & 0x07) << 5;
+    if (mVoice[v].sl != sl) {
+        mVoice[v].sl = sl;
+    }
+    if (mVoice[v].sr != sr) {
+        mVoice[v].sr = sr;
     }
     if (v < 8) {
         writeDsp(DSP_ADSR+1 + 0x10*v, data);
