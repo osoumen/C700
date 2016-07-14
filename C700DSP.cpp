@@ -411,6 +411,26 @@ void C700DSP::SetEchoOn(int v, bool isOn)
     writeDsp(DSP_EON, data);
 }
 
+void C700DSP::SetEchoOnFlg(int flg, int mask)
+{
+    unsigned char data = 0;
+    for (int i=0; i<8; i++) {
+        if (mVoice[i].ecen) {
+            data |= 1 << i;
+        }
+    }
+    data = (data & ~mask) | (flg & mask);
+    
+    for (int v=0; v<8; v++) {
+        bool isOn = (data & (1 << v))?true:false;
+        if ((mVoice[v].ecen != isOn) || mVoice[v].ecenNotWrited) {
+            mVoice[v].ecen = isOn;
+            mVoice[v].ecenNotWrited = false;
+        }
+    }
+    writeDsp(DSP_EON, data);
+}
+
 void C700DSP::SetSrcn(int v, int value)
 {
     // v chのsrcnからbrrdata,loopPointを設定する

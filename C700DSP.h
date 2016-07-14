@@ -52,6 +52,7 @@ public:
     void SetVol_R(int v, int value);
     void SetPitch(int v, int value);
     void SetEchoOn(int v, bool isOn);
+    void SetEchoOnFlg(int flg, int mask);
     void SetSrcn(int v, int value);
     void SetDir(int value);
     

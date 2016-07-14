@@ -239,6 +239,8 @@ void C700Driver::AllNotesOff()
 	for ( int i=0; i<kMaximumVoices; i++ ) {
         mVoiceStat[i].Reset();
         mKeyOnFlag[i] = false;
+        mEchoOnFlag = 0;
+        mEchoOnMask[i] = false;
 	}
     mVoiceManager.Reset();
 }
@@ -971,7 +973,13 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
             mDSP.setBrr(v, vp.brrData(), vp.lp);
         }
         
-        mDSP.SetEchoOn(v, vp.echo);
+        //mDSP.SetEchoOn(v, vp.echo);
+        mEchoOnFlag &= ~(1 << v);
+        if (vp.echo) {
+            mEchoOnFlag |= 1 << v;
+        }
+        mEchoOnMask[v] = true;
+        
         mDSP.SetARDR(v, vp.ar, vp.dr);
         if (vp.sustainMode) {
             mDSP.SetSLSR(v, vp.sl, 0);		//ノートオフ時に設定値になる
@@ -1265,6 +1273,7 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 		
 		for ( ; mProcessFrac >= 0; mProcessFrac -= CYCLES_PER_SAMPLE ) {
             int kon = 0;
+            int ecen = 0;
             for ( int v=0; v<kMaximumVoices; v++ ) {
 				//ピッチの算出
                 if (mPitchCount[v] >= 0) {
@@ -1310,13 +1319,20 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
                 mDSP.SetVol_L(v, volL);
                 mDSP.SetVol_R(v, volR);
                 
+                if (mEchoOnMask[v]) {
+                    ecen |= 1 << v;
+                    mEchoOnMask[v] = false;
+                }
+                
                 if (mKeyOnFlag[v]) {
                     kon |= 1 << v;
                     mKeyOnFlag[v] = false;
                 }
                 mPitchCount[v]++;
             }
-            
+            if (ecen) {
+                mDSP.SetEchoOnFlg(mEchoOnFlag, ecen);
+            }
             if (kon) {
                 mDSP.KeyOnVoiceFlg(kon);
             }
