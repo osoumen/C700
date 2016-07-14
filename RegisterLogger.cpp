@@ -18,6 +18,12 @@
 #include <windows.h>
 #endif
 
+#include <iostream>
+
+std::map<int,int> regStat;
+
+static int getCommandLength(unsigned char cmd);
+
 //-----------------------------------------------------------------------------
 RegisterLogger::RegisterLogger(int allocSize)
 : m_pData( NULL )
@@ -57,27 +63,13 @@ bool RegisterLogger::SetPos( int pos )
 //-----------------------------------------------------------------------------
 bool RegisterLogger::SaveToFile( const char *path, int clock )
 {
-	//ヘッダーを付けてダンプ内容をファイルに書き出す
-    /*
-	S98Header	header = {
-		{ 'S','9','8' },
-		'3',
-		mTimeNumerator,
-		mTimeDenominator,
-		0,								// COMPRESSING The value is 0 always.
-		sizeof(S98Header) + mDataUsed,	// FILE OFFSET TO TAG
-		sizeof(S98Header),				// FILE OFFSET TO DUMP DATA
-		sizeof(S98Header) + mLoopPoint,	// FILE OFFSET TO LOOP POINT DUMP DATA
-		1,								// DEVICE COUNT
-		5,								// DEVICE TYPE (OPM)
-		clock,							// CLOCK(Hz)
-		0,								// PAN
-		0								// RESERVE
-	};
-	
-	char	tag[] = "[S98]title=Title\nartist=Artist\ncopyright=(c)\n";
-     */
-    int loopAddr = mLoopPoint + 3;
+    // データの削減
+    unsigned char *optimizedData = new unsigned char [mDataSize];
+    int optimizedDataSize;
+    int optimizedLoopPoint;
+    optimizedDataSize = optimizeWaits(m_pData, optimizedData, mDataUsed, &optimizedLoopPoint);
+
+    int loopAddr = optimizedLoopPoint + 3;
     unsigned char loopStart[3];
     loopStart[0] = loopAddr & 0xff;
     loopStart[1] = ((loopAddr >> 8) & 0x7f) + 0x80;
@@ -90,13 +82,14 @@ bool RegisterLogger::SaveToFile( const char *path, int clock )
 	if (CFWriteStreamOpen(filestream)) {
 		//CFWriteStreamWrite(filestream, reinterpret_cast<UInt8*> (&header), sizeof(S98Header) );
         CFWriteStreamWrite(filestream, loopStart, 3 );
-		CFWriteStreamWrite(filestream, m_pData, mDataUsed );
+		CFWriteStreamWrite(filestream, optimizedData, optimizedDataSize );
 		//CFWriteStreamWrite(filestream, reinterpret_cast<UInt8*> (tag), sizeof(tag) );
 		CFWriteStreamClose(filestream);
 	}
 	CFRelease(filestream);
 	CFRelease(savefile);
 	
+    delete [] optimizedData;
 	return true;
 #else
 	HANDLE	hFile;
@@ -106,10 +99,11 @@ bool RegisterLogger::SaveToFile( const char *path, int clock )
 		DWORD	writeSize;
 		//WriteFile( hFile, &header, sizeof(S98Header), &writeSize, NULL );
         WriteFile( hFile, loopStart, 3, &writeSize, NULL );
-		WriteFile( hFile, m_pData, mDataUsed, &writeSize, NULL );
+		WriteFile( hFile, optimizedData, optimizedDataSize, &writeSize, NULL );
 		//WriteFile( hFile, tag, sizeof(tag), &writeSize, NULL );
 		CloseHandle( hFile );
 	}
+    delete [] optimizedData;
 	return true;
 #endif
 }
@@ -133,6 +127,8 @@ void RegisterLogger::BeginDump( int time )
 	mDataPos = 0;
 	mLoopPoint = 0;
 	mIsEnded = false;
+    
+    mWaitStat.clear();
 	
 //	printf("--BeginDump--\n");
 }
@@ -154,6 +150,12 @@ bool RegisterLogger::DumpReg( int device, int addr, unsigned char data, int time
 			if ( GetWritableSize() >= 3 ) {
 				writeByte( addr );
 				writeByte( data );
+                if (regStat.count(addr) == 0) {
+                    regStat[addr] = 1;
+                }
+                else {
+                    regStat[addr] = regStat[addr]+1;
+                }
 			}
 			
 			return true;
@@ -180,7 +182,13 @@ void RegisterLogger::EndDump(int time)
 		writeWaitFromPrev(time);
 		writeEndByte();
 		mIsEnded = true;
-		
+		/*
+        for (auto it = regStat.begin(); it != regStat.end(); it++) {
+            std::cout << it->first << "," << it->second << std::endl;
+        }
+        for (auto it = mWaitStat.begin(); it != mWaitStat.end(); it++) {
+            std::cout << it->first << "," << it->second << std::endl;
+        }*/
 //		printf("--EndDump-- %d\n",time);
 	}
 }
@@ -247,6 +255,7 @@ bool RegisterLogger::writeWaitFromPrev(int time)
             mDataUsed = mDataPos;
             return false;
         }
+        addWaitStatistic(0xffff);
     }
     if (mod > 0) {
         if (mod < 0x100) {
@@ -259,6 +268,7 @@ bool RegisterLogger::writeWaitFromPrev(int time)
                 mDataUsed = mDataPos;
                 return false;
             }
+            addWaitStatistic(mod & 0xff);
         }
         else {
 #if 1
@@ -278,7 +288,9 @@ bool RegisterLogger::writeWaitFromPrev(int time)
                 mDataUsed = mDataPos;
                 return false;
             }
+            addWaitStatistic(mod);
 #else
+            //テスト
             result = writeByte(0xc0);
             if ( result == false ) return false;
             result = writeByte(mod & 0xff);
@@ -306,4 +318,126 @@ bool RegisterLogger::writeWaitFromPrev(int time)
 		mPrevTime -= adv_time;
 	}*/
 	return true;
+}
+
+//-----------------------------------------------------------------------------
+bool RegisterLogger::addWaitStatistic(int time)
+{
+    if (mWaitStat.count(time) == 0) {
+        mWaitStat[time] = 1;
+    }
+    else {
+        mWaitStat[time] = mWaitStat[time]+1;
+    }
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+int RegisterLogger::optimizeWaits(unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint)
+{
+    // 頻度の高い16wait値を取得
+    std::map<int,int> frequentWaitValue;
+    getFrequentWaitValue(frequentWaitValue, 16);
+    
+    int inPtr = 0;
+    int outPtr = 0;
+    
+    // wait値設定コマンドを出力
+    for (auto it = frequentWaitValue.begin(); it != frequentWaitValue.end(); it++) {
+        int value = it->first;
+        int ind = it->second;
+        outData[outPtr++] = 0xc0 + ind*2;
+        outData[outPtr++] = value & 0xff;
+        outData[outPtr++] = (value >> 8) & 0xff;
+    }
+    
+    while (inPtr < inDataSize) {
+        // ループポイントの変換
+        if (inPtr == mLoopPoint) {
+            *outLoopPoint = outPtr;
+        }
+        
+        unsigned char cmd = inData[inPtr];
+        int len = getCommandLength(cmd);
+        bool found = false;
+        if (cmd == 0x92) {
+            // 8bit値シンク
+            int value = inData[inPtr+1];
+            auto it = frequentWaitValue.find(value);
+            if (it != frequentWaitValue.end()) {
+                outData[outPtr++] = (it->second) * 2 + 0xa0;
+                inPtr += len;
+                found = true;
+            }
+        }
+        else if (cmd == 0x94) {
+            // 16bit値シンク
+            int value = inData[inPtr+1] | (inData[inPtr+2] << 8);
+            auto it = frequentWaitValue.find(value);
+            if (it != frequentWaitValue.end()) {
+                outData[outPtr++] = (it->second) * 2 + 0xa0;
+                inPtr += len;
+                found = true;
+            }
+        }
+        if (found == false) {
+            for (int i=0; i<len; i++) {
+                outData[outPtr++] = inData[inPtr++];
+            }
+        }
+    }
+    
+    // 削減後のバイト数を返す
+    return outPtr;
+}
+
+//-----------------------------------------------------------------------------
+int RegisterLogger::getFrequentWaitValue(std::map<int,int> &outValues, int numValues)
+{
+    // キーにwait値、valueに何番目の値かが入ったmapを返す
+    std::map<int, int> waitStat(mWaitStat);
+    int foundValues = 0;
+    while (foundValues < numValues && waitStat.size() > 0) {
+        int max = 0;
+        int maxWait = 0;
+        for(auto it = waitStat.begin(); it != waitStat.end(); it++) {
+            if( max < it->second ) {
+                max = it->second;
+                maxWait = it->first;
+            }
+        }
+        auto maxIt = waitStat.find(maxWait);
+        if (maxIt != waitStat.end()) {
+            waitStat.erase(maxIt);
+            outValues[maxWait] = foundValues++;
+        }
+    }
+    return foundValues;
+}
+//-----------------------------------------------------------------------------
+int getCommandLength(unsigned char cmd)
+{
+    if (cmd < 0x80) {
+        return 2;
+    }
+    if (cmd >= 0xa0 && cmd < 0xc0) {
+        return 1;
+    }
+    if (cmd >= 0xc0 && cmd < 0xe0) {
+        return 3;
+    }
+    switch (cmd) {
+        case 0x80:
+            return 4;
+        case 0x90:
+            return 1;
+        case 0x92:
+            return 2;
+        case 0x94:
+            return 3;
+        case 0x9e:
+            return 1;
+        default:
+            return 1;
+    }
 }
