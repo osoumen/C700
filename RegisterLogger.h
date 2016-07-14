@@ -10,6 +10,7 @@
 #pragma once
 
 #include <time.h>
+#include <map>
 
 class RegisterLogger {
 public:
@@ -51,7 +52,10 @@ protected:
 	bool				writeByte( unsigned char byte );
 	bool				writeEndByte();
 	bool				writeWaitFromPrev(int time);
-	
+    bool                addWaitStatistic(int time);
+	int                 optimizeWaits(unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint);
+    int                 getFrequentWaitValue(std::map<int,int> &outValues, int numValues);
+    
 	unsigned char	*m_pData;
 	int				mDataSize;
 	int				mDataUsed;
@@ -64,4 +68,6 @@ protected:
 	short			mReg[256];
 	int				mTimeNumerator;
 	int				mTimeDenominator;
+    
+    std::map<int,int> mWaitStat;
 };
