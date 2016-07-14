@@ -60,6 +60,7 @@ public:
     void WriteRam(int addr, unsigned char data);
     
     void KeyOffVoice(int v);
+    void KeyOffVoiceFlg(int flg);
     void KeyOnVoice(int v);
     void KeyOnVoiceFlg(int flg);
     

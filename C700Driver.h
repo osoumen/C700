@@ -206,6 +206,7 @@ private:
 	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
 	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
     bool                mKeyOnFlag[kMaximumVoices]; // 次のProcessでKeyOnする
+    bool                mKeyOffFlag[kMaximumVoices]; // 次のProcessでKeyOffする
     int                 mEchoOnFlag; // 次のProcessでEchoOnする
     bool                mEchoOnMask[kMaximumVoices]; // 次のProcessでEchoを変更する
 	
