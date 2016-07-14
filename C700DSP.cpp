@@ -249,6 +249,17 @@ void C700DSP::KeyOffVoice(int v)
     writeDsp(DSP_KOF, 0);  // 本当に必要？
 }
 
+void C700DSP::KeyOffVoiceFlg(int flg)
+{
+    for (int v=0; v<kMaximumVoices; v++) {
+        if (flg & (1 << v)) {
+            mVoice[v].envstate = RELEASE;
+        }
+    }
+    writeDsp(DSP_KOF, static_cast<unsigned char>(flg & 0xff));
+    writeDsp(DSP_KOF, 0);  // 本当に必要？
+}
+
 void C700DSP::KeyOnVoice(int v)
 {
     mVoice[v].memPtr = 0;
