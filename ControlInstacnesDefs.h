@@ -73,7 +73,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		172, 42, 73, 11,	//x,y,w,h
+		196, 42, 73, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2351,7 +2351,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		55,	//id
 		0,	//command
-		342, 59, 80, 12,	//x,y,w,h
+		352, 59, 70, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2368,7 +2368,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		54,	//id
 		0,	//command
-		342, 47, 80, 12,	//x,y,w,h
+		352, 47, 70, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2385,7 +2385,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		53,	//id
 		0,	//command
-		259, 59, 80, 12,	//x,y,w,h
+		279, 59, 70, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2402,7 +2402,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		10,	//id
 		0,	//command
-		259, 47, 80, 12,	//x,y,w,h
+		279, 47, 70, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2419,7 +2419,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		6,	//id
 		0,	//command
-		169, 53, 80, 12,	//x,y,w,h
+		196, 53, 80, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2916,7 +2916,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		50, 63, 40, 11,	//x,y,w,h
+		6, 63, 40, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -2933,7 +2933,41 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		kParam_engine,	//id
 		0,	//command
-		84, 61, 50, 12,	//x,y,w,h
+		40, 61, 50, 12,	//x,y,w,h
+		"",	//fontname
+		9,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+		"VoiceAlloc",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		96, 63, 50, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'VeMa',	//sig
+		'menu',	//kind
+		"Oldest;SameCh",	//title
+		2,	//Value
+		0,	//Minimum
+		2,	//Maximum
+		0,	//sig
+		kParam_voiceAllocMode,	//id
+		0,	//command
+		145, 61, 50, 12,	//x,y,w,h
 		"",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
