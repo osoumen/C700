@@ -1253,6 +1253,19 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 			}
 		}
         
+        {
+            int koff = 0;
+            for ( int v=0; v<kMaximumVoices; v++ ) {
+                if (mKeyOffFlag[v]) {
+                    koff |= 1 << v;
+                    mKeyOffFlag[v] = false;
+                }
+            }
+            if (koff) {
+                mDSP.KeyOffVoiceFlg(koff);
+            }
+        }
+        
         while (mPortamentCount >= 0) {
             // ポルタメント処理
 #if 0
@@ -1276,7 +1289,6 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 		
 		for ( ; mProcessFrac >= 0; mProcessFrac -= CYCLES_PER_SAMPLE ) {
             int kon = 0;
-            int koff = 0;
             int ecen = 0;
             for ( int v=0; v<kMaximumVoices; v++ ) {
 				//ピッチの算出
@@ -1331,17 +1343,11 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
                     kon |= 1 << v;
                     mKeyOnFlag[v] = false;
                 }
-                if (mKeyOffFlag[v]) {
-                    koff |= 1 << v;
-                    mKeyOffFlag[v] = false;
-                }
+                
                 mPitchCount[v]++;
             }
             if (ecen) {
                 mDSP.SetEchoOnFlg(mEchoOnFlag, ecen);
-            }
-            if (koff) {
-                mDSP.KeyOffVoiceFlg(koff);
             }
             if (kon) {
                 mDSP.KeyOnVoiceFlg(kon);
