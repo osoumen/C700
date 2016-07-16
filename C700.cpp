@@ -298,6 +298,9 @@ AudioUnitParameterUnit getParameterUnit( int id )
 			return kAudioUnitParameterUnit_Indexed;
 		case kParam_fir7:
 			return kAudioUnitParameterUnit_Indexed;
+            
+        case kParam_voiceAllocMode:
+            return kAudioUnitParameterUnit_Indexed;
 			
 		default:
 			return kAudioUnitParameterUnit_Indexed;

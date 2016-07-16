@@ -10,7 +10,8 @@
 
 //-----------------------------------------------------------------------------
 DynamicVoiceManager::DynamicVoiceManager() :
-mVoiceLimit(8)
+mVoiceLimit(8),
+mAllocMode(ALLOC_MODE_OLDEST)
 {
     
 }
@@ -69,6 +70,12 @@ void DynamicVoiceManager::ChangeVoiceLimit(int voiceLimit)
 }
 
 //-----------------------------------------------------------------------------
+void DynamicVoiceManager::SetVoiceAllocMode(VoiceAllocMode mode)
+{
+    mAllocMode = mode;
+}
+
+//-----------------------------------------------------------------------------
 int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, bool monoMode,
                                     int *releasedCh, bool *isLegato)
 {
@@ -109,7 +116,7 @@ int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, bool monoMod
         }
         else {
             // 超えてない場合は、後着優先で優先度の低い音を消す
-            v = findVoice(ch);
+            v = findVoice((mAllocMode == ALLOC_MODE_SAMECH)?ch:-1);
             if (v >= MAX_VOICE) {  //空きがなくてどこかを止めた
                 v -= MAX_VOICE;
                 mPlayVo.remove(v);

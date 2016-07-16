@@ -37,6 +37,7 @@ static const float kDefaultValue_bankBmulti = 0;
 static const float kDefaultValue_bankCmulti = 0;
 static const float kDefaultValue_bankDmulti = 0;
 static const float kDefaultValue_alwaysDelayNote = 1;
+static const float kDefaultValue_voiceAllocMode = 0;
 
 //ÉGÉRÅ[ïî
 static const float kDefaultValue_echovol_L = 50;
@@ -177,7 +178,8 @@ const char *C700Parameters::GetParameterName( int id )
 		"Bank C Multi",
 		"Bank D Multi",
         
-        "alwaysDelayNote"
+        "alwaysDelayNote",
+        "voiceAllocMode"
 	};
 	return paramName[id];
 }
@@ -275,7 +277,9 @@ const char *C700Parameters::GetParameterName( int id )
             
         case kParam_alwaysDelayNote:
             return 1;
-			
+        case kParam_voiceAllocMode:
+            return 1;
+            
 		default:
 			return 0;
 	}
@@ -375,7 +379,9 @@ const char *C700Parameters::GetParameterName( int id )
             
         case kParam_alwaysDelayNote:
             return 0;
-			
+        case kParam_voiceAllocMode:
+            return kMinimumValue_0;
+            
 		default:
 			return 0;
 	}	
@@ -475,7 +481,9 @@ const char *C700Parameters::GetParameterName( int id )
             
         case kParam_alwaysDelayNote:
             return kDefaultValue_alwaysDelayNote;
-			
+        case kParam_voiceAllocMode:
+            return kDefaultValue_voiceAllocMode;
+            
 		default:
 			return .0f;
 	}	

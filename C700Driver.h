@@ -30,6 +30,12 @@ typedef enum
     kEngineType_Accurate
 } engine_type;
 //-----------------------------------------------------------------------------
+typedef enum
+{
+    kVoiceAllocMode_Oldest = 0,
+    kVoiceAllocMode_SameChannel,
+} voicealloc_mode;
+//-----------------------------------------------------------------------------
 class C700Driver
 {
 public:
@@ -131,6 +137,7 @@ public:
 	void		SetPBRange( float value );
 	void		SetPBRange( int ch, float value );
 	void		SetEngineType( engine_type type );
+    void        SetVoiceAllocMode( voicealloc_mode mode );
 	void		SetMultiMode( int bank, bool value );
 	bool		GetMultiMode( int bank ) const;
 	void		SetVelocityMode( velocity_mode value );
