@@ -100,7 +100,7 @@ int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, bool monoMod
     else {
         if (mChNoteOns[ch] >= mChLimit[ch]) {
             // ch発音数を超えてたら、そのchの音を一つ止めて次の音を鳴らす
-            v = StealVoice(ch);
+            v = stealVoice(ch);
             if (v != -1) {
                 mPlayVo.remove(v);
                 *releasedCh = mVoCh[v];
@@ -109,7 +109,7 @@ int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, bool monoMod
         }
         else {
             // 超えてない場合は、後着優先で優先度の低い音を消す
-            v = FindVoice();
+            v = findVoice();
             if (v >= MAX_VOICE) {  //空きがなくてどこかを止めた
                 v -= MAX_VOICE;
                 mPlayVo.remove(v);
@@ -205,7 +205,7 @@ void DynamicVoiceManager::pushWaitVo(int vo)
 }
 
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::FindFreeVoice()
+int DynamicVoiceManager::findFreeVoice()
 {
 	int	v=-1;
     
@@ -231,7 +231,7 @@ bool DynamicVoiceManager::IsPlayingVoice(int v)
     return false;
 }
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::StealVoice(int ch)
+int DynamicVoiceManager::stealVoice(int ch)
 {
     int v=-1;
     int prio_min = 0x7fff;
@@ -250,7 +250,7 @@ int DynamicVoiceManager::StealVoice(int ch)
 }
 
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::FindVoice(int ch)
+int DynamicVoiceManager::findVoice(int ch)
 {
     int v=-1;
     int prio_min = 0x7fff;

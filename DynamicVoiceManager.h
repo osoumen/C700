@@ -47,9 +47,9 @@ private:
     int mChLimit[16];
     
     void pushWaitVo(int vo);
-    int	FindFreeVoice();
-    int StealVoice(int ch);
-    int FindVoice(int ch=-1);
+    int	findFreeVoice();
+    int stealVoice(int ch);
+    int findVoice(int ch=-1);
 };
 
 #endif /* defined(__C700__DynamicVoiceManager__) */
