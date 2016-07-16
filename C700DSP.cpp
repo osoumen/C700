@@ -246,7 +246,7 @@ void C700DSP::KeyOffVoice(int v)
 {
     mVoice[v].envstate = RELEASE;
     writeDsp(DSP_KOF, static_cast<unsigned char>(0x01 << v));
-    writeDsp(DSP_KOF, 0);  // 本当に必要？
+    //writeDsp(DSP_KOF, 0);  // ドライバ側で行う
 }
 
 void C700DSP::KeyOffVoiceFlg(int flg)
@@ -257,7 +257,7 @@ void C700DSP::KeyOffVoiceFlg(int flg)
         }
     }
     writeDsp(DSP_KOF, static_cast<unsigned char>(flg & 0xff));
-    writeDsp(DSP_KOF, 0);  // 本当に必要？
+    //writeDsp(DSP_KOF, 0);  // ドライバ側で行う
 }
 
 void C700DSP::KeyOnVoice(int v)
