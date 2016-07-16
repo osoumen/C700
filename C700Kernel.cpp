@@ -267,6 +267,18 @@ bool C700Kernel::SetParameter( int id, float value )
             mGenerator.SetEventDelayClocks(value==0 ? 0:8192);
             break;
             
+        case kParam_voiceAllocMode:
+            // voiceAllocÉÇÅ[ÉhÇê›íË
+            switch ( (int)value ) {
+                case 0:
+                    mGenerator.SetVoiceAllocMode(kVoiceAllocMode_Oldest);
+                    break;
+                case 1:
+                    mGenerator.SetVoiceAllocMode(kVoiceAllocMode_SameChannel);
+                    break;
+            }
+            break;
+            
 		default:
 			return false;
 	}

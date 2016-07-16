@@ -75,6 +75,7 @@ enum {
     kParam_bankDmulti,
     
     kParam_alwaysDelayNote,
+    kParam_voiceAllocMode,
     
     kNumberOfParameters
 };

@@ -15,12 +15,17 @@
 class DynamicVoiceManager
 {
 public:
+    enum VoiceAllocMode {
+        ALLOC_MODE_OLDEST = 0,
+        ALLOC_MODE_SAMECH
+    };
     DynamicVoiceManager();
     ~DynamicVoiceManager();
     
     void    Initialize(int voiceLimit);
     void    Reset();
     void    ChangeVoiceLimit(int voiceLimit);
+    void    SetVoiceAllocMode(VoiceAllocMode mode);
     int     GetVoiceLimit() { return mVoiceLimit; }
     int     AllocVoice(int prio, int ch, int uniqueID, bool monoMode,
                        int *releasedCh, bool *isLegato);
@@ -45,6 +50,7 @@ private:
     int mVoiceLimit;
     int mChNoteOns[16];
     int mChLimit[16];
+    VoiceAllocMode mAllocMode;
     
     void pushWaitVo(int vo);
     int	findFreeVoice();

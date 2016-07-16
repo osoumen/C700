@@ -406,6 +406,21 @@ void C700Driver::SetEngineType( engine_type type )
 }
 
 //-----------------------------------------------------------------------------
+void C700Driver::SetVoiceAllocMode( voicealloc_mode mode )
+{
+    switch (mode) {
+        case kVoiceAllocMode_Oldest:
+            mVoiceManager.SetVoiceAllocMode(DynamicVoiceManager::ALLOC_MODE_OLDEST);
+            break;
+        case kVoiceAllocMode_SameChannel:
+            mVoiceManager.SetVoiceAllocMode(DynamicVoiceManager::ALLOC_MODE_SAMECH);
+            break;
+        default:
+            break;
+    }
+}
+
+//-----------------------------------------------------------------------------
 void C700Driver::SetMultiMode( int bank, bool value )
 {
 	mDrumMode[bank] = value;
