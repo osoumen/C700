@@ -22,26 +22,14 @@ public:
 	void				SetResolution( int numerator, int denominator );
 	void				BeginDump( int time );
 	bool				DumpReg( int device, int addr, unsigned char data, int time );
+    bool                DumpApuPitch( int device, int addr, unsigned char data_l, unsigned char data_m, int time );
 	void				MarkLoopPoint();
 	void				EndDump(int time);
+    unsigned char       *GetWaitvalTable() { return mWaitvalTable; }
 
 protected:
-	typedef struct {
-		char			magic[3];
-		char			format_version;
-		unsigned int	timer_info;
-		unsigned int	timer_info2;
-		unsigned int	compressing;
-		unsigned int	file_offset_to_tag;
-		unsigned int	file_offset_to_dumpdata;
-		unsigned int	file_offset_to_looppoint;
-		unsigned int	device_count;	//"1"
-		unsigned int	device_type;
-		unsigned int	clock;
-		unsigned int	pan;
-		unsigned int	reserve;
-	} S98Header;
-	
+    static const int    WAIT_VAL_NUM = 32;
+    
 	int					GetDataSize() const { return mDataUsed; }
 	int					GetWritableSize() const { return (mDataSize - mDataPos - 1); }
 	const unsigned char	*GetDataPtr() const { return m_pData; }
@@ -68,6 +56,8 @@ protected:
 	short			mReg[256];
 	int				mTimeNumerator;
 	int				mTimeDenominator;
+    
+    unsigned char   mWaitvalTable[WAIT_VAL_NUM*2];
     
     std::map<int,int> mWaitStat;
 };

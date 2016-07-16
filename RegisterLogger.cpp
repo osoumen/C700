@@ -128,6 +128,7 @@ void RegisterLogger::BeginDump( int time )
 	mLoopPoint = 0;
 	mIsEnded = false;
     
+    regStat.clear();
     mWaitStat.clear();
 	
 //	printf("--BeginDump--\n");
@@ -165,6 +166,39 @@ bool RegisterLogger::DumpReg( int device, int addr, unsigned char data, int time
 }
 
 //-----------------------------------------------------------------------------
+bool RegisterLogger::DumpApuPitch( int device, int addr, unsigned char data_l, unsigned char data_m, int time )
+{
+    if (time < mDumpBeginTime) {
+        return false;
+    }
+    
+    if ( (addr & 0x0f) == 0x02 ) {
+        if (data_m == mReg[addr+1]) {
+            return DumpReg( device, addr, data_l, time );
+        }
+        mReg[addr] = data_l;
+        mReg[addr+1] = data_m;
+        
+        writeWaitFromPrev(time);
+        
+        if ( GetWritableSize() >= 4 ) {
+            writeByte( addr+1 );
+            writeByte( data_m );
+            writeByte( data_l );
+            if (regStat.count(addr+1) == 0) {
+                regStat[addr+1] = 1;
+            }
+            else {
+                regStat[addr+1] = regStat[addr+1]+1;
+            }
+        }
+        
+        return true;
+    }
+	return false;
+}
+
+//-----------------------------------------------------------------------------
 void RegisterLogger::MarkLoopPoint()
 {
 	mLoopPoint = mDataPos;
@@ -184,8 +218,9 @@ void RegisterLogger::EndDump(int time)
 		mIsEnded = true;
 		/*
         for (auto it = regStat.begin(); it != regStat.end(); it++) {
-            std::cout << it->first << "," << it->second << std::endl;
+            std::cout << "$" << std::hex << it->first << "," << std::dec << it->second << std::endl;
         }
+        
         for (auto it = mWaitStat.begin(); it != mWaitStat.end(); it++) {
             std::cout << it->first << "," << it->second << std::endl;
         }*/
@@ -272,21 +307,39 @@ bool RegisterLogger::writeWaitFromPrev(int time)
         }
         else {
 #if 1
-            result = writeByte(0x94);
-            if ( result == false ) return false;
-            result = writeByte(mod & 0xff);
-            if ( result == false ) {
-                //書き込んだ分を巻き戻す
-                mDataPos -= 1;
-                mDataUsed = mDataPos;
-                return false;
+            if ((mod & ~0x01fe) == 0) {
+                result = writeByte(0x96);
+                result = writeByte(mod >> 1);
             }
-            result = writeByte(mod >> 8);
-            if ( result == false ) {
-                //書き込んだ分を巻き戻す
-                mDataPos -= 2;
-                mDataUsed = mDataPos;
-                return false;
+            else if ((mod & ~0x03fc) == 0) {
+                result = writeByte(0x98);
+                result = writeByte(mod >> 2);
+            }
+            else if ((mod & ~0x07f8) == 0) {
+                result = writeByte(0x9a);
+                result = writeByte(mod >> 3);
+            }
+            else if ((mod & ~0x0ff0) == 0) {
+                result = writeByte(0x9c);
+                result = writeByte(mod >> 4);
+            }
+            else {
+                result = writeByte(0x94);
+                if ( result == false ) return false;
+                result = writeByte(mod & 0xff);
+                if ( result == false ) {
+                    //書き込んだ分を巻き戻す
+                    mDataPos -= 1;
+                    mDataUsed = mDataPos;
+                    return false;
+                }
+                result = writeByte(mod >> 8);
+                if ( result == false ) {
+                    //書き込んだ分を巻き戻す
+                    mDataPos -= 2;
+                    mDataUsed = mDataPos;
+                    return false;
+                }
             }
             addWaitStatistic(mod);
 #else
@@ -337,11 +390,12 @@ int RegisterLogger::optimizeWaits(unsigned char *inData, unsigned char *outData,
 {
     // 頻度の高い16wait値を取得
     std::map<int,int> frequentWaitValue;
-    getFrequentWaitValue(frequentWaitValue, 16);
+    getFrequentWaitValue(frequentWaitValue, WAIT_VAL_NUM);
     
     int inPtr = 0;
     int outPtr = 0;
     
+#if 0
     // wait値設定コマンドを出力
     for (auto it = frequentWaitValue.begin(); it != frequentWaitValue.end(); it++) {
         int value = it->first;
@@ -350,6 +404,14 @@ int RegisterLogger::optimizeWaits(unsigned char *inData, unsigned char *outData,
         outData[outPtr++] = value & 0xff;
         outData[outPtr++] = (value >> 8) & 0xff;
     }
+#else
+    for (auto it = frequentWaitValue.begin(); it != frequentWaitValue.end(); it++) {
+        int value = it->first;
+        int ind = it->second;
+        mWaitvalTable[ind * 2] = value & 0xff;
+        mWaitvalTable[ind * 2+1] = (value >> 8) & 0xff;
+    }
+#endif
     
     while (inPtr < inDataSize) {
         // ループポイントの変換
@@ -360,26 +422,55 @@ int RegisterLogger::optimizeWaits(unsigned char *inData, unsigned char *outData,
         unsigned char cmd = inData[inPtr];
         int len = getCommandLength(cmd);
         bool found = false;
-        if (cmd == 0x92) {
-            // 8bit値シンク
-            int value = inData[inPtr+1];
+        int value;
+        bool isWaitCmd = true;
+        switch (cmd) {
+            case 0x92:
+                // 8bit値シンク
+                value = inData[inPtr+1];
+                break;
+            case 0x94:
+                // 16bit値シンク
+                value = inData[inPtr+1] | (inData[inPtr+2] << 8);
+                break;
+            case 0x96:
+                // 8bitx2シンク
+                value = inData[inPtr+1] << 1;
+                break;
+            case 0x98:
+                // 8bitx4シンク
+                value = inData[inPtr+1] << 2;
+                break;
+            case 0x9a:
+                // 8bitx8シンク
+                value = inData[inPtr+1] << 3;
+                break;
+            case 0x9c:
+                // 8bitx16シンク
+                value = inData[inPtr+1] << 4;
+                break;
+            default:
+                isWaitCmd = false;
+                break;
+        }
+        if (isWaitCmd) {
             auto it = frequentWaitValue.find(value);
             if (it != frequentWaitValue.end()) {
                 outData[outPtr++] = (it->second) * 2 + 0xa0;
                 inPtr += len;
                 found = true;
             }
-        }
-        else if (cmd == 0x94) {
-            // 16bit値シンク
-            int value = inData[inPtr+1] | (inData[inPtr+2] << 8);
-            auto it = frequentWaitValue.find(value);
-            if (it != frequentWaitValue.end()) {
-                outData[outPtr++] = (it->second) * 2 + 0xa0;
-                inPtr += len;
-                found = true;
+            else if (cmd == 0x94) {
+                auto it = frequentWaitValue.find(value-1);
+                if (it != frequentWaitValue.end()) {
+                    outData[outPtr++] = (it->second) * 2 + 0xa0;
+                    outData[outPtr++] = 0x90;
+                    inPtr += len;
+                    found = true;
+                }
             }
         }
+        
         if (found == false) {
             for (int i=0; i<len; i++) {
                 outData[outPtr++] = inData[inPtr++];
@@ -418,6 +509,9 @@ int RegisterLogger::getFrequentWaitValue(std::map<int,int> &outValues, int numVa
 int getCommandLength(unsigned char cmd)
 {
     if (cmd < 0x80) {
+        if ((cmd & 0x0f) == 0x03) {
+            return 3;
+        }
         return 2;
     }
     if (cmd >= 0xa0 && cmd < 0xc0) {
@@ -435,6 +529,14 @@ int getCommandLength(unsigned char cmd)
             return 2;
         case 0x94:
             return 3;
+        case 0x96:
+            return 2;
+        case 0x98:
+            return 2;
+        case 0x9a:
+            return 2;
+        case 0x9c:
+            return 2;
         case 0x9e:
             return 1;
         default:
