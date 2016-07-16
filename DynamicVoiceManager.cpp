@@ -44,7 +44,7 @@ void DynamicVoiceManager::Reset()
     }
     for (int i=0; i<MAX_VOICE; i++) {
         mVoCh[i] = 0;
-        mVoPrio[i] = 64;
+        mVoPrio[i] = 0;
         mVoUniqueID[i] = 0;
         mVoKeyOn[i] = false;
     }
@@ -109,7 +109,7 @@ int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, bool monoMod
         }
         else {
             // 超えてない場合は、後着優先で優先度の低い音を消す
-            v = findVoice();
+            v = findVoice(ch);
             if (v >= MAX_VOICE) {  //空きがなくてどこかを止めた
                 v -= MAX_VOICE;
                 mPlayVo.remove(v);
@@ -258,21 +258,34 @@ int DynamicVoiceManager::findVoice(int ch)
     std::list<int>::reverse_iterator  it = mPlayVo.rbegin();
     while (it != mPlayVo.rend()) {
         int vo = *it;
-        bool    chMatch = (mVoCh[vo] == ch) ? true:false;
-        if (ch == -1) {
-            chMatch = true;
-        }
-        if ( (mVoPrio[vo] <= prio_min) && chMatch ) {
+        if ( mVoPrio[vo] <= prio_min ) {
             prio_min = mVoPrio[vo];
-            v = vo + MAX_VOICE;
+            v = vo + MAX_VOICE; // どこかを止めて確保した場合は+MAX_VOICEした値を返す
         }
         it++;
+    }
+    // chを指定した場合はそのMIDIchを優先する
+    if (ch != -1) {
+        it = mPlayVo.rbegin();
+        while (it != mPlayVo.rend()) {
+            int vo = *it;
+            int prio = 1;   // 通常ありえるノートオンプライオリティの最低値
+            if ( (prio <= prio_min) && mVoCh[vo] == ch ) {
+                prio_min = prio;
+                v = vo + MAX_VOICE;
+            }
+            it++;
+        }
     }
     it = mWaitVo.rbegin();
     while (it != mWaitVo.rend()) {
         int vo = *it;
-        if (mVoPrio[vo] <= prio_min) {
-            prio_min = mVoPrio[vo];
+        int prio = mVoPrio[vo];
+        if (ch != -1 && ch == mVoCh[vo]) {
+            prio = -1;  // リリースプライオリティのデフォルト値の0より1小さい
+        }
+        if (prio <= prio_min) {
+            prio_min = prio;
             v = vo;
         }
         it++;
