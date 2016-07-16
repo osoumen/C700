@@ -402,8 +402,16 @@ void C700DSP::SetPitch(int v, int value)
         mVoice[v].pitch = value;
     }
     if (v < 8) {
-        writeDsp(DSP_P + 0x10*v, static_cast<unsigned char>(value&0xff));
-        writeDsp(DSP_P+1 + 0x10*v, static_cast<unsigned char>((value>>8)&0x3f));
+        int addr_l = DSP_P + 0x10*v;
+        int addr_m = DSP_P+1 + 0x10*v;
+        unsigned char data_l = static_cast<unsigned char>(value&0xff);
+        unsigned char data_m = static_cast<unsigned char>((value>>8)&0x3f);
+        
+        if ( mIsLoggerRunning ) {
+            mLogger.DumpApuPitch(0, addr_l, data_l, data_m, static_cast<int>((mLoggerSamplePos * mTickPerSec) / 32000 + 0.5) );
+        }
+        mDsp.WriteDsp(addr_l, data_l, false);
+        mDsp.WriteDsp(addr_m, data_m, false);
     }
 }
 
@@ -732,6 +740,13 @@ void C700DSP::BeginRegisterLog()
     // 現在のレジスタ値を出力
     for (int i=0; i<128; i++) {
         int reg = mDsp.GetDspMirror(i);
+        if ((i & 0x0f) == 0x03) {
+            mLogger.DumpApuPitch(0, i-1, mDsp.GetDspMirror(i-1), reg, 0);
+            continue;
+        }
+        if ((i & 0x0f) == 0x02) {
+            continue;
+        }
         if (reg >= 0 && reg <= 0xff) {
             mLogger.DumpReg(0, i, reg, 0);
         }
@@ -754,7 +769,20 @@ void C700DSP::EndRegisterLog()
         
 #if 1
         // テスト出力
-        SaveRegisterLog("/Users/osoumen/Desktop/spclog.dat");
+        {
+            SaveRegisterLog("/Users/osoumen/Desktop/spclog.dat");
+            
+            char path[] = "/Users/osoumen/Desktop/waittable.dat";
+            CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+            
+            CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
+            if (CFWriteStreamOpen(filestream)) {
+                CFWriteStreamWrite(filestream, mLogger.GetWaitvalTable(), 64 );
+                CFWriteStreamClose(filestream);
+            }
+            CFRelease(filestream);
+            CFRelease(savefile);
+        }
         
         {
             int startAddr = 0x200;
