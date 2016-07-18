@@ -92,7 +92,6 @@ mUseRealEmulation( true )
     mDsp.init();
     
     mIsLoggerRunning = false;
-    mTickPerSec = 15734;
 }
 
 C700DSP::~C700DSP()
@@ -408,7 +407,7 @@ void C700DSP::SetPitch(int v, int value)
         unsigned char data_m = static_cast<unsigned char>((value>>8)&0x3f);
         
         if ( mIsLoggerRunning ) {
-            mLogger.DumpApuPitch(0, addr_l, data_l, data_m, static_cast<int>((mLoggerSamplePos * mTickPerSec) / 32000 + 0.5) );
+            mLogger.DumpApuPitch(0, addr_l, data_l, data_m, mLoggerSamplePos);
         }
         mDsp.WriteDsp(addr_l, data_l, false);
         mDsp.WriteDsp(addr_m, data_m, false);
@@ -723,7 +722,7 @@ bool C700DSP::writeDsp(int addr, unsigned char data)
 {
     //レジスタをログへ
 	if ( mIsLoggerRunning ) {
-		mLogger.DumpReg(0, addr, data, static_cast<int>((mLoggerSamplePos * mTickPerSec) / 32000 + 0.5) );
+		mLogger.DumpReg(0, addr, data, mLoggerSamplePos);
 	}
     
     return mDsp.WriteDsp(addr, data, false);
@@ -732,8 +731,9 @@ bool C700DSP::writeDsp(int addr, unsigned char data)
 void C700DSP::BeginRegisterLog()
 {
 	mLoggerSamplePos = 0;
-	mTickPerSec = 15734;    // Hsync
-	mLogger.SetResolution(1, static_cast<int>(mTickPerSec));
+	//mLogger.SetResolution(15734);    // Hsync
+    mLogger.SetResolution(16045);
+    mLogger.SetProcessSampleRate(32000);
 	mLogger.BeginDump(0);
 	mIsLoggerRunning = true;
     
@@ -764,7 +764,7 @@ void C700DSP::MarkRegisterLogLoop()
 void C700DSP::EndRegisterLog()
 {
 	if ( mIsLoggerRunning ) {
-		mLogger.EndDump( static_cast<int>((mLoggerSamplePos * mTickPerSec) / 32000 + 0.5) );
+		mLogger.EndDump(mLoggerSamplePos);
 		mIsLoggerRunning = false;
         
 #if 1
