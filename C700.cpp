@@ -301,7 +301,9 @@ AudioUnitParameterUnit getParameterUnit( int id )
             
         case kParam_voiceAllocMode:
             return kAudioUnitParameterUnit_Indexed;
-			
+        case kParam_fastReleaseAsKeyOff:
+            return kAudioUnitParameterUnit_Boolean;
+            
 		default:
 			return kAudioUnitParameterUnit_Indexed;
 	}

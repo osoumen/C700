@@ -279,6 +279,10 @@ bool C700Kernel::SetParameter( int id, float value )
             }
             break;
             
+        case kParam_fastReleaseAsKeyOff:
+            mGenerator.SetFastReleaseAsKeyOff(value==0 ? false:true);
+            break;
+            
 		default:
 			return false;
 	}

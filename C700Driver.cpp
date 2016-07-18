@@ -91,6 +91,7 @@ C700Driver::C700Driver()
     
     mVoiceLimit = 8;
     mIsAccurateMode = false;
+    mFastReleaseAsKeyOff = true;
 
     mEventDelayClocks = 8192;   // 8ms
     mEventDelaySamples = calcEventDelaySamples();
@@ -418,6 +419,12 @@ void C700Driver::SetVoiceAllocMode( voicealloc_mode mode )
         default:
             break;
     }
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::SetFastReleaseAsKeyOff( bool value )
+{
+    mFastReleaseAsKeyOff = value;
 }
 
 //-----------------------------------------------------------------------------
@@ -1028,7 +1035,7 @@ int C700Driver::doNoteOff( const MIDIEvt *evt )
     int             vo=-1;
     stops = mVoiceManager.ReleaseVoice(vp.releasePriority, evt->ch, evt->uniqueID, &vo);
     if (stops > 0) {
-        if (vp.sustainMode) {
+        if (vp.sustainMode && (vp.sr != 31 || !mFastReleaseAsKeyOff)) {
             //キーオフさせずにsrを変更する
             mDSP.SetDR(vo, 7);
             mDSP.SetSR(vo, vp.sr);

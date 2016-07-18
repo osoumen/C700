@@ -138,6 +138,7 @@ public:
 	void		SetPBRange( int ch, float value );
 	void		SetEngineType( engine_type type );
     void        SetVoiceAllocMode( voicealloc_mode mode );
+    void        SetFastReleaseAsKeyOff( bool value );
 	void		SetMultiMode( int bank, bool value );
 	bool		GetMultiMode( int bank ) const;
 	void		SetVelocityMode( velocity_mode value );
@@ -240,6 +241,7 @@ private:
     
     int             mVoiceLimit;
     bool            mIsAccurateMode;
+    bool            mFastReleaseAsKeyOff;   // sustainmodeでsr=31の場合キーオフで処理する
 	
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
