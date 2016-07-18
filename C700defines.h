@@ -76,6 +76,7 @@ enum {
     
     kParam_alwaysDelayNote,
     kParam_voiceAllocMode,
+    kParam_fastReleaseAsKeyOff,
     
     kNumberOfParameters
 };
