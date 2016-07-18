@@ -19,7 +19,8 @@ public:
 	
 	bool				IsEnded() const { return mIsEnded; }
 	bool				SaveToFile( const char *path, int clock=0 );
-	void				SetResolution( int numerator, int denominator );
+	void				SetResolution( double tickPerSec );
+    void                SetProcessSampleRate( int rate );
 	void				BeginDump( int time );
 	bool				DumpReg( int device, int addr, unsigned char data, int time );
     bool                DumpApuPitch( int device, int addr, unsigned char data_l, unsigned char data_m, int time );
@@ -39,8 +40,8 @@ protected:
 	
 	bool				writeByte( unsigned char byte );
 	bool				writeEndByte();
-	bool				writeWaitFromPrev(int time);
-    bool                addWaitStatistic(int time);
+	bool				writeWaitFromPrev(int tick);
+    bool                addWaitStatistic(int tick);
 	int                 optimizeWaits(unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint);
     int                 getFrequentWaitValue(std::map<int,int> &outValues, int numValues);
     
@@ -54,8 +55,8 @@ protected:
 	int				mLoopPoint;
 	bool			mIsEnded;
 	short			mReg[256];
-	int				mTimeNumerator;
-	int				mTimeDenominator;
+	double          mTickPerSec;
+    int             mProcessSampleRate;
     
     unsigned char   mWaitvalTable[WAIT_VAL_NUM*2];
     

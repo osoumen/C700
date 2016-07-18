@@ -139,7 +139,6 @@ private:
     
     RegisterLogger  mLogger;
     bool            mIsLoggerRunning;
-    double          mTickPerSec;
     int             mLoggerSamplePos;
 
 };

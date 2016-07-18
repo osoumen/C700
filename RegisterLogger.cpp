@@ -30,8 +30,8 @@ RegisterLogger::RegisterLogger(int allocSize)
 , mDataSize( allocSize )
 , mDataUsed( 0 )
 , mDataPos( 0 )
-, mTimeNumerator( 1 )
-, mTimeDenominator( 15734 )
+, mTickPerSec( 15734 )
+, mProcessSampleRate( 32000 )
 {
 	if ( allocSize > 0 ) {
 		m_pData = new unsigned char[allocSize];
@@ -109,16 +109,23 @@ bool RegisterLogger::SaveToFile( const char *path, int clock )
 }
 
 //-----------------------------------------------------------------------------
-void RegisterLogger::SetResolution( int numerator, int denominator )
+void RegisterLogger::SetResolution( double tickPerSec )
 {
-	mTimeNumerator = numerator;
-	mTimeDenominator = denominator;
+	mTickPerSec = tickPerSec;
+}
+
+//-----------------------------------------------------------------------------
+void RegisterLogger::SetProcessSampleRate( int rate )
+{
+    mProcessSampleRate = rate;
 }
 
 //-----------------------------------------------------------------------------
 void RegisterLogger::BeginDump( int time )
 {
-	mDumpBeginTime = time;
+    int tick = static_cast<int>((time * mTickPerSec) / mProcessSampleRate + 0.5);
+    
+	mDumpBeginTime = tick;
 	mPrevTime = mDumpBeginTime;
 	for ( int i=0; i<256; i++ ) {
         mReg[i] = -1;
@@ -137,7 +144,9 @@ void RegisterLogger::BeginDump( int time )
 //-----------------------------------------------------------------------------
 bool RegisterLogger::DumpReg( int device, int addr, unsigned char data, int time )
 {
-    if (time < mDumpBeginTime) {
+    int tick = static_cast<int>((time * mTickPerSec) / mProcessSampleRate + 0.5);
+    
+    if (tick < mDumpBeginTime) {
         return false;
     }
     
@@ -146,7 +155,7 @@ bool RegisterLogger::DumpReg( int device, int addr, unsigned char data, int time
 		if ( mReg[addr] != data || addr == 0x4c || addr == 0x5c) {
 			mReg[addr] = data;
 
-			writeWaitFromPrev(time);
+			writeWaitFromPrev(tick);
 			
 			if ( GetWritableSize() >= 3 ) {
 				writeByte( addr );
@@ -168,7 +177,9 @@ bool RegisterLogger::DumpReg( int device, int addr, unsigned char data, int time
 //-----------------------------------------------------------------------------
 bool RegisterLogger::DumpApuPitch( int device, int addr, unsigned char data_l, unsigned char data_m, int time )
 {
-    if (time < mDumpBeginTime) {
+    int tick = static_cast<int>((time * mTickPerSec) / mProcessSampleRate + 0.5);
+    
+    if (tick < mDumpBeginTime) {
         return false;
     }
     
@@ -179,7 +190,7 @@ bool RegisterLogger::DumpApuPitch( int device, int addr, unsigned char data_l, u
         mReg[addr] = data_l;
         mReg[addr+1] = data_m;
         
-        writeWaitFromPrev(time);
+        writeWaitFromPrev(tick);
         
         if ( GetWritableSize() >= 4 ) {
             writeByte( addr+1 );
@@ -212,8 +223,10 @@ void RegisterLogger::MarkLoopPoint()
 //-----------------------------------------------------------------------------
 void RegisterLogger::EndDump(int time)
 {
+    int tick = static_cast<int>((time * mTickPerSec) / mProcessSampleRate + 0.5);
+    
 	if ( mDataUsed > 0 && mIsEnded == false ) {
-		writeWaitFromPrev(time);
+		writeWaitFromPrev(tick);
 		writeEndByte();
 		mIsEnded = true;
 		/*
@@ -257,11 +270,11 @@ bool RegisterLogger::writeEndByte()
 }
 
 //-----------------------------------------------------------------------------
-bool RegisterLogger::writeWaitFromPrev(int time)
+bool RegisterLogger::writeWaitFromPrev(int tick)
 {
 	bool		result;
 	
-	int		now_time	= time - mDumpBeginTime;
+	int		now_time	= tick - mDumpBeginTime;
 	int		prev_time	= mPrevTime - mDumpBeginTime;
 	int		adv_time	= now_time - prev_time;
 	
@@ -365,7 +378,7 @@ bool RegisterLogger::writeWaitFromPrev(int time)
         }
     }
     
-	mPrevTime = time;
+	mPrevTime = tick;
     /*
 	if ( adv_time < 0 ) {
 		mPrevTime -= adv_time;
@@ -374,13 +387,13 @@ bool RegisterLogger::writeWaitFromPrev(int time)
 }
 
 //-----------------------------------------------------------------------------
-bool RegisterLogger::addWaitStatistic(int time)
+bool RegisterLogger::addWaitStatistic(int tick)
 {
-    if (mWaitStat.count(time) == 0) {
-        mWaitStat[time] = 1;
+    if (mWaitStat.count(tick) == 0) {
+        mWaitStat[tick] = 1;
     }
     else {
-        mWaitStat[time] = mWaitStat[time]+1;
+        mWaitStat[tick] = mWaitStat[tick]+1;
     }
     return true;
 }
