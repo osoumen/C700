@@ -785,6 +785,30 @@ void C700DSP::EndRegisterLog()
         }
         
         {
+            unsigned char dspreg[256];
+            for (int i=0; i<128; i++) {
+                int reg = mDsp.GetDspMirror(i);
+                if (reg >= 0 && reg <= 0xff) {
+                    dspreg[i] = reg;
+                }
+                else {
+                    dspreg[i] = 0;
+                }
+            }
+            
+            char path[] = "/Users/osoumen/Desktop/regdump.dat";
+            CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+            
+            CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
+            if (CFWriteStreamOpen(filestream)) {
+                CFWriteStreamWrite(filestream, dspreg, 256 );
+                CFWriteStreamClose(filestream);
+            }
+            CFRelease(filestream);
+            CFRelease(savefile);
+        }
+        
+        {
             int startAddr = 0x200;
             int writeBytes = 0x400;
             unsigned char header[4];
