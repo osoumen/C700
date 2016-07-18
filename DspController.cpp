@@ -102,6 +102,7 @@ unsigned char DspController::dspregAccCode[] =
     ,0x2F ,0xE0       //     	bra loop2
     // resetP0:
     ,0x8F ,0xB0 ,0xF1 //       	mov SPC_CONTROL,#$b0
+    ,0x20             //   	clrp
     ,0xD8 ,0xF4       //     	mov SPC_PORT0,x
     ,0x5F ,0xC0 ,0xFF //       	jmp !$ffc0
 };
