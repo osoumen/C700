@@ -14,18 +14,24 @@
 
 class RegisterLogger {
 public:
+    typedef struct {
+        int    time;
+        unsigned char data[4];
+    } LogCommands;
+    
 	RegisterLogger(int allocSize=4*1024*1024);
 	~RegisterLogger();
 	
 	bool				IsEnded() const { return mIsEnded; }
-	bool				SaveToFile( const char *path, int clock=0 );
-	void				SetResolution( double tickPerSec );
+	bool				SaveToFile( const char *path, double tickPerSec );
     void                SetProcessSampleRate( int rate );
-	void				BeginDump( int time );
+    
+    void				BeginDump( int time );
 	bool				DumpReg( int device, int addr, unsigned char data, int time );
     bool                DumpApuPitch( int device, int addr, unsigned char data_l, unsigned char data_m, int time );
 	void				MarkLoopPoint();
 	void				EndDump(int time);
+    
     unsigned char       *GetWaitvalTable() { return mWaitvalTable; }
 
 protected:
@@ -38,12 +44,20 @@ protected:
 	void				AdvDataPos( int adv ) { mDataPos+=adv; }
 	bool				SetPos( int pos );
 	
+    void                compileLogData( double tickPerSec );
+    void				BeginDump_( int time );
+	bool				DumpReg_( int device, int addr, unsigned char data, int time );
+    bool                DumpApuPitch_( int device, int addr, unsigned char data_l, unsigned char data_m, int time );
+	void				MarkLoopPoint_();
+	void				EndDump_(int time);
+    
 	bool				writeByte( unsigned char byte );
 	bool				writeEndByte();
 	bool				writeWaitFromPrev(int tick);
     bool                addWaitStatistic(int tick);
 	int                 optimizeWaits(unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint);
     int                 getFrequentWaitValue(std::map<int,int> &outValues, int numValues);
+    int                 convertTime2Tick(int time);
     
 	unsigned char	*m_pData;
 	int				mDataSize;
@@ -59,6 +73,11 @@ protected:
     int             mProcessSampleRate;
     
     unsigned char   mWaitvalTable[WAIT_VAL_NUM*2];
+    
+    LogCommands     *m_pLogCommands;
+    int             mLogCommandsSize;
+    int             mLogCommandsPos;
+    int             mLogCommandsLoopPoint;
     
     std::map<int,int> mWaitStat;
 };

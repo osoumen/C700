@@ -35,7 +35,12 @@ RegisterLogger::RegisterLogger(int allocSize)
 {
 	if ( allocSize > 0 ) {
 		m_pData = new unsigned char[allocSize];
+        m_pLogCommands = new LogCommands[allocSize];
 	}
+    mLogCommandsSize = allocSize;
+    mLogCommandsPos = 0;
+    mLogCommandsLoopPoint = 0;
+    
 	BeginDump(0);
 }
 
@@ -45,6 +50,9 @@ RegisterLogger::~RegisterLogger()
 	if ( m_pData != NULL ) {
 		delete [] m_pData;
 	}
+    if ( m_pLogCommands != NULL ) {
+        delete [] m_pLogCommands;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -61,8 +69,10 @@ bool RegisterLogger::SetPos( int pos )
 }
 
 //-----------------------------------------------------------------------------
-bool RegisterLogger::SaveToFile( const char *path, int clock )
+bool RegisterLogger::SaveToFile( const char *path, double tickPerSec )
 {
+    compileLogData( tickPerSec );
+    
     // データの削減
     unsigned char *optimizedData = new unsigned char [mDataSize];
     int optimizedDataSize;
@@ -109,12 +119,6 @@ bool RegisterLogger::SaveToFile( const char *path, int clock )
 }
 
 //-----------------------------------------------------------------------------
-void RegisterLogger::SetResolution( double tickPerSec )
-{
-	mTickPerSec = tickPerSec;
-}
-
-//-----------------------------------------------------------------------------
 void RegisterLogger::SetProcessSampleRate( int rate )
 {
     mProcessSampleRate = rate;
@@ -123,17 +127,118 @@ void RegisterLogger::SetProcessSampleRate( int rate )
 //-----------------------------------------------------------------------------
 void RegisterLogger::BeginDump( int time )
 {
-    int tick = static_cast<int>((time * mTickPerSec) / mProcessSampleRate + 0.5);
+    mLogCommandsPos = 0;
+    mLogCommandsLoopPoint = 0;
+    for ( int i=0; i<256; i++ ) {
+        mReg[i] = -1;
+	}
+    mIsEnded = false;
+}
+
+//-----------------------------------------------------------------------------
+bool RegisterLogger::DumpReg( int device, int addr, unsigned char data, int time )
+{
+    if (addr >= 0 && addr < 128) {
+		
+		if ( mReg[addr] != data || addr == 0x4c || addr == 0x5c) {
+			mReg[addr] = data;
+            if ( (mLogCommandsSize - mLogCommandsPos) > 0 ) {
+                m_pLogCommands[mLogCommandsPos].data[0] = addr;
+                m_pLogCommands[mLogCommandsPos].data[1] = data;
+                m_pLogCommands[mLogCommandsPos].time = time;
+                mLogCommandsPos++;
+			}
+			return true;
+		}
+	}
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+bool RegisterLogger::DumpApuPitch( int device, int addr, unsigned char data_l, unsigned char data_m, int time )
+{
+    if ( (addr & 0x0f) == 0x02 ) {
+        if (data_m == mReg[addr+1]) {
+            return DumpReg( device, addr, data_l, time );
+        }
+        mReg[addr] = data_l;
+        mReg[addr+1] = data_m;
+        
+        if ( (mLogCommandsSize - mLogCommandsPos) > 0 ) {
+            m_pLogCommands[mLogCommandsPos].data[0] = addr+1;
+            m_pLogCommands[mLogCommandsPos].data[1] = data_m;
+            m_pLogCommands[mLogCommandsPos].data[2] = data_l;
+            m_pLogCommands[mLogCommandsPos].time = time;
+            mLogCommandsPos++;
+        }
+        return true;
+    }
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+void RegisterLogger::MarkLoopPoint()
+{
+    mLogCommandsLoopPoint = mLogCommandsPos;
+    //ループ直後は常にレジスタが書き込まれるようにする
+	for ( int i=0; i<256; i++ ) {
+		mReg[i] = -1;
+	}
+}
+
+//-----------------------------------------------------------------------------
+void RegisterLogger::EndDump(int time)
+{
+    if ( (mLogCommandsSize - mLogCommandsPos) > 0 && mIsEnded == false) {
+        m_pLogCommands[mLogCommandsPos].data[0] = 0x9e;
+        m_pLogCommands[mLogCommandsPos].time = time;
+        mLogCommandsPos++;
+        mIsEnded = true;
+    }
+}
+
+//-----------------------------------------------------------------------------
+void RegisterLogger::compileLogData( double tickPerSec )
+{
+    mTickPerSec = tickPerSec;
+    
+    if ( mLogCommandsPos == 0) {
+        return;
+    }
+    
+    BeginDump_(0);
+    for (int i=0; i<mLogCommandsPos; i++) {
+        if (i == mLogCommandsLoopPoint) {
+            MarkLoopPoint_();
+        }
+        unsigned char cmd = m_pLogCommands[i].data[0];
+        int cmdLen = getCommandLength(cmd);
+        if (cmd < 0x80) {
+            if (cmdLen == 2) {
+                DumpReg_( 0, cmd, m_pLogCommands[i].data[1], m_pLogCommands[i].time );
+            }
+            else if (cmdLen == 3) {
+                DumpApuPitch_( 0, cmd, m_pLogCommands[i].data[2], m_pLogCommands[i].data[1], m_pLogCommands[i].time );
+            }
+        }
+        else if (cmd == 0x9e) {
+            EndDump_(m_pLogCommands[i].time);
+            break;
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void RegisterLogger::BeginDump_( int time )
+{
+    int tick = convertTime2Tick(time);
     
 	mDumpBeginTime = tick;
 	mPrevTime = mDumpBeginTime;
-	for ( int i=0; i<256; i++ ) {
-        mReg[i] = -1;
-	}
+	
 	mDataUsed = 0;
 	mDataPos = 0;
 	mLoopPoint = 0;
-	mIsEnded = false;
     
     regStat.clear();
     mWaitStat.clear();
@@ -142,65 +247,52 @@ void RegisterLogger::BeginDump( int time )
 }
 
 //-----------------------------------------------------------------------------
-bool RegisterLogger::DumpReg( int device, int addr, unsigned char data, int time )
+bool RegisterLogger::DumpReg_( int device, int addr, unsigned char data, int time )
 {
-    int tick = static_cast<int>((time * mTickPerSec) / mProcessSampleRate + 0.5);
+    int tick = convertTime2Tick(time);
     
     if (tick < mDumpBeginTime) {
         return false;
     }
     
-	if (addr >= 0 && addr < 128) {
-		
-		if ( mReg[addr] != data || addr == 0x4c || addr == 0x5c) {
-			mReg[addr] = data;
-
-			writeWaitFromPrev(tick);
-			
-			if ( GetWritableSize() >= 3 ) {
-				writeByte( addr );
-				writeByte( data );
-                if (regStat.count(addr) == 0) {
-                    regStat[addr] = 1;
-                }
-                else {
-                    regStat[addr] = regStat[addr]+1;
-                }
-			}
-			
-			return true;
-		}
-	}
-	return false;
+    writeWaitFromPrev(tick);
+    
+    if ( GetWritableSize() >= 3 ) {
+        writeByte( addr );
+        writeByte( data );
+        if (regStat.count(addr) == 0) {
+            regStat[addr] = 1;
+        }
+        else {
+            regStat[addr] = regStat[addr]+1;
+        }
+    }
+    
+    return true;
 }
 
 //-----------------------------------------------------------------------------
-bool RegisterLogger::DumpApuPitch( int device, int addr, unsigned char data_l, unsigned char data_m, int time )
+bool RegisterLogger::DumpApuPitch_( int device, int addr, unsigned char data_l, unsigned char data_m, int time )
 {
-    int tick = static_cast<int>((time * mTickPerSec) / mProcessSampleRate + 0.5);
+    int tick = convertTime2Tick(time);
     
     if (tick < mDumpBeginTime) {
         return false;
     }
     
-    if ( (addr & 0x0f) == 0x02 ) {
-        if (data_m == mReg[addr+1]) {
-            return DumpReg( device, addr, data_l, time );
-        }
-        mReg[addr] = data_l;
-        mReg[addr+1] = data_m;
-        
+    if ( (addr & 0x0f) == 0x03 ) {
+
         writeWaitFromPrev(tick);
         
         if ( GetWritableSize() >= 4 ) {
-            writeByte( addr+1 );
+            writeByte( addr );
             writeByte( data_m );
             writeByte( data_l );
-            if (regStat.count(addr+1) == 0) {
-                regStat[addr+1] = 1;
+            if (regStat.count(addr) == 0) {
+                regStat[addr] = 1;
             }
             else {
-                regStat[addr+1] = regStat[addr+1]+1;
+                regStat[addr] = regStat[addr]+1;
             }
         }
         
@@ -210,25 +302,20 @@ bool RegisterLogger::DumpApuPitch( int device, int addr, unsigned char data_l, u
 }
 
 //-----------------------------------------------------------------------------
-void RegisterLogger::MarkLoopPoint()
+void RegisterLogger::MarkLoopPoint_()
 {
 	mLoopPoint = mDataPos;
-	//ループ直後は常にレジスタが書き込まれるようにする
-	for ( int i=0; i<256; i++ ) {
-		mReg[i] = -1;
-	}
 //	printf("--MarkLoopPoint--\n");
 }
 
 //-----------------------------------------------------------------------------
-void RegisterLogger::EndDump(int time)
+void RegisterLogger::EndDump_(int time)
 {
-    int tick = static_cast<int>((time * mTickPerSec) / mProcessSampleRate + 0.5);
+    int tick = convertTime2Tick(time);
     
-	if ( mDataUsed > 0 && mIsEnded == false ) {
+	if ( mDataUsed > 0 ) {
 		writeWaitFromPrev(tick);
 		writeEndByte();
-		mIsEnded = true;
 		/*
         for (auto it = regStat.begin(); it != regStat.end(); it++) {
             std::cout << "$" << std::hex << it->first << "," << std::dec << it->second << std::endl;
@@ -518,6 +605,14 @@ int RegisterLogger::getFrequentWaitValue(std::map<int,int> &outValues, int numVa
     }
     return foundValues;
 }
+
+//-----------------------------------------------------------------------------
+int RegisterLogger::convertTime2Tick(int time)
+{
+    int tick = static_cast<int>((time * mTickPerSec) / mProcessSampleRate + 0.5);
+    return tick;
+}
+
 //-----------------------------------------------------------------------------
 int getCommandLength(unsigned char cmd)
 {
