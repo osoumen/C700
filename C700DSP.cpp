@@ -802,19 +802,6 @@ int C700DSP::saveRegisterLog(const char *path)
     }
     // 波形領域の設定
     {
-        /*
-         int startAddr = mBrrStartAddr;
-         int writeBytes = mBrrEndAddr - mBrrStartAddr;
-         
-         // (32KB-4)を超える場合は２分割する
-         while (writeBytes > 0) {
-         unsigned char *data = &mRam[startAddr];
-         int toWrite = (writeBytes>(0x8000-4))?(0x8000-4):writeBytes;
-         mLogger.addBrrRegion(startAddr, toWrite, data);
-         writeBytes -= toWrite;
-         startAddr += toWrite;
-         }
-         */
         mLogger.addBrrRegion(mBrrStartAddr, mBrrEndAddr - mBrrStartAddr, &mRam[mBrrStartAddr]);
     }
     

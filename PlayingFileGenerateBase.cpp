@@ -42,7 +42,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
     }
     {
         // DIR領域の書き出し
-        DataBuffer buffer(reglog.mDirRegionSize);
+        DataBuffer buffer(reglog.mDirRegionSize + 4);
         unsigned char header[4];
         header[0] = reglog.mDirRegionLocateAddr & 0xff;
         header[1] = (reglog.mDirRegionLocateAddr >> 8) & 0xff;
@@ -56,7 +56,20 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
     }
     {
         // BRR領域の書き出し
-        DataBuffer buffer(reglog.mBrrRegionSize);
+        /*
+         int startAddr = mBrrStartAddr;
+         int writeBytes = mBrrEndAddr - mBrrStartAddr;
+         
+         // (32KB-4)を超える場合は２分割する
+         while (writeBytes > 0) {
+         unsigned char *data = &mRam[startAddr];
+         int toWrite = (writeBytes>(0x8000-4))?(0x8000-4):writeBytes;
+         mLogger.addBrrRegion(startAddr, toWrite, data);
+         writeBytes -= toWrite;
+         startAddr += toWrite;
+         }
+         */
+        DataBuffer buffer(reglog.mBrrRegionSize + 4);
         unsigned char header[4];
         header[0] = reglog.mBrrRegionLocateAddr & 0xff;
         header[1] = (reglog.mBrrRegionLocateAddr >> 8) & 0xff;
@@ -66,14 +79,6 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
         buffer.writeData(reglog.mBrrRegionData, reglog.mBrrRegionSize);
         strncpy(fname, directory, PATH_LEN_MAX);
         strncat(fname, "brrregion.dat", 14);
-        buffer.WriteToFile(fname);
-    }
-    {
-        // WaitTableの書き出し
-        DataBuffer buffer(WAIT_TABLE_LEN);
-        buffer.writeData(mWaitvalTable, WAIT_TABLE_LEN);
-        strncpy(fname, directory, PATH_LEN_MAX);
-        strncat(fname, "waittable.dat", 14);
         buffer.WriteToFile(fname);
     }
     {
@@ -98,6 +103,14 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
         strncat(fname, "spclog.dat", 11);
         buffer.WriteToFile(fname);
         delete [] optimizedData;
+    }
+    {
+        // WaitTableの書き出し
+        DataBuffer buffer(WAIT_TABLE_LEN);
+        buffer.writeData(mWaitvalTable, WAIT_TABLE_LEN);
+        strncpy(fname, directory, PATH_LEN_MAX);
+        strncat(fname, "waittable.dat", 14);
+        buffer.WriteToFile(fname);
     }
     
     return true;
