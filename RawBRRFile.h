@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "C700defines.h"
 #include "FileAccess.h"
 
 class RawBRRFile : public FileAccess {

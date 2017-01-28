@@ -11,22 +11,25 @@
 #include <string.h>
 
 //-----------------------------------------------------------------------------
-FileAccess::FileAccess( const char *path, bool isWriteable )
+FileAccess::FileAccess( const char *path, bool isWriteable, int pathLenMax )
 : mIsWriteable( isWriteable )
 , mIsLoaded( false )
+, mPathLenMax( pathLenMax )
 {
+    mPath = new char[pathLenMax];
 	SetFilePath( path );
 }
 
 //-----------------------------------------------------------------------------
 FileAccess::~FileAccess()
 {
+    delete mPath;
 }
 
 //-----------------------------------------------------------------------------
 void FileAccess::SetFilePath( const char *path )
 {
 	if ( path ) {
-		strncpy(mPath, path, PATH_LEN_MAX-1);
+		strncpy(mPath, path, mPathLenMax-1);
 	}
 }

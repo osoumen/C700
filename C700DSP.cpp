@@ -767,23 +767,11 @@ void C700DSP::EndRegisterLog()
 		mLogger.EndDump(mLoggerSamplePos);
 		mIsLoggerRunning = false;
         
-#if 1
-        // テスト出力
+        // WaitTableの書き出し
         {
-            SaveRegisterLog("/Users/osoumen/Desktop/spclog.dat");
-            
-            char path[] = "/Users/osoumen/Desktop/waittable.dat";
-            CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
-            
-            CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
-            if (CFWriteStreamOpen(filestream)) {
-                CFWriteStreamWrite(filestream, mLogger.GetWaitvalTable(), 64 );
-                CFWriteStreamClose(filestream);
-            }
-            CFRelease(filestream);
-            CFRelease(savefile);
+            mLogger.addWaitTable(mLogger.GetWaitvalTable());
         }
-        
+        // DSP領域の書き出し
         {
             unsigned char dspreg[256];
             for (int i=0; i<128; i++) {
@@ -795,91 +783,46 @@ void C700DSP::EndRegisterLog()
                     dspreg[i] = 0;
                 }
             }
-            
-            char path[] = "/Users/osoumen/Desktop/regdump.dat";
-            CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
-            
-            CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
-            if (CFWriteStreamOpen(filestream)) {
-                CFWriteStreamWrite(filestream, dspreg, 256 );
-                CFWriteStreamClose(filestream);
-            }
-            CFRelease(filestream);
-            CFRelease(savefile);
+            mLogger.addDspRegRegion(dspreg);
         }
-        
+        // DIR領域の書き出し
         {
-            int startAddr = 0x200;
-            int writeBytes = 0x400;
-            unsigned char header[4];
-            unsigned char *data = &mRam[0x200];
-            header[0] = startAddr & 0xff;
-            header[1] = (startAddr >> 8) & 0xff;
-            header[2] = writeBytes & 0xff;
-            header[3] = (writeBytes >> 8) & 0xff;
-            // DIR領域を保存
-            {
-                char dirRegionDataPath[] = "/Users/osoumen/Desktop/dirregion.dat";
-                CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)dirRegionDataPath, strlen(dirRegionDataPath), false);
-                
-                CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
-                if (CFWriteStreamOpen(filestream)) {
-                    CFWriteStreamWrite(filestream, header, 4 );
-                    CFWriteStreamWrite(filestream, data, writeBytes );
-                    CFWriteStreamClose(filestream);
-                }
-                CFRelease(filestream);
-                CFRelease(savefile);
-            }
+            mLogger.addDirRegion(0x200, 0x400, &mRam[0x200]);
         }
-        
+        // 波形領域の書き出し
         {
             int startAddr = mBrrStartAddr;
             int writeBytes = mBrrEndAddr - mBrrStartAddr;
-            
-            if (writeBytes > 0) {
-                // 波形領域を保存
-                char dirRegionDataPath[] = "/Users/osoumen/Desktop/brrregion.dat";
-                CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)dirRegionDataPath, strlen(dirRegionDataPath), false);
-                
-                CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
-                if (CFWriteStreamOpen(filestream)) {
-                    while (writeBytes > 0) {
-                        unsigned char header[4];
-                        unsigned char *data = &mRam[startAddr];
-                        int toWrite = (writeBytes>(0x8000-4))?(0x8000-4):writeBytes;
-                        header[0] = startAddr & 0xff;
-                        header[1] = (startAddr >> 8) & 0xff;
-                        header[2] = toWrite & 0xff;
-                        header[3] = (toWrite >> 8) & 0xff;
-                        CFWriteStreamWrite(filestream, header, 4 );
-                        CFWriteStreamWrite(filestream, data, toWrite);
-                        writeBytes -= toWrite;
-                        startAddr += toWrite;
-                    }
-                    CFWriteStreamClose(filestream);
-                }
-                CFRelease(filestream);
-                CFRelease(savefile);
+
+            // (32KB-4)を超える場合は２分割する
+            while (writeBytes > 0) {
+                unsigned char *data = &mRam[startAddr];
+                int toWrite = (writeBytes>(0x8000-4))?(0x8000-4):writeBytes;
+                mLogger.addBrrRegion(startAddr, toWrite, data);
+                writeBytes -= toWrite;
+                startAddr += toWrite;
             }
         }
-#endif
+
+        // ファイルへ書き出し
+        saveRegisterLog("/Users/osoumen/Desktop/c700dump.dat");    // TODO: UI上で選択できるようにする
 	}
 }
 
-int C700DSP::SaveRegisterLog(const char *path)
+int C700DSP::saveRegisterLog(const char *path)
 {
 	if ( *path == 0 ) {
 		return(-1);
 	}
-	if ( CanSaveRegisterLog() == false ) {
+	if ( canSaveRegisterLog() == false ) {
 		return(-1);
 	}
-	mLogger.SaveToFile(path, 16045);
+    mLogger.SetFilePath(path);
+	mLogger.Write();
 	return(0);
 }
 
-bool C700DSP::CanSaveRegisterLog()
+bool C700DSP::canSaveRegisterLog()
 {
 	if ( mIsLoggerRunning == false && mLogger.IsEnded() ) {
 		return true;

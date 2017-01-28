@@ -12,16 +12,14 @@
 
 //-----------------------------------------------------------------------------
 PGChunk::PGChunk(int allocMemSize)
-: FileAccess(NULL, true)
-, DataBuffer(allocMemSize)
+: ChunkReader(allocMemSize)
 , mNumPrograms( 0 )
 {
 }
 
 //-----------------------------------------------------------------------------
 PGChunk::PGChunk( const void *data, int dataSize )
-: FileAccess(NULL, true)
-, DataBuffer( data, dataSize )
+: ChunkReader( data, dataSize )
 , mNumPrograms( 0 )
 {
 }
@@ -43,64 +41,64 @@ bool PGChunk::AppendDataFromVP( const InstParams *vp )
 	
 	//プログラム名
 	if (vp->pgname[0] != 0) {
-		writeChunk(kAudioUnitCustomProperty_ProgramName, vp->pgname, PROGRAMNAME_MAX_LEN);
+		addChunk(kAudioUnitCustomProperty_ProgramName, vp->pgname, PROGRAMNAME_MAX_LEN);
 	}
 
 	int	brrSize = vp->brrSize();
-	writeChunk(kAudioUnitCustomProperty_BRRData, vp->brrData(), brrSize);
+	addChunk(kAudioUnitCustomProperty_BRRData, vp->brrData(), brrSize);
 	doubleValue = vp->rate;
-	writeChunk(kAudioUnitCustomProperty_Rate, &doubleValue, sizeof(double));
+	addChunk(kAudioUnitCustomProperty_Rate, &doubleValue, sizeof(double));
 	intValue = vp->basekey;
-	writeChunk(kAudioUnitCustomProperty_BaseKey, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_BaseKey, &intValue, sizeof(int));
 	intValue = vp->lowkey;
-	writeChunk(kAudioUnitCustomProperty_LowKey, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_LowKey, &intValue, sizeof(int));
 	intValue = vp->highkey;
-	writeChunk(kAudioUnitCustomProperty_HighKey, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_HighKey, &intValue, sizeof(int));
 	intValue = vp->lp;
-	writeChunk(kAudioUnitCustomProperty_LoopPoint, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_LoopPoint, &intValue, sizeof(int));
 
 	intValue = vp->ar;
-	writeChunk(kAudioUnitCustomProperty_AR, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_AR, &intValue, sizeof(int));
 	intValue = vp->dr;
-	writeChunk(kAudioUnitCustomProperty_DR, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_DR, &intValue, sizeof(int));
 	intValue = vp->sl;
-	writeChunk(kAudioUnitCustomProperty_SL, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_SL, &intValue, sizeof(int));
 	intValue = vp->sr;
-	writeChunk(kAudioUnitCustomProperty_SR, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_SR, &intValue, sizeof(int));
 
 	intValue = vp->volL;
-	writeChunk(kAudioUnitCustomProperty_VolL, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_VolL, &intValue, sizeof(int));
 	intValue = vp->volR;
-	writeChunk(kAudioUnitCustomProperty_VolR, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_VolR, &intValue, sizeof(int));
 
 	intValue = vp->echo ? 1:0;
-	writeChunk(kAudioUnitCustomProperty_Echo, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_Echo, &intValue, sizeof(int));
 	intValue = vp->bank;
-	writeChunk(kAudioUnitCustomProperty_Bank, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_Bank, &intValue, sizeof(int));
 	
     intValue = vp->sustainMode ? 1:0;
-    writeChunk(kAudioUnitCustomProperty_SustainMode, &intValue, sizeof(int));
+    addChunk(kAudioUnitCustomProperty_SustainMode, &intValue, sizeof(int));
 	
     intValue = vp->monoMode ? 1:0;
-    writeChunk(kAudioUnitCustomProperty_MonoMode, &intValue, sizeof(int));
+    addChunk(kAudioUnitCustomProperty_MonoMode, &intValue, sizeof(int));
 
     intValue = vp->portamentoOn ? 1:0;
-    writeChunk(kAudioUnitCustomProperty_PortamentoOn, &intValue, sizeof(int));
+    addChunk(kAudioUnitCustomProperty_PortamentoOn, &intValue, sizeof(int));
 
     intValue = vp->portamentoRate;
-    writeChunk(kAudioUnitCustomProperty_PortamentoRate, &intValue, sizeof(int));
+    addChunk(kAudioUnitCustomProperty_PortamentoRate, &intValue, sizeof(int));
 
     intValue = vp->noteOnPriority;
-    writeChunk(kAudioUnitCustomProperty_NoteOnPriority, &intValue, sizeof(int));
+    addChunk(kAudioUnitCustomProperty_NoteOnPriority, &intValue, sizeof(int));
     
     intValue = vp->releasePriority;
-    writeChunk(kAudioUnitCustomProperty_ReleasePriority, &intValue, sizeof(int));
+    addChunk(kAudioUnitCustomProperty_ReleasePriority, &intValue, sizeof(int));
 
 	//元波形情報
 	intValue = vp->isEmphasized ? 1:0;
-	writeChunk(kAudioUnitCustomProperty_IsEmaphasized, &intValue, sizeof(int));
+	addChunk(kAudioUnitCustomProperty_IsEmaphasized, &intValue, sizeof(int));
 	if ( vp->sourceFile[0] ) {
-		writeChunk(kAudioUnitCustomProperty_SourceFileRef, vp->sourceFile, PATH_LEN_MAX);
+		addChunk(kAudioUnitCustomProperty_SourceFileRef, vp->sourceFile, PATH_LEN_MAX);
 	}
     
 	mNumPrograms++;
@@ -245,44 +243,5 @@ bool PGChunk::ReadDataToVP( InstParams *vp )
 				break;
 		}
 	}
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-bool PGChunk::writeChunk( int type, const void *data, int byte )
-{
-	if ( mReadOnly ) {
-		return false;
-	}
-	
-	MyChunkHead	ckHead = {type, byte};
-	
-	//空き容量チェック
-	if ( mDataSize < ( mDataPos + byte + (int)sizeof(MyChunkHead) ) ) {
-		return false;
-	}
-	
-	long	writeSize;
-	if ( writeData(&ckHead, sizeof(MyChunkHead), &writeSize) == false ) {
-		return false;
-	}
-	
-	if ( writeData(data, byte, &writeSize) == false ) {
-		return false;
-	}
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-bool PGChunk::readChunkHead( int *type, long *byte )
-{
-	long		toRead = sizeof( MyChunkHead );
-	
-	MyChunkHead	head;
-	if ( readData(&head, toRead, &toRead) == false ) {
-		return false;
-	}
-	(*type) = head.type;
-	(*byte) = head.size;
 	return true;
 }
