@@ -34,11 +34,13 @@ public:
 	bool				setPos( int pos );
 
 	bool				readData( void *data, long byte, long *actualReadByte );
-	bool				writeData( const void *data, long byte, long *actualWriteByte );
+	bool				writeData( const void *data, long byte, long *actualWriteByte=NULL );
     bool                writeByte( unsigned char byte );
     DataBufferState     SaveState();
     void                RestoreState(const DataBufferState &state);
 	
+    bool                WriteToFile(const char *path);
+    
 protected:
 	bool			mIsBufferInternal;
     

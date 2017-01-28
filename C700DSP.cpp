@@ -8,6 +8,7 @@
 
 #include "C700DSP.h"
 #include "gauss.h"
+#include "PlayingFileGenerateBase.h"
 //#include <iomanip>
 
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
@@ -767,44 +768,7 @@ void C700DSP::EndRegisterLog()
 		mLogger.EndDump(mLoggerSamplePos);
 		mIsLoggerRunning = false;
         
-        // WaitTableの書き出し
-        {
-            mLogger.addWaitTable(mLogger.GetWaitvalTable());
-        }
-        // DSP領域の書き出し
-        {
-            unsigned char dspreg[256];
-            for (int i=0; i<128; i++) {
-                int reg = mDsp.GetDspMirror(i);
-                if (reg >= 0 && reg <= 0xff) {
-                    dspreg[i] = reg;
-                }
-                else {
-                    dspreg[i] = 0;
-                }
-            }
-            mLogger.addDspRegRegion(dspreg);
-        }
-        // DIR領域の書き出し
-        {
-            mLogger.addDirRegion(0x200, 0x400, &mRam[0x200]);
-        }
-        // 波形領域の書き出し
-        {
-            int startAddr = mBrrStartAddr;
-            int writeBytes = mBrrEndAddr - mBrrStartAddr;
-
-            // (32KB-4)を超える場合は２分割する
-            while (writeBytes > 0) {
-                unsigned char *data = &mRam[startAddr];
-                int toWrite = (writeBytes>(0x8000-4))?(0x8000-4):writeBytes;
-                mLogger.addBrrRegion(startAddr, toWrite, data);
-                writeBytes -= toWrite;
-                startAddr += toWrite;
-            }
-        }
-
-        // ファイルへ書き出し
+        // ファイルへ書き出しテスト
         saveRegisterLog("/Users/osoumen/Desktop/c700dump.dat");    // TODO: UI上で選択できるようにする
 	}
 }
@@ -817,8 +781,46 @@ int C700DSP::saveRegisterLog(const char *path)
 	if ( canSaveRegisterLog() == false ) {
 		return(-1);
 	}
-    mLogger.SetFilePath(path);
-	mLogger.Write();
+    
+    // DSP領域の設定
+    {
+        unsigned char dspreg[256];
+        for (int i=0; i<128; i++) {
+            int reg = mDsp.GetDspMirror(i);
+            if (reg >= 0 && reg <= 0xff) {
+                dspreg[i] = reg;
+            }
+            else {
+                dspreg[i] = 0;
+            }
+        }
+        mLogger.addDspRegRegion(dspreg);
+    }
+    // DIR領域の設定
+    {
+        mLogger.addDirRegion(0x200, 0x400, &mRam[0x200]);
+    }
+    // 波形領域の設定
+    {
+        /*
+         int startAddr = mBrrStartAddr;
+         int writeBytes = mBrrEndAddr - mBrrStartAddr;
+         
+         // (32KB-4)を超える場合は２分割する
+         while (writeBytes > 0) {
+         unsigned char *data = &mRam[startAddr];
+         int toWrite = (writeBytes>(0x8000-4))?(0x8000-4):writeBytes;
+         mLogger.addBrrRegion(startAddr, toWrite, data);
+         writeBytes -= toWrite;
+         startAddr += toWrite;
+         }
+         */
+        mLogger.addBrrRegion(mBrrStartAddr, mBrrEndAddr - mBrrStartAddr, &mRam[mBrrStartAddr]);
+    }
+    
+    PlayingFileGenerateBase exporter;
+    exporter.WriteToFile(path, mLogger, 15734);
+    
 	return(0);
 }
 
