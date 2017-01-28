@@ -9,32 +9,43 @@
 
 #pragma once
 
-#include "C700defines.h"
-
 #if _WIN32
 #include <windows.h>
 #endif
 
 class DataBuffer {
 public:
+    typedef struct {
+        int pos;
+        int used;
+    } DataBufferState;
+    
 	DataBuffer( int allocMemSize );
 	DataBuffer( const void *data, int dataSize );
 	virtual ~DataBuffer();
 	
+    void                Clear();
 	const unsigned char	*GetDataPtr() const { return m_pData; }
 	int					GetDataSize() const { return mDataUsed; }
+    int					GetMaxDataSize() const { return mDataSize; }
+    int					GetWritableSize() const { return (mDataSize - mDataPos - 1); }
 	int					GetDataPos() const { return mDataPos; }
 	void				AdvDataPos( int adv ) { mDataPos+=adv; }
 	bool				setPos( int pos );
 
 	bool				readData( void *data, long byte, long *actualReadByte );
 	bool				writeData( const void *data, long byte, long *actualWriteByte );
+    bool                writeByte( unsigned char byte );
+    DataBufferState     SaveState();
+    void                RestoreState(const DataBufferState &state);
 	
 protected:
 	bool			mIsBufferInternal;
+    
 	unsigned char	*m_pData;
 	int				mDataSize;
 	int				mDataUsed;
 	int				mDataPos;
+    
 	bool			mReadOnly;
 };

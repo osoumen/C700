@@ -44,6 +44,13 @@ DataBuffer::~DataBuffer()
 }
 
 //-----------------------------------------------------------------------------
+void DataBuffer::Clear()
+{
+    mDataUsed = 0;
+	mDataPos = 0;
+}
+
+//-----------------------------------------------------------------------------
 bool DataBuffer::setPos( int pos )
 {
 	if ( mDataSize < pos ) {
@@ -100,4 +107,34 @@ bool DataBuffer::writeData( const void *data, long byte, long *actualWriteByte )
 		*actualWriteByte = toWrite;
 	}
 	return true;
+}
+
+//-----------------------------------------------------------------------------
+bool DataBuffer::writeByte( unsigned char byte )
+{
+	if ( ( mDataPos + 1 ) > mDataSize ) {
+		return false;
+	}
+	m_pData[mDataPos] = byte;
+	mDataPos++;
+	if ( mDataPos > mDataUsed ) {
+		mDataUsed = mDataPos;
+	}
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+DataBuffer::DataBufferState DataBuffer::SaveState()
+{
+    DataBufferState state;
+    state.pos = mDataPos;
+    state.used = mDataUsed;
+    return state;
+}
+
+//-----------------------------------------------------------------------------
+void DataBuffer::RestoreState(const DataBufferState &state)
+{
+    mDataPos = state.pos;
+    mDataUsed = state.used;
 }

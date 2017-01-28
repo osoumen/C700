@@ -20,26 +20,30 @@
 
 #include <iostream>
 
-std::map<int,int> regStat;
+//std::map<int,int> regStat;
 
 static int getCommandLength(unsigned char cmd);
 
 //-----------------------------------------------------------------------------
 RegisterLogger::RegisterLogger(int allocSize)
-: m_pData( NULL )
-, mDataSize( allocSize )
-, mDataUsed( 0 )
-, mDataPos( 0 )
+: ChunkReader(1024 * 1024 * 32)  // TODO: 適切なサイズを計算する
+, mDataBuffer( allocSize )
 , mTickPerSec( 15734 )
 , mProcessSampleRate( 32000 )
 {
 	if ( allocSize > 0 ) {
-		m_pData = new unsigned char[allocSize];
         m_pLogCommands = new LogCommands[allocSize];
 	}
     mLogCommandsSize = allocSize;
     mLogCommandsPos = 0;
     mLogCommandsLoopPoint = 0;
+    
+    mDirRegionData = NULL;
+    mBrrRegionData = NULL;
+    mDirRegionLocateAddr = 0;
+    mDirRegionSize = 0;
+    mBrrRegionLocateAddr = 0;
+    mBrrRegionSize = 0;
     
 	BeginDump(0);
 }
@@ -47,77 +51,129 @@ RegisterLogger::RegisterLogger(int allocSize)
 //-----------------------------------------------------------------------------
 RegisterLogger::~RegisterLogger()
 {
-	if ( m_pData != NULL ) {
-		delete [] m_pData;
-	}
-    if ( m_pLogCommands != NULL ) {
+    if (m_pLogCommands != NULL) {
         delete [] m_pLogCommands;
+    }
+    if (mDirRegionData != NULL) {
+        delete mDirRegionData;
+    }
+    if (mBrrRegionData != NULL) {
+        delete mBrrRegionData;
     }
 }
 
 //-----------------------------------------------------------------------------
-bool RegisterLogger::SetPos( int pos )
+void RegisterLogger::addWaitTable(const unsigned char *data)
 {
-	if ( mDataSize < pos ) {
-		return false;
-	}
-	mDataPos = pos;
-	if ( mDataPos > mDataUsed ) {
-		mDataUsed = mDataPos;
-	}
-	return true;
+    memcpy(mWaitTableData, data, WAIT_TABLE_LEN);
 }
 
+//-----------------------------------------------------------------------------
+void RegisterLogger::addDspRegRegion(const unsigned char *data)
+{
+    memcpy(mDspRegionData, data, DSP_REGION_LEN);
+}
+
+//-----------------------------------------------------------------------------
+void RegisterLogger::addDirRegion(int locateAddr, int size, unsigned char *data)
+{
+    mDirRegionLocateAddr = locateAddr;
+    mDirRegionSize = size;
+    if (mDirRegionData) {
+        delete mDirRegionData;
+    }
+    mDirRegionData = new unsigned char[size];
+    memcpy(mDirRegionData, data, size);
+}
+
+//-----------------------------------------------------------------------------
+void RegisterLogger::addBrrRegion(int locateAddr, int size, unsigned char *data)
+{
+    mBrrRegionLocateAddr = locateAddr;
+    mBrrRegionSize = size;
+    if (mBrrRegionData) {
+        delete mBrrRegionData;
+    }
+    mBrrRegionData = new unsigned char[size];
+    memcpy(mBrrRegionData, data, size);
+}
+
+//-----------------------------------------------------------------------------
+bool RegisterLogger::Write()
+{
+    // ChunkReaderにデータを詰める
+    setPos(0);
+    
+    addChunk('WTBL', mWaitTableData, WAIT_TABLE_LEN);
+    addChunk('DSPR', mDspRegionData, DSP_REGION_LEN);
+    
+    unsigned char header[4];
+    header[0] = mDirRegionLocateAddr & 0xff;
+    header[1] = (mDirRegionLocateAddr >> 8) & 0xff;
+    header[2] = mDirRegionSize & 0xff;
+    header[3] = (mDirRegionSize >> 8) & 0xff;
+    addChunkWithHeader('DIRR', mDirRegionData, mDirRegionSize, header, 4);
+    
+    header[0] = mBrrRegionLocateAddr & 0xff;
+    header[1] = (mBrrRegionLocateAddr >> 8) & 0xff;
+    header[2] = mBrrRegionSize & 0xff;
+    header[3] = (mBrrRegionSize >> 8) & 0xff;
+    addChunkWithHeader('BRRR', mBrrRegionData, mBrrRegionSize, header, 4);
+    
+    // 変換前のデータを出力するようにする
+    int loopAddr = mLogCommandsLoopPoint;
+    header[0] = loopAddr & 0xff;
+    header[1] = ((loopAddr >> 8) & 0x7f) + 0x80;
+    header[2] = (loopAddr >> 15) & 0xff;
+    header[3] = (loopAddr >> 24) & 0xff;
+    addChunkWithHeader('SEQR', (unsigned char *)m_pLogCommands, mLogCommandsPos, header, 4);
+    
+	return ChunkReader::Write();
+}
+#if 0
 //-----------------------------------------------------------------------------
 bool RegisterLogger::SaveToFile( const char *path, double tickPerSec )
 {
     compileLogData( tickPerSec );
     
     // データの削減
-    unsigned char *optimizedData = new unsigned char [mDataSize];
+    unsigned char *optimizedData = new unsigned char [mDataBuffer.GetMaxDataSize()];
     int optimizedDataSize;
     int optimizedLoopPoint;
-    optimizedDataSize = optimizeWaits(m_pData, optimizedData, mDataUsed, &optimizedLoopPoint);
-
+    optimizedDataSize = optimizeWaits(mDataBuffer.GetDataPtr(), optimizedData, mDataBuffer.GetDataSize(), &optimizedLoopPoint);
+	
+    // ChunkReaderにデータを詰める
+    setPos(0);
+    
+    addChunk('WTBL', mWaitTableData, WAIT_TABLE_LEN);
+    addChunk('DSPR', mDspRegionData, DSP_REGION_LEN);
+    
+    unsigned char header[4];
+    header[0] = mDirRegionLocateAddr & 0xff;
+    header[1] = (mDirRegionLocateAddr >> 8) & 0xff;
+    header[2] = mDirRegionSize & 0xff;
+    header[3] = (mDirRegionSize >> 8) & 0xff;
+    addChunkWithHeader('DIRR', mDirRegionData, mDirRegionSize, header, 4);
+    
+    header[0] = mBrrRegionLocateAddr & 0xff;
+    header[1] = (mBrrRegionLocateAddr >> 8) & 0xff;
+    header[2] = mBrrRegionSize & 0xff;
+    header[3] = (mBrrRegionSize >> 8) & 0xff;
+    addChunkWithHeader('BRRR', mBrrRegionData, mBrrRegionSize, header, 4);
+    
     int loopAddr = optimizedLoopPoint + 3;
     unsigned char loopStart[3];
     loopStart[0] = loopAddr & 0xff;
     loopStart[1] = ((loopAddr >> 8) & 0x7f) + 0x80;
     loopStart[2] = (loopAddr >> 15) & 0xff;
-	
-#if __APPLE_CC__
-	CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
-	
-	CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
-	if (CFWriteStreamOpen(filestream)) {
-		//CFWriteStreamWrite(filestream, reinterpret_cast<UInt8*> (&header), sizeof(S98Header) );
-        CFWriteStreamWrite(filestream, loopStart, 3 );
-		CFWriteStreamWrite(filestream, optimizedData, optimizedDataSize );
-		//CFWriteStreamWrite(filestream, reinterpret_cast<UInt8*> (tag), sizeof(tag) );
-		CFWriteStreamClose(filestream);
-	}
-	CFRelease(filestream);
-	CFRelease(savefile);
-	
+    addChunkWithHeader('SEQR', optimizedData, optimizedDataSize, loopStart, 3);
+    
     delete [] optimizedData;
-	return true;
-#else
-	HANDLE	hFile;
-	
-	hFile = CreateFile( path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-	if ( hFile != INVALID_HANDLE_VALUE ) {
-		DWORD	writeSize;
-		//WriteFile( hFile, &header, sizeof(S98Header), &writeSize, NULL );
-        WriteFile( hFile, loopStart, 3, &writeSize, NULL );
-		WriteFile( hFile, optimizedData, optimizedDataSize, &writeSize, NULL );
-		//WriteFile( hFile, tag, sizeof(tag), &writeSize, NULL );
-		CloseHandle( hFile );
-	}
-    delete [] optimizedData;
-	return true;
-#endif
-}
 
+    SetFilePath(path);
+	return ChunkReader::Write();
+}
+#endif
 //-----------------------------------------------------------------------------
 void RegisterLogger::SetProcessSampleRate( int rate )
 {
@@ -236,11 +292,10 @@ void RegisterLogger::BeginDump_( int time )
 	mDumpBeginTime = tick;
 	mPrevTime = mDumpBeginTime;
 	
-	mDataUsed = 0;
-	mDataPos = 0;
+	mDataBuffer.Clear();
 	mLoopPoint = 0;
     
-    regStat.clear();
+    //regStat.clear();
     mWaitStat.clear();
 	
 //	printf("--BeginDump--\n");
@@ -257,15 +312,17 @@ bool RegisterLogger::DumpReg_( int device, int addr, unsigned char data, int tim
     
     writeWaitFromPrev(tick);
     
-    if ( GetWritableSize() >= 3 ) {
+    if ( mDataBuffer.GetWritableSize() >= 3 ) {
         writeByte( addr );
         writeByte( data );
+        /*
         if (regStat.count(addr) == 0) {
             regStat[addr] = 1;
         }
         else {
             regStat[addr] = regStat[addr]+1;
         }
+         */
     }
     
     return true;
@@ -284,16 +341,18 @@ bool RegisterLogger::DumpApuPitch_( int device, int addr, unsigned char data_l, 
 
         writeWaitFromPrev(tick);
         
-        if ( GetWritableSize() >= 4 ) {
+        if ( mDataBuffer.GetWritableSize() >= 4 ) {
             writeByte( addr );
             writeByte( data_m );
             writeByte( data_l );
+            /*
             if (regStat.count(addr) == 0) {
                 regStat[addr] = 1;
             }
             else {
                 regStat[addr] = regStat[addr]+1;
             }
+             */
         }
         
         return true;
@@ -304,7 +363,7 @@ bool RegisterLogger::DumpApuPitch_( int device, int addr, unsigned char data_l, 
 //-----------------------------------------------------------------------------
 void RegisterLogger::MarkLoopPoint_()
 {
-	mLoopPoint = mDataPos;
+	mLoopPoint = mDataBuffer.GetDataPos();
 //	printf("--MarkLoopPoint--\n");
 }
 
@@ -313,7 +372,7 @@ void RegisterLogger::EndDump_(int time)
 {
     int tick = convertTime2Tick(time);
     
-	if ( mDataUsed > 0 ) {
+	if ( mDataBuffer.GetDataSize() > 0 ) {
 		writeWaitFromPrev(tick);
 		writeEndByte();
 		/*
@@ -331,29 +390,16 @@ void RegisterLogger::EndDump_(int time)
 //-----------------------------------------------------------------------------
 bool RegisterLogger::writeByte( unsigned char byte )
 {
-	if ( ( mDataPos + 1 ) > (mDataSize-1) ) {	//END/LOOPが書き込める様に１バイト残しておく
+	if ( ( mDataBuffer.GetDataPos() + 1 ) > (mDataBuffer.GetMaxDataSize()-1) ) {	//END/LOOPが書き込める様に１バイト残しておく
 		return false;
 	}
-	m_pData[mDataPos] = byte;
-	mDataPos++;
-	if ( mDataPos > mDataUsed ) {
-		mDataUsed = mDataPos;
-	}
-	return true;
+    return mDataBuffer.writeByte(byte);
 }
 
 //-----------------------------------------------------------------------------
 bool RegisterLogger::writeEndByte()
 {
-	if ( ( mDataPos + 1 ) > mDataSize) {
-		return false;
-	}
-	m_pData[mDataPos] = 0x9e;
-	mDataPos++;
-	if ( mDataPos > mDataUsed ) {
-		mDataUsed = mDataPos;
-	}
-	return true;
+	return mDataBuffer.writeByte(0x9e);
 }
 
 //-----------------------------------------------------------------------------
@@ -374,39 +420,39 @@ bool RegisterLogger::writeWaitFromPrev(int tick)
     long mod = adv_time & 0xffff;
     
     for (int i=0; i<div; i++) {
+        DataBuffer::DataBufferState state = mDataBuffer.SaveState();
+        
         result = writeByte(0x94);
         if ( result == false ) return false;
         result = writeByte(0xff);
         if ( result == false ) {
             //書き込んだ分を巻き戻す
-            mDataPos -= 1;
-            mDataUsed = mDataPos;
+            mDataBuffer.RestoreState(state);
             return false;
         }
         result = writeByte(0xff);
         if ( result == false ) {
             //書き込んだ分を巻き戻す
-            mDataPos -= 2;
-            mDataUsed = mDataPos;
+            mDataBuffer.RestoreState(state);
             return false;
         }
         addWaitStatistic(0xffff);
     }
     if (mod > 0) {
         if (mod < 0x100) {
+            DataBuffer::DataBufferState state = mDataBuffer.SaveState();
+            
             result = writeByte(0x92);
             if ( result == false ) return false;
             result = writeByte(mod & 0xff);
             if ( result == false ) {
                 //書き込んだ分を巻き戻す
-                mDataPos -= 1;
-                mDataUsed = mDataPos;
+                mDataBuffer.RestoreState(state);
                 return false;
             }
             addWaitStatistic(mod & 0xff);
         }
         else {
-#if 1
             if ((mod & ~0x01fe) == 0) {
                 result = writeByte(0x96);
                 result = writeByte(mod >> 1);
@@ -424,44 +470,24 @@ bool RegisterLogger::writeWaitFromPrev(int tick)
                 result = writeByte(mod >> 4);
             }
             else {
+                DataBuffer::DataBufferState state = mDataBuffer.SaveState();
+                
                 result = writeByte(0x94);
                 if ( result == false ) return false;
                 result = writeByte(mod & 0xff);
                 if ( result == false ) {
                     //書き込んだ分を巻き戻す
-                    mDataPos -= 1;
-                    mDataUsed = mDataPos;
+                    mDataBuffer.RestoreState(state);
                     return false;
                 }
                 result = writeByte(mod >> 8);
                 if ( result == false ) {
                     //書き込んだ分を巻き戻す
-                    mDataPos -= 2;
-                    mDataUsed = mDataPos;
+                    mDataBuffer.RestoreState(state);
                     return false;
                 }
             }
             addWaitStatistic(mod);
-#else
-            //テスト
-            result = writeByte(0xc0);
-            if ( result == false ) return false;
-            result = writeByte(mod & 0xff);
-            if ( result == false ) {
-                //書き込んだ分を巻き戻す
-                mDataPos -= 1;
-                mDataUsed = mDataPos;
-                return false;
-            }
-            result = writeByte(mod >> 8);
-            if ( result == false ) {
-                //書き込んだ分を巻き戻す
-                mDataPos -= 2;
-                mDataUsed = mDataPos;
-                return false;
-            }
-            result = writeByte(0xa0);
-#endif
         }
     }
     
@@ -486,7 +512,7 @@ bool RegisterLogger::addWaitStatistic(int tick)
 }
 
 //-----------------------------------------------------------------------------
-int RegisterLogger::optimizeWaits(unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint)
+int RegisterLogger::optimizeWaits(const unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint)
 {
     // 頻度の高い16wait値を取得
     std::map<int,int> frequentWaitValue;
@@ -495,23 +521,12 @@ int RegisterLogger::optimizeWaits(unsigned char *inData, unsigned char *outData,
     int inPtr = 0;
     int outPtr = 0;
     
-#if 0
-    // wait値設定コマンドを出力
-    for (auto it = frequentWaitValue.begin(); it != frequentWaitValue.end(); it++) {
-        int value = it->first;
-        int ind = it->second;
-        outData[outPtr++] = 0xc0 + ind*2;
-        outData[outPtr++] = value & 0xff;
-        outData[outPtr++] = (value >> 8) & 0xff;
-    }
-#else
     for (auto it = frequentWaitValue.begin(); it != frequentWaitValue.end(); it++) {
         int value = it->first;
         int ind = it->second;
         mWaitvalTable[ind * 2] = value & 0xff;
         mWaitvalTable[ind * 2+1] = (value >> 8) & 0xff;
     }
-#endif
     
     while (inPtr < inDataSize) {
         // ループポイントの変換

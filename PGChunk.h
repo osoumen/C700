@@ -10,10 +10,9 @@
 #pragma once
 
 #include "C700defines.h"
-#include "DataBuffer.h"
-#include "FileAccess.h"
+#include "ChunkReader.h"
 
-class PGChunk : public FileAccess, public DataBuffer {
+class PGChunk : public ChunkReader {
 public:
 	PGChunk( int allocMemSize );
 	PGChunk( const void *data, int dataSize );
@@ -22,16 +21,8 @@ public:
 	bool				AppendDataFromVP( const InstParams *vp );
 	bool				ReadDataToVP( InstParams *vp );
 	
-	bool				writeChunk( int type, const void* data, int byte );	//容量不足で全部を書き込めないときはfalse
-	bool				readChunkHead( int *type, long *byte );
-	
 	static int			getPGChunkSize( const InstParams *vp );
 
-	typedef struct {
-		int		type;
-		int     size;	//ヘッダを除いたデータサイズ
-	} MyChunkHead;
-	
 private:	
 	static const int CKID_NULL_DATA	= 0;
 	int				mNumPrograms;

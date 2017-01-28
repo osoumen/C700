@@ -336,11 +336,11 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 		for ( int i=0; i<kNumberOfParameters; i++ ) {
 			float	param;
 			param = getParameter(i);
-			saveChunk->writeChunk(i, &param, sizeof(float));
+			saveChunk->addChunk(i, &param, sizeof(float));
 		}
-		saveChunk->writeChunk(CKID_PROGRAM_TOTAL, &totalProgs, sizeof(int));
-		saveChunk->writeChunk(kAudioUnitCustomProperty_EditingProgram, &editProg, sizeof(int));
-		saveChunk->writeChunk(kAudioUnitCustomProperty_EditingChannel, &editChan, sizeof(int));
+		saveChunk->addChunk(CKID_PROGRAM_TOTAL, &totalProgs, sizeof(int));
+		saveChunk->addChunk(kAudioUnitCustomProperty_EditingProgram, &editProg, sizeof(int));
+		saveChunk->addChunk(kAudioUnitCustomProperty_EditingChannel, &editChan, sizeof(int));
 	}
 	
 	if ( isPreset ) {
@@ -355,7 +355,7 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
                 vp[editProg].unsetLoop();
             }*/
 			pg->AppendDataFromVP(&vp[editProg]);
-			saveChunk->writeChunk(CKID_PROGRAM_DATA+editProg, pg->GetDataPtr(), pg->GetDataSize());
+			saveChunk->addChunk(CKID_PROGRAM_DATA+editProg, pg->GetDataPtr(), pg->GetDataSize());
 			delete pg;
 		}
 	}
@@ -364,7 +364,7 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 			if ( vp[i].hasBrrData() ) {
 				PGChunk		*pg = new PGChunk( PGChunk::getPGChunkSize( &vp[i] ) );
 				pg->AppendDataFromVP(&vp[i]);
-				saveChunk->writeChunk(CKID_PROGRAM_DATA+i, pg->GetDataPtr(), pg->GetDataSize());
+				saveChunk->addChunk(CKID_PROGRAM_DATA+i, pg->GetDataPtr(), pg->GetDataSize());
 				delete pg;
 			}
 		}

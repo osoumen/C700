@@ -229,6 +229,10 @@
 		F54338DB1629759600863A0B /* C700VST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338D91629759600863A0B /* C700VST.cpp */; };
 		F543D0AC147D285F00DC53A3 /* C700Driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* C700Driver.cpp */; };
 		F543D0AD147D285F00DC53A3 /* C700Driver.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* C700Driver.h */; };
+		F54D11BA1E3788EB000CDDA7 /* ChunkReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54D11B81E3788EB000CDDA7 /* ChunkReader.cpp */; };
+		F54D11BB1E3788EB000CDDA7 /* ChunkReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54D11B81E3788EB000CDDA7 /* ChunkReader.cpp */; };
+		F54D11BC1E3788EB000CDDA7 /* ChunkReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F54D11B91E3788EB000CDDA7 /* ChunkReader.h */; };
+		F54D11BD1E3788EB000CDDA7 /* ChunkReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F54D11B91E3788EB000CDDA7 /* ChunkReader.h */; };
 		F556802D1A2AA8550031451C /* DynamicVoiceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F556802B1A2AA8550031451C /* DynamicVoiceManager.cpp */; };
 		F556802E1A2AA8550031451C /* DynamicVoiceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F556802B1A2AA8550031451C /* DynamicVoiceManager.cpp */; };
 		F556802F1A2AA8550031451C /* DynamicVoiceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F556802C1A2AA8550031451C /* DynamicVoiceManager.h */; };
@@ -272,6 +276,10 @@
 		F55D6603161ECFD1001CF9AB /* MyParamDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */; };
 		F55D6608161ECFE3001CF9AB /* MyTextEdit.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6606161ECFE3001CF9AB /* MyTextEdit.h */; };
 		F55D6609161ECFE3001CF9AB /* MyTextEdit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */; };
+		F560181D1E3B8C4000400327 /* PlayingFileGenerateBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560181B1E3B8C4000400327 /* PlayingFileGenerateBase.cpp */; };
+		F560181E1E3B8C4000400327 /* PlayingFileGenerateBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560181B1E3B8C4000400327 /* PlayingFileGenerateBase.cpp */; };
+		F560181F1E3B8C4000400327 /* PlayingFileGenerateBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F560181C1E3B8C4000400327 /* PlayingFileGenerateBase.h */; };
+		F56018201E3B8C4000400327 /* PlayingFileGenerateBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F560181C1E3B8C4000400327 /* PlayingFileGenerateBase.h */; };
 		F569A3F61619527F006C91AD /* C700_CocoaViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */; };
 		F569A3F71619527F006C91AD /* C700_CocoaViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */; };
 		F569A40516195488006C91AD /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
@@ -497,6 +505,8 @@
 		F54338D91629759600863A0B /* C700VST.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700VST.cpp; sourceTree = "<group>"; };
 		F543D0AA147D285F00DC53A3 /* C700Driver.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = C700Driver.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		F543D0AB147D285F00DC53A3 /* C700Driver.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Driver.h; sourceTree = "<group>"; };
+		F54D11B81E3788EB000CDDA7 /* ChunkReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChunkReader.cpp; sourceTree = "<group>"; };
+		F54D11B91E3788EB000CDDA7 /* ChunkReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChunkReader.h; sourceTree = "<group>"; };
 		F556802B1A2AA8550031451C /* DynamicVoiceManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicVoiceManager.cpp; sourceTree = "<group>"; };
 		F556802C1A2AA8550031451C /* DynamicVoiceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicVoiceManager.h; sourceTree = "<group>"; };
 		F557ACE619CD159300CF9792 /* MersenneTwister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MersenneTwister.h; sourceTree = "<group>"; };
@@ -537,6 +547,8 @@
 		F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = MyParamDisplay.cpp; sourceTree = "<group>"; };
 		F55D6606161ECFE3001CF9AB /* MyTextEdit.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = MyTextEdit.h; sourceTree = "<group>"; };
 		F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = MyTextEdit.cpp; sourceTree = "<group>"; };
+		F560181B1E3B8C4000400327 /* PlayingFileGenerateBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlayingFileGenerateBase.cpp; sourceTree = "<group>"; };
+		F560181C1E3B8C4000400327 /* PlayingFileGenerateBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayingFileGenerateBase.h; sourceTree = "<group>"; };
 		F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700_CocoaViewFactory.h; sourceTree = "<group>"; };
 		F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.objcpp; path = C700_CocoaViewFactory.mm; sourceTree = "<group>"; };
 		F569A40316195488006C91AD /* C700Edit.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Edit.h; sourceTree = "<group>"; };
@@ -931,6 +943,8 @@
 				F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */,
 				F51D83CF1D295E8B00A23008 /* RegisterLogger.cpp */,
 				F51D83D01D295E8B00A23008 /* RegisterLogger.h */,
+				F560181B1E3B8C4000400327 /* PlayingFileGenerateBase.cpp */,
+				F560181C1E3B8C4000400327 /* PlayingFileGenerateBase.h */,
 				F527FF9E1BEE323F0083E355 /* MemManager.cpp */,
 				F527FF9F1BEE323F0083E355 /* MemManager.h */,
 				F5432C251627AE4200863A0B /* EchoKernel.cpp */,
@@ -941,6 +955,8 @@
 				8AD362300AFE59F900FC48D2 /* brrcodec.h */,
 				8AEECD2D0B020BC6002C9BB7 /* czt.cpp */,
 				8AEECD2E0B020BC6002C9BB7 /* czt.h */,
+				F54D11B81E3788EB000CDDA7 /* ChunkReader.cpp */,
+				F54D11B91E3788EB000CDDA7 /* ChunkReader.h */,
 				F569C389162515ED006C91AD /* DataBuffer.cpp */,
 				F569C388162515ED006C91AD /* DataBuffer.h */,
 				F510B703163266CB00A844B4 /* FileAccess.cpp */,
@@ -1089,6 +1105,7 @@
 				8BA05AB8072073D300365D66 /* AUScopeElement.h in Headers */,
 				8BA05ABA072073D300365D66 /* ComponentBase.h in Headers */,
 				8BA05AD3072073D300365D66 /* AUBuffer.h in Headers */,
+				F54D11BC1E3788EB000CDDA7 /* ChunkReader.h in Headers */,
 				8BA05AD5072073D300365D66 /* AUDebugDispatcher.h in Headers */,
 				8BA05AD6072073D300365D66 /* AUInputFormatConverter.h in Headers */,
 				8BA05AD7072073D300365D66 /* AUSilentTimeout.h in Headers */,
@@ -1098,6 +1115,7 @@
 				8BA05AEA0720742100365D66 /* CAStreamBasicDescription.h in Headers */,
 				8BA05B080720754400365D66 /* CAAUParameter.h in Headers */,
 				8BC6025C073B072D006C4272 /* C700.h in Headers */,
+				F560181F1E3B8C4000400327 /* PlayingFileGenerateBase.h in Headers */,
 				3E0BECFC0898391C00E1F0F7 /* CAVectorUnit.h in Headers */,
 				3E0BECFD0898391C00E1F0F7 /* CAVectorUnitTypes.h in Headers */,
 				8AA4CF3F0AAE7C4000AA021C /* CAAUMIDIMap.h in Headers */,
@@ -1224,11 +1242,13 @@
 				F54331B216296E0200863A0B /* EfxAccess.h in Headers */,
 				F59D91B41BF720EA00E5EFC6 /* spc.h in Headers */,
 				F54331B316296E0200863A0B /* DataBuffer.h in Headers */,
+				F56018201E3B8C4000400327 /* PlayingFileGenerateBase.h in Headers */,
 				F54331B416296E0200863A0B /* AudioFile.h in Headers */,
 				F54331B516296E0200863A0B /* SPCFile.h in Headers */,
 				F54331B616296E0200863A0B /* RawBRRFile.h in Headers */,
 				F54331B716296E0200863A0B /* XIFile.h in Headers */,
 				F54331B816296E0200863A0B /* PlistBRRFile.h in Headers */,
+				F54D11BD1E3788EB000CDDA7 /* ChunkReader.h in Headers */,
 				F54331B916296E0200863A0B /* EchoKernel.h in Headers */,
 				F54331BB16296E0200863A0B /* C700Kernel.h in Headers */,
 				F54331BC16296E0200863A0B /* C700Parameters.h in Headers */,
@@ -1509,6 +1529,7 @@
 				8BA05AB2072073D300365D66 /* AUInputElement.cpp in Sources */,
 				F51D83D11D295E8B00A23008 /* RegisterLogger.cpp in Sources */,
 				8BA05AB4072073D300365D66 /* AUOutputElement.cpp in Sources */,
+				F560181D1E3B8C4000400327 /* PlayingFileGenerateBase.cpp in Sources */,
 				8BA05AB7072073D300365D66 /* AUScopeElement.cpp in Sources */,
 				8BA05AB9072073D300365D66 /* ComponentBase.cpp in Sources */,
 				8BA05AD2072073D300365D66 /* AUBuffer.cpp in Sources */,
@@ -1574,6 +1595,7 @@
 				F5432C271627AE4200863A0B /* EchoKernel.cpp in Sources */,
 				F59D91AF1BF720EA00E5EFC6 /* SNES_SPC_state.cpp in Sources */,
 				F5432F321628117D00863A0B /* C700Kernel.cpp in Sources */,
+				F54D11BA1E3788EB000CDDA7 /* ChunkReader.cpp in Sources */,
 				F5432FF4162915F900863A0B /* C700Parameters.cpp in Sources */,
 				F510B707163266CB00A844B4 /* FileAccess.cpp in Sources */,
 				F59D91A51BF720EA00E5EFC6 /* dsp.cpp in Sources */,
@@ -1589,6 +1611,7 @@
 				F54331FE16296E0200863A0B /* C700Driver.cpp in Sources */,
 				F527FFA11BEE323F0083E355 /* MemManager.cpp in Sources */,
 				F59D91B81BF720EA00E5EFC6 /* SPC_DSP.cpp in Sources */,
+				F560181E1E3B8C4000400327 /* PlayingFileGenerateBase.cpp in Sources */,
 				F54331FF16296E0200863A0B /* cocoasupport.mm in Sources */,
 				F543320116296E0200863A0B /* cvstguitimer.cpp in Sources */,
 				F543320216296E0200863A0B /* cfileselector.cpp in Sources */,
@@ -1618,6 +1641,7 @@
 				F543321216296E0200863A0B /* DataBuffer.cpp in Sources */,
 				F543321316296E0200863A0B /* AudioFile.cpp in Sources */,
 				F543321416296E0200863A0B /* SPCFile.cpp in Sources */,
+				F54D11BB1E3788EB000CDDA7 /* ChunkReader.cpp in Sources */,
 				F543321516296E0200863A0B /* RawBRRFile.cpp in Sources */,
 				F543321616296E0200863A0B /* XIFile.cpp in Sources */,
 				F59D91881BF71FCE00E5EFC6 /* DspController.cpp in Sources */,
@@ -1762,7 +1786,10 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG_PRINT=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG_PRINT=1",
+					"PATH_LEN_MAX=1024",
+				);
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_UNUSED_VALUE = NO;
@@ -1785,6 +1812,7 @@
 				CLANG_LINK_OBJC_RUNTIME = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "PATH_LEN_MAX=1024";
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				GCC_WARN_UNUSED_VALUE = NO;

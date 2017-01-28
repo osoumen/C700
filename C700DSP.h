@@ -74,11 +74,12 @@ public:
     void BeginRegisterLog();
     void MarkRegisterLogLoop();
     void EndRegisterLog();
-    int SaveRegisterLog(const char *path);
-    bool CanSaveRegisterLog();
     
 private:
     bool writeDsp(int addr, unsigned char data);
+
+    int saveRegisterLog(const char *path);
+    bool canSaveRegisterLog();
 
     static void onDeviceReady(void *ref);
     static void onDeviceStop(void *ref);
