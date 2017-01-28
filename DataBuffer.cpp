@@ -138,3 +138,32 @@ void DataBuffer::RestoreState(const DataBufferState &state)
     mDataPos = state.pos;
     mDataUsed = state.used;
 }
+
+//-----------------------------------------------------------------------------
+bool DataBuffer::WriteToFile(const char *path)
+{
+    // Buffer にあるデータを指定したファイルパスに書き込む
+    
+#if MAC
+    CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+    
+    CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
+    if (CFWriteStreamOpen(filestream)) {
+        CFWriteStreamWrite(filestream, GetDataPtr(), GetDataPos() );
+        CFWriteStreamClose(filestream);
+    }
+    CFRelease(filestream);
+    CFRelease(savefile);
+#else
+    HANDLE	hFile;
+	
+	hFile = CreateFile( path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+	if ( hFile != INVALID_HANDLE_VALUE ) {
+		DWORD	writeSize;
+		WriteFile( hFile, GetDataPtr(), GetDataPos(), &writeSize, NULL );
+		CloseHandle( hFile );
+	}
+    delete [] optimizedData;
+#endif
+    return true;
+}
