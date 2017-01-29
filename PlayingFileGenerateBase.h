@@ -15,7 +15,7 @@
 class PlayingFileGenerateBase {
 public:
     PlayingFileGenerateBase(int allocSize=4*1024*1024);
-    ~PlayingFileGenerateBase();
+    virtual ~PlayingFileGenerateBase();
     
     virtual bool        WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec );
     

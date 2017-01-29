@@ -36,6 +36,7 @@ public:
 	bool				readData( void *data, long byte, long *actualReadByte );
 	bool				writeData( const void *data, long byte, long *actualWriteByte=NULL );
     bool                writeByte( unsigned char byte );
+    bool                writeByte( unsigned char byte, int len );
     DataBufferState     SaveState();
     void                RestoreState(const DataBufferState &state);
 	

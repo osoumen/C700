@@ -8,7 +8,7 @@
 
 #include "C700DSP.h"
 #include "gauss.h"
-#include "PlayingFileGenerateBase.h"
+#include "SmcFileGenerate.h"
 //#include <iomanip>
 
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
@@ -732,13 +732,35 @@ bool C700DSP::writeDsp(int addr, unsigned char data)
 void C700DSP::BeginRegisterLog()
 {
 	mLoggerSamplePos = 0;
-	//mLogger.SetResolution(15734);    // Hsync
     //mLogger.SetResolution(16000);
     mLogger.SetProcessSampleRate(32000);
 	mLogger.BeginDump(0);
 	mIsLoggerRunning = true;
     
-    // 現在のレジスタ値を出力
+    // DIR領域の設定
+    {
+        mLogger.addDirRegion(0x200, 0x400, &mRam[0x200]);
+    }
+    // 波形領域の設定
+    {
+        mLogger.addBrrRegion(mBrrStartAddr, mBrrEndAddr - mBrrStartAddr, &mRam[mBrrStartAddr]);
+    }
+    // 演奏開始時点のDSP領域の設定
+    {
+        unsigned char dspreg[256];
+        for (int i=0; i<128; i++) {
+            int reg = mDsp.GetDspMirror(i);
+            if (reg >= 0 && reg <= 0xff) {
+                dspreg[i] = reg;
+            }
+            else {
+                dspreg[i] = 0;
+            }
+        }
+        mLogger.addDspRegRegion(dspreg);
+    }
+    // 現在のレジスタ値をログに出力
+    // TODO: SPC出力のときのために出力した量を記録しておく
     for (int i=0; i<128; i++) {
         int reg = mDsp.GetDspMirror(i);
         if ((i & 0x0f) == 0x03) {
@@ -769,7 +791,7 @@ void C700DSP::EndRegisterLog()
 		mIsLoggerRunning = false;
         
         // ファイルへ書き出しテスト
-        saveRegisterLog("/Users/osoumen/Desktop/c700dump.dat");    // TODO: UI上で選択できるようにする
+        saveRegisterLog("/Users/osoumen/Desktop/c700dump.smc");    // TODO: UI上で選択できるようにする
 	}
 }
 
@@ -782,31 +804,10 @@ int C700DSP::saveRegisterLog(const char *path)
 		return(-1);
 	}
     
-    // DSP領域の設定
-    {
-        unsigned char dspreg[256];
-        for (int i=0; i<128; i++) {
-            int reg = mDsp.GetDspMirror(i);
-            if (reg >= 0 && reg <= 0xff) {
-                dspreg[i] = reg;
-            }
-            else {
-                dspreg[i] = 0;
-            }
-        }
-        mLogger.addDspRegRegion(dspreg);
-    }
-    // DIR領域の設定
-    {
-        mLogger.addDirRegion(0x200, 0x400, &mRam[0x200]);
-    }
-    // 波形領域の設定
-    {
-        mLogger.addBrrRegion(mBrrStartAddr, mBrrEndAddr - mBrrStartAddr, &mRam[mBrrStartAddr]);
-    }
-    
-    PlayingFileGenerateBase exporter;
-    exporter.WriteToFile(path, mLogger, 16000);
+    //PlayingFileGenerateBase exporter;
+    //exporter.WriteToFile(path, mLogger, 16000);
+    SmcFileGenerate exporter;
+    exporter.WriteToFile(path, mLogger);
     
 	return(0);
 }

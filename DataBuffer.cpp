@@ -21,6 +21,7 @@ DataBuffer::DataBuffer(int allocMemSize)
 {
 	if ( allocMemSize > 0 ) {
 		m_pData = new unsigned char[allocMemSize];
+        memset(m_pData, 0, allocMemSize);
 	}
 }
 
@@ -124,6 +125,15 @@ bool DataBuffer::writeByte( unsigned char byte )
 }
 
 //-----------------------------------------------------------------------------
+bool DataBuffer::writeByte( unsigned char byte, int len )
+{
+    for (int i=0; i<len; i++) {
+        writeByte(byte);
+    }
+    return true;
+}
+
+//-----------------------------------------------------------------------------
 DataBuffer::DataBufferState DataBuffer::SaveState()
 {
     DataBufferState state;
@@ -149,7 +159,7 @@ bool DataBuffer::WriteToFile(const char *path)
     
     CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
     if (CFWriteStreamOpen(filestream)) {
-        CFWriteStreamWrite(filestream, GetDataPtr(), GetDataPos() );
+        CFWriteStreamWrite(filestream, GetDataPtr(), GetDataSize() );
         CFWriteStreamClose(filestream);
     }
     CFRelease(filestream);
