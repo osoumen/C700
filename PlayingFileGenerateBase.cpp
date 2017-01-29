@@ -27,6 +27,79 @@ PlayingFileGenerateBase::~PlayingFileGenerateBase()
 }
 
 //-----------------------------------------------------------------------------
+void PlayingFileGenerateBase::writeDspRegion( DataBuffer &buffer, const RegisterLogger &reglog )
+{
+    buffer.writeData(reglog.mDspRegionData, RegisterLogger::DSP_REGION_LEN);
+}
+
+//-----------------------------------------------------------------------------
+void PlayingFileGenerateBase::writeDirRegion( DataBuffer &buffer, const RegisterLogger &reglog )
+{
+    unsigned char header[4];
+    header[0] = reglog.mDirRegionLocateAddr & 0xff;
+    header[1] = (reglog.mDirRegionLocateAddr >> 8) & 0xff;
+    header[2] = reglog.mDirRegionSize & 0xff;
+    header[3] = (reglog.mDirRegionSize >> 8) & 0xff;
+    buffer.writeData(header, 4);
+    buffer.writeData(reglog.mDirRegionData, reglog.mDirRegionSize);
+}
+
+//-----------------------------------------------------------------------------
+void PlayingFileGenerateBase::writeBrrRegion( DataBuffer &buffer, const RegisterLogger &reglog, int bankSize )
+{
+    if (bankSize <= 0) {
+        bankSize = 0x7fffffff;
+    }
+    // 合計サイズがbankSizeを超える場合は分割する(通常は32KB)
+    const int bankHeaderSize = 4;
+    unsigned char header[bankHeaderSize];
+    unsigned char *data = reglog.mBrrRegionData;
+    int startAddr = reglog.mBrrRegionLocateAddr;
+    int writeBytes = reglog.mBrrRegionSize;
+    
+    while (writeBytes > 0) {
+        int toWrite = (writeBytes > (bankSize-bankHeaderSize)) ? (bankSize-bankHeaderSize):writeBytes;
+        header[0] = startAddr & 0xff;
+        header[1] = (startAddr >> 8) & 0xff;
+        header[2] = toWrite & 0xff;
+        header[3] = (toWrite >> 8) & 0xff;
+        buffer.writeData(header, 4);
+        buffer.writeData(data, toWrite);
+        writeBytes -= toWrite;
+        startAddr += toWrite;
+        data += toWrite;
+    }
+}
+
+//-----------------------------------------------------------------------------
+void PlayingFileGenerateBase::writeRegLog( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec )
+{
+    // タイムベースの変換
+    compileLogData( reglog, tickPerSec );
+    
+    // データの削減
+    unsigned char *optimizedData = new unsigned char [mDataBuffer.GetMaxDataSize()];
+    int optimizedDataSize;
+    int optimizedLoopPoint;
+    optimizedDataSize = optimizeWaits(mDataBuffer.GetDataPtr(), optimizedData, mDataBuffer.GetDataSize(), &optimizedLoopPoint);
+    
+    int loopAddr = optimizedLoopPoint + 3;
+    unsigned char loopStart[3];
+    loopStart[0] = loopAddr & 0xff;
+    loopStart[1] = ((loopAddr >> 8) & 0x7f) + 0x80;
+    loopStart[2] = (loopAddr >> 15) & 0xff;
+    buffer.writeData(loopStart, 3);
+    buffer.writeData(optimizedData, optimizedDataSize);
+    delete [] optimizedData;
+}
+
+//-----------------------------------------------------------------------------
+void PlayingFileGenerateBase::writeWaitTable( DataBuffer &buffer, const RegisterLogger &reglog )
+{
+    buffer.writeData(mWaitvalTable, WAIT_TABLE_LEN);
+}
+
+//-----------------------------------------------------------------------------
 bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec )
 {
     // TODO: pathからディレクトリを抽出
@@ -35,7 +108,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
     {
         // DSP領域の書き出し
         DataBuffer buffer(RegisterLogger::DSP_REGION_LEN);
-        buffer.writeData(reglog.mDspRegionData, RegisterLogger::DSP_REGION_LEN);
+        writeDspRegion(buffer, reglog);
         strncpy(fname, directory, PATH_LEN_MAX);
         strncat(fname, "regdump.dat", 12);
         buffer.WriteToFile(fname);
@@ -43,71 +116,32 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
     {
         // DIR領域の書き出し
         DataBuffer buffer(reglog.mDirRegionSize + 4);
-        unsigned char header[4];
-        header[0] = reglog.mDirRegionLocateAddr & 0xff;
-        header[1] = (reglog.mDirRegionLocateAddr >> 8) & 0xff;
-        header[2] = reglog.mDirRegionSize & 0xff;
-        header[3] = (reglog.mDirRegionSize >> 8) & 0xff;
-        buffer.writeData(header, 4);
-        buffer.writeData(reglog.mDirRegionData, reglog.mDirRegionSize);
+        writeDirRegion(buffer, reglog);
         strncpy(fname, directory, PATH_LEN_MAX);
         strncat(fname, "dirregion.dat", 14);
         buffer.WriteToFile(fname);
     }
     {
         // BRR領域の書き出し
-        /*
-         int startAddr = mBrrStartAddr;
-         int writeBytes = mBrrEndAddr - mBrrStartAddr;
-         
-         // (32KB-4)を超える場合は２分割する
-         while (writeBytes > 0) {
-         unsigned char *data = &mRam[startAddr];
-         int toWrite = (writeBytes>(0x8000-4))?(0x8000-4):writeBytes;
-         mLogger.addBrrRegion(startAddr, toWrite, data);
-         writeBytes -= toWrite;
-         startAddr += toWrite;
-         }
-         */
         DataBuffer buffer(reglog.mBrrRegionSize + 4);
-        unsigned char header[4];
-        header[0] = reglog.mBrrRegionLocateAddr & 0xff;
-        header[1] = (reglog.mBrrRegionLocateAddr >> 8) & 0xff;
-        header[2] = reglog.mBrrRegionSize & 0xff;
-        header[3] = (reglog.mBrrRegionSize >> 8) & 0xff;
-        buffer.writeData(header, 4);
-        buffer.writeData(reglog.mBrrRegionData, reglog.mBrrRegionSize);
+        writeBrrRegion(buffer, reglog, 0x8000);
         strncpy(fname, directory, PATH_LEN_MAX);
         strncat(fname, "brrregion.dat", 14);
         buffer.WriteToFile(fname);
     }
     {
         // レジスタログの書き出し
-        compileLogData( reglog, tickPerSec );
-        
-        // データの削減
-        unsigned char *optimizedData = new unsigned char [mDataBuffer.GetMaxDataSize()];
-        int optimizedDataSize;
-        int optimizedLoopPoint;
-        optimizedDataSize = optimizeWaits(mDataBuffer.GetDataPtr(), optimizedData, mDataBuffer.GetDataSize(), &optimizedLoopPoint);
-        
-        DataBuffer buffer(optimizedDataSize + 3);
-        int loopAddr = optimizedLoopPoint + 3;
-        unsigned char loopStart[3];
-        loopStart[0] = loopAddr & 0xff;
-        loopStart[1] = ((loopAddr >> 8) & 0x7f) + 0x80;
-        loopStart[2] = (loopAddr >> 15) & 0xff;
-        buffer.writeData(loopStart, 3);
-        buffer.writeData(optimizedData, optimizedDataSize);
+        //DataBuffer buffer(optimizedDataSize + 3);
+        DataBuffer buffer(1024 * 1024 * 6);     // 仮
+        writeRegLog(buffer, reglog, tickPerSec);
         strncpy(fname, directory, PATH_LEN_MAX);
         strncat(fname, "spclog.dat", 11);
         buffer.WriteToFile(fname);
-        delete [] optimizedData;
     }
     {
         // WaitTableの書き出し
         DataBuffer buffer(WAIT_TABLE_LEN);
-        buffer.writeData(mWaitvalTable, WAIT_TABLE_LEN);
+        writeWaitTable(buffer, reglog);
         strncpy(fname, directory, PATH_LEN_MAX);
         strncat(fname, "waittable.dat", 14);
         buffer.WriteToFile(fname);

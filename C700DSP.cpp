@@ -733,7 +733,7 @@ void C700DSP::BeginRegisterLog()
 {
 	mLoggerSamplePos = 0;
 	//mLogger.SetResolution(15734);    // Hsync
-    //mLogger.SetResolution(16045);
+    //mLogger.SetResolution(16000);
     mLogger.SetProcessSampleRate(32000);
 	mLogger.BeginDump(0);
 	mIsLoggerRunning = true;
@@ -806,7 +806,7 @@ int C700DSP::saveRegisterLog(const char *path)
     }
     
     PlayingFileGenerateBase exporter;
-    exporter.WriteToFile(path, mLogger, 15734);
+    exporter.WriteToFile(path, mLogger, 16000);
     
 	return(0);
 }
