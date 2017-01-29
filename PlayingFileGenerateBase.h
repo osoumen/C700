@@ -26,29 +26,25 @@ protected:
     void                writeRegLog( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec );
     void                writeWaitTable( DataBuffer &buffer, const RegisterLogger &reglog );
     
-    DataBuffer          mDataBuffer;
-
 private:
     static const int    WAIT_VAL_NUM = 32;
     static const int    WAIT_TABLE_LEN = WAIT_VAL_NUM * 2;
     
     double              mTickPerTime;
-    
     unsigned char       mWaitvalTable[WAIT_TABLE_LEN];
-    
+    DataBuffer          mRegLogBuffer;
 	int                 mDumpBeginTime;
 	int                 mPrevTime;
 	int                 mLoopPoint;
-    
     std::map<int,int>   mWaitStat;
     
-    void				BeginDump_( int time );
-	bool				DumpReg_( int device, int addr, unsigned char data, int time );
-    bool                DumpApuPitch_( int device, int addr, unsigned char data_l, unsigned char data_m, int time );
-	void				MarkLoopPoint_();
-	void				EndDump_(int time);
+    void				beginConvert( int time );
+	bool				addRegWrite( int device, int addr, unsigned char data, int time );
+    bool                addPitchRegWrite( int device, int addr, unsigned char data_l, unsigned char data_m, int time );
+	void				markLoopPoint();
+	void				endConvert(int time);
     
-    void                compileLogData( const RegisterLogger &reglog, double tickPerSec );
+    void                convertLogData( const RegisterLogger &reglog, double tickPerSec );
 	int                 optimizeWaits(const unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint);    
     bool				writeByte( unsigned char byte );
 	bool				writeEndByte();

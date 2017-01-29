@@ -14,8 +14,8 @@ static int getCommandLength(unsigned char cmd);
 
 //-----------------------------------------------------------------------------
 PlayingFileGenerateBase::PlayingFileGenerateBase(int allocSize)
-: mDataBuffer( allocSize )
-, mTickPerTime( 15734.0 / 32000.0 )
+: mTickPerTime( 15734.0 / 32000.0 )
+, mRegLogBuffer( allocSize )
 {
     
 }
@@ -75,13 +75,13 @@ void PlayingFileGenerateBase::writeBrrRegion( DataBuffer &buffer, const Register
 void PlayingFileGenerateBase::writeRegLog( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec )
 {
     // タイムベースの変換
-    compileLogData( reglog, tickPerSec );
+    convertLogData( reglog, tickPerSec );
     
     // データの削減
-    unsigned char *optimizedData = new unsigned char [mDataBuffer.GetMaxDataSize()];
+    unsigned char *optimizedData = new unsigned char [mRegLogBuffer.GetMaxDataSize()];
     int optimizedDataSize;
     int optimizedLoopPoint;
-    optimizedDataSize = optimizeWaits(mDataBuffer.GetDataPtr(), optimizedData, mDataBuffer.GetDataSize(), &optimizedLoopPoint);
+    optimizedDataSize = optimizeWaits(mRegLogBuffer.GetDataPtr(), optimizedData, mRegLogBuffer.GetDataSize(), &optimizedLoopPoint);
     
     int loopAddr = optimizedLoopPoint + 3;
     unsigned char loopStart[3];
@@ -104,6 +104,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
 {
     // TODO: pathからディレクトリを抽出
     char directory[] = "/Users/osoumen/Desktop/";    // 仮
+    
     char fname[PATH_LEN_MAX];
     {
         // DSP領域の書き出し
@@ -151,7 +152,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
 }
 
 //-----------------------------------------------------------------------------
-void PlayingFileGenerateBase::compileLogData( const RegisterLogger &reglog, double tickPerSec )
+void PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, double tickPerSec )
 {
     mTickPerTime = tickPerSec / reglog.mProcessSampleRate;
     
@@ -159,37 +160,37 @@ void PlayingFileGenerateBase::compileLogData( const RegisterLogger &reglog, doub
         return;
     }
     
-    BeginDump_(0);
+    beginConvert(0);
     for (int i=0; i<reglog.mLogCommandsPos; i++) {
         if (i == reglog.mLogCommandsLoopPoint) {
-            MarkLoopPoint_();
+            markLoopPoint();
         }
         unsigned char cmd = reglog.m_pLogCommands[i].data[0];
         int cmdLen = getCommandLength(cmd);
         if (cmd < 0x80) {
             if (cmdLen == 2) {
-                DumpReg_( 0, cmd, reglog.m_pLogCommands[i].data[1], reglog.m_pLogCommands[i].time );
+                addRegWrite( 0, cmd, reglog.m_pLogCommands[i].data[1], reglog.m_pLogCommands[i].time );
             }
             else if (cmdLen == 3) {
-                DumpApuPitch_( 0, cmd, reglog.m_pLogCommands[i].data[2], reglog.m_pLogCommands[i].data[1], reglog.m_pLogCommands[i].time );
+                addPitchRegWrite( 0, cmd, reglog.m_pLogCommands[i].data[2], reglog.m_pLogCommands[i].data[1], reglog.m_pLogCommands[i].time );
             }
         }
         else if (cmd == 0x9e) {
-            EndDump_(reglog.m_pLogCommands[i].time);
+            endConvert(reglog.m_pLogCommands[i].time);
             break;
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void PlayingFileGenerateBase::BeginDump_( int time )
+void PlayingFileGenerateBase::beginConvert( int time )
 {
     int tick = convertTime2Tick(time);
     
 	mDumpBeginTime = tick;
 	mPrevTime = mDumpBeginTime;
 	
-	mDataBuffer.Clear();
+	mRegLogBuffer.Clear();
 	mLoopPoint = 0;
     
     //regStat.clear();
@@ -199,7 +200,7 @@ void PlayingFileGenerateBase::BeginDump_( int time )
 }
 
 //-----------------------------------------------------------------------------
-bool PlayingFileGenerateBase::DumpReg_( int device, int addr, unsigned char data, int time )
+bool PlayingFileGenerateBase::addRegWrite( int device, int addr, unsigned char data, int time )
 {
     int tick = convertTime2Tick(time);
     
@@ -209,7 +210,7 @@ bool PlayingFileGenerateBase::DumpReg_( int device, int addr, unsigned char data
     
     writeWaitFromPrev(tick);
     
-    if ( mDataBuffer.GetWritableSize() >= 3 ) {
+    if ( mRegLogBuffer.GetWritableSize() >= 3 ) {
         writeByte( addr );
         writeByte( data );
         /*
@@ -226,7 +227,7 @@ bool PlayingFileGenerateBase::DumpReg_( int device, int addr, unsigned char data
 }
 
 //-----------------------------------------------------------------------------
-bool PlayingFileGenerateBase::DumpApuPitch_( int device, int addr, unsigned char data_l, unsigned char data_m, int time )
+bool PlayingFileGenerateBase::addPitchRegWrite( int device, int addr, unsigned char data_l, unsigned char data_m, int time )
 {
     int tick = convertTime2Tick(time);
     
@@ -238,7 +239,7 @@ bool PlayingFileGenerateBase::DumpApuPitch_( int device, int addr, unsigned char
         
         writeWaitFromPrev(tick);
         
-        if ( mDataBuffer.GetWritableSize() >= 4 ) {
+        if ( mRegLogBuffer.GetWritableSize() >= 4 ) {
             writeByte( addr );
             writeByte( data_m );
             writeByte( data_l );
@@ -258,18 +259,18 @@ bool PlayingFileGenerateBase::DumpApuPitch_( int device, int addr, unsigned char
 }
 
 //-----------------------------------------------------------------------------
-void PlayingFileGenerateBase::MarkLoopPoint_()
+void PlayingFileGenerateBase::markLoopPoint()
 {
-	mLoopPoint = mDataBuffer.GetDataPos();
+	mLoopPoint = mRegLogBuffer.GetDataPos();
     //	printf("--MarkLoopPoint--¥n");
 }
 
 //-----------------------------------------------------------------------------
-void PlayingFileGenerateBase::EndDump_(int time)
+void PlayingFileGenerateBase::endConvert(int time)
 {
     int tick = convertTime2Tick(time);
     
-	if ( mDataBuffer.GetDataSize() > 0 ) {
+	if ( mRegLogBuffer.GetDataSize() > 0 ) {
 		writeWaitFromPrev(tick);
 		writeEndByte();
 		/*
@@ -287,16 +288,16 @@ void PlayingFileGenerateBase::EndDump_(int time)
 //-----------------------------------------------------------------------------
 bool PlayingFileGenerateBase::writeByte( unsigned char byte )
 {
-	if ( ( mDataBuffer.GetDataPos() + 1 ) > (mDataBuffer.GetMaxDataSize()-1) ) {	//END/LOOPが書き込める様に１バイト残しておく
+	if ( ( mRegLogBuffer.GetDataPos() + 1 ) > (mRegLogBuffer.GetMaxDataSize()-1) ) {	//END/LOOPが書き込める様に１バイト残しておく
 		return false;
 	}
-    return mDataBuffer.writeByte(byte);
+    return mRegLogBuffer.writeByte(byte);
 }
 
 //-----------------------------------------------------------------------------
 bool PlayingFileGenerateBase::writeEndByte()
 {
-	return mDataBuffer.writeByte(0x9e);
+	return mRegLogBuffer.writeByte(0x9e);
 }
 
 //-----------------------------------------------------------------------------
@@ -317,34 +318,34 @@ bool PlayingFileGenerateBase::writeWaitFromPrev(int tick)
     long mod = adv_time & 0xffff;
     
     for (int i=0; i<div; i++) {
-        DataBuffer::DataBufferState state = mDataBuffer.SaveState();
+        DataBuffer::DataBufferState state = mRegLogBuffer.SaveState();
         
         result = writeByte(0x94);
         if ( result == false ) return false;
         result = writeByte(0xff);
         if ( result == false ) {
             //書き込んだ分を巻き戻す
-            mDataBuffer.RestoreState(state);
+            mRegLogBuffer.RestoreState(state);
             return false;
         }
         result = writeByte(0xff);
         if ( result == false ) {
             //書き込んだ分を巻き戻す
-            mDataBuffer.RestoreState(state);
+            mRegLogBuffer.RestoreState(state);
             return false;
         }
         addWaitStatistic(0xffff);
     }
     if (mod > 0) {
         if (mod < 0x100) {
-            DataBuffer::DataBufferState state = mDataBuffer.SaveState();
+            DataBuffer::DataBufferState state = mRegLogBuffer.SaveState();
             
             result = writeByte(0x92);
             if ( result == false ) return false;
             result = writeByte(mod & 0xff);
             if ( result == false ) {
                 //書き込んだ分を巻き戻す
-                mDataBuffer.RestoreState(state);
+                mRegLogBuffer.RestoreState(state);
                 return false;
             }
             addWaitStatistic(mod & 0xff);
@@ -367,20 +368,20 @@ bool PlayingFileGenerateBase::writeWaitFromPrev(int tick)
                 result = writeByte(mod >> 4);
             }
             else {
-                DataBuffer::DataBufferState state = mDataBuffer.SaveState();
+                DataBuffer::DataBufferState state = mRegLogBuffer.SaveState();
                 
                 result = writeByte(0x94);
                 if ( result == false ) return false;
                 result = writeByte(mod & 0xff);
                 if ( result == false ) {
                     //書き込んだ分を巻き戻す
-                    mDataBuffer.RestoreState(state);
+                    mRegLogBuffer.RestoreState(state);
                     return false;
                 }
                 result = writeByte(mod >> 8);
                 if ( result == false ) {
                     //書き込んだ分を巻き戻す
-                    mDataBuffer.RestoreState(state);
+                    mRegLogBuffer.RestoreState(state);
                     return false;
                 }
             }
