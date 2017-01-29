@@ -17,11 +17,14 @@ public:
     PlayingFileGenerateBase(int allocSize=4*1024*1024);
     ~PlayingFileGenerateBase();
     
-    virtual bool WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec );
+    virtual bool        WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec );
     
 protected:
-    void                compileLogData( const RegisterLogger &reglog, double tickPerSec );
-	int                 optimizeWaits(const unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint);
+    void                writeDspRegion( DataBuffer &buffer, const RegisterLogger &reglog );
+    void                writeDirRegion( DataBuffer &buffer, const RegisterLogger &reglog );
+    void                writeBrrRegion( DataBuffer &buffer, const RegisterLogger &reglog, int bankSize=0 );
+    void                writeRegLog( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec );
+    void                writeWaitTable( DataBuffer &buffer, const RegisterLogger &reglog );
     
     DataBuffer          mDataBuffer;
 
@@ -45,6 +48,8 @@ private:
 	void				MarkLoopPoint_();
 	void				EndDump_(int time);
     
+    void                compileLogData( const RegisterLogger &reglog, double tickPerSec );
+	int                 optimizeWaits(const unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint);    
     bool				writeByte( unsigned char byte );
 	bool				writeEndByte();
 	bool				writeWaitFromPrev(int tick);
