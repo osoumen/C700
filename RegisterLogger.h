@@ -30,12 +30,13 @@ public:
     void                addDirRegion(int locateAddr, int size, unsigned char *data);
     void                addBrrRegion(int locateAddr, int size, unsigned char *data);
     
-    unsigned char*      getDirRegionData() { return mDirRegionData; }
-    int                 getDirRegionLocateAddr() { return mDirRegionLocateAddr; }
-    int                 getDirRegionSize() { return mDirRegionSize; }
-    unsigned char*      getBrrRegionData() { return mBrrRegionData; }
-    int                 getBrrRegionLocateAddr() { return mBrrRegionLocateAddr; }
-    int                 getBrrRegionSize() { return mBrrRegionSize; }
+    const unsigned char* getDirRegionData() const { return mDirRegionData; }
+    int                 getDirRegionLocateAddr() const { return mDirRegionLocateAddr; }
+    int                 getDirRegionSize() const { return mDirRegionSize; }
+    const unsigned char* getBrrRegionData() const { return mBrrRegionData; }
+    int                 getBrrRegionLocateAddr() const { return mBrrRegionLocateAddr; }
+    int                 getBrrRegionSize() const { return mBrrRegionSize; }
+    const unsigned char* getDspRegionData() const { return mDspRegionData; }
     
     bool                Write();
     

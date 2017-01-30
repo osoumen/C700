@@ -1,0 +1,3 @@
+static const char spcplayercode[] = {
+
+    };

@@ -9,6 +9,7 @@
 #include "C700DSP.h"
 #include "gauss.h"
 #include "SmcFileGenerate.h"
+#include "SpcFileGenerate.h"
 //#include <iomanip>
 
 #define filter1(a1)	(( a1 >> 1 ) + ( ( -a1 ) >> 5 ))
@@ -791,7 +792,7 @@ void C700DSP::EndRegisterLog()
 		mIsLoggerRunning = false;
         
         // ファイルへ書き出しテスト
-        saveRegisterLog("/Users/osoumen/Desktop/c700dump.smc");    // TODO: UI上で選択できるようにする
+        saveRegisterLog("/Users/osoumen/Desktop/c700dump.spc");    // TODO: UI上で選択できるようにする
 	}
 }
 
@@ -806,7 +807,9 @@ int C700DSP::saveRegisterLog(const char *path)
     
     //PlayingFileGenerateBase exporter;
     //exporter.WriteToFile(path, mLogger, 16000);
-    SmcFileGenerate exporter;
+    //SmcFileGenerate exporter;
+    //exporter.WriteToFile(path, mLogger);
+    SpcFileGenerate exporter;
     exporter.WriteToFile(path, mLogger);
     
 	return(0);
