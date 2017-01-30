@@ -286,6 +286,10 @@
 		F56018261E3DDC1200400327 /* SmcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018221E3DDC1200400327 /* SmcFileGenerate.h */; };
 		F56018281E3DE22100400327 /* smcplayercode.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018271E3DE22100400327 /* smcplayercode.h */; };
 		F56018291E3DE22100400327 /* smcplayercode.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018271E3DE22100400327 /* smcplayercode.h */; };
+		F560182C1E3F508C00400327 /* SpcFileGenerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */; };
+		F560182D1E3F508C00400327 /* SpcFileGenerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */; };
+		F560182E1E3F508C00400327 /* SpcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F560182B1E3F508C00400327 /* SpcFileGenerate.h */; };
+		F560182F1E3F508C00400327 /* SpcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F560182B1E3F508C00400327 /* SpcFileGenerate.h */; };
 		F569A3F61619527F006C91AD /* C700_CocoaViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */; };
 		F569A3F71619527F006C91AD /* C700_CocoaViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */; };
 		F569A40516195488006C91AD /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
@@ -558,6 +562,8 @@
 		F56018211E3DDC1200400327 /* SmcFileGenerate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SmcFileGenerate.cpp; sourceTree = "<group>"; };
 		F56018221E3DDC1200400327 /* SmcFileGenerate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmcFileGenerate.h; sourceTree = "<group>"; };
 		F56018271E3DE22100400327 /* smcplayercode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smcplayercode.h; sourceTree = "<group>"; };
+		F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpcFileGenerate.cpp; sourceTree = "<group>"; };
+		F560182B1E3F508C00400327 /* SpcFileGenerate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpcFileGenerate.h; sourceTree = "<group>"; };
 		F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700_CocoaViewFactory.h; sourceTree = "<group>"; };
 		F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.objcpp; path = C700_CocoaViewFactory.mm; sourceTree = "<group>"; };
 		F569A40316195488006C91AD /* C700Edit.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Edit.h; sourceTree = "<group>"; };
@@ -957,6 +963,8 @@
 				F56018271E3DE22100400327 /* smcplayercode.h */,
 				F56018211E3DDC1200400327 /* SmcFileGenerate.cpp */,
 				F56018221E3DDC1200400327 /* SmcFileGenerate.h */,
+				F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */,
+				F560182B1E3F508C00400327 /* SpcFileGenerate.h */,
 				F527FF9E1BEE323F0083E355 /* MemManager.cpp */,
 				F527FF9F1BEE323F0083E355 /* MemManager.h */,
 				F5432C251627AE4200863A0B /* EchoKernel.cpp */,
@@ -1182,6 +1190,7 @@
 				F55D6602161ECFD1001CF9AB /* MyParamDisplay.h in Headers */,
 				F55D6608161ECFE3001CF9AB /* MyTextEdit.h in Headers */,
 				F569BEC21622B5F8006C91AD /* EfxAccess.h in Headers */,
+				F560182E1E3F508C00400327 /* SpcFileGenerate.h in Headers */,
 				F569C38A162515ED006C91AD /* DataBuffer.h in Headers */,
 				F569C3AD162518B9006C91AD /* AudioFile.h in Headers */,
 				F569C3B1162518BF006C91AD /* SPCFile.h in Headers */,
@@ -1231,6 +1240,7 @@
 				F56018261E3DDC1200400327 /* SmcFileGenerate.h in Headers */,
 				F54331A416296E0200863A0B /* vstgui.h in Headers */,
 				F54331A616296E0200863A0B /* C700Edit.h in Headers */,
+				F560182F1E3F508C00400327 /* SpcFileGenerate.h in Headers */,
 				F53602A71984CF600079A9BE /* aeffect.h in Headers */,
 				F54331A716296E0200863A0B /* C700GUI.h in Headers */,
 				F51D83D41D295E8B00A23008 /* RegisterLogger.h in Headers */,
@@ -1580,6 +1590,7 @@
 				F597AD38160B67860003E710 /* plugguieditor.cpp in Sources */,
 				F597AD3B160B67860003E710 /* cvstguitimer.cpp in Sources */,
 				F52674311C01E8A2006B0276 /* SpcControlDevice.cpp in Sources */,
+				F560182C1E3F508C00400327 /* SpcFileGenerate.cpp in Sources */,
 				F597AD3E160B67860003E710 /* cfileselector.cpp in Sources */,
 				F597AD41160B67860003E710 /* vstcontrols.cpp in Sources */,
 				F597AD42160B67860003E710 /* vstgui.cpp in Sources */,
@@ -1677,6 +1688,7 @@
 				F59D91B21BF720EA00E5EFC6 /* spc.cpp in Sources */,
 				F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */,
 				F510B705163266CB00A844B4 /* FileAccess.cpp in Sources */,
+				F560182D1E3F508C00400327 /* SpcFileGenerate.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

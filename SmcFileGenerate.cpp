@@ -33,22 +33,22 @@ void SmcFileGenerate::SetSmcPlayCode( const void *code, int size, const SmcVecto
 
 bool SmcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec )
 {
-    DataBuffer  smcFile(1024 * 1024 * 8);
+    DataBuffer  smcFile(1024 * 1024 * 4);
     
     // 実行コードの書き出し
     smcFile.writeData(m_pSmcPlayCode, mSmcPlayCodeSize);
     
     // DIR領域の書き出し
     smcFile.setPos(0x7b00);
-    writeDirRegion(smcFile, reglog);
+    writeDirRegionWithHeader(smcFile, reglog);
     
     // BRR領域の書き出し
     smcFile.setPos(0x8000);
-    writeBrrRegion(smcFile, reglog, 0x8000);
+    writeBrrRegionWithHeader(smcFile, reglog, 0x8000);
     
     // レジスタログの書き出し
     smcFile.setPos(0x18000);
-    writeRegLog(smcFile, reglog, tickPerSec);
+    writeRegLogWithLoopPoint(smcFile, reglog, tickPerSec);
     
     // WaitTableの書き出し
     smcFile.setPos(0x7a00);

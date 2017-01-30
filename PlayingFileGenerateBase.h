@@ -21,10 +21,11 @@ public:
     
 protected:
     void                writeDspRegion( DataBuffer &buffer, const RegisterLogger &reglog );
-    void                writeDirRegion( DataBuffer &buffer, const RegisterLogger &reglog );
-    void                writeBrrRegion( DataBuffer &buffer, const RegisterLogger &reglog, int bankSize=0 );
-    void                writeRegLog( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec );
+    void                writeDirRegionWithHeader( DataBuffer &buffer, const RegisterLogger &reglog );
+    void                writeBrrRegionWithHeader( DataBuffer &buffer, const RegisterLogger &reglog, int bankSize=0 );
+    void                writeRegLogWithLoopPoint( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec );
     void                writeWaitTable( DataBuffer &buffer, const RegisterLogger &reglog );
+    int                 convertLogData( const RegisterLogger &reglog, double tickPerSec, unsigned char *outData, int outDataSize, int *outLoopPoint );
     
 private:
     static const int    WAIT_VAL_NUM = 32;
@@ -44,8 +45,7 @@ private:
 	void				markLoopPoint();
 	void				endConvert(int time);
     
-    void                convertLogData( const RegisterLogger &reglog, double tickPerSec );
-	int                 optimizeWaits(const unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint);    
+	int                 optimizeWaits(const unsigned char *inData, int inDataSize, unsigned char *outData, int outDataSize, int *outLoopPoint);
     bool				writeByte( unsigned char byte );
 	bool				writeEndByte();
 	bool				writeWaitFromPrev(int tick);
