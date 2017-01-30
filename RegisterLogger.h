@@ -30,6 +30,13 @@ public:
     void                addDirRegion(int locateAddr, int size, unsigned char *data);
     void                addBrrRegion(int locateAddr, int size, unsigned char *data);
     
+    unsigned char*      getDirRegionData() { return mDirRegionData; }
+    int                 getDirRegionLocateAddr() { return mDirRegionLocateAddr; }
+    int                 getDirRegionSize() { return mDirRegionSize; }
+    unsigned char*      getBrrRegionData() { return mBrrRegionData; }
+    int                 getBrrRegionLocateAddr() { return mBrrRegionLocateAddr; }
+    int                 getBrrRegionSize() { return mBrrRegionSize; }
+    
     bool                Write();
     
 	bool				IsEnded() const { return mIsEnded; }
@@ -48,10 +55,9 @@ protected:
     
     unsigned char       mDspRegionData[DSP_REGION_LEN];
     unsigned char       *mDirRegionData;
-    unsigned char       *mBrrRegionData;
-    
     int                 mDirRegionLocateAddr;
     int                 mDirRegionSize;
+    unsigned char       *mBrrRegionData;
     int                 mBrrRegionLocateAddr;
     int                 mBrrRegionSize;
     

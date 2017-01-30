@@ -58,37 +58,29 @@ void PlayingFileGenerateBase::writeDspRegion( DataBuffer &buffer, const Register
 }
 
 //-----------------------------------------------------------------------------
-void PlayingFileGenerateBase::writeDirRegion( DataBuffer &buffer, const RegisterLogger &reglog )
+void PlayingFileGenerateBase::writeDirRegionWithHeader( DataBuffer &buffer, const RegisterLogger &reglog )
 {
-    unsigned char header[4];
-    header[0] = reglog.mDirRegionLocateAddr & 0xff;
-    header[1] = (reglog.mDirRegionLocateAddr >> 8) & 0xff;
-    header[2] = reglog.mDirRegionSize & 0xff;
-    header[3] = (reglog.mDirRegionSize >> 8) & 0xff;
-    buffer.writeData(header, 4);
+    buffer.writeU16( reglog.mDirRegionLocateAddr & 0xffff );
+    buffer.writeU16( reglog.mDirRegionSize & 0xffff );
     buffer.writeData(reglog.mDirRegionData, reglog.mDirRegionSize);
 }
 
 //-----------------------------------------------------------------------------
-void PlayingFileGenerateBase::writeBrrRegion( DataBuffer &buffer, const RegisterLogger &reglog, int bankSize )
+void PlayingFileGenerateBase::writeBrrRegionWithHeader( DataBuffer &buffer, const RegisterLogger &reglog, int bankSize )
 {
     if (bankSize <= 0) {
         bankSize = 0x7fffffff;
     }
     // 合計サイズがbankSizeを超える場合は分割する(通常は32KB)
     const int bankHeaderSize = 4;
-    unsigned char header[bankHeaderSize];
     unsigned char *data = reglog.mBrrRegionData;
     int startAddr = reglog.mBrrRegionLocateAddr;
     int writeBytes = reglog.mBrrRegionSize;
     
     while (writeBytes > 0) {
         int toWrite = (writeBytes > (bankSize-bankHeaderSize)) ? (bankSize-bankHeaderSize):writeBytes;
-        header[0] = startAddr & 0xff;
-        header[1] = (startAddr >> 8) & 0xff;
-        header[2] = toWrite & 0xff;
-        header[3] = (toWrite >> 8) & 0xff;
-        buffer.writeData(header, 4);
+        buffer.writeU16( startAddr );
+        buffer.writeU16( toWrite );
         buffer.writeData(data, toWrite);
         writeBytes -= toWrite;
         startAddr += toWrite;
@@ -97,16 +89,12 @@ void PlayingFileGenerateBase::writeBrrRegion( DataBuffer &buffer, const Register
 }
 
 //-----------------------------------------------------------------------------
-void PlayingFileGenerateBase::writeRegLog( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec )
+void PlayingFileGenerateBase::writeRegLogWithLoopPoint( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec )
 {
     // タイムベースの変換
-    convertLogData( reglog, tickPerSec );
-    
-    // データの削減
     unsigned char *optimizedData = new unsigned char [mRegLogBuffer.GetMaxDataSize()];
-    int optimizedDataSize;
     int optimizedLoopPoint;
-    optimizedDataSize = optimizeWaits(mRegLogBuffer.GetDataPtr(), optimizedData, mRegLogBuffer.GetDataSize(), &optimizedLoopPoint);
+    int optimizedDataSize = convertLogData( reglog, tickPerSec, optimizedData, mRegLogBuffer.GetMaxDataSize(), &optimizedLoopPoint );
     
     int loopAddr = optimizedLoopPoint + 3;
     unsigned char loopStart[3];
@@ -143,7 +131,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
     {
         // DIR領域の書き出し
         DataBuffer buffer(reglog.mDirRegionSize + 4);
-        writeDirRegion(buffer, reglog);
+        writeDirRegionWithHeader(buffer, reglog);
         strncpy(fname, directory, PATH_LEN_MAX);
         strncat(fname, "dirregion.dat", 14);
         buffer.WriteToFile(fname);
@@ -151,7 +139,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
     {
         // BRR領域の書き出し
         DataBuffer buffer(reglog.mBrrRegionSize + 4);
-        writeBrrRegion(buffer, reglog, 0x8000);
+        writeBrrRegionWithHeader(buffer, reglog, 0x8000);
         strncpy(fname, directory, PATH_LEN_MAX);
         strncat(fname, "brrregion.dat", 14);
         buffer.WriteToFile(fname);
@@ -159,8 +147,8 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
     {
         // レジスタログの書き出し
         //DataBuffer buffer(optimizedDataSize + 3);
-        DataBuffer buffer(1024 * 1024 * 6);     // 仮
-        writeRegLog(buffer, reglog, tickPerSec);
+        DataBuffer buffer(1024 * 1024 * 4);     // 仮
+        writeRegLogWithLoopPoint(buffer, reglog, tickPerSec);
         strncpy(fname, directory, PATH_LEN_MAX);
         strncat(fname, "spclog.dat", 11);
         buffer.WriteToFile(fname);
@@ -178,12 +166,12 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
 }
 
 //-----------------------------------------------------------------------------
-void PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, double tickPerSec )
+int PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, double tickPerSec, unsigned char *outData, int outDataSize, int *outLoopPoint )
 {
     mTickPerTime = tickPerSec / reglog.mProcessSampleRate;
     
     if ( reglog.mLogCommandsPos == 0) {
-        return;
+        return 0;
     }
     
     beginConvert(0);
@@ -206,6 +194,9 @@ void PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, doub
             break;
         }
     }
+    
+    // wait値を削減
+    return optimizeWaits(mRegLogBuffer.GetDataPtr(), mRegLogBuffer.GetDataSize(), outData, outDataSize, outLoopPoint);
 }
 
 //-----------------------------------------------------------------------------
@@ -436,7 +427,7 @@ bool PlayingFileGenerateBase::addWaitStatistic(int tick)
 }
 
 //-----------------------------------------------------------------------------
-int PlayingFileGenerateBase::optimizeWaits(const unsigned char *inData, unsigned char *outData, int inDataSize, int *outLoopPoint)
+int PlayingFileGenerateBase::optimizeWaits(const unsigned char *inData, int inDataSize, unsigned char *outData, int outDataSize, int *outLoopPoint)
 {
     // 頻度の高い16wait値を取得
     std::map<int,int> frequentWaitValue;
@@ -495,15 +486,21 @@ int PlayingFileGenerateBase::optimizeWaits(const unsigned char *inData, unsigned
         if (isWaitCmd) {
             auto it = frequentWaitValue.find(value);
             if (it != frequentWaitValue.end()) {
-                outData[outPtr++] = (it->second) * 2 + 0xa0;
+                if (outPtr < outDataSize) {
+                    outData[outPtr++] = (it->second) * 2 + 0xa0;
+                }
                 inPtr += len;
                 found = true;
             }
             else if (cmd == 0x94) {
                 auto it = frequentWaitValue.find(value-1);
                 if (it != frequentWaitValue.end()) {
-                    outData[outPtr++] = (it->second) * 2 + 0xa0;
-                    outData[outPtr++] = 0x90;
+                    if (outPtr < outDataSize) {
+                        outData[outPtr++] = (it->second) * 2 + 0xa0;
+                    }
+                    if (outPtr < outDataSize) {
+                        outData[outPtr++] = 0x90;
+                    }
                     inPtr += len;
                     found = true;
                 }
@@ -512,7 +509,9 @@ int PlayingFileGenerateBase::optimizeWaits(const unsigned char *inData, unsigned
         
         if (found == false) {
             for (int i=0; i<len; i++) {
-                outData[outPtr++] = inData[inPtr++];
+                if (outPtr < outDataSize) {
+                    outData[outPtr++] = inData[inPtr++];
+                }
             }
         }
     }

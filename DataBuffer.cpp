@@ -134,6 +134,36 @@ bool DataBuffer::writeByte( unsigned char byte, int len )
 }
 
 //-----------------------------------------------------------------------------
+bool DataBuffer::writeU16( unsigned short word )
+{
+    unsigned char data[2];
+    data[0] = word & 0xff;
+    data[1] = (word >> 8) & 0xff;
+    return writeData(data, 2);
+}
+
+//-----------------------------------------------------------------------------
+bool DataBuffer::writeU24( int value )
+{
+    unsigned char data[3];
+    data[0] = value & 0xff;
+    data[1] = (value >> 8) & 0xff;
+    data[2] = (value >> 16) & 0xff;
+    return writeData(data, 3);
+}
+
+//-----------------------------------------------------------------------------
+bool DataBuffer::writeS32( int value )
+{
+    unsigned char data[4];
+    data[0] = value & 0xff;
+    data[1] = (value >> 8) & 0xff;
+    data[2] = (value >> 16) & 0xff;
+    data[3] = (value >> 24) & 0xff;
+    return writeData(data, 4);
+}
+
+//-----------------------------------------------------------------------------
 DataBuffer::DataBufferState DataBuffer::SaveState()
 {
     DataBufferState state;
