@@ -44,6 +44,8 @@ public:
     void                SetProcessSampleRate( int rate );
     
     void				BeginDump( int time );
+    void                BeginDspInitialization();  // DSP‚Ì‰Šú‰»ŠJn
+    void                EndDspInitialization();    // DSP‚Ì‰Šú‰»I—¹
 	bool				DumpReg( int device, int addr, unsigned char data, int time );
     bool                DumpApuPitch( int device, int addr, unsigned char data_l, unsigned char data_m, int time );
 	void				MarkLoopPoint();
@@ -70,4 +72,6 @@ protected:
     int                 mLogCommandsSize;
     int                 mLogCommandsPos;
     int                 mLogCommandsLoopPoint;
+    int                 mBeginInitializationPoint;
+    int                 mEndInitializationPoint;
 };
