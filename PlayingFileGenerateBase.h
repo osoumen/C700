@@ -25,7 +25,7 @@ protected:
     void                writeBrrRegionWithHeader( DataBuffer &buffer, const RegisterLogger &reglog, int bankSize=0 );
     void                writeRegLogWithLoopPoint( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec );
     void                writeWaitTable( DataBuffer &buffer, const RegisterLogger &reglog );
-    int                 convertLogData( const RegisterLogger &reglog, double tickPerSec, unsigned char *outData, int outDataSize, int *outLoopPoint );
+    int                 convertLogData( const RegisterLogger &reglog, double tickPerSec, unsigned char *outData, int outDataSize, int *outLoopPoint, bool skipInitialize );
     
 private:
     static const int    WAIT_VAL_NUM = 32;

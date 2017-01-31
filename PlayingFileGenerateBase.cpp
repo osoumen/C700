@@ -94,7 +94,7 @@ void PlayingFileGenerateBase::writeRegLogWithLoopPoint( DataBuffer &buffer, cons
     // タイムベースの変換
     unsigned char *optimizedData = new unsigned char [mRegLogBuffer.GetMaxDataSize()];
     int optimizedLoopPoint;
-    int optimizedDataSize = convertLogData( reglog, tickPerSec, optimizedData, mRegLogBuffer.GetMaxDataSize(), &optimizedLoopPoint );
+    int optimizedDataSize = convertLogData( reglog, tickPerSec, optimizedData, mRegLogBuffer.GetMaxDataSize(), &optimizedLoopPoint, false );
     
     int loopAddr = optimizedLoopPoint + 3;
     unsigned char loopStart[3];
@@ -166,7 +166,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
 }
 
 //-----------------------------------------------------------------------------
-int PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, double tickPerSec, unsigned char *outData, int outDataSize, int *outLoopPoint )
+int PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, double tickPerSec, unsigned char *outData, int outDataSize, int *outLoopPoint, bool skipInitialize )
 {
     mTickPerTime = tickPerSec / reglog.mProcessSampleRate;
     
@@ -178,6 +178,11 @@ int PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, doubl
     for (int i=0; i<reglog.mLogCommandsPos; i++) {
         if (i == reglog.mLogCommandsLoopPoint) {
             markLoopPoint();
+        }
+        if (skipInitialize) {
+            if ((i >= reglog.mBeginInitializationPoint) && (i < reglog.mEndInitializationPoint)) {
+                continue;
+            }
         }
         unsigned char cmd = reglog.m_pLogCommands[i].data[0];
         int cmdLen = getCommandLength(cmd);

@@ -33,13 +33,13 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     // レジスタログの生成
     unsigned char *reglogData = new unsigned char [4 * 1024 * 1024];
     int loopPoint;
-    int reglogSize = convertLogData( reglog, tickPerSec, reglogData, 4 * 1024 * 1024, &loopPoint );
+    int reglogSize = convertLogData( reglog, tickPerSec, reglogData, 4 * 1024 * 1024, &loopPoint, true );
     
     // TODO: 64kに収まらない場合、700ファイルの形式で書き出す
     
     // SPCヘッダの書き出し
     spcFile.writeData("SNES-SPC700 Sound File Data v0.30", 33);
-    spcFile.writeByte(0x26, 3);
+    spcFile.writeByte(26, 3);
     spcFile.writeByte(30);      // Version minor
     spcFile.writeU16(0x100);    // PC
     spcFile.writeByte(0);       // A
@@ -51,7 +51,7 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     
     spcFile.writeData("C700 spctest                    ", 32);  // Song title
     spcFile.writeData("Game title                      ", 32);  // Game title
-    spcFile.writeData("osoumen         ", 16);                  // Name of dumper
+    spcFile.writeData("dumper          ", 16);                  // Name of dumper
     spcFile.writeData("Comments                        ", 32);  // Comments
     spcFile.writeData("2016/07/17", 11);                        // Date SPC was dumped (MM/DD/YYYY)
     spcFile.writeData("120", 3);                                // Number of seconds to play song before fading out

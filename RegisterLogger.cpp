@@ -31,6 +31,8 @@ RegisterLogger::RegisterLogger(int allocSize)
     mLogCommandsSize = allocSize;
     mLogCommandsPos = 0;
     mLogCommandsLoopPoint = 0;
+    mBeginInitializationPoint = 0;
+    mEndInitializationPoint = 0;
     
     mDirRegionData = NULL;
     mBrrRegionData = NULL;
@@ -129,10 +131,24 @@ void RegisterLogger::BeginDump( int time )
 {
     mLogCommandsPos = 0;
     mLogCommandsLoopPoint = 0;
+    mBeginInitializationPoint = 0;
+    mEndInitializationPoint = 0;
     for ( int i=0; i<256; i++ ) {
         mReg[i] = -1;
 	}
     mIsEnded = false;
+}
+
+//-----------------------------------------------------------------------------
+void RegisterLogger::BeginDspInitialization()
+{
+    mBeginInitializationPoint = mLogCommandsPos;
+}
+
+//-----------------------------------------------------------------------------
+void RegisterLogger::EndDspInitialization()
+{
+    mEndInitializationPoint = mLogCommandsPos;
 }
 
 //-----------------------------------------------------------------------------

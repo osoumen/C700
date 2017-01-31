@@ -733,7 +733,6 @@ bool C700DSP::writeDsp(int addr, unsigned char data)
 void C700DSP::BeginRegisterLog()
 {
 	mLoggerSamplePos = 0;
-    //mLogger.SetResolution(16000);
     mLogger.SetProcessSampleRate(32000);
 	mLogger.BeginDump(0);
 	mIsLoggerRunning = true;
@@ -761,7 +760,7 @@ void C700DSP::BeginRegisterLog()
         mLogger.addDspRegRegion(dspreg);
     }
     // 現在のレジスタ値をログに出力
-    // TODO: SPC出力のときのために出力した量を記録しておく
+    mLogger.BeginDspInitialization();
     for (int i=0; i<128; i++) {
         int reg = mDsp.GetDspMirror(i);
         if ((i & 0x0f) == 0x03) {
@@ -775,6 +774,7 @@ void C700DSP::BeginRegisterLog()
             mLogger.DumpReg(0, i, reg, 0);
         }
     }
+    mLogger.EndDspInitialization();
 }
 
 void C700DSP::MarkRegisterLogLoop()
@@ -807,10 +807,10 @@ int C700DSP::saveRegisterLog(const char *path)
     
     //PlayingFileGenerateBase exporter;
     //exporter.WriteToFile(path, mLogger, 16000);
-    //SmcFileGenerate exporter;
-    //exporter.WriteToFile(path, mLogger);
-    SpcFileGenerate exporter;
-    exporter.WriteToFile(path, mLogger);
+    SmcFileGenerate exporter1;
+    exporter1.WriteToFile("/Users/osoumen/Desktop/c700dump.smc", mLogger);
+    SpcFileGenerate exporter2;
+    exporter2.WriteToFile("/Users/osoumen/Desktop/c700dump.spc", mLogger);
     
 	return(0);
 }
