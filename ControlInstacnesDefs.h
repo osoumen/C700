@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "ControlInstances.h"
+#include "GUIUtils.h"
 
 ControlInstances	sCntl[] = {
     {

@@ -144,7 +144,6 @@
 		F54331AB16296E0200863A0B /* LabelOnOffButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AAA2161C0114006C91AD /* LabelOnOffButton.h */; };
 		F54331AC16296E0200863A0B /* WaveView.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AD34161D3490006C91AD /* WaveView.h */; };
 		F54331AD16296E0200863A0B /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
-		F54331AE16296E0200863A0B /* ControlInstances.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6447161D7A94001CF9AB /* ControlInstances.h */; };
 		F54331AF16296E0200863A0B /* SeparatorLine.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D65BC161EC9D0001CF9AB /* SeparatorLine.h */; };
 		F54331B016296E0200863A0B /* MyParamDisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6600161ECFD1001CF9AB /* MyParamDisplay.h */; };
 		F54331B116296E0200863A0B /* MyTextEdit.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6606161ECFE3001CF9AB /* MyTextEdit.h */; };
@@ -241,7 +240,6 @@
 		F557ACE819CD159300CF9792 /* MersenneTwister.h in Headers */ = {isa = PBXBuildFile; fileRef = F557ACE619CD159300CF9792 /* MersenneTwister.h */; };
 		F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
 		F55D63DB161D6FFE001CF9AB /* DummyCntl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */; };
-		F55D6448161D7A94001CF9AB /* ControlInstances.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6447161D7A94001CF9AB /* ControlInstances.h */; };
 		F55D64FC161EB76D001CF9AB /* bt_copy.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FB161EB76D001CF9AB /* bt_copy.png */; };
 		F55D64FE161EB7CD001CF9AB /* bt_calc.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FD161EB7CD001CF9AB /* bt_calc.png */; };
 		F55D6500161EB8CE001CF9AB /* bt_load.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FF161EB8CE001CF9AB /* bt_load.png */; };
@@ -397,6 +395,9 @@
 		F5BEFCA619BC4F8C0083F8D9 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = F5BEFCA419BC4F8C0083F8D9 /* help.png */; };
 		F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
 		F5C1B32316F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
+		F5D69C3A1E44A7E800F62CF6 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
+		F5D69C3B1E44A7E800F62CF6 /* GUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C391E44A7E800F62CF6 /* GUIUtils.h */; };
+		F5D69C3C1E44A85C00F62CF6 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -524,7 +525,6 @@
 		F557ACE619CD159300CF9792 /* MersenneTwister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MersenneTwister.h; sourceTree = "<group>"; };
 		F55D63D8161D6FFE001CF9AB /* DummyCntl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummyCntl.h; sourceTree = "<group>"; };
 		F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DummyCntl.cpp; sourceTree = "<group>"; };
-		F55D6447161D7A94001CF9AB /* ControlInstances.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstances.h; sourceTree = "<group>"; };
 		F55D64FB161EB76D001CF9AB /* bt_copy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bt_copy.png; path = graphics/bt_copy.png; sourceTree = "<group>"; };
 		F55D64FD161EB7CD001CF9AB /* bt_calc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bt_calc.png; path = graphics/bt_calc.png; sourceTree = "<group>"; };
 		F55D64FF161EB8CE001CF9AB /* bt_load.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bt_load.png; path = graphics/bt_load.png; sourceTree = "<group>"; };
@@ -647,6 +647,8 @@
 		F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DspRegFIFO.h; sourceTree = "<group>"; };
 		F5BEFCA419BC4F8C0083F8D9 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = help.png; path = graphics/help.png; sourceTree = "<group>"; };
 		F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstacnesDefs.h; sourceTree = "<group>"; };
+		F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIUtils.cpp; sourceTree = "<group>"; };
+		F5D69C391E44A7E800F62CF6 /* GUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIUtils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1029,7 +1031,8 @@
 		F569A40E161954C9006C91AD /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				F55D6447161D7A94001CF9AB /* ControlInstances.h */,
+				F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */,
+				F5D69C391E44A7E800F62CF6 /* GUIUtils.h */,
 				F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */,
 				F569BEC01622B5F8006C91AD /* EfxAccess.h */,
 				F569BEC11622B5F8006C91AD /* EfxAccess.cpp */,
@@ -1145,6 +1148,7 @@
 				3E0BECFD0898391C00E1F0F7 /* CAVectorUnitTypes.h in Headers */,
 				8AA4CF3F0AAE7C4000AA021C /* CAAUMIDIMap.h in Headers */,
 				8AA4CF410AAE7C4000AA021C /* CAAUMIDIMapManager.h in Headers */,
+				F5D69C3B1E44A7E800F62CF6 /* GUIUtils.h in Headers */,
 				8AA4CF500AAE7CFC00AA021C /* AUMIDIBase.h in Headers */,
 				8AA4CF520AAE7CFC00AA021C /* MusicDeviceBase.h in Headers */,
 				F557ACE719CD159300CF9792 /* MersenneTwister.h in Headers */,
@@ -1189,7 +1193,6 @@
 				F569AD36161D3490006C91AD /* WaveView.h in Headers */,
 				F56018251E3DDC1200400327 /* SmcFileGenerate.h in Headers */,
 				F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */,
-				F55D6448161D7A94001CF9AB /* ControlInstances.h in Headers */,
 				F55D65BE161EC9D0001CF9AB /* SeparatorLine.h in Headers */,
 				F51D83D31D295E8B00A23008 /* RegisterLogger.h in Headers */,
 				F55D6602161ECFD1001CF9AB /* MyParamDisplay.h in Headers */,
@@ -1260,7 +1263,6 @@
 				F54331AC16296E0200863A0B /* WaveView.h in Headers */,
 				F53602A91984CF600079A9BE /* aeffectx.h in Headers */,
 				F54331AD16296E0200863A0B /* DummyCntl.h in Headers */,
-				F54331AE16296E0200863A0B /* ControlInstances.h in Headers */,
 				F54331AF16296E0200863A0B /* SeparatorLine.h in Headers */,
 				F54331B016296E0200863A0B /* MyParamDisplay.h in Headers */,
 				F54331B116296E0200863A0B /* MyTextEdit.h in Headers */,
@@ -1577,6 +1579,7 @@
 				8AA4CF4F0AAE7CFC00AA021C /* AUMIDIBase.cpp in Sources */,
 				F56018231E3DDC1200400327 /* SmcFileGenerate.cpp in Sources */,
 				8AA4CF510AAE7CFC00AA021C /* MusicDeviceBase.cpp in Sources */,
+				F5D69C3A1E44A7E800F62CF6 /* GUIUtils.cpp in Sources */,
 				8AA4CF600AAE7D7A00AA021C /* AUInstrumentBase.cpp in Sources */,
 				8AA4CF630AAE7D7A00AA021C /* SynthElement.cpp in Sources */,
 				8AA4CF660AAE7D7A00AA021C /* SynthNote.cpp in Sources */,
@@ -1659,6 +1662,7 @@
 				F59D91A61BF720EA00E5EFC6 /* dsp.cpp in Sources */,
 				F543320816296E0200863A0B /* ctooltipsupport.cpp in Sources */,
 				F543320916296E0200863A0B /* MyKnob.cpp in Sources */,
+				F5D69C3C1E44A85C00F62CF6 /* GUIUtils.cpp in Sources */,
 				F543320A16296E0200863A0B /* MySlider.cpp in Sources */,
 				F543320B16296E0200863A0B /* LabelOnOffButton.cpp in Sources */,
 				F53602B91984CF7D0079A9BE /* audioeffectx.cpp in Sources */,
