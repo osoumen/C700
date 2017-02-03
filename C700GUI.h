@@ -11,7 +11,7 @@
 
 #include "vstgui.h"
 #include "C700defines.h"
-#include "ControlInstances.h"
+#include "GUIUtils.h"
 #include "EfxAccess.h"
 
 #include "DummyCntl.h"
@@ -24,7 +24,6 @@
 #include "MyTextEdit.h"
 
 #include "SPCFile.h"
-//#include "PlistBRRFile.h"
 #include "RawBRRFile.h"
 #include "AudioFile.h"
 #include "XIFile.h"
@@ -48,7 +47,6 @@ public:
 	
 	CLASS_METHODS(C700GUI, CViewContainer)
 private:
-	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
 	void			copyFIRParamToClipBoard();
     bool            loadToCurrentProgramFromKhaos();
 	bool			loadToCurrentProgramFromBRR( RawBRRFile *file );
@@ -63,17 +61,10 @@ private:
 	void			autocalcCurrentProgramBaseKey();
 	bool			IsPreemphasisOn();
 	
-	CFontRef				mLabelFont;
 	int						mNumCntls;
 	CControl				**mCntl;
 	
 	EfxAccess				*efxAcc;
-	
-	//èâä˙âªéûÇ…ÇÃÇ›égóp
-	CBitmap					*sliderHandleBitmap;
-	CBitmap					*onOffButton;
-	CBitmap					*bgKnob;
-	CBitmap					*rocker;
 	
 	//Testóp
 #if 0

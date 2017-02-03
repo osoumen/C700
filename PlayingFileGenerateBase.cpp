@@ -9,33 +9,10 @@
 #include "PlayingFileGenerateBase.h"
 
 static int getCommandLength(unsigned char cmd);
+void getFileNameParentPath( const char *path, char *out, int maxLen );
 
 //std::map<int,int> regStat;
 
-void getFileNameParentPath( const char *path, char *out, int maxLen )
-{
-#if MAC
-	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
-	CFURLRef	extlesspath=CFURLCreateCopyDeletingLastPathComponent(NULL, url);
-	CFStringRef	filename = CFURLCopyFileSystemPath(extlesspath, kCFURLPOSIXPathStyle);
-	CFStringGetCString(filename, out, maxLen-1, kCFStringEncodingUTF8);
-	CFRelease(filename);
-	CFRelease(extlesspath);
-	CFRelease(url);
-    strncat(out, "/", 1);
-#else
-	// Windowsでの親フォルダパス取得処理
-	int	len = static_cast<int>(strlen(path));
-	int bcPos = 0;
-	for ( int i=0; i<len; i++ ) {
-		if ( path[i] == '¥¥' ) {
-			bcPos = i+1;
-		}
-	}
-	strncpy(out, path, bcPos);
-	out[bcPos] = 0;
-#endif
-}
 
 //-----------------------------------------------------------------------------
 PlayingFileGenerateBase::PlayingFileGenerateBase(int allocSize)
