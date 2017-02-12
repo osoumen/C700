@@ -358,6 +358,7 @@ void C700Edit::SetBRRData( const BRRData *brr )
 //-----------------------------------------------------------------------------
 void C700Edit::UpdateXMSNESText()
 {
+#if 0
 	if (!frame) return;
 	if (m_pUIView == NULL) return;
 	
@@ -421,6 +422,7 @@ void C700Edit::UpdateXMSNESText()
 	
 	CTextLabel	*textbox = reinterpret_cast<CTextLabel*> (m_pUIView->FindControlByTag(kControlXMSNESText));
 	textbox->setText(param_str);
+#endif
 }
 
 //-----------------------------------------------------------------------------

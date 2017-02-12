@@ -163,6 +163,18 @@ enum
     
     kAudioUnitCustomProperty_IsHwConnected,     // read only
     
+    kAudioUnitCustomProperty_IsSaveAsSpc,
+    kAudioUnitCustomProperty_IsSaveAsSmc,
+    kAudioUnitCustomProperty_RecordStart,
+    kAudioUnitCustomProperty_RecordLoopStart,
+    kAudioUnitCustomProperty_RecordEnd,
+    kAudioUnitCustomProperty_TimeBaseForSmc,
+    kAudioUnitCustomProperty_GameTitle,
+    kAudioUnitCustomProperty_SongTitle,
+    kAudioUnitCustomProperty_NameOfDumper,
+    kAudioUnitCustomProperty_ArtistOfSong,
+    kAudioUnitCustomProperty_SongComments,
+    
     kAudioUnitCustomProperty_End,
     kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
 };
@@ -172,7 +184,7 @@ enum
 {
     kControlCommandsFirst = 70000,
     
-    kControlBankDBtn = 70000,
+    kControlBankDBtn = kControlCommandsFirst,
     kControlBankCBtn,
     kControlBankBBtn,
     kControlBankABtn,
@@ -207,7 +219,15 @@ enum
     kControlSelectTrack2,
     kControlSelectTrack1,
     
-    kControlButtonKhaos
+    kControlButtonKhaos,
+    
+    kControlButtonOpenRecordingSettings,
+    kControlButtonChooseRecordPath,
+    kControlButtonSetRecordStart,
+    kControlButtonSetRecordLoopStart,
+    kControlButtonSetRecordEnd,
+    kControlButtonLoadPlayerCode,
+    kControlButtonRecordSettingExit
 };
 
 enum InstChangeFlag {

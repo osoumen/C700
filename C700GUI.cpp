@@ -32,12 +32,9 @@
 //-----------------------------------------------------------------------------
 C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 : CViewContainer (inSize, frame, pBackground)
-, mNumCntls( 0 )
-, mCntl(NULL)
+, recordWindow(NULL)
 , efxAcc(NULL)
 {
-	//mLabelFont = new CFontDesc(g_LabelFont);
-
 	//共通グラフィックの読み込み
     CBitmap					*sliderHandleBitmap;
 	CBitmap					*onOffButton;
@@ -49,19 +46,20 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	rocker = new CBitmap("rocker_sw.png");
 	
 	//コントロールの個数
-	mNumCntls = sizeof(sCntl) / sizeof(ControlInstances);
+	int numCntls = sizeof(sCntl) / sizeof(ControlInstances);
 	
 	//作成したコントロールのインスタンスへのポインタを保持しておく
-	mCntl = new CControl*[mNumCntls];
-	
-	for ( int i=0; i<mNumCntls; i++ )
+	for ( int i=0; i<numCntls; i++ )
 	{
 		CControl	*cntl;
 		cntl = makeControlFrom( &sCntl[i], frame, this, sliderHandleBitmap, onOffButton, bgKnob, rocker );
 		if ( cntl )
 		{
 			addView(cntl);
-			mCntl[i] = cntl;
+            // -1はタグ未設定を表す
+            if (cntl->getTag() != -1) {
+                mCntl[cntl->getTag()] = cntl;
+            }
 		}
 	}
 	
@@ -70,8 +68,20 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	onOffButton->forget();
 	rocker->forget();
 	
+    CRect size (0, 0, inSize.getWidth() - 100, inSize.getHeight() - 100);
+    size.offset (50, 50);
+    recordWindow = new RecordingSettingsGUI(size, frame, NULL);
+    recordWindow->setBackgroundColor(kGreyCColor);
+    
 	//以下テストコード
 #if 0
+    CMyKnob				*cKnob;
+	CMySlider			*cVerticalSlider;
+	CLabelOnOffButton	*cCheckBox;
+	CRockerSwitch		*cRockerSwitch;
+	CWaveView			*cWaveView;
+	CDummyCntl			*cDummyTest;
+    
     //--COptionMenu--------------------------------------
 	CRect size (0, 0, 50, 14);
 	size.offset (10, 30);
@@ -188,11 +198,10 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 //-----------------------------------------------------------------------------
 C700GUI::~C700GUI()
 {
+    if (recordWindow) {
+        recordWindow->forget();
+    }
 	//mLabelFont->forget();
-	if ( mCntl )
-	{
-		delete [] mCntl;
-	}
 	removeAll();
 }
 
@@ -240,9 +249,11 @@ void C700GUI::valueChanged(CControl* control)
 
 	if ( tag < kAudioUnitCustomProperty_Begin )
 	{
+        // パラメータの操作
 		efxAcc->SetParameter( this, tag%1000, value );
 	}
 	else if ( tag < kControlCommandsFirst ) {
+        // プロパティ系の操作
 		int	propertyId = ((tag-kAudioUnitCustomProperty_Begin)%1000)+kAudioUnitCustomProperty_Begin;
 		switch (propertyId) {
 			case kAudioUnitCustomProperty_ProgramName:
@@ -256,6 +267,7 @@ void C700GUI::valueChanged(CControl* control)
 		}
 	}
 	else {
+        // 単機能のボタン操作
 		switch (tag) {
 			case kControlButtonCopy:
 				if ( value > 0 ) {
@@ -422,6 +434,14 @@ void C700GUI::valueChanged(CControl* control)
 				efxAcc->SetPropertyValue( kAudioUnitCustomProperty_Bank, 3-(tag-kControlBankDBtn) );
 				break;
                 
+            case kControlButtonOpenRecordingSettings:
+                if ( value > 0 ) {
+                    if (recordWindow) {
+                        getFrame()->setModalView(recordWindow);
+                    }
+				}
+                break;
+                
 			default:
 				break;
 		}
@@ -449,20 +469,13 @@ CMessageResult C700GUI::notify(CBaseObject* sender, const char* message)
 //-----------------------------------------------------------------------------
 CControl *C700GUI::FindControlByTag( long tag )
 {
-	CControl	*cntl = NULL;
-	if ( mCntl )
-	{
-		for ( int i=0; i<mNumCntls; i++ )
-		{
-			//単純な線形探索なのでもっと冴えた方法があるかも
-			if ( mCntl[i]->getTag() == tag )
-			{
-				cntl = mCntl[i];
-				break;
-			}
-		}
-	}
-	return cntl;
+    auto itr = mCntl.find(tag);
+    if (itr != mCntl.end()) {
+        if (itr->second->getTag() == tag) {
+            return mCntl[tag];
+        }
+    }
+    return NULL;
 }
 
 //-----------------------------------------------------------------------------

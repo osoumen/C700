@@ -17,6 +17,7 @@
 #include "SeparatorLine.h"
 #include "MyParamDisplay.h"
 #include "MyTextEdit.h"
+#include "TextKickButton.h"
 
 static CFontDesc g_LabelFont("Helvetica", 9, kBoldFace);
 CFontRef kLabelFont = &g_LabelFont;
@@ -173,6 +174,37 @@ CControl *makeControlFrom( const ControlInstances *desc, CFrame *frame, CControl
                     cntl = optionMenu;
                     break;
                 }
+                case 'push':
+				{
+					CFontRef	fontDesc;
+					int			fontsize = 9;
+					if ( desc->fontsize > 0 )
+					{
+						fontsize = desc->fontsize;
+					}
+					if ( desc->fontname[0] != 0 || desc->fontsize != 0)
+					{
+						if ( desc->fontname[0] == 0 )
+						{
+							fontDesc = new CFontDesc(kLabelFont->getName(), fontsize);
+						}
+						else
+						{
+							fontDesc = new CFontDesc(desc->fontname, fontsize);
+						}
+					}
+					else
+					{
+                        fontDesc = new CFontDesc(*kLabelFont);
+					}
+                    
+                    CTextKickButton	*button;
+					button = new CTextKickButton(cntlSize, listener, desc->id, NULL, desc->title, fontDesc );
+                    fontDesc->forget();
+                    
+					cntl = button;
+					break;
+				}
 				default:
 					goto makeDummy;
 					break;
@@ -321,7 +353,7 @@ CControl *makeControlFrom( const ControlInstances *desc, CFrame *frame, CControl
 				{
 					CTextLabel	*textLabel;
 					cntlSize.offset(0, -2);	//位置補正
-					textLabel = new CTextLabel(cntlSize, desc->title, 0, 0);
+					textLabel = new CTextLabel(cntlSize, desc->title, 0, desc->style);
 					textLabel->setFontColor(kBlackCColor);
 					textLabel->setHoriAlign(desc->fontalign);
 					textLabel->setTransparency(true);

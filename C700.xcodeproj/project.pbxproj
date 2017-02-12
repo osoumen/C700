@@ -398,6 +398,14 @@
 		F5D69C3A1E44A7E800F62CF6 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
 		F5D69C3B1E44A7E800F62CF6 /* GUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C391E44A7E800F62CF6 /* GUIUtils.h */; };
 		F5D69C3C1E44A85C00F62CF6 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
+		F5D69C401E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */; };
+		F5D69C411E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */; };
+		F5D69C421E44BD6D00F62CF6 /* RecordingSettingsGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */; };
+		F5D69C431E44BD6D00F62CF6 /* RecordingSettingsGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */; };
+		F5FEFAED1E4F439B00F08114 /* TextKickButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */; };
+		F5FEFAEE1E4F439B00F08114 /* TextKickButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */; };
+		F5FEFAEF1E4F439B00F08114 /* TextKickButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */; };
+		F5FEFAF01E4F439B00F08114 /* TextKickButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -649,6 +657,11 @@
 		F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstacnesDefs.h; sourceTree = "<group>"; };
 		F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIUtils.cpp; sourceTree = "<group>"; };
 		F5D69C391E44A7E800F62CF6 /* GUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIUtils.h; sourceTree = "<group>"; };
+		F5D69C3D1E44BCBC00F62CF6 /* RecordingViewCntls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingViewCntls.h; sourceTree = "<group>"; };
+		F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecordingSettingsGUI.cpp; sourceTree = "<group>"; };
+		F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordingSettingsGUI.h; sourceTree = "<group>"; };
+		F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextKickButton.cpp; sourceTree = "<group>"; };
+		F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextKickButton.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1031,31 +1044,19 @@
 		F569A40E161954C9006C91AD /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */,
+				F5D69C3D1E44BCBC00F62CF6 /* RecordingViewCntls.h */,
 				F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */,
 				F5D69C391E44A7E800F62CF6 /* GUIUtils.h */,
-				F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */,
-				F569BEC01622B5F8006C91AD /* EfxAccess.h */,
 				F569BEC11622B5F8006C91AD /* EfxAccess.cpp */,
-				F569A40316195488006C91AD /* C700Edit.h */,
+				F569BEC01622B5F8006C91AD /* EfxAccess.h */,
 				F569A40416195488006C91AD /* C700Edit.cpp */,
-				F569A484161964FD006C91AD /* C700GUI.h */,
+				F569A40316195488006C91AD /* C700Edit.h */,
 				F569A485161964FD006C91AD /* C700GUI.cpp */,
-				F569A94D161AB0F1006C91AD /* MyKnob.h */,
-				F569A94E161AB0F1006C91AD /* MyKnob.cpp */,
-				F569AA24161AD9F4006C91AD /* MySlider.h */,
-				F569AA25161AD9F4006C91AD /* MySlider.cpp */,
-				F569AAA2161C0114006C91AD /* LabelOnOffButton.h */,
-				F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */,
-				F569AD34161D3490006C91AD /* WaveView.h */,
-				F569AD35161D3490006C91AD /* WaveView.cpp */,
-				F55D63D8161D6FFE001CF9AB /* DummyCntl.h */,
-				F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */,
-				F55D65BC161EC9D0001CF9AB /* SeparatorLine.h */,
-				F55D65BD161EC9D0001CF9AB /* SeparatorLine.cpp */,
-				F55D6600161ECFD1001CF9AB /* MyParamDisplay.h */,
-				F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */,
-				F55D6606161ECFE3001CF9AB /* MyTextEdit.h */,
-				F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */,
+				F569A484161964FD006C91AD /* C700GUI.h */,
+				F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */,
+				F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */,
+				F5D69C441E44BEEB00F62CF6 /* CustomUI */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -1116,6 +1117,31 @@
 			path = snes_spc;
 			sourceTree = "<group>";
 		};
+		F5D69C441E44BEEB00F62CF6 /* CustomUI */ = {
+			isa = PBXGroup;
+			children = (
+				F569A94E161AB0F1006C91AD /* MyKnob.cpp */,
+				F569A94D161AB0F1006C91AD /* MyKnob.h */,
+				F569AA25161AD9F4006C91AD /* MySlider.cpp */,
+				F569AA24161AD9F4006C91AD /* MySlider.h */,
+				F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */,
+				F569AAA2161C0114006C91AD /* LabelOnOffButton.h */,
+				F569AD35161D3490006C91AD /* WaveView.cpp */,
+				F569AD34161D3490006C91AD /* WaveView.h */,
+				F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */,
+				F55D63D8161D6FFE001CF9AB /* DummyCntl.h */,
+				F55D65BD161EC9D0001CF9AB /* SeparatorLine.cpp */,
+				F55D65BC161EC9D0001CF9AB /* SeparatorLine.h */,
+				F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */,
+				F55D6600161ECFD1001CF9AB /* MyParamDisplay.h */,
+				F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */,
+				F55D6606161ECFE3001CF9AB /* MyTextEdit.h */,
+				F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */,
+				F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */,
+			);
+			name = CustomUI;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1164,6 +1190,7 @@
 				8A10AB560AE2855600271511 /* samplebrr.h in Headers */,
 				F59D91C31BF721CE00E5EFC6 /* DspRegFIFO.h in Headers */,
 				8AF717D00AE3DD5900C79293 /* gauss.h in Headers */,
+				F5FEFAEF1E4F439B00F08114 /* TextKickButton.h in Headers */,
 				F59D919F1BF720EA00E5EFC6 /* blargg_config.h in Headers */,
 				F59D919D1BF720EA00E5EFC6 /* blargg_common.h in Headers */,
 				8ACF4CD90B2145CB00EC1825 /* CarbonEventHandler.h in Headers */,
@@ -1180,6 +1207,7 @@
 				F597AD3A160B67860003E710 /* cocoasupport.h in Headers */,
 				F597AD3F160B67860003E710 /* cfileselector.h in Headers */,
 				F597AD40160B67860003E710 /* plugguieditor.h in Headers */,
+				F5D69C421E44BD6D00F62CF6 /* RecordingSettingsGUI.h in Headers */,
 				F597AD43160B67860003E710 /* vstgui.h in Headers */,
 				F59D91B31BF720EA00E5EFC6 /* spc.h in Headers */,
 				F569A3F61619527F006C91AD /* C700_CocoaViewFactory.h in Headers */,
@@ -1233,6 +1261,7 @@
 				F59D91AC1BF720EA00E5EFC6 /* SNES_SPC.h in Headers */,
 				F543319916296E0200863A0B /* gauss.h in Headers */,
 				F543319C16296E0200863A0B /* czt.h in Headers */,
+				F5D69C431E44BD6D00F62CF6 /* RecordingSettingsGUI.h in Headers */,
 				F59D919E1BF720EA00E5EFC6 /* blargg_common.h in Headers */,
 				F543319D16296E0200863A0B /* brrcodec.h in Headers */,
 				F53602BB1984CF7D0079A9BE /* audioeffectx.h in Headers */,
@@ -1288,6 +1317,7 @@
 				F54331BC16296E0200863A0B /* C700Parameters.h in Headers */,
 				F53602B31984CF7D0079A9BE /* aeffeditor.h in Headers */,
 				F54338C31629749600863A0B /* aeffguieditor.h in Headers */,
+				F5FEFAF01E4F439B00F08114 /* TextKickButton.h in Headers */,
 				F54338DA1629759600863A0B /* C700VST.h in Headers */,
 				F5710731162EB3D40043EF00 /* PGChunk.h in Headers */,
 				F510B704163266CB00A844B4 /* FileAccess.h in Headers */,
@@ -1632,7 +1662,9 @@
 				F5432C271627AE4200863A0B /* EchoKernel.cpp in Sources */,
 				F59D91AF1BF720EA00E5EFC6 /* SNES_SPC_state.cpp in Sources */,
 				F5432F321628117D00863A0B /* C700Kernel.cpp in Sources */,
+				F5FEFAED1E4F439B00F08114 /* TextKickButton.cpp in Sources */,
 				F54D11BA1E3788EB000CDDA7 /* ChunkReader.cpp in Sources */,
+				F5D69C401E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp in Sources */,
 				F5432FF4162915F900863A0B /* C700Parameters.cpp in Sources */,
 				F510B707163266CB00A844B4 /* FileAccess.cpp in Sources */,
 				F59D91A51BF720EA00E5EFC6 /* dsp.cpp in Sources */,
@@ -1673,6 +1705,7 @@
 				F543320F16296E0200863A0B /* MyParamDisplay.cpp in Sources */,
 				F543321016296E0200863A0B /* MyTextEdit.cpp in Sources */,
 				F526742E1C01E8A2006B0276 /* ControlUSB.cpp in Sources */,
+				F5FEFAEE1E4F439B00F08114 /* TextKickButton.cpp in Sources */,
 				F59D91BC1BF720EA00E5EFC6 /* SPC_Filter.cpp in Sources */,
 				F51D83D21D295E8B00A23008 /* RegisterLogger.cpp in Sources */,
 				F543321116296E0200863A0B /* EfxAccess.cpp in Sources */,
@@ -1690,6 +1723,7 @@
 				F53602B51984CF7D0079A9BE /* audioeffect.cpp in Sources */,
 				F58DCD7F1A2B4586004BD426 /* C700DSP.cpp in Sources */,
 				F52674321C01E8A2006B0276 /* SpcControlDevice.cpp in Sources */,
+				F5D69C411E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp in Sources */,
 				F59D91C21BF721CE00E5EFC6 /* DspRegFIFO.cpp in Sources */,
 				F543321916296E0200863A0B /* C700Kernel.cpp in Sources */,
 				F543321A16296E0200863A0B /* C700Parameters.cpp in Sources */,

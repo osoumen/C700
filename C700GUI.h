@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <map>
 #include "vstgui.h"
 #include "C700defines.h"
 #include "GUIUtils.h"
@@ -22,6 +23,7 @@
 #include "SeparatorLine.h"
 #include "MyParamDisplay.h"
 #include "MyTextEdit.h"
+#include "RecordingSettingsGUI.h"
 
 #include "SPCFile.h"
 #include "RawBRRFile.h"
@@ -35,7 +37,12 @@ public:
 	~C700GUI();
 	
 	CControl*	FindControlByTag( long tag );
-	void		SetEfxAccess(EfxAccess* efxacc) { efxAcc = efxacc; }
+	void		SetEfxAccess(EfxAccess* efxacc) {
+        efxAcc = efxacc;
+        if (recordWindow) {
+            recordWindow->SetEfxAccess(efxacc);
+        }
+    }
 	
 	// CView‚æ‚è
 	virtual void	valueChanged(CControl* control);
@@ -61,18 +68,8 @@ private:
 	void			autocalcCurrentProgramBaseKey();
 	bool			IsPreemphasisOn();
 	
-	int						mNumCntls;
-	CControl				**mCntl;
+    std::map<long, CControl*> mCntl;
+    RecordingSettingsGUI    *recordWindow;
 	
 	EfxAccess				*efxAcc;
-	
-	//Test—p
-#if 0
-	CMyKnob				*cKnob;
-	CMySlider			*cVerticalSlider;
-	CLabelOnOffButton	*cCheckBox;
-	CRockerSwitch		*cRockerSwitch;
-	CWaveView			*cWaveView;
-	CDummyCntl			*cDummyTest;
-#endif
 };
