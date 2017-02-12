@@ -1304,6 +1304,7 @@ ControlInstances	sCntl[] = {
 		0,	//style
 		0	//future use
 	},
+    /*
 	{
 		'appl',	//sig
 		'stxt',	//kind
@@ -1338,6 +1339,7 @@ ControlInstances	sCntl[] = {
 		0,	//style
 		0	//future use
 	},
+     */
 	{
 		'airy',	//sig
 		'slid',	//kind
@@ -2969,6 +2971,24 @@ ControlInstances	sCntl[] = {
 		0,	//command
 		145, 61, 50, 12,	//x,y,w,h
 		"",	//fontname
+		9,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		
+		'VeMa',	//sig
+		'push',	//kind
+		"song Recording...",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		0,	//sig
+		kControlButtonOpenRecordingSettings,	//id
+		0,	//command
+		216, 389, 100, 14,	//x,y,w,h
+		"Arial Black",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
 		0,	//style
