@@ -313,14 +313,21 @@ public:
     }
     void        setLoop()
     {
-        brr.data[brr.size - 9] |= 2;
+        if (brr.size >= 9) {
+            brr.data[brr.size - 9] |= 2;
+        }
     }
     void        unsetLoop()
     {
-        brr.data[brr.size - 9] &= ~2;
+        if (brr.size >= 9) {
+            brr.data[brr.size - 9] &= ~2;
+        }
     }
     bool        isLoop() const
     {
+        if (brr.size < 9) {
+            return false;
+        }
         return (brr.data[brr.size - 9] & 2)?true:false;
     }
     unsigned char *brrData() const { return brr.data; }
