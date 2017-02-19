@@ -21,7 +21,7 @@ public:
 	
 	void			Reset();
 	
-	void			SetSampleRate( double samplerate ) { mGenerator.SetSampleRate(samplerate); }
+	void			SetSampleRate( double samplerate ) { mDriver.SetSampleRate(samplerate); }
 	void			SetTempo( double tempo );
 	virtual float	GetParameter( int id );
 	virtual bool	SetParameter( int id, float value );
@@ -54,7 +54,7 @@ public:
 	void			HandleAllNotesOff( int ch, int inFrame );
 	void			HandleAllSoundOff( int ch, int inFrame );
 	
-	C700Driver	*GetGenerator() { return &mGenerator; }
+	C700Driver	*GetGenerator() { return &mDriver; }
 	
 	void			SetPropertyNotifyFunc( void (*func) (int propID, void* userData), void* userData );
 	void			SetParameterSetFunc( void (*func) (int paramID, float value, void* userData) , void* userData );
@@ -64,12 +64,12 @@ public:
 		BRRData temp = *mVPset[pg].getBRRData();
 		mVPset[pg] = *vp;
 		mVPset[pg].setBRRData(&temp);
-		mGenerator.RefreshKeyMap();
+		mDriver.RefreshKeyMap();
 	}
     
     void            CorrectLoopFlagForSave(int pgnum);
     
-    double          GetProcessDelayTime() { return mGenerator.GetProcessDelayTime(); }
+    double          GetProcessDelayTime() { return mDriver.GetProcessDelayTime(); }
 	
 #if AU
     static CFStringRef kSaveKey_ProgName;
@@ -129,7 +129,7 @@ private:
     int                 mRPN[16];
     int                 mNRPN[16];
 	
-	C700Driver      mGenerator;
+	C700Driver      mDriver;
     
     bool            mIsHwAvailable;
     
