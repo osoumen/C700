@@ -346,7 +346,8 @@ float EfxAccess::GetPropertyValue( int propertyId )
 	char		outDataPtr[16];
 	UInt32		outDataSize=16;
 	
-	if ( 
+	if (
+        propertyId != kAudioUnitCustomProperty_ProgramName &&
 		propertyId != kAudioUnitCustomProperty_PGDictionary &&
 		propertyId != kAudioUnitCustomProperty_XIData &&
 		propertyId != kAudioUnitCustomProperty_SourceFileRef ) {
