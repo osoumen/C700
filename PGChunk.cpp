@@ -9,6 +9,7 @@
 
 #include <string.h>
 #include "PGChunk.h"
+#include "C700Properties.h"
 
 //-----------------------------------------------------------------------------
 PGChunk::PGChunk(int allocMemSize)

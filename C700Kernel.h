@@ -27,7 +27,10 @@ public:
 	virtual bool	SetParameter( int id, float value );
 
 	float			GetPropertyValue( int inID );
+    void            *GetPropertyPtrValue( int inID );
+    bool            GetPropertyStructValue( int inID, void *outData );
 	bool			SetPropertyValue( int inID, float value );
+	bool			SetPropertyPtrValue( int inID, const void *inPtr );
 	const char		*GetSourceFilePath();
 	bool			SetSourceFilePath( const char *path );
 	const char		*GetProgramName();
@@ -68,6 +71,39 @@ public:
     
     double          GetProcessDelayTime() { return mGenerator.GetProcessDelayTime(); }
 	
+#if AU
+    static CFStringRef kSaveKey_ProgName;
+    static CFStringRef kSaveKey_EditProg;
+    static CFStringRef kSaveKey_EditChan;
+    static CFStringRef kSaveKey_brrdata;
+    static CFStringRef kSaveKey_looppoint;
+    static CFStringRef kSaveKey_samplerate;
+    static CFStringRef kSaveKey_basekey;
+    static CFStringRef kSaveKey_lowkey;
+    static CFStringRef kSaveKey_highkey;
+    static CFStringRef kSaveKey_ar;
+    static CFStringRef kSaveKey_dr;
+    static CFStringRef kSaveKey_sl;
+    static CFStringRef kSaveKey_sr;
+    static CFStringRef kSaveKey_volL;
+    static CFStringRef kSaveKey_volR;
+    static CFStringRef kSaveKey_echo;
+    static CFStringRef kSaveKey_bank;
+    static CFStringRef kSaveKey_IsEmphasized;
+    static CFStringRef kSaveKey_SourceFile;
+    static CFStringRef kSaveKey_SustainMode;
+    static CFStringRef kSaveKey_MonoMode;
+    static CFStringRef kSaveKey_PortamentoOn;
+    static CFStringRef kSaveKey_PortamentoRate;
+    static CFStringRef kSaveKey_NoteOnPriority;
+    static CFStringRef kSaveKey_ReleasePriority;
+
+    static void     AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int value);
+    static void     AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key, bool value);
+    int             CreatePGDataDic(CFDictionaryRef *data, int pgnum);
+    void            RestorePGDataDic(CFPropertyListRef data, int pgnum);
+#endif
+    
 private:
 	int		GetTotalRAM();
 	

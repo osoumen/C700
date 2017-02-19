@@ -14,6 +14,7 @@
 
 #include "C700defines.h"
 #include "C700Kernel.h"
+#include "C700Properties.h"
 
 #pragma mark ____C700
 class C700 : public MusicDeviceBase
@@ -127,7 +128,6 @@ private:
 	C700Kernel			*mEfx;
 	AUPreset			*mPresets;
     bool                mParameterHasChanged[kNumberOfParameters];
-	
-	int			CreatePGDataDic(CFDictionaryRef *data, int pgnum);
-	void		RestorePGDataDic(CFPropertyListRef data, int pgnum);
+    
+    std::map<int, PropertyDescription>  mPropertyParams;
 };

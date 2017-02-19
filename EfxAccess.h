@@ -24,6 +24,7 @@ class C700VST;
 #include "RawBRRFile.h"
 #include "AudioFile.h"
 #include "XIFile.h"
+#include "C700Properties.h"
 
 class EfxAccess
 {
@@ -58,4 +59,5 @@ private:
 #else
 	C700VST*			mEfx;
 #endif
+    std::map<int, PropertyDescription>  mPropertyParams;
 };
