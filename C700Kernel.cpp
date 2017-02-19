@@ -74,7 +74,7 @@ C700Kernel::C700Kernel()
 	}
 	
 	// 音源にプログラムのメモリを渡す
-	mGenerator.SetVPSet(mVPset);
+	mDriver.SetVPSet(mVPset);
 }
 
 //-----------------------------------------------------------------------------
@@ -91,7 +91,7 @@ C700Kernel::~C700Kernel()
 void C700Kernel::Reset()
 {
 	//音源リセット
-	mGenerator.Reset();
+	mDriver.Reset();
 	
 	for ( int i=0; i<16; i++ ) {
         //プラグイン状態のリセット
@@ -124,69 +124,69 @@ bool C700Kernel::SetParameter( int id, float value )
 	
 	switch ( id ) {
 		case kParam_poly:
-			mGenerator.SetVoiceLimit(value);
+			mDriver.SetVoiceLimit(value);
 			break;
 			
 		case kParam_mainvol_L:
-			mGenerator.SetMainVol_L(value);
+			mDriver.SetMainVol_L(value);
 			break;
 			
 		case kParam_mainvol_R:
-			mGenerator.SetMainVol_R(value);
+			mDriver.SetMainVol_R(value);
 			break;
 			
 		case kParam_vibdepth:
-			mGenerator.ModWheel(0, value);
+			mDriver.ModWheel(0, value);
 			break;
 			
 		case kParam_vibrate:
-			mGenerator.SetVibFreq(-1, value);   // -1が全チャンネルを表す
+			mDriver.SetVibFreq(-1, value);   // -1が全チャンネルを表す
 			break;
 			
 		case kParam_vibdepth2:
-			mGenerator.SetVibDepth(-1, value);  // -1は全チャンネルを表す
+			mDriver.SetVibDepth(-1, value);  // -1は全チャンネルを表す
 			break;
 			
 		case kParam_velocity:
 			switch ( (int)value ) {
 				case 0:
-					mGenerator.SetVelocityMode( kVelocityMode_Constant );
+					mDriver.SetVelocityMode( kVelocityMode_Constant );
 					break;
 				case 1:
-					mGenerator.SetVelocityMode( kVelocityMode_Square );
+					mDriver.SetVelocityMode( kVelocityMode_Square );
 					break;
 				case 2:
-					mGenerator.SetVelocityMode( kVelocityMode_Linear );
+					mDriver.SetVelocityMode( kVelocityMode_Linear );
 					break;
 				default:
-					mGenerator.SetVelocityMode( kVelocityMode_Square );
+					mDriver.SetVelocityMode( kVelocityMode_Square );
 			}
 			break;
 			
 		case kParam_bendrange:
-			mGenerator.SetPBRange(value);
+			mDriver.SetPBRange(value);
 			break;
 			
 		case kParam_program:
-			mGenerator.ProgramChange(0, value, 0);
+			mDriver.ProgramChange(0, value, 0);
 			break;
 			
 		case kParam_engine:
             switch ( (int)value ) {
                 case 0:
-                    mGenerator.SetEngineType(kEngineType_Old);
+                    mDriver.SetEngineType(kEngineType_Old);
                     break;
                 case 1:
-                    mGenerator.SetEngineType(kEngineType_Relaxed);
+                    mDriver.SetEngineType(kEngineType_Relaxed);
                     break;
                 case 2:
-                    mGenerator.SetEngineType(kEngineType_Accurate);
+                    mDriver.SetEngineType(kEngineType_Accurate);
                     break;
             }
 			break;
 			
 		case kParam_bankAmulti:
-			mGenerator.SetMultiMode(0, value==0 ? false:true);
+			mDriver.SetMultiMode(0, value==0 ? false:true);
 			break;
 			
 
@@ -205,7 +205,7 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_program_14:
 		case kParam_program_15:
 		case kParam_program_16:
-			mGenerator.ProgramChange( id - kParam_program_2 + 1, value, 0 );
+			mDriver.ProgramChange( id - kParam_program_2 + 1, value, 0 );
 			break;
 			
 		case kParam_vibdepth_2:
@@ -223,23 +223,23 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_vibdepth_14:
 		case kParam_vibdepth_15:
 		case kParam_vibdepth_16:
-			mGenerator.ModWheel( id - kParam_vibdepth_2 + 1, value);
+			mDriver.ModWheel( id - kParam_vibdepth_2 + 1, value);
 			break;
 			
 		case kParam_echovol_L:
-			mGenerator.SetEchoVol_L( value );
+			mDriver.SetEchoVol_L( value );
 			break;
 			
 		case kParam_echovol_R:
-			mGenerator.SetEchoVol_R( value );
+			mDriver.SetEchoVol_R( value );
 			break;
 			
 		case kParam_echoFB:
-			mGenerator.SetFeedBackLevel(value);
+			mDriver.SetFeedBackLevel(value);
 			break;
 			
 		case kParam_echodelay:
-			mGenerator.SetDelayTime(value);
+			mDriver.SetDelayTime(value);
 			break;
 			
 		case kParam_fir0:
@@ -250,39 +250,39 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_fir5:
 		case kParam_fir6:
 		case kParam_fir7:
-			mGenerator.SetFIRTap( id - kParam_fir0, value );
+			mDriver.SetFIRTap( id - kParam_fir0, value );
 			break;
 			
 		case kParam_bankBmulti:
-			mGenerator.SetMultiMode(1, value==0 ? false:true);
+			mDriver.SetMultiMode(1, value==0 ? false:true);
 			break;
 			
 		case kParam_bankCmulti:
-			mGenerator.SetMultiMode(2, value==0 ? false:true);
+			mDriver.SetMultiMode(2, value==0 ? false:true);
 			break;
 			
 		case kParam_bankDmulti:
-			mGenerator.SetMultiMode(3, value==0 ? false:true);
+			mDriver.SetMultiMode(3, value==0 ? false:true);
 			break;
 			
         case kParam_alwaysDelayNote:
-            mGenerator.SetEventDelayClocks(value==0 ? 0:8192);
+            mDriver.SetEventDelayClocks(value==0 ? 0:8192);
             break;
             
         case kParam_voiceAllocMode:
             // voiceAllocモードを設定
             switch ( (int)value ) {
                 case 0:
-                    mGenerator.SetVoiceAllocMode(kVoiceAllocMode_Oldest);
+                    mDriver.SetVoiceAllocMode(kVoiceAllocMode_Oldest);
                     break;
                 case 1:
-                    mGenerator.SetVoiceAllocMode(kVoiceAllocMode_SameChannel);
+                    mDriver.SetVoiceAllocMode(kVoiceAllocMode_SameChannel);
                     break;
             }
             break;
             
         case kParam_fastReleaseAsKeyOff:
-            mGenerator.SetFastReleaseAsKeyOff(value==0 ? false:true);
+            mDriver.SetFastReleaseAsKeyOff(value==0 ? false:true);
             break;
             
 		default:
@@ -417,7 +417,7 @@ float C700Kernel::GetPropertyValue( int inID )
             return mVPset[mEditProg].releasePriority;
             
         case kAudioUnitCustomProperty_IsHwConnected:
-            return mGenerator.IsHwAvailable() ? 1.0f:.0f;
+            return mDriver.IsHwAvailable() ? 1.0f:.0f;
             
 		default:
 			return 0;
@@ -497,15 +497,15 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 		case kAudioUnitCustomProperty_BaseKey:
 			mVPset[mEditProg].basekey = value;
-			mGenerator.RefreshKeyMap();
+			mDriver.RefreshKeyMap();
 			return true;
 		case kAudioUnitCustomProperty_LowKey:
 			mVPset[mEditProg].lowkey = value;
-			mGenerator.RefreshKeyMap();
+			mDriver.RefreshKeyMap();
 			return true;
 		case kAudioUnitCustomProperty_HighKey:
 			mVPset[mEditProg].highkey = value;
-			mGenerator.RefreshKeyMap();
+			mDriver.RefreshKeyMap();
 			return true;
 			
 		case kAudioUnitCustomProperty_LoopPoint:
@@ -517,7 +517,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			if ( mVPset[mEditProg].lp < 0 ) {
 				mVPset[mEditProg].lp = 0;
 			}
-            mGenerator.UpdateLoopPoint(mEditProg);
+            mDriver.UpdateLoopPoint(mEditProg);
 			return true;
 			
 		case kAudioUnitCustomProperty_Loop:
@@ -528,7 +528,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             else {
                 mVPset[mEditProg].unsetLoop();
             }
-            mGenerator.UpdateLoopFlag(mEditProg);
+            mDriver.UpdateLoopFlag(mEditProg);
 			return true;
 			
 		case kAudioUnitCustomProperty_Echo:
@@ -537,7 +537,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 		case kAudioUnitCustomProperty_Bank:
 			mVPset[mEditProg].bank = value;
-            mGenerator.RefreshKeyMap();
+            mDriver.RefreshKeyMap();
 			return true;
 			
 		case kAudioUnitCustomProperty_AR:
@@ -692,17 +692,17 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             
         case kAudioUnitCustomProperty_PortamentoRate:
             mVPset[mEditProg].portamentoRate = value;
-            mGenerator.UpdatePortamentoTime(mEditProg);
+            mDriver.UpdatePortamentoTime(mEditProg);
             return true;
 
         case kAudioUnitCustomProperty_NoteOnPriority:
             mVPset[mEditProg].noteOnPriority = value;
-            mGenerator.AllNotesOff();
+            mDriver.AllNotesOff();
             return true;
             
         case kAudioUnitCustomProperty_ReleasePriority:
             mVPset[mEditProg].releasePriority = value;
-            mGenerator.AllNotesOff();
+            mDriver.AllNotesOff();
             return true;
             
         case kAudioUnitCustomProperty_IsHwConnected:
@@ -848,7 +848,7 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
 		memmove(brr.data, data, size);
         mVPset[prog].setBRRData(&brr);
         // 波形の転送
-        mGenerator.SetBrrSample(prog, data, size, mVPset[prog].lp);
+        mDriver.SetBrrSample(prog, data, size, mVPset[prog].lp);
 	}
 	else {
         //NULLデータをセットされると削除を行う
@@ -856,7 +856,7 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
             mVPset[prog].releaseBrr();
 			mVPset[prog].pgname[0] = 0;
             // 波形メモリの解放
-            mGenerator.DelBrrSample(prog);
+            mDriver.DelBrrSample(prog);
 			if ( propertyNotifyFunc ) {
 				propertyNotifyFunc( kAudioUnitCustomProperty_ProgramName, propNotifyUserData );
 			}
@@ -986,7 +986,7 @@ bool C700Kernel::SelectPreset( int num )
 			return false;
 	}
 	
-	mGenerator.RefreshKeyMap();
+	mDriver.RefreshKeyMap();
 	
 	return true;
 }
@@ -995,11 +995,11 @@ bool C700Kernel::SelectPreset( int num )
 
 void C700Kernel::Render( unsigned int frames, float *output[2] )
 {
-	mGenerator.Process(frames, output);
+	mDriver.Process(frames, output);
     
     // MIDIインジケーターへの反映
     for (int i=0; i<16; i++) {
-        int onNotes = mGenerator.GetNoteOnNotes(i);
+        int onNotes = mDriver.GetNoteOnNotes(i);
         if (onNotes != mOnNotes[i]) {
             mOnNotes[i] = onNotes;
             if ( propertyNotifyFunc ) {
@@ -1014,8 +1014,8 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
         }
     }
     
-    if (mIsHwAvailable != mGenerator.IsHwAvailable()) {
-        mIsHwAvailable = mGenerator.IsHwAvailable();
+    if (mIsHwAvailable != mDriver.IsHwAvailable()) {
+        mIsHwAvailable = mDriver.IsHwAvailable();
         propertyNotifyFunc( kAudioUnitCustomProperty_IsHwConnected, propNotifyUserData );
     }
 }
@@ -1026,16 +1026,16 @@ void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFr
 {
     // TODO: ログ開始終了のノート番号を設定出来るようにする
     if (note == 0) {
-        mGenerator.StartRegisterLog(inFrame);
+        mDriver.StartRegisterLog(inFrame);
     }
     else if (note == 1) {
-        mGenerator.MarkLoopRegisterLog(inFrame);
+        mDriver.MarkLoopRegisterLog(inFrame);
     }
     else if (note == 2) {
-        mGenerator.EndRegisterLog(inFrame);
+        mDriver.EndRegisterLog(inFrame);
     }
     else {
-        mGenerator.NoteOn(ch, note, vel, uniqueID, inFrame);
+        mDriver.NoteOn(ch, note, vel, uniqueID, inFrame);
     }
 }
 
@@ -1044,7 +1044,7 @@ void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFr
 void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 {
     if (note > 2) {
-        mGenerator.NoteOff(ch, note, 0, uniqueID, inFrame);
+        mDriver.NoteOff(ch, note, 0, uniqueID, inFrame);
     }
 }
 
@@ -1052,7 +1052,7 @@ void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 
 void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
 {
-	mGenerator.PitchBend(ch, pitch1, pitch2, inFrame);
+	mDriver.PitchBend(ch, pitch1, pitch2, inFrame);
 }
 
 //-----------------------------------------------------------------------------
@@ -1136,7 +1136,7 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             // ECEN ON/OFF
             
         default:
-           mGenerator.ControlChange( ch, controlNum, value, inFrame);
+           mDriver.ControlChange( ch, controlNum, value, inFrame);
            break;
     }
 }
@@ -1192,7 +1192,7 @@ void C700Kernel::sendDataEntryValue(int ch)
     else  {
         switch (mRPN[ch]) {
             case 0x0000:
-                mGenerator.SetPBRange(ch, mDataEntryValue[ch]);
+                mDriver.SetPBRange(ch, mDataEntryValue[ch]);
                 break;
                 
             default:
@@ -1217,21 +1217,21 @@ void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
 #ifdef DEBUG_PRINT
     std::cout << "pg:" << pg << " inFrame:" << inFrame << std::endl;
 #endif
-    mGenerator.ProgramChange(ch, pg, inFrame);
+    mDriver.ProgramChange(ch, pg, inFrame);
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleResetAllControllers( int ch, int inFrame )
 {
-	mGenerator.ResetAllControllers();
+	mDriver.ResetAllControllers();
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleAllNotesOff( int ch, int inFrame )
 {
-	mGenerator.AllNotesOff();
+	mDriver.AllNotesOff();
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
@@ -1245,7 +1245,7 @@ void C700Kernel::HandleAllNotesOff( int ch, int inFrame )
 
 void C700Kernel::HandleAllSoundOff( int ch, int inFrame )
 {
-	mGenerator.AllSoundOff();
+	mDriver.AllSoundOff();
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
