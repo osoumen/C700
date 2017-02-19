@@ -32,6 +32,8 @@ C700Edit::C700Edit( void *pEffect )
 	rect.top	= 0;
 	rect.right	= (short)m_pBackground->getWidth();
 	rect.bottom = (short)m_pBackground->getHeight();
+    
+    createPropertyParamMap(mPropertyParams);
 }
 
 //-----------------------------------------------------------------------------
@@ -224,6 +226,38 @@ void C700Edit::setParameter(int index, float value)
 			UpdateXMSNESText();
 			break;
 	}
+}
+
+//-----------------------------------------------------------------------------
+void C700Edit::setParameter(int index, const void *inPtr)
+{
+    switch ( index ) {
+#if AU
+		case kAudioUnitCustomProperty_BRRData:
+        {
+            BRRData		*brrdata = (BRRData*)inPtr;
+            SetBRRData( brrdata );
+            break;
+        }
+		case kAudioUnitCustomProperty_ProgramName:
+        {
+            CFStringRef		cfpgname = reinterpret_cast<CFStringRef>(inPtr);
+            if ( cfpgname == NULL )
+            {
+                SetProgramName( "" );
+            }
+            else {
+                char	pgname[PROGRAMNAME_MAX_LEN];
+                CFStringGetCString(cfpgname, pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
+                SetProgramName( pgname );
+                CFRelease(cfpgname);
+            }
+            break;
+        }
+#endif
+        default:
+            break;
+    }
 }
 
 //-----------------------------------------------------------------------------

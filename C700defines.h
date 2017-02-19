@@ -81,104 +81,6 @@ enum {
     kNumberOfParameters
 };
 
-// properties
-enum
-{
-    kAudioUnitCustomProperty_Begin = 64000,
-
-    kAudioUnitCustomProperty_ProgramName = kAudioUnitCustomProperty_Begin,
-    kAudioUnitCustomProperty_BRRData,
-    kAudioUnitCustomProperty_Rate,
-    kAudioUnitCustomProperty_BaseKey,
-    kAudioUnitCustomProperty_LowKey,
-    kAudioUnitCustomProperty_HighKey,
-    kAudioUnitCustomProperty_LoopPoint,
-    kAudioUnitCustomProperty_Loop,
-    kAudioUnitCustomProperty_AR,
-    kAudioUnitCustomProperty_DR,
-    kAudioUnitCustomProperty_SL,
-    kAudioUnitCustomProperty_SR,
-    kAudioUnitCustomProperty_VolL,
-    kAudioUnitCustomProperty_VolR,
-    kAudioUnitCustomProperty_Echo,
-    kAudioUnitCustomProperty_Bank,
-    kAudioUnitCustomProperty_EditingProgram,
-    kAudioUnitCustomProperty_EditingChannel,
-    
-    //Å´ÉGÉRÅ[ïî
-    kAudioUnitCustomProperty_Band1,
-    kAudioUnitCustomProperty_Band2,
-    kAudioUnitCustomProperty_Band3,
-    kAudioUnitCustomProperty_Band4,
-    kAudioUnitCustomProperty_Band5,
-    
-    kAudioUnitCustomProperty_TotalRAM,          // read only
-    
-    kAudioUnitCustomProperty_PGDictionary,
-    kAudioUnitCustomProperty_XIData,            // read only
-    
-    kAudioUnitCustomProperty_NoteOnTrack_1,     // read only
-    kAudioUnitCustomProperty_NoteOnTrack_2,     // read only
-    kAudioUnitCustomProperty_NoteOnTrack_3,     // read only
-    kAudioUnitCustomProperty_NoteOnTrack_4,     // read only
-    kAudioUnitCustomProperty_NoteOnTrack_5,     // read only
-    kAudioUnitCustomProperty_NoteOnTrack_6,     // read only
-    kAudioUnitCustomProperty_NoteOnTrack_7,     // read only
-    kAudioUnitCustomProperty_NoteOnTrack_8,     // read only
-    kAudioUnitCustomProperty_NoteOnTrack_9,     // read only
-    kAudioUnitCustomProperty_NoteOnTrack_10,    // read only
-    kAudioUnitCustomProperty_NoteOnTrack_11,    // read only
-    kAudioUnitCustomProperty_NoteOnTrack_12,    // read only
-    kAudioUnitCustomProperty_NoteOnTrack_13,    // read only
-    kAudioUnitCustomProperty_NoteOnTrack_14,    // read only
-    kAudioUnitCustomProperty_NoteOnTrack_15,    // read only
-    kAudioUnitCustomProperty_NoteOnTrack_16,    // read only
-    
-    kAudioUnitCustomProperty_MaxNoteTrack_1,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_2,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_3,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_4,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_5,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_6,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_7,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_8,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_9,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_10,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_11,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_12,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_13,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_14,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_15,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_16,   // read only
-    
-    kAudioUnitCustomProperty_SourceFileRef,
-    kAudioUnitCustomProperty_IsEmaphasized,
-    
-    kAudioUnitCustomProperty_SustainMode,
-    kAudioUnitCustomProperty_MonoMode,
-    kAudioUnitCustomProperty_PortamentoOn,
-    kAudioUnitCustomProperty_PortamentoRate,
-    kAudioUnitCustomProperty_NoteOnPriority,
-    kAudioUnitCustomProperty_ReleasePriority,
-    
-    kAudioUnitCustomProperty_IsHwConnected,     // read only
-    
-    kAudioUnitCustomProperty_IsSaveAsSpc,
-    kAudioUnitCustomProperty_IsSaveAsSmc,
-    kAudioUnitCustomProperty_RecordStart,
-    kAudioUnitCustomProperty_RecordLoopStart,
-    kAudioUnitCustomProperty_RecordEnd,
-    kAudioUnitCustomProperty_TimeBaseForSmc,
-    kAudioUnitCustomProperty_GameTitle,
-    kAudioUnitCustomProperty_SongTitle,
-    kAudioUnitCustomProperty_NameOfDumper,
-    kAudioUnitCustomProperty_ArtistOfSong,
-    kAudioUnitCustomProperty_SongComments,
-    
-    kAudioUnitCustomProperty_End,
-    kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
-};
-
 // control commands
 enum 
 {
@@ -189,20 +91,20 @@ enum
     kControlBankBBtn,
     kControlBankABtn,
     
-    kControlXMSNESText          = 70004,
+    kControlXMSNESText,
     
-    kControlButtonCopy          = 70005,
-    kControlButtonPreemphasis   = 70006,
-    kControlButtonUnload        = 70007,
-    kControlButtonLoad          = 70008,
-    kControlButtonSave          = 70009,
-    kControlButtonSaveXI        = 70010,
-    kControlButtonAutoSampleRate= 70011,
-    kControlButtonAutoKey       = 70012,
-    kControlButtonChangeLoopPoint= 70013,
-    kControlButtonChangeProgram = 70014,
+    kControlButtonCopy,
+    kControlButtonPreemphasis,
+    kControlButtonUnload,
+    kControlButtonLoad,
+    kControlButtonSave,
+    kControlButtonSaveXI,
+    kControlButtonAutoSampleRate,
+    kControlButtonAutoKey,
+    kControlButtonChangeLoopPoint,
+    kControlButtonChangeProgram,
     
-    kControlSelectTrack16 = 70015,
+    kControlSelectTrack16,
     kControlSelectTrack15,
     kControlSelectTrack14,
     kControlSelectTrack13,

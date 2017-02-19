@@ -395,6 +395,10 @@
 		F5BEFCA619BC4F8C0083F8D9 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = F5BEFCA419BC4F8C0083F8D9 /* help.png */; };
 		F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
 		F5C1B32316F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
+		F5D1B06E1E55E67E00C0C795 /* C700Properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */; };
+		F5D1B06F1E55E67E00C0C795 /* C700Properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */; };
+		F5D1B0701E55E67E00C0C795 /* C700Properties.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D1B06D1E55E67E00C0C795 /* C700Properties.h */; };
+		F5D1B0711E55E67E00C0C795 /* C700Properties.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D1B06D1E55E67E00C0C795 /* C700Properties.h */; };
 		F5D69C3A1E44A7E800F62CF6 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
 		F5D69C3B1E44A7E800F62CF6 /* GUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C391E44A7E800F62CF6 /* GUIUtils.h */; };
 		F5D69C3C1E44A85C00F62CF6 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
@@ -655,6 +659,8 @@
 		F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DspRegFIFO.h; sourceTree = "<group>"; };
 		F5BEFCA419BC4F8C0083F8D9 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = help.png; path = graphics/help.png; sourceTree = "<group>"; };
 		F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstacnesDefs.h; sourceTree = "<group>"; };
+		F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C700Properties.cpp; sourceTree = "<group>"; };
+		F5D1B06D1E55E67E00C0C795 /* C700Properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700Properties.h; sourceTree = "<group>"; };
 		F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIUtils.cpp; sourceTree = "<group>"; };
 		F5D69C391E44A7E800F62CF6 /* GUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIUtils.h; sourceTree = "<group>"; };
 		F5D69C3D1E44BCBC00F62CF6 /* RecordingViewCntls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingViewCntls.h; sourceTree = "<group>"; };
@@ -963,6 +969,8 @@
 				8A10AB550AE2855600271511 /* samplebrr.h */,
 				F5432FF0162915F900863A0B /* C700Parameters.cpp */,
 				F5432FEF162915F900863A0B /* C700Parameters.h */,
+				F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */,
+				F5D1B06D1E55E67E00C0C795 /* C700Properties.h */,
 				F5432F2E1628117D00863A0B /* C700Kernel.cpp */,
 				F5432F2D1628117D00863A0B /* C700Kernel.h */,
 				F543D0AA147D285F00DC53A3 /* C700Driver.cpp */,
@@ -1207,6 +1215,7 @@
 				F597AD3A160B67860003E710 /* cocoasupport.h in Headers */,
 				F597AD3F160B67860003E710 /* cfileselector.h in Headers */,
 				F597AD40160B67860003E710 /* plugguieditor.h in Headers */,
+				F5D1B0701E55E67E00C0C795 /* C700Properties.h in Headers */,
 				F5D69C421E44BD6D00F62CF6 /* RecordingSettingsGUI.h in Headers */,
 				F597AD43160B67860003E710 /* vstgui.h in Headers */,
 				F59D91B31BF720EA00E5EFC6 /* spc.h in Headers */,
@@ -1269,6 +1278,7 @@
 				F543319E16296E0200863A0B /* C700Driver.h in Headers */,
 				F59D91BE1BF720EA00E5EFC6 /* SPC_Filter.h in Headers */,
 				F543319F16296E0200863A0B /* getpluginbundle.h in Headers */,
+				F5D1B0711E55E67E00C0C795 /* C700Properties.h in Headers */,
 				F54331A016296E0200863A0B /* vstkeycode.h in Headers */,
 				F59D91A41BF720EA00E5EFC6 /* blargg_source.h in Headers */,
 				F59D91BA1BF720EA00E5EFC6 /* SPC_DSP.h in Headers */,
@@ -1591,6 +1601,7 @@
 				8BA05AAE072073D300365D66 /* AUBase.cpp in Sources */,
 				8BA05AB0072073D300365D66 /* AUDispatch.cpp in Sources */,
 				8BA05AB2072073D300365D66 /* AUInputElement.cpp in Sources */,
+				F5D1B06E1E55E67E00C0C795 /* C700Properties.cpp in Sources */,
 				F51D83D11D295E8B00A23008 /* RegisterLogger.cpp in Sources */,
 				8BA05AB4072073D300365D66 /* AUOutputElement.cpp in Sources */,
 				F560181D1E3B8C4000400327 /* PlayingFileGenerateBase.cpp in Sources */,
@@ -1728,6 +1739,7 @@
 				F543321916296E0200863A0B /* C700Kernel.cpp in Sources */,
 				F543321A16296E0200863A0B /* C700Parameters.cpp in Sources */,
 				F54338C41629749600863A0B /* aeffguieditor.cpp in Sources */,
+				F5D1B06F1E55E67E00C0C795 /* C700Properties.cpp in Sources */,
 				F54338DB1629759600863A0B /* C700VST.cpp in Sources */,
 				F59D91B21BF720EA00E5EFC6 /* spc.cpp in Sources */,
 				F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */,

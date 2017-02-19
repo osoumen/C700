@@ -21,6 +21,7 @@ EfxAccess::EfxAccess( void *efx )
 : mEfx((C700VST*)efx)
 #endif
 {
+    createPropertyParamMap(mPropertyParams);
 }
 
 //-----------------------------------------------------------------------------
@@ -352,92 +353,26 @@ float EfxAccess::GetPropertyValue( int propertyId )
 		AudioUnitGetProperty(mAU, propertyId, kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
 	}
 	
-	switch (propertyId) {
-		case kAudioUnitCustomProperty_BaseKey:
-		case kAudioUnitCustomProperty_LowKey:
-		case kAudioUnitCustomProperty_HighKey:
-		case kAudioUnitCustomProperty_AR:
-		case kAudioUnitCustomProperty_DR:
-		case kAudioUnitCustomProperty_SL:
-		case kAudioUnitCustomProperty_SR:
-		case kAudioUnitCustomProperty_VolL:
-		case kAudioUnitCustomProperty_VolR:
-		case kAudioUnitCustomProperty_EditingProgram:
-		case kAudioUnitCustomProperty_EditingChannel:
-		case kAudioUnitCustomProperty_Bank:
-		case kAudioUnitCustomProperty_TotalRAM:
-		case kAudioUnitCustomProperty_LoopPoint:
-        case kAudioUnitCustomProperty_PortamentoRate:
-        case kAudioUnitCustomProperty_NoteOnPriority:
-        case kAudioUnitCustomProperty_ReleasePriority:
-			value = *((int*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_Rate:
-			value = *((double*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_Loop:
-		case kAudioUnitCustomProperty_Echo:
-		case kAudioUnitCustomProperty_IsEmaphasized:
-        case kAudioUnitCustomProperty_SustainMode:
-        case kAudioUnitCustomProperty_MonoMode:
-        case kAudioUnitCustomProperty_PortamentoOn:
-        case kAudioUnitCustomProperty_IsHwConnected:
-			value = *((bool*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_Band1:
-		case kAudioUnitCustomProperty_Band2:
-		case kAudioUnitCustomProperty_Band3:
-		case kAudioUnitCustomProperty_Band4:
-		case kAudioUnitCustomProperty_Band5:
-			value = *((Float32*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_NoteOnTrack_1:
-		case kAudioUnitCustomProperty_NoteOnTrack_2:
-		case kAudioUnitCustomProperty_NoteOnTrack_3:
-		case kAudioUnitCustomProperty_NoteOnTrack_4:
-		case kAudioUnitCustomProperty_NoteOnTrack_5:	
-		case kAudioUnitCustomProperty_NoteOnTrack_6:
-		case kAudioUnitCustomProperty_NoteOnTrack_7:
-		case kAudioUnitCustomProperty_NoteOnTrack_8:
-		case kAudioUnitCustomProperty_NoteOnTrack_9:
-		case kAudioUnitCustomProperty_NoteOnTrack_10:
-		case kAudioUnitCustomProperty_NoteOnTrack_11:
-		case kAudioUnitCustomProperty_NoteOnTrack_12:
-		case kAudioUnitCustomProperty_NoteOnTrack_13:
-		case kAudioUnitCustomProperty_NoteOnTrack_14:
-		case kAudioUnitCustomProperty_NoteOnTrack_15:
-		case kAudioUnitCustomProperty_NoteOnTrack_16:
-		case kAudioUnitCustomProperty_MaxNoteTrack_1:
-		case kAudioUnitCustomProperty_MaxNoteTrack_2:
-		case kAudioUnitCustomProperty_MaxNoteTrack_3:
-		case kAudioUnitCustomProperty_MaxNoteTrack_4:
-		case kAudioUnitCustomProperty_MaxNoteTrack_5:
-		case kAudioUnitCustomProperty_MaxNoteTrack_6:
-		case kAudioUnitCustomProperty_MaxNoteTrack_7:
-		case kAudioUnitCustomProperty_MaxNoteTrack_8:
-		case kAudioUnitCustomProperty_MaxNoteTrack_9:
-		case kAudioUnitCustomProperty_MaxNoteTrack_10:
-		case kAudioUnitCustomProperty_MaxNoteTrack_11:
-		case kAudioUnitCustomProperty_MaxNoteTrack_12:
-		case kAudioUnitCustomProperty_MaxNoteTrack_13:
-		case kAudioUnitCustomProperty_MaxNoteTrack_14:
-		case kAudioUnitCustomProperty_MaxNoteTrack_15:
-		case kAudioUnitCustomProperty_MaxNoteTrack_16:
-			value = *((UInt32*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_BRRData:
-		case kAudioUnitCustomProperty_ProgramName:
-		case kAudioUnitCustomProperty_PGDictionary:
-		case kAudioUnitCustomProperty_XIData:
-		case kAudioUnitCustomProperty_SourceFileRef:
-		default:
-			value = .0f;
-	}
+    auto it = mPropertyParams.find(propertyId);
+    if (it != mPropertyParams.end()) {
+        switch (it->second.dataType) {
+            case propertyDataTypeFloat32:
+                value = *((Float32*)outDataPtr);
+                break;
+            case propertyDataTypeDouble:
+                value = *((double*)outDataPtr);
+                break;
+            case propertyDataTypeInt32:
+                value = *((int*)outDataPtr);
+                break;
+            case propertyDataTypeBool:
+                value = *((bool*)outDataPtr);
+                break;
+            case propertyDataTypePtr:
+            case propertyDataTypeStruct:
+                break;
+        }
+    }
 	return value;
 #else
 	//VSTŽž‚Ìˆ—
@@ -483,118 +418,34 @@ void EfxAccess::SetPropertyValue( int propertyID, float value )
 	void*		outDataPtr = NULL;
 	UInt32		outDataSize = 0;
 	
-	switch (propertyID) {
-		case kAudioUnitCustomProperty_BaseKey:
-		case kAudioUnitCustomProperty_LowKey:
-		case kAudioUnitCustomProperty_HighKey:
-		case kAudioUnitCustomProperty_AR:
-		case kAudioUnitCustomProperty_DR:
-		case kAudioUnitCustomProperty_SL:
-		case kAudioUnitCustomProperty_SR:
-		case kAudioUnitCustomProperty_VolL:
-		case kAudioUnitCustomProperty_VolR:
-		case kAudioUnitCustomProperty_EditingProgram:
-		case kAudioUnitCustomProperty_EditingChannel:
-		case kAudioUnitCustomProperty_LoopPoint:
-		case kAudioUnitCustomProperty_Bank:
-        case kAudioUnitCustomProperty_PortamentoRate:
-        case kAudioUnitCustomProperty_NoteOnPriority:
-        case kAudioUnitCustomProperty_ReleasePriority:
-			outDataSize	= sizeof(int);
-			outDataPtr	= (void*)&intData;
-			break;
-			
-		case kAudioUnitCustomProperty_Rate:
-			outDataSize = sizeof(double);
-			outDataPtr = (void*)&doubleData;
-			break;
-			
-		case kAudioUnitCustomProperty_Loop:
-		case kAudioUnitCustomProperty_Echo:
-        case kAudioUnitCustomProperty_SustainMode:
-        case kAudioUnitCustomProperty_MonoMode:
-        case kAudioUnitCustomProperty_PortamentoOn:
-			outDataSize = sizeof(bool);
-			outDataPtr = (void*)&boolData;
-			break;
-			
-		case kAudioUnitCustomProperty_BRRData:
-			//•ÊŠÖ”‚Åˆ—
-			break;
-			
-		case kAudioUnitCustomProperty_PGDictionary:
-			//•ÊŠÖ”‚Åˆ—
-			break;
-			
-		case kAudioUnitCustomProperty_XIData:
-			//read only
-			break;
-			
-		case kAudioUnitCustomProperty_ProgramName:
-			//•ÊŠÖ”‚Åˆ—
-			break;
-			
-		case kAudioUnitCustomProperty_TotalRAM:
-			//read only
-			break;
-			
-		case kAudioUnitCustomProperty_Band1:
-		case kAudioUnitCustomProperty_Band2:
-		case kAudioUnitCustomProperty_Band3:
-		case kAudioUnitCustomProperty_Band4:
-		case kAudioUnitCustomProperty_Band5:
-			outDataSize = sizeof(Float32);
-			outDataPtr = (void*)&floatData;
-			break;
-			
-		case kAudioUnitCustomProperty_NoteOnTrack_1:
-		case kAudioUnitCustomProperty_NoteOnTrack_2:
-		case kAudioUnitCustomProperty_NoteOnTrack_3:
-		case kAudioUnitCustomProperty_NoteOnTrack_4:
-		case kAudioUnitCustomProperty_NoteOnTrack_5:	
-		case kAudioUnitCustomProperty_NoteOnTrack_6:
-		case kAudioUnitCustomProperty_NoteOnTrack_7:
-		case kAudioUnitCustomProperty_NoteOnTrack_8:
-		case kAudioUnitCustomProperty_NoteOnTrack_9:
-		case kAudioUnitCustomProperty_NoteOnTrack_10:
-		case kAudioUnitCustomProperty_NoteOnTrack_11:
-		case kAudioUnitCustomProperty_NoteOnTrack_12:
-		case kAudioUnitCustomProperty_NoteOnTrack_13:
-		case kAudioUnitCustomProperty_NoteOnTrack_14:
-		case kAudioUnitCustomProperty_NoteOnTrack_15:
-		case kAudioUnitCustomProperty_NoteOnTrack_16:
-		case kAudioUnitCustomProperty_MaxNoteTrack_1:
-		case kAudioUnitCustomProperty_MaxNoteTrack_2:
-		case kAudioUnitCustomProperty_MaxNoteTrack_3:
-		case kAudioUnitCustomProperty_MaxNoteTrack_4:
-		case kAudioUnitCustomProperty_MaxNoteTrack_5:
-		case kAudioUnitCustomProperty_MaxNoteTrack_6:
-		case kAudioUnitCustomProperty_MaxNoteTrack_7:
-		case kAudioUnitCustomProperty_MaxNoteTrack_8:
-		case kAudioUnitCustomProperty_MaxNoteTrack_9:
-		case kAudioUnitCustomProperty_MaxNoteTrack_10:
-		case kAudioUnitCustomProperty_MaxNoteTrack_11:
-		case kAudioUnitCustomProperty_MaxNoteTrack_12:
-		case kAudioUnitCustomProperty_MaxNoteTrack_13:
-		case kAudioUnitCustomProperty_MaxNoteTrack_14:
-		case kAudioUnitCustomProperty_MaxNoteTrack_15:
-		case kAudioUnitCustomProperty_MaxNoteTrack_16:
-			//read only
-			break;
-			
-		case kAudioUnitCustomProperty_SourceFileRef:
-			//•ÊŠÖ”‚Åˆ—
-			break;
-			
-		case kAudioUnitCustomProperty_IsEmaphasized:
-			//•ÊŠÖ”‚Åˆ—
-			break;
-			
-		default:
-			outDataPtr = NULL;
-			outDataSize = 0;
-	}
-	
+    auto it = mPropertyParams.find(propertyID);
+    if (it != mPropertyParams.end()) {
+        if (it->second.readOnly == false) {
+            switch (it->second.dataType) {
+                case propertyDataTypeFloat32:
+                    outDataSize = sizeof(Float32);
+                    outDataPtr = (void*)&floatData;
+                    break;
+                case propertyDataTypeDouble:
+                    outDataSize = sizeof(double);
+                    outDataPtr = (void*)&doubleData;
+                    break;
+                case propertyDataTypeInt32:
+                    outDataSize	= sizeof(int);
+                    outDataPtr	= (void*)&intData;
+                    break;
+                case propertyDataTypeBool:
+                    outDataSize = sizeof(bool);
+                    outDataPtr = (void*)&boolData;
+                    break;
+                case propertyDataTypePtr:
+                case propertyDataTypeStruct:
+                    outDataPtr = NULL;
+                    outDataSize = 0;
+                    break;
+            }
+        }
+    }
 	if ( outDataPtr ) {
 		AudioUnitSetProperty(mAU, propertyID, kAudioUnitScope_Global, 0, outDataPtr, outDataSize);
 	}

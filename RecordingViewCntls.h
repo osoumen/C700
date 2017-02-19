@@ -11,6 +11,7 @@
 
 
 #include "GUIUtils.h"
+#include "C700Properties.h"
 
 ControlInstances	sRecordingViewCntls[] = {
     {
@@ -72,7 +73,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		kAudioUnitCustomProperty_IsSaveAsSpc,	//id
+		kAudioUnitCustomProperty_RecSaveAsSpc,	//id
 		0,	//command
 		10, 52, 80, 14,	//x,y,w,h
 		"",	//fontname
@@ -89,7 +90,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
-		kAudioUnitCustomProperty_IsSaveAsSmc,	//id
+		kAudioUnitCustomProperty_RecSaveAsSmc,	//id
 		0,	//command
         10, 68, 80, 14,	//x,y,w,h
 		"",	//fontname

@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "C700Properties.h"
 #include "GUIUtils.h"
 
 ControlInstances	sCntl[] = {
