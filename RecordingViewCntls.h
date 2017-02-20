@@ -107,7 +107,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
-		kAudioUnitCustomProperty_RecordStart,	//id
+		kAudioUnitCustomProperty_RecordStartBeatPos,	//id
 		0,	//command
 		10, 84, 64, 14,	//x,y,w,h
 		"Arial",	//fontname
@@ -158,7 +158,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
-		kAudioUnitCustomProperty_RecordLoopStart,	//id
+		kAudioUnitCustomProperty_RecordLoopStartBeatPos,	//id
 		0,	//command
 		10, 100, 64, 14,	//x,y,w,h
 		"Arial",	//fontname
@@ -209,7 +209,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
-		kAudioUnitCustomProperty_RecordEnd,	//id
+		kAudioUnitCustomProperty_RecordEndBeatPos,	//id
 		0,	//command
 		10, 116, 64, 14,	//x,y,w,h
 		"Arial",	//fontname

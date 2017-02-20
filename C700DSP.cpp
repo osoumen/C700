@@ -94,6 +94,22 @@ mUseRealEmulation( true )
     mDsp.init();
     
     mIsLoggerRunning = false;
+    
+    mSongRecordPath[0] = 0;
+    mRecSaveAsSpc = false;
+    mRecSaveAsSmc = false;
+    mTimeBaseForSmc = SmcTimeBaseNTSC;
+    mGameTitle[0] = 0;
+    mSongTitle[0] = 0;
+    mNameOfDumper[0] = 0;
+    mArtistOfSong[0] = 0;
+    mSongComments[0] = 0;
+    mSmcNativeVector[0] = 0;
+    mSmcEmulationVector[0] = 0;
+    mSmcPlayerCode = NULL;
+    mSmcPlayerCodeSize = 0;
+    mSpcPlayerCode = NULL;
+    mSpcPlayerCodeSize = 0;
 }
 
 C700DSP::~C700DSP()
@@ -807,6 +823,7 @@ int C700DSP::saveRegisterLog(const char *path)
     
     //PlayingFileGenerateBase exporter;
     //exporter.WriteToFile(path, mLogger, 16000);
+    // TODO: 設定でチェックを入れているフォーマットだけ出力する
     SmcFileGenerate exporter1;
     exporter1.WriteToFile("/Users/osoumen/Desktop/c700dump.smc", mLogger);
     SpcFileGenerate exporter2;
@@ -842,4 +859,85 @@ void C700DSP::onDeviceStop(void *ref)
     
     // もしハード側にだけ書き込まれていたような場合のためにDIR領域を転送
     This->mDsp.WriteRam(0x200, &This->mRam[0x200], 0x400);
+}
+
+void C700DSP::SetSongRecordPath(const char *path)
+{
+    strncpy(mSongRecordPath, path, PATH_LEN_MAX-1);
+    mSongRecordPath[PATH_LEN_MAX-1] = 0;
+}
+
+void C700DSP::SetRecSaveAsSpc(bool enable)
+{
+    mRecSaveAsSpc = enable;
+}
+
+void C700DSP::SetRecSaveAsSmc(bool enable)
+{
+    mRecSaveAsSmc = enable;
+}
+
+void C700DSP::SetTimeBaseForSmc(SmcTimeBase timebase)
+{
+    mTimeBaseForSmc = timebase;
+}
+
+void C700DSP::SetGameTitle(const char *title)
+{
+    strncpy(mGameTitle, title, 32);
+    mGameTitle[32] = 0;
+}
+
+void C700DSP::SetSongTitle(const char *title)
+{
+    strncpy(mSongTitle, title, 32);
+    mSongTitle[32] = 0;
+}
+
+void C700DSP::SetNameOfDumper(const char *dumper)
+{
+    strncpy(mNameOfDumper, dumper, 16);
+    mNameOfDumper[16] = 0;
+}
+
+void C700DSP::SetArtistOfSong(const char *artist)
+{
+    strncpy(mArtistOfSong, artist, 32);
+    mArtistOfSong[32] = 0;
+}
+
+void C700DSP::SetSongComments(const char *comments)
+{
+    strncpy(mSongComments, comments, 32);
+    mSongComments[32] = 0;
+}
+
+void C700DSP::SetSmcNativeVector(void *vec)
+{
+    memcpy(mSmcNativeVector, vec, 12);
+}
+
+void C700DSP::SetSmcEmulationVector(void *vec)
+{
+    memcpy(mSmcEmulationVector, vec, 12);
+}
+
+void C700DSP::SetSmcPlayerCode(void *code, int size)
+{
+    if (mSmcPlayerCode != NULL) {
+        delete mSmcPlayerCode;
+    }
+    mSmcPlayerCodeSize = size;
+    mSmcPlayerCode = new unsigned char[size];
+    memcpy(mSmcPlayerCode, code, size);
+}
+
+void C700DSP::SetSpcPlayerCode(void *code, int size)
+{
+    if (mSpcPlayerCode != NULL) {
+        delete mSpcPlayerCode;
+    }
+    mSpcPlayerCodeSize = size;
+    mSpcPlayerCode = new unsigned char[size];
+    memcpy(mSpcPlayerCode, code, size);
 }

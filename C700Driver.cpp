@@ -114,6 +114,11 @@ C700Driver::C700Driver()
         mChStat[i].lastNote = 0;
 	}
     mVoiceManager.Initialize(8);
+    
+    mRecordStartBeatPos = .0;
+    mRecordLoopStartBeatPos = .0;
+    mRecordEndBeatPos = .0;
+    
 	Reset();
 }
 
@@ -1486,4 +1491,22 @@ void C700Driver::SetVPSet( InstParams *vp )
 double C700Driver::GetProcessDelayTime()
 {
     return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) + 8) / static_cast<double>(INTERNAL_CLOCK);    // 8ms + resample
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::SetRecordStartBeatPos(double pos)
+{
+    mRecordStartBeatPos = .0;
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::SetRecordLoopStartBeatPos(double pos)
+{
+    mRecordLoopStartBeatPos = .0;
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::SetRecordEndBeatPos(double pos)
+{
+    mRecordEndBeatPos = .0;
 }

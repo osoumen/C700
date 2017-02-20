@@ -447,7 +447,7 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 	//UI‚É•ÏX‚ð”½‰f
 	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg );
 	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingChannel, editChan );
-	mEfx->GetGenerator()->RefreshKeyMap();
+	mEfx->GetDriver()->RefreshKeyMap();
 	
 	delete saveChunk;
 	

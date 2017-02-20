@@ -505,6 +505,7 @@ ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 		int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
 		C700Kernel::AddNumToDictionary(dict, C700Kernel::kSaveKey_EditProg, editProg);
 		C700Kernel::AddNumToDictionary(dict, C700Kernel::kSaveKey_EditChan, editChan);
+        // TODO: recording関連の設定を保存
 		
 		pgname = CFStringCreateCopy(NULL,CFSTR("C700"));
 		CFDictionarySetValue(dict, CFSTR(kAUPresetNameKey), pgname);
@@ -553,6 +554,7 @@ ComponentResult	C700::RestoreState(CFPropertyListRef plist)
 			//変更の通知
 			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
 		}
+        // TODO: recording関連の設定を復元
 	}
 	return result;
 }
