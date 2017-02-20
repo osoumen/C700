@@ -54,7 +54,7 @@ public:
 	void			HandleAllNotesOff( int ch, int inFrame );
 	void			HandleAllSoundOff( int ch, int inFrame );
 	
-	C700Driver	*GetGenerator() { return &mDriver; }
+	C700Driver	*GetDriver() { return &mDriver; }
 	
 	void			SetPropertyNotifyFunc( void (*func) (int propID, void* userData), void* userData );
 	void			SetParameterSetFunc( void (*func) (int paramID, float value, void* userData) , void* userData );

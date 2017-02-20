@@ -119,7 +119,7 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 	}
 	
 	XIFile	*file = new XIFile(NULL);
-	file->SetDataFromChip( mEfx->mEfx->GetGenerator(),
+	file->SetDataFromChip( mEfx->mEfx->GetDriver(),
 							 mEfx->mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram),
 							 tempo );
 	if ( file->IsLoaded() ) {

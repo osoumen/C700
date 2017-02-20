@@ -417,7 +417,7 @@ float C700Kernel::GetPropertyValue( int inID )
             return mVPset[mEditProg].releasePriority;
             
         case kAudioUnitCustomProperty_IsHwConnected:
-            return mDriver.IsHwAvailable() ? 1.0f:.0f;
+            return mDriver.GetDsp()->IsHwAvailable() ? 1.0f:.0f;
             
 		default:
 			return 0;
@@ -452,7 +452,7 @@ void *C700Kernel::GetPropertyPtrValue( int inID )
         {
             XIFile	fileData(NULL);
             
-            fileData.SetDataFromChip(GetGenerator(),
+            fileData.SetDataFromChip(GetDriver(),
                                      GetPropertyValue(kAudioUnitCustomProperty_EditingProgram), mTempo);
             
             if ( fileData.IsLoaded() ) {
@@ -1014,8 +1014,8 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
         }
     }
     
-    if (mIsHwAvailable != mDriver.IsHwAvailable()) {
-        mIsHwAvailable = mDriver.IsHwAvailable();
+    if (mIsHwAvailable != mDriver.GetDsp()->IsHwAvailable()) {
+        mIsHwAvailable = mDriver.GetDsp()->IsHwAvailable();
         propertyNotifyFunc( kAudioUnitCustomProperty_IsHwConnected, propNotifyUserData );
     }
 }
@@ -1606,7 +1606,7 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
 	}
 	
-	GetGenerator()->RefreshKeyMap();
+	GetDriver()->RefreshKeyMap();
 }
 
 #endif

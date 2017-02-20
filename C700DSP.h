@@ -25,6 +25,11 @@ typedef enum
 
 class C700DSP {
 public:
+    enum SmcTimeBase {
+        SmcTimeBaseNTSC,
+        SmcTimeBasePAL
+    };
+    
     C700DSP();
     ~C700DSP();
     
@@ -74,6 +79,34 @@ public:
     void BeginRegisterLog();
     void MarkRegisterLogLoop();
     void EndRegisterLog();
+    void SetSongRecordPath(const char *path);
+    void SetRecSaveAsSpc(bool enable);
+    void SetRecSaveAsSmc(bool enable);
+    void SetTimeBaseForSmc(SmcTimeBase timebase);
+    void SetGameTitle(const char *title);
+    void SetSongTitle(const char *title);
+    void SetNameOfDumper(const char *dumper);
+    void SetArtistOfSong(const char *artist);
+    void SetSongComments(const char *comments);
+    void SetSmcNativeVector(void *vec);
+    void SetSmcEmulationVector(void *vec);
+    void SetSmcPlayerCode(void *code, int size);
+    void SetSpcPlayerCode(void *code, int size);
+    char* GetSongRecordPath() { return mSongRecordPath; }
+    bool GetRecSaveAsSpc() { return mRecSaveAsSpc; }
+    bool GetRecSaveAsSmc() { return mRecSaveAsSmc; }
+    SmcTimeBase GetTimeBaseForSmc() { return mTimeBaseForSmc; }
+    char* GetGameTitle() { return mGameTitle; }
+    char* GetSongTitle() { return mSongTitle; }
+    char* GetNameOfDumper() { return mNameOfDumper; }
+    char* GetArtistOfSong() { return mArtistOfSong; }
+    char* GetSongComments() { return mSongComments; }
+    unsigned char* GetSmcNativeVector() { return mSmcNativeVector; }
+    unsigned char* GetSmcEmulationVector() { return mSmcEmulationVector; }
+    unsigned char* GetSmcPlayerCode() { return mSmcPlayerCode; }
+    int GetSmcPlayerCodeSize() { return mSmcPlayerCodeSize; }
+    unsigned char* GetSpcPlayerCode() { return mSpcPlayerCode; }
+    int GetSpcPlayerCodeSize() { return mSpcPlayerCodeSize; }
     
 private:
     bool writeDsp(int addr, unsigned char data);
@@ -142,6 +175,21 @@ private:
     bool            mIsLoggerRunning;
     int             mLoggerSamplePos;
 
+    char            mSongRecordPath[PATH_LEN_MAX];
+    bool            mRecSaveAsSpc;
+    bool            mRecSaveAsSmc;
+    SmcTimeBase     mTimeBaseForSmc;
+    char            mGameTitle[33];
+    char            mSongTitle[33];
+    char            mNameOfDumper[17];
+    char            mArtistOfSong[33];
+    char            mSongComments[33];
+    unsigned char   mSmcNativeVector[12];
+    unsigned char   mSmcEmulationVector[12];
+    unsigned char   *mSmcPlayerCode;
+    int             mSmcPlayerCodeSize;
+    unsigned char   *mSpcPlayerCode;
+    int             mSpcPlayerCodeSize;
 };
 
 #endif /* defined(__C700__C700DSP__) */

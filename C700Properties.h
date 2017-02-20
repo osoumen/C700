@@ -96,22 +96,22 @@ enum
     kAudioUnitCustomProperty_IsHwConnected,     // read only
     
     // 追加
-    kAudioUnitCustomProperty_SongRecordPath,    // CFURLRef
-    kAudioUnitCustomProperty_RecSaveAsSpc,      // bool
-    kAudioUnitCustomProperty_RecSaveAsSmc,      // bool
-    kAudioUnitCustomProperty_RecordStart,       // double
-    kAudioUnitCustomProperty_RecordLoopStart,   // double
-    kAudioUnitCustomProperty_RecordEnd,         // double
-    kAudioUnitCustomProperty_TimeBaseForSmc,    // int
-    kAudioUnitCustomProperty_GameTitle,         // Cstring[32](smc出力時には21バイトに切り詰められる)
-    kAudioUnitCustomProperty_SongTitle,         // Cstring[32]
-    kAudioUnitCustomProperty_NameOfDumper,      // Cstring[16]
-    kAudioUnitCustomProperty_ArtistOfSong,      // Cstring[32]
-    kAudioUnitCustomProperty_SongComments,      // Cstring[32]
-    kAudioUnitCustomProperty_SmcNativeVector,
-    kAudioUnitCustomProperty_SmcEmulationVector,
-    kAudioUnitCustomProperty_SmcPlayerCode,
-    kAudioUnitCustomProperty_SpcPlayerCode,
+    kAudioUnitCustomProperty_SongRecordPath,    // Cstring[PATH_LEN_MAX] ->dsp
+    kAudioUnitCustomProperty_RecSaveAsSpc,      // bool ->dsp
+    kAudioUnitCustomProperty_RecSaveAsSmc,      // bool ->dsp
+    kAudioUnitCustomProperty_RecordStartBeatPos,// double ->driver
+    kAudioUnitCustomProperty_RecordLoopStartBeatPos,// double ->driver
+    kAudioUnitCustomProperty_RecordEndBeatPos,  // double ->driver
+    kAudioUnitCustomProperty_TimeBaseForSmc,    // int ->dsp
+    kAudioUnitCustomProperty_GameTitle,         // CFStringRef [32](smc出力時には21バイトに切り詰められる) ->dsp
+    kAudioUnitCustomProperty_SongTitle,         // CFStringRef [32] ->dsp
+    kAudioUnitCustomProperty_NameOfDumper,      // CFStringRef [16] ->dsp
+    kAudioUnitCustomProperty_ArtistOfSong,      // CFStringRef [32] ->dsp
+    kAudioUnitCustomProperty_SongComments,      // CFStringRef [32] ->dsp
+    kAudioUnitCustomProperty_SmcNativeVector,   // ptr[12] ->dsp
+    kAudioUnitCustomProperty_SmcEmulationVector,// ptr[12] ->dsp
+    kAudioUnitCustomProperty_SmcPlayerCode,     // ptr[variable] ->dsp
+    kAudioUnitCustomProperty_SpcPlayerCode,     // ptr[variable] ->dsp
     
     kAudioUnitCustomProperty_End,
     kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
@@ -132,6 +132,11 @@ typedef struct {
     bool             outWritable;
     PropertyDataType dataType;
     bool             readOnly;
+    bool             saveToProg;    // 未使用
+    bool             saveToSong;
+    bool             saveToGlobal;
+    bool             allocWhenGet;  // 未使用
+    float            defaultValue;  // 未使用
 } PropertyDescription;
 
 void createPropertyParamMap(std::map<int, PropertyDescription> &m);
