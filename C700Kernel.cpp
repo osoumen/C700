@@ -298,7 +298,6 @@ float C700Kernel::GetParameter( int id )
 }
 
 //-----------------------------------------------------------------------------
-
 float C700Kernel::GetPropertyValue( int inID )
 {
 	switch (inID) {
@@ -419,9 +418,43 @@ float C700Kernel::GetPropertyValue( int inID )
         case kAudioUnitCustomProperty_IsHwConnected:
             return mDriver.GetDsp()->IsHwAvailable() ? 1.0f:.0f;
             
+        case kAudioUnitCustomProperty_RecSaveAsSpc:
+            return mDriver.GetDsp()->GetRecSaveAsSpc() ? 1.0f:0.f;
+            
+        case kAudioUnitCustomProperty_RecSaveAsSmc:
+            return mDriver.GetDsp()->GetRecSaveAsSmc() ? 1.0f:0.f;
+            
+        case kAudioUnitCustomProperty_TimeBaseForSmc:
+        {
+            switch (mDriver.GetDsp()->GetTimeBaseForSmc()) {
+                case C700DSP::SmcTimeBaseNTSC:
+                    return 0;   // NTSC
+                case C700DSP::SmcTimeBasePAL:
+                    return 1;
+            }
+        }
+            
 		default:
 			return 0;
 	}	
+}
+
+//-----------------------------------------------------------------------------
+double C700Kernel::GetPropertyDoubleValue( int inID )
+{
+    switch (inID) {
+        case kAudioUnitCustomProperty_RecordStartBeatPos:
+            return mDriver.GetRecordStartBeatPos();
+            
+        case kAudioUnitCustomProperty_RecordLoopStartBeatPos:
+            return mDriver.GetRecordLoopStartBeatPos();
+            
+        case kAudioUnitCustomProperty_RecordEndBeatPos:
+            return mDriver.GetRecordEndBeatPos();
+            
+        default:
+			return 0;
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -464,7 +497,49 @@ void *C700Kernel::GetPropertyPtrValue( int inID )
                 return NULL;
             }
         }
+        case kAudioUnitCustomProperty_SmcPlayerCode:
+        {
+            CFDataRef data = CFDataCreate(NULL, mDriver.GetDsp()->GetSmcPlayerCode(), mDriver.GetDsp()->GetSmcPlayerCodeSize());
+            return (void *)data;	//使用後要release
+        }
+        case kAudioUnitCustomProperty_SpcPlayerCode:
+        {
+            CFDataRef data = CFDataCreate(NULL, mDriver.GetDsp()->GetSpcPlayerCode(), mDriver.GetDsp()->GetSpcPlayerCodeSize());
+            return (void *)data;	//使用後要release
+        }
 #endif
+        case kAudioUnitCustomProperty_SongRecordPath:
+        {
+            return mDriver.GetDsp()->GetSongRecordPath();
+        }
+        case kAudioUnitCustomProperty_GameTitle:
+        {
+            return mDriver.GetDsp()->GetGameTitle();
+        }
+        case kAudioUnitCustomProperty_SongTitle:
+        {
+            return mDriver.GetDsp()->GetSongTitle();
+        }
+        case kAudioUnitCustomProperty_NameOfDumper:
+        {
+            return mDriver.GetDsp()->GetNameOfDumper();
+        }
+        case kAudioUnitCustomProperty_ArtistOfSong:
+        {
+            return mDriver.GetDsp()->GetArtistOfSong();
+        }
+        case kAudioUnitCustomProperty_SongComments:
+        {
+            return mDriver.GetDsp()->GetSongComments();
+        }
+        case kAudioUnitCustomProperty_SmcNativeVector:
+        {
+            return mDriver.GetDsp()->GetSmcNativeVector();
+        }
+        case kAudioUnitCustomProperty_SmcEmulationVector:
+        {
+            return mDriver.GetDsp()->GetSmcEmulationVector();
+        }
         default:
 			return 0;
     }
@@ -485,7 +560,6 @@ bool C700Kernel::GetPropertyStructValue( int inID, void *outData )
 }
 
 //-----------------------------------------------------------------------------
-
 bool C700Kernel::SetPropertyValue( int inID, float value )
 {
 	bool		boolData = value>0.5f?true:false;
@@ -708,9 +782,48 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
         case kAudioUnitCustomProperty_IsHwConnected:
             return true;
 
+        case kAudioUnitCustomProperty_RecSaveAsSpc:
+            mDriver.GetDsp()->SetRecSaveAsSpc(value==0 ? false:true);
+            return true;
+            
+        case kAudioUnitCustomProperty_RecSaveAsSmc:
+            mDriver.GetDsp()->SetRecSaveAsSmc(value==0 ? false:true);
+            return true;
+            
+        case kAudioUnitCustomProperty_TimeBaseForSmc:
+        {
+            if (value == 0) {
+                mDriver.GetDsp()->SetTimeBaseForSmc(C700DSP::SmcTimeBaseNTSC);
+            }
+            else {
+                mDriver.GetDsp()->SetTimeBaseForSmc(C700DSP::SmcTimeBasePAL);
+            }
+            return true;
+        }
 		default:
 			return false;
 	}
+}
+
+//-----------------------------------------------------------------------------
+bool C700Kernel::SetPropertyDoubleValue( int inID, double value )
+{
+    switch (inID) {
+        case kAudioUnitCustomProperty_RecordStartBeatPos:
+            mDriver.SetRecordStartBeatPos(value);
+            return true;
+            
+        case kAudioUnitCustomProperty_RecordLoopStartBeatPos:
+            mDriver.SetRecordLoopStartBeatPos(value);
+            return true;
+            
+        case kAudioUnitCustomProperty_RecordEndBeatPos:
+            mDriver.SetRecordEndBeatPos(value);
+            return true;
+            
+        default:
+			return false;
+    }
 }
 
 bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr )
@@ -746,8 +859,60 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr )
             RestorePGDataDic(pgdata, editProg);
             return true;
         }
-		case kAudioUnitCustomProperty_XIData:
+        
+        case kAudioUnitCustomProperty_SmcPlayerCode:
+        {
+            CFDataRef data = reinterpret_cast<CFDataRef>(inPtr);
+            mDriver.GetDsp()->SetSmcPlayerCode(CFDataGetBytePtr(data), CFDataGetLength(data));
+            return true;
+        }
+        case kAudioUnitCustomProperty_SpcPlayerCode:
+        {
+            CFDataRef data = reinterpret_cast<CFDataRef>(inPtr);
+            mDriver.GetDsp()->SetSpcPlayerCode(CFDataGetBytePtr(data), CFDataGetLength(data));
+            return true;
+        }
 #endif
+        case kAudioUnitCustomProperty_SongRecordPath:
+        {
+            mDriver.GetDsp()->SetSongRecordPath(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_GameTitle:
+        {
+            mDriver.GetDsp()->SetGameTitle(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_SongTitle:
+        {
+            mDriver.GetDsp()->SetSongTitle(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_NameOfDumper:
+        {
+            mDriver.GetDsp()->SetNameOfDumper(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_ArtistOfSong:
+        {
+            mDriver.GetDsp()->SetArtistOfSong(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_SongComments:
+        {
+            mDriver.GetDsp()->SetSongComments(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_SmcNativeVector:
+        {
+            mDriver.GetDsp()->SetSmcNativeVector(inPtr);
+            return true;
+        }
+        case kAudioUnitCustomProperty_SmcEmulationVector:
+        {
+            mDriver.GetDsp()->SetSmcEmulationVector(inPtr);
+            return true;
+        }
         default:
 			return false;
     }

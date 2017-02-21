@@ -27,9 +27,11 @@ public:
 	virtual bool	SetParameter( int id, float value );
 
 	float			GetPropertyValue( int inID );
+    double          GetPropertyDoubleValue( int inID );
     void            *GetPropertyPtrValue( int inID );
     bool            GetPropertyStructValue( int inID, void *outData );
 	bool			SetPropertyValue( int inID, float value );
+    bool            SetPropertyDoubleValue( int inID, double value );
 	bool			SetPropertyPtrValue( int inID, const void *inPtr );
 	const char		*GetSourceFilePath();
 	bool			SetSourceFilePath( const char *path );

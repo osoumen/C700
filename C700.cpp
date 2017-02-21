@@ -378,7 +378,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
                     *((Float32 *)outData) = mEfx->GetPropertyValue(inID);
                     break;
                 case propertyDataTypeDouble:
-                    *((double *)outData) = mEfx->GetPropertyValue(inID);
+                    *((double *)outData) = mEfx->GetPropertyDoubleValue(inID);
                     break;
                 case propertyDataTypeInt32:
                     *((int *)outData) = mEfx->GetPropertyValue(inID);
@@ -417,7 +417,7 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
                         mEfx->SetPropertyValue(inID, *((float*)inData) );
                         break;
                     case propertyDataTypeDouble:
-                        mEfx->SetPropertyValue(inID, *((double*)inData));
+                        mEfx->SetPropertyDoubleValue(inID, *((double*)inData));
                         break;
                     case propertyDataTypeInt32:
                         mEfx->SetPropertyValue(inID, *((int*)inData) );
