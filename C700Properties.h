@@ -96,22 +96,23 @@ enum
     kAudioUnitCustomProperty_IsHwConnected,     // read only
     
     // 追加
-    kAudioUnitCustomProperty_SongRecordPath,    // Cstring[PATH_LEN_MAX] ->dsp
+    // グローバル設定ファイルはau,vst共通にするためsaveToGlobalなものはCStringに
+    kAudioUnitCustomProperty_SongRecordPath,    // char[PATH_LEN_MAX] ->dsp
     kAudioUnitCustomProperty_RecSaveAsSpc,      // bool ->dsp
     kAudioUnitCustomProperty_RecSaveAsSmc,      // bool ->dsp
     kAudioUnitCustomProperty_RecordStartBeatPos,// double ->driver
     kAudioUnitCustomProperty_RecordLoopStartBeatPos,// double ->driver
     kAudioUnitCustomProperty_RecordEndBeatPos,  // double ->driver
     kAudioUnitCustomProperty_TimeBaseForSmc,    // int ->dsp
-    kAudioUnitCustomProperty_GameTitle,         // CFStringRef [32](smc出力時には21バイトに切り詰められる) ->dsp
-    kAudioUnitCustomProperty_SongTitle,         // CFStringRef [32] ->dsp
-    kAudioUnitCustomProperty_NameOfDumper,      // CFStringRef [16] ->dsp
-    kAudioUnitCustomProperty_ArtistOfSong,      // CFStringRef [32] ->dsp
-    kAudioUnitCustomProperty_SongComments,      // CFStringRef [32] ->dsp
+    kAudioUnitCustomProperty_GameTitle,         // char[32](smc出力時には21バイトに切り詰められる) ->dsp
+    kAudioUnitCustomProperty_SongTitle,         // char[32] ->dsp
+    kAudioUnitCustomProperty_NameOfDumper,      // char[16] ->dsp
+    kAudioUnitCustomProperty_ArtistOfSong,      // char[32] ->dsp
+    kAudioUnitCustomProperty_SongComments,      // char[32] ->dsp
     kAudioUnitCustomProperty_SmcNativeVector,   // ptr[12] ->dsp
     kAudioUnitCustomProperty_SmcEmulationVector,// ptr[12] ->dsp
-    kAudioUnitCustomProperty_SmcPlayerCode,     // ptr[variable] ->dsp
-    kAudioUnitCustomProperty_SpcPlayerCode,     // ptr[variable] ->dsp
+    kAudioUnitCustomProperty_SmcPlayerCode,     // CFData ->dsp	使用後要release
+    kAudioUnitCustomProperty_SpcPlayerCode,     // CFData ->dsp	使用後要release
     
     kAudioUnitCustomProperty_End,
     kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
@@ -134,8 +135,8 @@ typedef struct {
     bool             readOnly;
     bool             saveToProg;    // 未使用
     bool             saveToSong;
-    bool             saveToGlobal;
-    bool             allocWhenGet;  // 未使用
+    bool             saveToGlobal;  // 未使用
+    bool             allocWhenGet;  // TODO: 設定する
     float            defaultValue;  // 未使用
 } PropertyDescription;
 

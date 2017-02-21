@@ -912,17 +912,17 @@ void C700DSP::SetSongComments(const char *comments)
     mSongComments[32] = 0;
 }
 
-void C700DSP::SetSmcNativeVector(void *vec)
+void C700DSP::SetSmcNativeVector(const void *vec)
 {
     memcpy(mSmcNativeVector, vec, 12);
 }
 
-void C700DSP::SetSmcEmulationVector(void *vec)
+void C700DSP::SetSmcEmulationVector(const void *vec)
 {
     memcpy(mSmcEmulationVector, vec, 12);
 }
 
-void C700DSP::SetSmcPlayerCode(void *code, int size)
+void C700DSP::SetSmcPlayerCode(const void *code, int size)
 {
     if (mSmcPlayerCode != NULL) {
         delete mSmcPlayerCode;
@@ -932,7 +932,7 @@ void C700DSP::SetSmcPlayerCode(void *code, int size)
     memcpy(mSmcPlayerCode, code, size);
 }
 
-void C700DSP::SetSpcPlayerCode(void *code, int size)
+void C700DSP::SetSpcPlayerCode(const void *code, int size)
 {
     if (mSpcPlayerCode != NULL) {
         delete mSpcPlayerCode;

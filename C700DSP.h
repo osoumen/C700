@@ -88,10 +88,10 @@ public:
     void SetNameOfDumper(const char *dumper);
     void SetArtistOfSong(const char *artist);
     void SetSongComments(const char *comments);
-    void SetSmcNativeVector(void *vec);
-    void SetSmcEmulationVector(void *vec);
-    void SetSmcPlayerCode(void *code, int size);
-    void SetSpcPlayerCode(void *code, int size);
+    void SetSmcNativeVector(const void *vec);
+    void SetSmcEmulationVector(const void *vec);
+    void SetSmcPlayerCode(const void *code, int size);
+    void SetSpcPlayerCode(const void *code, int size);
     char* GetSongRecordPath() { return mSongRecordPath; }
     bool GetRecSaveAsSpc() { return mRecSaveAsSpc; }
     bool GetRecSaveAsSmc() { return mRecSaveAsSmc; }
