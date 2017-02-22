@@ -61,14 +61,8 @@ AudioUnitParameterValue		inParameterValue
 		char		outDataPtr[16];
 		UInt32		outDataSize=16;
 		
-        if (
-            propertyId != kAudioUnitCustomProperty_ProgramName &&
-            propertyId != kAudioUnitCustomProperty_PGDictionary &&
-            propertyId != kAudioUnitCustomProperty_XIData &&
-            propertyId != kAudioUnitCustomProperty_SourceFileRef ) {
-            AudioUnitGetProperty((AudioUnit)editor->getEffect(), propertyId,
-                                 kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
-        }
+        AudioUnitGetProperty((AudioUnit)editor->getEffect(), propertyId,
+                             kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
 		
         auto it = editor->mPropertyParams.find(propertyId);
         if (it != editor->mPropertyParams.end()) {
