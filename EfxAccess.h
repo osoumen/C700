@@ -52,6 +52,15 @@ public:
 	float	GetParameter( int parameterId );
 	void	SetParameter( void *sender, int index, float value );
 	
+    bool	SetSongRecordPath( const char *path );
+	bool	GetSongRecordPath( char *path, int maxLen );
+    bool	SetSongInfoString( int propertyId, const char *string );
+	bool	GetSongInfoString( int propertyId, char *string, int maxLen );
+    bool    SetSmcNativeVector( const void *data );
+    bool    SetSmcEmulationVector( const void *data );
+    bool    SetSmcPlayerCode( const void *data, int size );
+    bool    SetSpcPlayerCode( const void *data, int size );
+    
 private:
 #if AU
 	AudioUnit			mAU;

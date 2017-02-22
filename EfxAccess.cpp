@@ -456,3 +456,172 @@ void EfxAccess::SetPropertyValue( int propertyID, float value )
 	mEfx->PropertyNotifyFunc(propertyID, mEfx);
 #endif
 }
+
+//-----------------------------------------------------------------------------
+bool EfxAccess::SetSongRecordPath( const char *path )
+{
+    if ( strlen(path) == 0 ) return false;
+#if AU
+	UInt32		inSize = sizeof(char *);
+    
+	if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SongRecordPath,
+							 kAudioUnitScope_Global, 0, &path, inSize)
+		== noErr ) {
+		return true;
+	}
+	return false;
+#else
+	//VST時の処理
+	mEfx->mEfx->GetDriver()->GetDsp()->SetSongRecordPath(path);
+	return true;
+#endif
+}
+//-----------------------------------------------------------------------------
+bool EfxAccess::GetSongRecordPath( char *path, int maxLen )
+{
+#if AU
+	char    *outpath;
+	UInt32	outSize = sizeof(char *);
+	
+	//データを取得する
+	if (
+		AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_SongRecordPath,
+							 kAudioUnitScope_Global, 0, &outpath, &outSize)
+		== noErr ) {
+		strncpy(path, outpath, maxLen-1);
+	}
+	return false;
+#else
+	//VST時の処理
+	const char	*outpath = mEfx->mEfx->GetDriver()->GetDsp()->GetSongRecordPath();
+	if ( outpath ) {
+		strncpy(path, outpath, maxLen-1);
+		return true;
+	}
+	return false;
+#endif
+}
+//-----------------------------------------------------------------------------
+bool EfxAccess::SetSongInfoString( int propertyId, const char *string )
+{
+    if ( strlen(string) == 0 ) return false;
+#if AU
+	UInt32		inSize = sizeof(char *);
+    
+	if (
+		AudioUnitSetProperty(mAU, propertyId,
+							 kAudioUnitScope_Global, 0, &string, inSize)
+		== noErr ) {
+		return true;
+	}
+	return false;
+#else
+	//VST時の処理
+	mEfx->mEfx->SetPropertyPtrValue(propertyId, string);
+	return true;
+#endif
+}
+//-----------------------------------------------------------------------------
+bool EfxAccess::GetSongInfoString( int propertyId, char *string, int maxLen )
+{
+#if AU
+	char    *outpath;
+	UInt32	outSize = sizeof(char *);
+	
+	//データを取得する
+	if (
+		AudioUnitGetProperty(mAU,propertyId,
+							 kAudioUnitScope_Global, 0, &outpath, &outSize)
+		== noErr ) {
+		strncpy(string, outpath, maxLen-1);
+	}
+	return false;
+#else
+	//VST時の処理
+	const void	*outpath = mEfx->mEfx->GetPropertyPtrValue(propertyId);
+	if ( outpath ) {
+		strncpy(string, (char *)outpath, maxLen-1);
+		return true;
+	}
+	return false;
+#endif
+}
+//-----------------------------------------------------------------------------
+bool EfxAccess::SetSmcNativeVector( const void *data )
+{
+#if AU
+	UInt32		inSize = sizeof(char *);
+    
+	if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SmcNativeVector,
+							 kAudioUnitScope_Global, 0, &data, inSize)
+		== noErr ) {
+		return true;
+	}
+	return false;
+#else
+	//VST時の処理
+	mEfx->mEfx->SetPropertyPtrValue(kAudioUnitCustomProperty_SmcNativeVector, data);
+	return true;
+#endif
+}
+//-----------------------------------------------------------------------------
+bool EfxAccess::SetSmcEmulationVector( const void *data )
+{
+#if AU
+	UInt32		inSize = sizeof(char *);
+    
+	if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SmcEmulationVector,
+							 kAudioUnitScope_Global, 0, &data, inSize)
+		== noErr ) {
+		return true;
+	}
+	return false;
+#else
+	//VST時の処理
+	mEfx->mEfx->SetPropertyPtrValue(kAudioUnitCustomProperty_SmcEmulationVector, data);
+	return true;
+#endif
+}
+//-----------------------------------------------------------------------------
+bool EfxAccess::SetSmcPlayerCode( const void *data, int size )
+{
+#if AU
+    CFDataRef   dataRef = CFDataCreate(NULL, (UInt8*)data, size);
+    UInt32      inSize = sizeof(CFDataRef);
+    if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SmcPlayerCode,
+							 kAudioUnitScope_Global, 0, &dataRef, inSize)
+		== noErr ) {
+        CFRelease(dataRef);
+		return true;
+	}
+    CFRelease(dataRef);
+	return false;
+#else
+    mEfx->mEfx->GetDriver()->GetDsp()->SetSmcPlayerCode(data, size);
+    return true;
+#endif
+}
+//-----------------------------------------------------------------------------
+bool EfxAccess::SetSpcPlayerCode( const void *data, int size )
+{
+#if AU
+    CFDataRef   dataRef = CFDataCreate(NULL, (UInt8*)data, size);
+    UInt32      inSize = sizeof(CFDataRef);
+    if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SpcPlayerCode,
+							 kAudioUnitScope_Global, 0, &dataRef, inSize)
+		== noErr ) {
+        CFRelease(dataRef);
+		return true;
+	}
+    CFRelease(dataRef);
+	return false;
+#else
+    mEfx->mEfx->GetDriver()->GetDsp()->SetSpcPlayerCode(data, size);
+    return true;
+#endif
+}
