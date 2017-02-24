@@ -567,3 +567,25 @@ bool EfxAccess::SetSongPlayerCode( const void *data, int size )
     return true;
 #endif
 }
+
+//-----------------------------------------------------------------------------
+double  EfxAccess::GetHostBeatPos()
+{
+#if AU
+    double		value = .0;
+    char		outDataPtr[16];
+    UInt32		outDataSize=16;
+    
+    AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_HostBeatPos, kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
+    
+    value = *((double*)outDataPtr);
+    return value;
+#else
+    //VSTŽž‚Ìˆ—
+    VstTimeInfo*	info = mEfx->getTimeInfo(kVstTempoValid);
+	if ( info ) {
+		return info->ppqPos;
+	}
+    return 0;
+#endif
+}
