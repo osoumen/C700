@@ -100,9 +100,9 @@ ControlInstances	sRecordingViewCntls[] = {
 		0	//future use
 	},
     {
-		'appl',	//sig
-		'stxt',	//kind
-		"1.1.0",	//title
+		'airy',	//sig
+		'eutx',	//kind
+		"",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
@@ -114,7 +114,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		9,	//fontsize
 		kCenterText,	//fontalign
 		k3DOut,	//style
-		0	//future use
+		1	//future use
 	},
     {
 		'VeMa',	//sig
@@ -151,9 +151,9 @@ ControlInstances	sRecordingViewCntls[] = {
 		0	//future use
 	},
     {
-		'appl',	//sig
-		'stxt',	//kind
-		"1.1.0",	//title
+		'airy',	//sig
+		'eutx',	//kind
+		"",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
@@ -165,7 +165,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		9,	//fontsize
 		kCenterText,	//fontalign
 		k3DOut,	//style
-		0	//future use
+		1	//future use
 	},
     {
 		'VeMa',	//sig
@@ -202,9 +202,9 @@ ControlInstances	sRecordingViewCntls[] = {
 		0	//future use
 	},
     {
-		'appl',	//sig
-		'stxt',	//kind
-		"1.1.0",	//title
+		'airy',	//sig
+		'eutx',	//kind
+		"",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
@@ -216,7 +216,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		9,	//fontsize
 		kCenterText,	//fontalign
 		k3DOut,	//style
-		0	//future use
+		1	//future use
 	},
     {
 		'VeMa',	//sig
@@ -465,7 +465,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
-		-1,	//id
+		kAudioUnitCustomProperty_SongPlayerCodeVer,	//id
 		0,	//command
 		10, 228, 64, 14,	//x,y,w,h
 		"Arial",	//fontname

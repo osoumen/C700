@@ -124,6 +124,8 @@ private:
 	static void ParameterSetFunc(int paramID, float value, void* userData);
 	
 	double				mTempo;
+    double              mBeatPos;
+    double              mCurrentSampleInTimeLine;
 	
 	C700Kernel			*mEfx;
 	AUPreset			*mPresets;

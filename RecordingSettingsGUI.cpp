@@ -133,6 +133,34 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
 					}
 				}
                 break;
+                
+            case kControlButtonSetRecordStart:
+            {
+                if ( value > 0 ) {
+                    double pos = efxAcc->GetHostBeatPos();
+                    efxAcc->SetPropertyValue(kAudioUnitCustomProperty_RecordStartBeatPos, pos);
+                    mCntl[kAudioUnitCustomProperty_RecordStartBeatPos]->setValue(pos);
+                }
+                break;
+            }
+            case kControlButtonSetRecordLoopStart:
+            {
+                if ( value > 0 ) {
+                    double pos = efxAcc->GetHostBeatPos();
+                    efxAcc->SetPropertyValue(kAudioUnitCustomProperty_RecordLoopStartBeatPos, pos);
+                    mCntl[kAudioUnitCustomProperty_RecordLoopStartBeatPos]->setValue(pos);
+                }
+                break;
+            }
+            case kControlButtonSetRecordEnd:
+            {
+                if ( value > 0 ) {
+                    double pos = efxAcc->GetHostBeatPos();
+                    efxAcc->SetPropertyValue(kAudioUnitCustomProperty_RecordEndBeatPos, pos);
+                    mCntl[kAudioUnitCustomProperty_RecordEndBeatPos]->setValue(pos);
+                }
+                break;
+            }
         }
     }
 }
@@ -143,7 +171,7 @@ bool RecordingSettingsGUI::attached(CView* view)
         CViewContainer::attached(view);
     }
     
-    // TODO: 設定値を読み込んで反映
+    // 設定値を読み込んで反映
     mCntl[kAudioUnitCustomProperty_RecSaveAsSpc]->setValue(efxAcc->GetPropertyValue(kAudioUnitCustomProperty_RecSaveAsSpc));
     mCntl[kAudioUnitCustomProperty_RecSaveAsSmc]->setValue(efxAcc->GetPropertyValue(kAudioUnitCustomProperty_RecSaveAsSmc));
     mCntl[kAudioUnitCustomProperty_TimeBaseForSmc]->setValue(efxAcc->GetPropertyValue(kAudioUnitCustomProperty_TimeBaseForSmc));
@@ -169,7 +197,24 @@ bool RecordingSettingsGUI::attached(CView* view)
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongComments]);
     efxAcc->GetSongInfoString(kAudioUnitCustomProperty_SongComments, str, 33);
     textedit->setText(str);
+    
+    textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_RecordStartBeatPos]);
+    textedit->setValue(efxAcc->GetPropertyValue(kAudioUnitCustomProperty_RecordStartBeatPos));
+    textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_RecordLoopStartBeatPos]);
+    textedit->setValue(efxAcc->GetPropertyValue(kAudioUnitCustomProperty_RecordLoopStartBeatPos));
+    textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_RecordEndBeatPos]);
+    textedit->setValue(efxAcc->GetPropertyValue(kAudioUnitCustomProperty_RecordEndBeatPos));
 
+    textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongPlayerCodeVer]);
+    int codeVer = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_SongPlayerCodeVer);
+    if (codeVer > 0) {
+        sprintf(str, "%d...OK!", codeVer);
+        textedit->setText(str);
+    }
+    else {
+        textedit->setText("not Loaded");
+    }
+    
     return CViewContainer::attached(view);
 }
 

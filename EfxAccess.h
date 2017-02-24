@@ -47,8 +47,8 @@ public:
 	bool	GetBRRData( BRRData *data );
 	bool	SetBRRData( const BRRData *data );
 	
-	float	GetPropertyValue( int propertyId );
-	void	SetPropertyValue( int propertyID, float value );
+	double	GetPropertyValue( int propertyId );
+	void	SetPropertyValue( int propertyID, double value );
 	float	GetParameter( int parameterId );
 	void	SetParameter( void *sender, int index, float value );
 	

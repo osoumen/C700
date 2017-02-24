@@ -339,7 +339,7 @@ bool EfxAccess::SetBRRData( const BRRData *data )
 }
 
 //-----------------------------------------------------------------------------
-float EfxAccess::GetPropertyValue( int propertyId )
+double EfxAccess::GetPropertyValue( int propertyId )
 {
 #if AU
 	float		value = .0f;
@@ -377,7 +377,18 @@ float EfxAccess::GetPropertyValue( int propertyId )
 	return value;
 #else
 	//VSTŽž‚Ìˆ—
-	return mEfx->mEfx->GetPropertyValue(propertyId);
+    switch (mPropertyParams[propertyId].dataType) {
+        case propertyDataTypeFloat32:
+        case propertyDataTypeInt32:
+        case propertyDataTypeBool:
+            return mEfx->mEfx->GetPropertyValue(propertyId);
+        case propertyDataTypeDouble:
+            return mEfx->mEfx->GetPropertyDoubleValue(propertyId);
+        case propertyDataTypePtr:
+        case propertyDataTypeStruct:
+            break;
+    }
+	return 0;
 #endif
 }
 
@@ -409,7 +420,7 @@ void EfxAccess::SetParameter( void *sender, int index, float value )
 }
 
 //-----------------------------------------------------------------------------
-void EfxAccess::SetPropertyValue( int propertyID, float value )
+void EfxAccess::SetPropertyValue( int propertyID, double value )
 {
 #if AU
 	double		doubleData = value;
@@ -452,7 +463,19 @@ void EfxAccess::SetPropertyValue( int propertyID, float value )
 	}
 #else
 	//VSTŽž‚Ìˆ—
-	mEfx->mEfx->SetPropertyValue(propertyID, value);
+    switch (mPropertyParams[propertyID].dataType) {
+        case propertyDataTypeFloat32:
+        case propertyDataTypeInt32:
+        case propertyDataTypeBool:
+            mEfx->mEfx->SetPropertyValue(propertyID, value);
+            break;
+        case propertyDataTypeDouble:
+            mEfx->mEfx->SetPropertyDoubleValue(propertyID, value);
+            break;
+        case propertyDataTypePtr:
+        case propertyDataTypeStruct:
+            break;
+    }
 	mEfx->PropertyNotifyFunc(propertyID, mEfx);
 #endif
 }
@@ -582,7 +605,7 @@ double  EfxAccess::GetHostBeatPos()
     return value;
 #else
     //VSTŽž‚Ìˆ—
-    VstTimeInfo*	info = mEfx->getTimeInfo(kVstTempoValid);
+    VstTimeInfo*	info = mEfx->getTimeInfo(kVstPpqPosValid);
 	if ( info ) {
 		return info->ppqPos;
 	}
