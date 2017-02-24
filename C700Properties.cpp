@@ -741,9 +741,9 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_TimeBaseForSmc,// propId
-        sizeof(double),                         // outDataSize
+        sizeof(int),                            // outDataSize
         false,                                  // outWritable
-        propertyDataTypeDouble,                 // dataType
+        propertyDataTypeInt32,                  // dataType
         false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
@@ -800,7 +800,7 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToGlobal
     },
     {
-        kAudioUnitCustomProperty_SmcNativeVector,// propId
+        kAudioUnitCustomProperty_SongPlayerCode,// propId
         sizeof(void*),                          // outDataSize
         false,                                  // outWritable
         propertyDataTypePtr,                    // dataType
@@ -810,34 +810,24 @@ PropertyDescription sPropertyDescription[] = {
         true,                                   // saveToGlobal
     },
     {
-        kAudioUnitCustomProperty_SmcEmulationVector,// propId
-        sizeof(void*),                          // outDataSize
+        kAudioUnitCustomProperty_SongPlayerCodeVer,// propId
+        sizeof(int),                            // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
-        false,                                  // readOnly
+        propertyDataTypeInt32,                  // dataType
+        true,                                   // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
-        true,                                   // saveToGlobal
+        false,                                  // saveToGlobal
     },
     {
-        kAudioUnitCustomProperty_SmcPlayerCode, // propId
-        sizeof(void*),                          // outDataSize
+        kAudioUnitCustomProperty_HostBeatPos,   // propId
+        sizeof(double),                         // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
-        false,                                  // readOnly
+        propertyDataTypeDouble,                 // dataType
+        true,                                   // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
-        true,                                   // saveToGlobal
-    },
-    {
-        kAudioUnitCustomProperty_SpcPlayerCode, // propId
-        sizeof(void*),                          // outDataSize
-        false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
-        false,                                  // readOnly
-        false,                                  // saveToProg
-        false,                                  // saveToSong
-        true,                                   // saveToGlobal
+        false                                   // saveToGlobal
     }
 };
 

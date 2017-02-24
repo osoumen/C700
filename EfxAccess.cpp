@@ -548,51 +548,13 @@ bool EfxAccess::GetSongInfoString( int propertyId, char *string, int maxLen )
 #endif
 }
 //-----------------------------------------------------------------------------
-bool EfxAccess::SetSmcNativeVector( const void *data )
-{
-#if AU
-	UInt32		inSize = sizeof(char *);
-    
-	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SmcNativeVector,
-							 kAudioUnitScope_Global, 0, &data, inSize)
-		== noErr ) {
-		return true;
-	}
-	return false;
-#else
-	//VSTŽž‚Ìˆ—
-	mEfx->mEfx->SetPropertyPtrValue(kAudioUnitCustomProperty_SmcNativeVector, data);
-	return true;
-#endif
-}
-//-----------------------------------------------------------------------------
-bool EfxAccess::SetSmcEmulationVector( const void *data )
-{
-#if AU
-	UInt32		inSize = sizeof(char *);
-    
-	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SmcEmulationVector,
-							 kAudioUnitScope_Global, 0, &data, inSize)
-		== noErr ) {
-		return true;
-	}
-	return false;
-#else
-	//VSTŽž‚Ìˆ—
-	mEfx->mEfx->SetPropertyPtrValue(kAudioUnitCustomProperty_SmcEmulationVector, data);
-	return true;
-#endif
-}
-//-----------------------------------------------------------------------------
-bool EfxAccess::SetSmcPlayerCode( const void *data, int size )
+bool EfxAccess::SetSongPlayerCode( const void *data, int size )
 {
 #if AU
     CFDataRef   dataRef = CFDataCreate(NULL, (UInt8*)data, size);
     UInt32      inSize = sizeof(CFDataRef);
     if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SmcPlayerCode,
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SongPlayerCode,
 							 kAudioUnitScope_Global, 0, &dataRef, inSize)
 		== noErr ) {
         CFRelease(dataRef);
@@ -601,27 +563,7 @@ bool EfxAccess::SetSmcPlayerCode( const void *data, int size )
     CFRelease(dataRef);
 	return false;
 #else
-    mEfx->mEfx->GetDriver()->GetDsp()->SetSmcPlayerCode(data, size);
-    return true;
-#endif
-}
-//-----------------------------------------------------------------------------
-bool EfxAccess::SetSpcPlayerCode( const void *data, int size )
-{
-#if AU
-    CFDataRef   dataRef = CFDataCreate(NULL, (UInt8*)data, size);
-    UInt32      inSize = sizeof(CFDataRef);
-    if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SpcPlayerCode,
-							 kAudioUnitScope_Global, 0, &dataRef, inSize)
-		== noErr ) {
-        CFRelease(dataRef);
-		return true;
-	}
-    CFRelease(dataRef);
-	return false;
-#else
-    mEfx->mEfx->GetDriver()->GetDsp()->SetSpcPlayerCode(data, size);
+    mEfx->mEfx->GetDriver()->GetDsp()->SetSongPlayerCode(data, size);
     return true;
 #endif
 }

@@ -433,6 +433,9 @@ float C700Kernel::GetPropertyValue( int inID )
                     return 1;
             }
         }
+        
+        case kAudioUnitCustomProperty_SongPlayerCodeVer:
+            return mDriver.GetDsp()->GetSongPlayCodeVer();
             
 		default:
 			return 0;
@@ -497,16 +500,6 @@ void *C700Kernel::GetPropertyPtrValue( int inID )
                 return NULL;
             }
         }
-        case kAudioUnitCustomProperty_SmcPlayerCode:
-        {
-            CFDataRef data = CFDataCreate(NULL, mDriver.GetDsp()->GetSmcPlayerCode(), mDriver.GetDsp()->GetSmcPlayerCodeSize());
-            return (void *)data;	//使用後要release
-        }
-        case kAudioUnitCustomProperty_SpcPlayerCode:
-        {
-            CFDataRef data = CFDataCreate(NULL, mDriver.GetDsp()->GetSpcPlayerCode(), mDriver.GetDsp()->GetSpcPlayerCodeSize());
-            return (void *)data;	//使用後要release
-        }
 #endif
         case kAudioUnitCustomProperty_SongRecordPath:
         {
@@ -531,14 +524,6 @@ void *C700Kernel::GetPropertyPtrValue( int inID )
         case kAudioUnitCustomProperty_SongComments:
         {
             return mDriver.GetDsp()->GetSongComments();
-        }
-        case kAudioUnitCustomProperty_SmcNativeVector:
-        {
-            return mDriver.GetDsp()->GetSmcNativeVector();
-        }
-        case kAudioUnitCustomProperty_SmcEmulationVector:
-        {
-            return mDriver.GetDsp()->GetSmcEmulationVector();
         }
         default:
 			return 0;
@@ -860,16 +845,10 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr )
             return true;
         }
         
-        case kAudioUnitCustomProperty_SmcPlayerCode:
+        case kAudioUnitCustomProperty_SongPlayerCode:
         {
             CFDataRef data = reinterpret_cast<CFDataRef>(inPtr);
-            mDriver.GetDsp()->SetSmcPlayerCode(CFDataGetBytePtr(data), CFDataGetLength(data));
-            return true;
-        }
-        case kAudioUnitCustomProperty_SpcPlayerCode:
-        {
-            CFDataRef data = reinterpret_cast<CFDataRef>(inPtr);
-            mDriver.GetDsp()->SetSpcPlayerCode(CFDataGetBytePtr(data), CFDataGetLength(data));
+            mDriver.GetDsp()->SetSongPlayerCode(CFDataGetBytePtr(data), CFDataGetLength(data));
             return true;
         }
 #endif
@@ -901,16 +880,6 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr )
         case kAudioUnitCustomProperty_SongComments:
         {
             mDriver.GetDsp()->SetSongComments(reinterpret_cast<const char *>(inPtr));
-            return true;
-        }
-        case kAudioUnitCustomProperty_SmcNativeVector:
-        {
-            mDriver.GetDsp()->SetSmcNativeVector(inPtr);
-            return true;
-        }
-        case kAudioUnitCustomProperty_SmcEmulationVector:
-        {
-            mDriver.GetDsp()->SetSmcEmulationVector(inPtr);
             return true;
         }
         default:

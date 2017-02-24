@@ -88,10 +88,7 @@ public:
     void SetNameOfDumper(const char *dumper);
     void SetArtistOfSong(const char *artist);
     void SetSongComments(const char *comments);
-    void SetSmcNativeVector(const void *vec);
-    void SetSmcEmulationVector(const void *vec);
-    void SetSmcPlayerCode(const void *code, int size);
-    void SetSpcPlayerCode(const void *code, int size);
+    void SetSongPlayerCode(const void *code, int size);
     char* GetSongRecordPath() { return mSongRecordPath; }
     bool GetRecSaveAsSpc() { return mRecSaveAsSpc; }
     bool GetRecSaveAsSmc() { return mRecSaveAsSmc; }
@@ -101,12 +98,7 @@ public:
     char* GetNameOfDumper() { return mNameOfDumper; }
     char* GetArtistOfSong() { return mArtistOfSong; }
     char* GetSongComments() { return mSongComments; }
-    unsigned char* GetSmcNativeVector() { return mSmcNativeVector; }
-    unsigned char* GetSmcEmulationVector() { return mSmcEmulationVector; }
-    unsigned char* GetSmcPlayerCode() { return mSmcPlayerCode; }
-    int GetSmcPlayerCodeSize() { return mSmcPlayerCodeSize; }
-    unsigned char* GetSpcPlayerCode() { return mSpcPlayerCode; }
-    int GetSpcPlayerCodeSize() { return mSpcPlayerCodeSize; }
+    unsigned int GetSongPlayCodeVer();
     
 private:
     bool writeDsp(int addr, unsigned char data);
@@ -117,6 +109,11 @@ private:
     static void onDeviceReady(void *ref);
     static void onDeviceStop(void *ref);
     
+    void setSmcNativeVector(const void *vec);
+    void setSmcEmulationVector(const void *vec);
+    void setSmcPlayerCode(const void *code, int size);
+    void setSpcPlayerCode(const void *code, int size);
+
 private:
     struct DSPState {
         // 音源内部状態
