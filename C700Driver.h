@@ -219,6 +219,8 @@ private:
 	int				mProcessbuf[2][16];		//リサンプリング用バッファ
 	int				mProcessbufPtr;			//リサンプリング用バッファ書き込み位置
 	
+    MutexObject         mREGLOGEvtMtx;
+    std::list<MIDIEvt>	mREGLOGEvt;			//レジスタログのためのキュー
     MutexObject         mMIDIEvtMtx;
 	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
 	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
@@ -267,6 +269,7 @@ private:
     bool    doNoteOn1( MIDIEvt dEvt );
 	void	doNoteOn2(const MIDIEvt *evt);
 	int		doNoteOff( const MIDIEvt *evt );
+    bool doRegLogEvents( const MIDIEvt *evt );
     bool doEvents1( const MIDIEvt *evt );
     bool doEvents2( const MIDIEvt *evt );
     int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }

@@ -75,6 +75,7 @@ C700Driver::C700Driver()
   mVelocityMode( kVelocityMode_Square ),
   mVPset(NULL)
 {
+    MutexInit(mREGLOGEvtMtx);
     MutexInit(mMIDIEvtMtx);
     
 	for ( int i=0; i<NUM_BANKS; i++ ) {
@@ -126,6 +127,7 @@ C700Driver::C700Driver()
 C700Driver::~C700Driver()
 {
     MutexDestroy(mMIDIEvtMtx);
+    MutexDestroy(mREGLOGEvtMtx);
 }
 //-----------------------------------------------------------------------------
 void C700Driver::Reset()
@@ -202,9 +204,9 @@ void C700Driver::StartRegisterLog( int inFrame )
 	evt.velo = 0;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
+    MutexLock(mREGLOGEvtMtx);
+	mREGLOGEvt.push_back( evt );
+    MutexUnlock(mREGLOGEvtMtx);
 }
 
 //-----------------------------------------------------------------------------
@@ -217,9 +219,9 @@ void C700Driver::MarkLoopRegisterLog( int inFrame )
 	evt.velo = 0;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
+    MutexLock(mREGLOGEvtMtx);
+	mREGLOGEvt.push_back( evt );
+    MutexUnlock(mREGLOGEvtMtx);
 }
 
 //-----------------------------------------------------------------------------
@@ -232,9 +234,9 @@ void C700Driver::EndRegisterLog( int inFrame )
 	evt.velo = 0;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
+    MutexLock(mREGLOGEvtMtx);
+	mREGLOGEvt.push_back( evt );
+    MutexUnlock(mREGLOGEvtMtx);
 }
 
 //-----------------------------------------------------------------------------
@@ -1055,6 +1057,26 @@ int C700Driver::doNoteOff( const MIDIEvt *evt )
 }
 
 //-----------------------------------------------------------------------------
+bool C700Driver::doRegLogEvents( const MIDIEvt *evt )
+{
+    bool    handled = true;
+    
+    if (evt->type == START_REGLOG) {
+        mDSP.BeginRegisterLog();
+    }
+    else if (evt->type == MARKLOOP_REGLOG) {
+        mDSP.MarkRegisterLogLoop();
+    }
+    else if (evt->type == END_REGLOG) {
+        mDSP.EndRegisterLog();
+    }
+    else {
+        handled = false;
+    }
+    return handled;
+}
+
+//-----------------------------------------------------------------------------
 bool C700Driver::doEvents1( const MIDIEvt *evt )
 {
     bool    handled = true;
@@ -1067,15 +1089,6 @@ bool C700Driver::doEvents1( const MIDIEvt *evt )
             doNoteOff( evt );
             //mChStat[evt->ch].noteOns -= stops;
         }
-    }
-    else if (evt->type == START_REGLOG) {
-        mDSP.BeginRegisterLog();
-    }
-    else if (evt->type == MARKLOOP_REGLOG) {
-        mDSP.MarkRegisterLogLoop();
-    }
-    else if (evt->type == END_REGLOG) {
-        mDSP.EndRegisterLog();
     }
     else {
         // ノートオフとレジスタログ以外のイベントは全て遅延実行する
@@ -1245,7 +1258,28 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
     
     mDSP.BeginFrameProcess((double)frames / mSampleRate);
     
+    // TODO: REGLOGイベントの登録
+    
 	for (unsigned int frame=0; frame<frames; ++frame) {
+        // REGLOGイベントの処理
+        MutexLock(mREGLOGEvtMtx);
+		if ( mREGLOGEvt.size() != 0 ) {
+			std::list<MIDIEvt>::iterator	it = mREGLOGEvt.begin();
+			while ( it != mREGLOGEvt.end() ) {
+				if ( it->remain_samples >= 0 ) {
+					it->remain_samples--;
+                }
+                if ( it->remain_samples < 0 ) {
+                    if (doRegLogEvents(&(*it))) {
+                        it = mREGLOGEvt.erase( it );
+                        continue;
+                    }
+                }
+				it++;
+			}
+		}
+        MutexUnlock(mREGLOGEvtMtx);
+        
 		//イベント処理
         MutexLock(mMIDIEvtMtx);
 		if ( mMIDIEvt.size() != 0 ) {
