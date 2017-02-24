@@ -98,7 +98,7 @@ public:
     char* GetNameOfDumper() { return mNameOfDumper; }
     char* GetArtistOfSong() { return mArtistOfSong; }
     char* GetSongComments() { return mSongComments; }
-    unsigned int GetSongPlayCodeVer();
+    int GetSongPlayCodeVer();
     
 private:
     bool writeDsp(int addr, unsigned char data);

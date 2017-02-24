@@ -118,7 +118,8 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 {
 	OSStatus result = MusicDeviceBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
 	
-	CallHostBeatAndTempo(NULL, &mTempo);
+	CallHostBeatAndTempo(&mBeatPos, &mTempo);
+    CallHostTransportState(NULL, NULL, &mCurrentSampleInTimeLine, NULL, NULL, NULL);
 	mEfx->SetTempo( mTempo );
 	//バッファの確保
 	float				*output[2];
@@ -374,9 +375,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
         auto it = mPropertyParams.find(inID);
         if (it != mPropertyParams.end()) {
             if (it->second.propId == kAudioUnitCustomProperty_HostBeatPos) {
-                double beat;
-                CallHostBeatAndTempo(&beat, NULL);
-                *((double *)outData) = beat;
+                *((double *)outData) = mCurrentSampleInTimeLine;
             }
             else {
                 switch (it->second.dataType) {

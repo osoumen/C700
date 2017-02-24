@@ -947,7 +947,7 @@ void C700DSP::SetSongPlayerCode(const void *code, int size)
     // TODO: chunk構造のデータからデータを読み込む
 }
 
-unsigned int C700DSP::GetSongPlayCodeVer()
+int C700DSP::GetSongPlayCodeVer()
 {
-    
+    return 1;
 }

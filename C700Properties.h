@@ -111,7 +111,7 @@ enum
     kAudioUnitCustomProperty_SongComments,      // char[32] ->dsp
     
     kAudioUnitCustomProperty_SongPlayerCode,    // CFData ->dsp write only
-    kAudioUnitCustomProperty_SongPlayerCodeVer, // uint32 read only
+    kAudioUnitCustomProperty_SongPlayerCodeVer, // int32 read only
     
     kAudioUnitCustomProperty_HostBeatPos,       // double read only
     

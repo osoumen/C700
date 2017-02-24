@@ -1496,17 +1496,17 @@ double C700Driver::GetProcessDelayTime()
 //-----------------------------------------------------------------------------
 void C700Driver::SetRecordStartBeatPos(double pos)
 {
-    mRecordStartBeatPos = .0;
+    mRecordStartBeatPos = pos;
 }
 
 //-----------------------------------------------------------------------------
 void C700Driver::SetRecordLoopStartBeatPos(double pos)
 {
-    mRecordLoopStartBeatPos = .0;
+    mRecordLoopStartBeatPos = pos;
 }
 
 //-----------------------------------------------------------------------------
 void C700Driver::SetRecordEndBeatPos(double pos)
 {
-    mRecordEndBeatPos = .0;
+    mRecordEndBeatPos = pos;
 }
