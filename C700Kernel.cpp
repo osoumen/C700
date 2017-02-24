@@ -446,6 +446,9 @@ float C700Kernel::GetPropertyValue( int inID )
 double C700Kernel::GetPropertyDoubleValue( int inID )
 {
     switch (inID) {
+        case kAudioUnitCustomProperty_Rate:
+			return mVPset[mEditProg].rate;
+            
         case kAudioUnitCustomProperty_RecordStartBeatPos:
             return mDriver.GetRecordStartBeatPos();
             
@@ -550,10 +553,6 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 	bool		boolData = value>0.5f?true:false;
 	
 	switch (inID) {
-		case kAudioUnitCustomProperty_Rate:
-			mVPset[mEditProg].rate = value;
-			return true;
-			
 		case kAudioUnitCustomProperty_BaseKey:
 			mVPset[mEditProg].basekey = value;
 			mDriver.RefreshKeyMap();
@@ -794,6 +793,10 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 bool C700Kernel::SetPropertyDoubleValue( int inID, double value )
 {
     switch (inID) {
+		case kAudioUnitCustomProperty_Rate:
+			mVPset[mEditProg].rate = value;
+			return true;
+			
         case kAudioUnitCustomProperty_RecordStartBeatPos:
             mDriver.SetRecordStartBeatPos(value);
             return true;
@@ -1558,7 +1561,7 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	if (CFDictionaryContainsKey(dict, kSaveKey_samplerate)) {
 		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_samplerate));
 		CFNumberGetValue(cfnum, kCFNumberDoubleType, &dvalue);
-		SetPropertyValue(kAudioUnitCustomProperty_Rate, dvalue);
+		SetPropertyDoubleValue(kAudioUnitCustomProperty_Rate, dvalue);
 	}
 	
 	if (CFDictionaryContainsKey(dict, kSaveKey_basekey)) {
