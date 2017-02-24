@@ -109,10 +109,11 @@ enum
     kAudioUnitCustomProperty_NameOfDumper,      // char[16] ->dsp
     kAudioUnitCustomProperty_ArtistOfSong,      // char[32] ->dsp
     kAudioUnitCustomProperty_SongComments,      // char[32] ->dsp
-    kAudioUnitCustomProperty_SmcNativeVector,   // ptr[12] ->dsp
-    kAudioUnitCustomProperty_SmcEmulationVector,// ptr[12] ->dsp
-    kAudioUnitCustomProperty_SmcPlayerCode,     // CFData ->dsp	使用後要release
-    kAudioUnitCustomProperty_SpcPlayerCode,     // CFData ->dsp	使用後要release
+    
+    kAudioUnitCustomProperty_SongPlayerCode,    // CFData ->dsp write only
+    kAudioUnitCustomProperty_SongPlayerCodeVer, // uint32 read only
+    
+    kAudioUnitCustomProperty_HostBeatPos,       // double read only
     
     kAudioUnitCustomProperty_End,
     kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin

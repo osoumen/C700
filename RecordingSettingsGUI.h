@@ -24,7 +24,7 @@ public:
 	~RecordingSettingsGUI();
 	
 	CControl*	FindControlByTag( long tag );
-	void		SetEfxAccess(EfxAccess* efxacc) { efxAcc = efxacc; }
+	void		SetEfxAccess(EfxAccess* efxacc);
 	
 	// CViewより
 	virtual void	valueChanged(CControl* control);
@@ -38,6 +38,9 @@ private:
     EfxAccess                   *efxAcc;
     
     std::map<long, CControl*>   mCntl;
+    
+    bool getLoadFile( char *path, int maxLen, const char *title );
+    bool getFolder( char *path, int maxLen, const char *title );
 };
 
 #endif /* defined(__C700__RecordingSettingsGUI__) */

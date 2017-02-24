@@ -373,25 +373,32 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 #endif
         auto it = mPropertyParams.find(inID);
         if (it != mPropertyParams.end()) {
-            switch (it->second.dataType) {
-                case propertyDataTypeFloat32:
-                    *((Float32 *)outData) = mEfx->GetPropertyValue(inID);
-                    break;
-                case propertyDataTypeDouble:
-                    *((double *)outData) = mEfx->GetPropertyDoubleValue(inID);
-                    break;
-                case propertyDataTypeInt32:
-                    *((int *)outData) = mEfx->GetPropertyValue(inID);
-                    break;
-                case propertyDataTypeBool:
-                    *((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
-                    break;
-                case propertyDataTypePtr:
-                    *((char **)outData) = (char *)mEfx->GetPropertyPtrValue(inID);
-                    break;
-                case propertyDataTypeStruct:
-                    mEfx->GetPropertyStructValue(inID, outData);
-                    break;
+            if (it->second.propId == kAudioUnitCustomProperty_HostBeatPos) {
+                double beat;
+                CallHostBeatAndTempo(&beat, NULL);
+                *((double *)outData) = beat;
+            }
+            else {
+                switch (it->second.dataType) {
+                    case propertyDataTypeFloat32:
+                        *((Float32 *)outData) = mEfx->GetPropertyValue(inID);
+                        break;
+                    case propertyDataTypeDouble:
+                        *((double *)outData) = mEfx->GetPropertyDoubleValue(inID);
+                        break;
+                    case propertyDataTypeInt32:
+                        *((int *)outData) = mEfx->GetPropertyValue(inID);
+                        break;
+                    case propertyDataTypeBool:
+                        *((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
+                        break;
+                    case propertyDataTypePtr:
+                        *((char **)outData) = (char *)mEfx->GetPropertyPtrValue(inID);
+                        break;
+                    case propertyDataTypeStruct:
+                        mEfx->GetPropertyStructValue(inID, outData);
+                        break;
+                }
             }
             return noErr;
         }

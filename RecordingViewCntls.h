@@ -39,7 +39,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
-		-1,	//id
+		kAudioUnitCustomProperty_SongRecordPath,	//id
 		0,	//command
 		10, 36, 350, 14,	//x,y,w,h
 		"Arial",	//fontname

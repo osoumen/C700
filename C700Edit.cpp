@@ -257,8 +257,6 @@ void C700Edit::setParameter(int index, const void *inPtr)
         case kAudioUnitCustomProperty_SourceFileRef:
         case kAudioUnitCustomProperty_PGDictionary:
         case kAudioUnitCustomProperty_XIData:
-        case kAudioUnitCustomProperty_SmcPlayerCode:
-        case kAudioUnitCustomProperty_SpcPlayerCode:
             CFRelease(inPtr);
             break;
 #endif
