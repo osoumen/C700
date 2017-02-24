@@ -57,6 +57,7 @@ public:
     bool	SetSongInfoString( int propertyId, const char *string );
 	bool	GetSongInfoString( int propertyId, char *string, int maxLen );
     bool    SetSongPlayerCode( const void *data, int size );
+    double  GetHostBeatPos();
     
 private:
 #if AU
