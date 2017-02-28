@@ -811,9 +811,9 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_SongPlayerCodeVer,// propId
-        sizeof(int),                            // outDataSize
+        sizeof(double),                         // outDataSize
         false,                                  // outWritable
-        propertyDataTypeInt32,                  // dataType
+        propertyDataTypeDouble,                 // dataType
         true,                                   // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong

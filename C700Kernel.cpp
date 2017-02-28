@@ -7,6 +7,7 @@
  *
  */
 
+#include "PlayerCodeReader.h"
 #include "XIFile.h"
 #include "C700Kernel.h"
 #include "C700Properties.h"
@@ -458,6 +459,9 @@ double C700Kernel::GetPropertyDoubleValue( int inID )
         case kAudioUnitCustomProperty_RecordEndBeatPos:
             return mDriver.GetRecordEndBeatPos();
             
+        case kAudioUnitCustomProperty_SongPlayerCodeVer:
+            return mDriver.GetDsp()->GetSongPlayCodeVer();
+            
         default:
 			return 0;
     }
@@ -851,7 +855,13 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr )
         case kAudioUnitCustomProperty_SongPlayerCode:
         {
             CFDataRef data = reinterpret_cast<CFDataRef>(inPtr);
-            mDriver.GetDsp()->SetSongPlayerCode(CFDataGetBytePtr(data), CFDataGetLength(data));
+            PlayerCodeReader codeFile(CFDataGetBytePtr(data), CFDataGetLength(data));
+            if (!codeFile.IsLoaded()) return true;
+            mDriver.GetDsp()->SetSpcPlayerCode(codeFile.getSpcPlayerCode(), codeFile.getSpcPlayerCodeSize());
+            mDriver.GetDsp()->SetSmcEmulationVector(codeFile.getSmcEmulationVector());
+            mDriver.GetDsp()->SetSmcNativeVector(codeFile.getSmcNativeVector());
+            mDriver.GetDsp()->SetSmcPlayerCode(codeFile.getSmcPlayerCode(), codeFile.getSmcPlayerCodeSize());
+            mDriver.GetDsp()->SetSongPlayCodeVer(codeFile.getVersion());
             return true;
         }
 #endif

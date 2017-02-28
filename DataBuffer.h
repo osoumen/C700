@@ -21,7 +21,7 @@ public:
     } DataBufferState;
     
 	DataBuffer( int allocMemSize );
-	DataBuffer( const void *data, int dataSize );
+	DataBuffer( const void *data, int dataSize );   // コピーされない、解放されない
 	virtual ~DataBuffer();
 	
     void                Clear();

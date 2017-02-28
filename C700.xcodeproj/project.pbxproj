@@ -395,6 +395,10 @@
 		F5BEFCA619BC4F8C0083F8D9 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = F5BEFCA419BC4F8C0083F8D9 /* help.png */; };
 		F5C1B32216F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
 		F5C1B32316F803A10034F320 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
+		F5C8566F1E61DC2A0083EC15 /* PlayerCodeReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5C8566D1E61DC2A0083EC15 /* PlayerCodeReader.cpp */; };
+		F5C856701E61DC2A0083EC15 /* PlayerCodeReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5C8566D1E61DC2A0083EC15 /* PlayerCodeReader.cpp */; };
+		F5C856711E61DC2A0083EC15 /* PlayerCodeReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C8566E1E61DC2A0083EC15 /* PlayerCodeReader.h */; };
+		F5C856721E61DC2A0083EC15 /* PlayerCodeReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C8566E1E61DC2A0083EC15 /* PlayerCodeReader.h */; };
 		F5D1B06E1E55E67E00C0C795 /* C700Properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */; };
 		F5D1B06F1E55E67E00C0C795 /* C700Properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */; };
 		F5D1B0701E55E67E00C0C795 /* C700Properties.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D1B06D1E55E67E00C0C795 /* C700Properties.h */; };
@@ -659,6 +663,8 @@
 		F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DspRegFIFO.h; sourceTree = "<group>"; };
 		F5BEFCA419BC4F8C0083F8D9 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = help.png; path = graphics/help.png; sourceTree = "<group>"; };
 		F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = ControlInstacnesDefs.h; sourceTree = "<group>"; };
+		F5C8566D1E61DC2A0083EC15 /* PlayerCodeReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlayerCodeReader.cpp; sourceTree = "<group>"; };
+		F5C8566E1E61DC2A0083EC15 /* PlayerCodeReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerCodeReader.h; sourceTree = "<group>"; };
 		F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C700Properties.cpp; sourceTree = "<group>"; };
 		F5D1B06D1E55E67E00C0C795 /* C700Properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700Properties.h; sourceTree = "<group>"; };
 		F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIUtils.cpp; sourceTree = "<group>"; };
@@ -1018,6 +1024,8 @@
 				F569C3AB162518B9006C91AD /* AudioFile.h */,
 				F569C40A16254B6E006C91AD /* XIFile.cpp */,
 				F569C40916254B6E006C91AD /* XIFile.h */,
+				F5C8566D1E61DC2A0083EC15 /* PlayerCodeReader.cpp */,
+				F5C8566E1E61DC2A0083EC15 /* PlayerCodeReader.h */,
 			);
 			name = "Common Source";
 			sourceTree = "<group>";
@@ -1189,6 +1197,7 @@
 				8AA4CF610AAE7D7A00AA021C /* AUInstrumentBase.h in Headers */,
 				F59D91A11BF720EA00E5EFC6 /* blargg_endian.h in Headers */,
 				8AA4CF620AAE7D7A00AA021C /* LockFreeFIFO.h in Headers */,
+				F5C856711E61DC2A0083EC15 /* PlayerCodeReader.h in Headers */,
 				8AA4CF640AAE7D7A00AA021C /* SynthElement.h in Headers */,
 				8AA4CF650AAE7D7A00AA021C /* SynthEvent.h in Headers */,
 				8AA4CF670AAE7D7A00AA021C /* SynthNote.h in Headers */,
@@ -1329,6 +1338,7 @@
 				F54338C31629749600863A0B /* aeffguieditor.h in Headers */,
 				F5FEFAF01E4F439B00F08114 /* TextKickButton.h in Headers */,
 				F54338DA1629759600863A0B /* C700VST.h in Headers */,
+				F5C856721E61DC2A0083EC15 /* PlayerCodeReader.h in Headers */,
 				F5710731162EB3D40043EF00 /* PGChunk.h in Headers */,
 				F510B704163266CB00A844B4 /* FileAccess.h in Headers */,
 				F59D91A01BF720EA00E5EFC6 /* blargg_config.h in Headers */,
@@ -1599,6 +1609,7 @@
 			files = (
 				8BA05A6B0720730100365D66 /* C700.cpp in Sources */,
 				8BA05AAE072073D300365D66 /* AUBase.cpp in Sources */,
+				F5C8566F1E61DC2A0083EC15 /* PlayerCodeReader.cpp in Sources */,
 				8BA05AB0072073D300365D66 /* AUDispatch.cpp in Sources */,
 				8BA05AB2072073D300365D66 /* AUInputElement.cpp in Sources */,
 				F5D1B06E1E55E67E00C0C795 /* C700Properties.cpp in Sources */,
@@ -1743,6 +1754,7 @@
 				F54338DB1629759600863A0B /* C700VST.cpp in Sources */,
 				F59D91B21BF720EA00E5EFC6 /* spc.cpp in Sources */,
 				F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */,
+				F5C856701E61DC2A0083EC15 /* PlayerCodeReader.cpp in Sources */,
 				F510B705163266CB00A844B4 /* FileAccess.cpp in Sources */,
 				F560182D1E3F508C00400327 /* SpcFileGenerate.cpp in Sources */,
 			);
