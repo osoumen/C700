@@ -89,7 +89,7 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     spcFile.writeData(reglog.getBrrRegionData(), reglog.getBrrRegionSize());
     
     // 初期変数の設定
-    spcFile.setPos(0x102);
+    spcFile.setPos(0x102);                  // 変数領域へ移動
     spcFile.writeU16(logAddr & 0xffff);     // 演奏データ開始アドレス
     spcFile.writeU16(loopPoint & 0xffff);   // ループポイント
     spcFile.writeByte(0xff);                // _INITIAL_WAIT_FRAMES

@@ -161,6 +161,28 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
                 }
                 break;
             }
+            case kControlButtonLoadPlayerCode:
+            {
+                if ( value > 0 ) {
+                    char	path[PATH_LEN_MAX];
+					bool	isSelected;
+					isSelected = getLoadFile(path, PATH_LEN_MAX, "");
+					if ( isSelected ) {
+                        efxAcc->LoadSongPlayerCode(path);
+					}
+                    CMyTextEdit *textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongPlayerCodeVer]);
+                    int codeVer = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_SongPlayerCodeVer);
+                    if (codeVer > 0) {
+                        char str[20];
+                        sprintf(str, "%08x...OK!", codeVer);
+                        textedit->setText(str);
+                    }
+                    else {
+                        textedit->setText("not Loaded");
+                    }
+                }
+                break;
+            }
         }
     }
 }
@@ -208,7 +230,7 @@ bool RecordingSettingsGUI::attached(CView* view)
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongPlayerCodeVer]);
     int codeVer = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_SongPlayerCodeVer);
     if (codeVer > 0) {
-        sprintf(str, "%d...OK!", codeVer);
+        sprintf(str, "%08x...OK!", codeVer);
         textedit->setText(str);
     }
     else {
@@ -231,23 +253,9 @@ CMessageResult RecordingSettingsGUI::notify(CBaseObject* sender, const char* mes
 bool RecordingSettingsGUI::getLoadFile( char *path, int maxLen, const char *title )
 {
 #if VSTGUI_NEW_CFILESELECTOR
-	CFileExtension	brrType("AddmusicM(Raw) BRR Sample", "brr");
-	CFileExtension	aiffType("AIFF File", "aif", "audio/aiff", 'AIFF');
-	CFileExtension	aifcType("AIFC File", "aif", "audio/aiff", 'AIFC');
-	CFileExtension	waveType("Wave File", "wav", "audio/wav");
-	CFileExtension	sd2Type("Sound Designer II File", "sd2", 0, 'Sd2f');
-	CFileExtension	cafType("CoreAudio File", "caf", 0, 'caff');
-	CFileExtension	spcType("SPC File", "spc");
 	CNewFileSelector* selector = CNewFileSelector::create(getFrame(), CNewFileSelector::kSelectFile);
 	if (selector)
 	{
-		selector->addFileExtension(brrType);
-		selector->addFileExtension(aiffType);
-		selector->addFileExtension(aifcType);
-		selector->addFileExtension(waveType);
-		selector->addFileExtension(sd2Type);
-		//selector->addFileExtension(cafType);
-		selector->addFileExtension(spcType);
 		if ( title ) selector->setTitle(title);
 		selector->runModal();
 		if ( selector->getNumSelectedFiles() > 0 ) {

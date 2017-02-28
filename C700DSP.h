@@ -88,7 +88,6 @@ public:
     void SetNameOfDumper(const char *dumper);
     void SetArtistOfSong(const char *artist);
     void SetSongComments(const char *comments);
-    void SetSongPlayerCode(const void *code, int size);
     char* GetSongRecordPath() { return mSongRecordPath; }
     bool GetRecSaveAsSpc() { return mRecSaveAsSpc; }
     bool GetRecSaveAsSmc() { return mRecSaveAsSmc; }
@@ -99,6 +98,11 @@ public:
     char* GetArtistOfSong() { return mArtistOfSong; }
     char* GetSongComments() { return mSongComments; }
     int GetSongPlayCodeVer();
+    void SetSmcNativeVector(const void *vec);
+    void SetSmcEmulationVector(const void *vec);
+    void SetSmcPlayerCode(const void *code, int size);
+    void SetSpcPlayerCode(const void *code, int size);
+    void SetSongPlayCodeVer(int ver);
     
 private:
     bool writeDsp(int addr, unsigned char data);
@@ -109,11 +113,6 @@ private:
     static void onDeviceReady(void *ref);
     static void onDeviceStop(void *ref);
     
-    void setSmcNativeVector(const void *vec);
-    void setSmcEmulationVector(const void *vec);
-    void setSmcPlayerCode(const void *code, int size);
-    void setSpcPlayerCode(const void *code, int size);
-
 private:
     struct DSPState {
         // 音源内部状態
@@ -187,6 +186,7 @@ private:
     int             mSmcPlayerCodeSize;
     unsigned char   *mSpcPlayerCode;
     int             mSpcPlayerCodeSize;
+    int             mCodeVer;
 };
 
 #endif /* defined(__C700__C700DSP__) */

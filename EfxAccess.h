@@ -56,7 +56,7 @@ public:
 	bool	GetSongRecordPath( char *path, int maxLen );
     bool	SetSongInfoString( int propertyId, const char *string );
 	bool	GetSongInfoString( int propertyId, char *string, int maxLen );
-    bool    SetSongPlayerCode( const void *data, int size );
+    bool    LoadSongPlayerCode( const char *path );
     double  GetHostBeatPos();
     
 private:

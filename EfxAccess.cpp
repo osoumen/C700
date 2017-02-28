@@ -7,6 +7,7 @@
  *
  */
 
+#include "PlayerCodeReader.h"
 #include "EfxAccess.h"
 #ifndef AU
 #include "C700VST.h"
@@ -342,7 +343,7 @@ bool EfxAccess::SetBRRData( const BRRData *data )
 double EfxAccess::GetPropertyValue( int propertyId )
 {
 #if AU
-	float		value = .0f;
+	double		value = .0;
 	char		outDataPtr[16];
 	UInt32		outDataSize=16;
 	
@@ -571,8 +572,38 @@ bool EfxAccess::GetSongInfoString( int propertyId, char *string, int maxLen )
 #endif
 }
 //-----------------------------------------------------------------------------
-bool EfxAccess::SetSongPlayerCode( const void *data, int size )
+bool EfxAccess::LoadSongPlayerCode( const char *path )
 {
+    char        data[65536];
+    int         size;
+
+#if MAC
+	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+	
+	CFReadStreamRef	filestream = CFReadStreamCreateWithFile(NULL, url);
+	if (CFReadStreamOpen(filestream) == false) {
+        CFRelease( filestream );
+		CFRelease( url );
+		return false;
+	}
+	CFIndex	readbytes=CFReadStreamRead(filestream, (UInt8*)data, 65536);
+	size = readbytes;
+	CFReadStreamClose(filestream);
+    CFRelease( filestream );
+	CFRelease( url );
+#else
+	//WindowsŠÂ‹«‚Ìƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ýˆ—
+	HANDLE	hFile;
+	
+	hFile = CreateFile( path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+	if ( hFile != INVALID_HANDLE_VALUE ) {
+		DWORD	readSize;
+		ReadFile( hFile, data, 65536, &readSize, NULL );
+		size = readSize;
+		CloseHandle( hFile );
+	}
+#endif
+    
 #if AU
     CFDataRef   dataRef = CFDataCreate(NULL, (UInt8*)data, size);
     UInt32      inSize = sizeof(CFDataRef);
@@ -586,7 +617,13 @@ bool EfxAccess::SetSongPlayerCode( const void *data, int size )
     CFRelease(dataRef);
 	return false;
 #else
-    mEfx->mEfx->GetDriver()->GetDsp()->SetSongPlayerCode(data, size);
+    PlayerCodeReader codeFile(data, size);
+    if (!codeFile.IsLoaded()) return true;
+    mEfx->mEfx->GetDriver()->GetDsp()->SetSpcPlayerCode(codeFile.getSpcPlayerCode(), codeFile.getSpcPlayerCodeSize());
+    mEfx->mEfx->GetDriver()->GetDsp()->SetSmcEmulationVector(codeFile.getSmcEmulationVector());
+    mEfx->mEfx->GetDriver()->GetDsp()->SetSmcNativeVector(codeFile.getSmcNativeVector());
+    mEfx->mEfx->GetDriver()->GetDsp()->SetSmcPlayerCode(codeFile.getSmcPlayerCode(), codeFile.getSmcPlayerCodeSize());
+    mEfx->mEfx->GetDriver()->GetDsp()->SetSongPlayCodeVer(codeFile.getVersion());
     return true;
 #endif
 }

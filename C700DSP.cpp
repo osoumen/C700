@@ -110,6 +110,7 @@ mUseRealEmulation( true )
     mSmcPlayerCodeSize = 0;
     mSpcPlayerCode = NULL;
     mSpcPlayerCodeSize = 0;
+    mCodeVer = 0;
 }
 
 C700DSP::~C700DSP()
@@ -912,17 +913,17 @@ void C700DSP::SetSongComments(const char *comments)
     mSongComments[32] = 0;
 }
 
-void C700DSP::setSmcNativeVector(const void *vec)
+void C700DSP::SetSmcNativeVector(const void *vec)
 {
     memcpy(mSmcNativeVector, vec, 12);
 }
 
-void C700DSP::setSmcEmulationVector(const void *vec)
+void C700DSP::SetSmcEmulationVector(const void *vec)
 {
     memcpy(mSmcEmulationVector, vec, 12);
 }
 
-void C700DSP::setSmcPlayerCode(const void *code, int size)
+void C700DSP::SetSmcPlayerCode(const void *code, int size)
 {
     if (mSmcPlayerCode != NULL) {
         delete mSmcPlayerCode;
@@ -932,7 +933,7 @@ void C700DSP::setSmcPlayerCode(const void *code, int size)
     memcpy(mSmcPlayerCode, code, size);
 }
 
-void C700DSP::setSpcPlayerCode(const void *code, int size)
+void C700DSP::SetSpcPlayerCode(const void *code, int size)
 {
     if (mSpcPlayerCode != NULL) {
         delete mSpcPlayerCode;
@@ -942,12 +943,12 @@ void C700DSP::setSpcPlayerCode(const void *code, int size)
     memcpy(mSpcPlayerCode, code, size);
 }
 
-void C700DSP::SetSongPlayerCode(const void *code, int size)
-{
-    // TODO: chunk構造のデータからデータを読み込む
-}
-
 int C700DSP::GetSongPlayCodeVer()
 {
-    return 1;
+    return mCodeVer;
+}
+
+void C700DSP::SetSongPlayCodeVer(int ver)
+{
+    mCodeVer = ver;
 }
