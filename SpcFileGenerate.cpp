@@ -7,12 +7,11 @@
 //
 
 #include "SpcFileGenerate.h"
-#include "spcplayercode.h"
 
 SpcFileGenerate::SpcFileGenerate(int allocSize)
 : PlayingFileGenerateBase(allocSize)
 {
-    SetSpcPlayCode( spcplayercode, sizeof(spcplayercode) );
+    //SetSpcPlayCode( spcplayercode, sizeof(spcplayercode) );
 }
 
 SpcFileGenerate::~SpcFileGenerate()
