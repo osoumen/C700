@@ -282,14 +282,10 @@
 		F56018241E3DDC1200400327 /* SmcFileGenerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56018211E3DDC1200400327 /* SmcFileGenerate.cpp */; };
 		F56018251E3DDC1200400327 /* SmcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018221E3DDC1200400327 /* SmcFileGenerate.h */; };
 		F56018261E3DDC1200400327 /* SmcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018221E3DDC1200400327 /* SmcFileGenerate.h */; };
-		F56018281E3DE22100400327 /* smcplayercode.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018271E3DE22100400327 /* smcplayercode.h */; };
-		F56018291E3DE22100400327 /* smcplayercode.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018271E3DE22100400327 /* smcplayercode.h */; };
 		F560182C1E3F508C00400327 /* SpcFileGenerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */; };
 		F560182D1E3F508C00400327 /* SpcFileGenerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */; };
 		F560182E1E3F508C00400327 /* SpcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F560182B1E3F508C00400327 /* SpcFileGenerate.h */; };
 		F560182F1E3F508C00400327 /* SpcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F560182B1E3F508C00400327 /* SpcFileGenerate.h */; };
-		F56018311E3F78C000400327 /* spcplayercode.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018301E3F78C000400327 /* spcplayercode.h */; };
-		F56018321E3F78C000400327 /* spcplayercode.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018301E3F78C000400327 /* spcplayercode.h */; };
 		F569A3F61619527F006C91AD /* C700_CocoaViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */; };
 		F569A3F71619527F006C91AD /* C700_CocoaViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */; };
 		F569A40516195488006C91AD /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
@@ -579,10 +575,8 @@
 		F560181C1E3B8C4000400327 /* PlayingFileGenerateBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayingFileGenerateBase.h; sourceTree = "<group>"; };
 		F56018211E3DDC1200400327 /* SmcFileGenerate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SmcFileGenerate.cpp; sourceTree = "<group>"; };
 		F56018221E3DDC1200400327 /* SmcFileGenerate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmcFileGenerate.h; sourceTree = "<group>"; };
-		F56018271E3DE22100400327 /* smcplayercode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = smcplayercode.h; sourceTree = "<group>"; };
 		F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpcFileGenerate.cpp; sourceTree = "<group>"; };
 		F560182B1E3F508C00400327 /* SpcFileGenerate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpcFileGenerate.h; sourceTree = "<group>"; };
-		F56018301E3F78C000400327 /* spcplayercode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spcplayercode.h; sourceTree = "<group>"; };
 		F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700_CocoaViewFactory.h; sourceTree = "<group>"; };
 		F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.objcpp; path = C700_CocoaViewFactory.mm; sourceTree = "<group>"; };
 		F569A40316195488006C91AD /* C700Edit.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Edit.h; sourceTree = "<group>"; };
@@ -992,8 +986,6 @@
 				F51D83D01D295E8B00A23008 /* RegisterLogger.h */,
 				F560181B1E3B8C4000400327 /* PlayingFileGenerateBase.cpp */,
 				F560181C1E3B8C4000400327 /* PlayingFileGenerateBase.h */,
-				F56018271E3DE22100400327 /* smcplayercode.h */,
-				F56018301E3F78C000400327 /* spcplayercode.h */,
 				F56018211E3DDC1200400327 /* SmcFileGenerate.cpp */,
 				F56018221E3DDC1200400327 /* SmcFileGenerate.h */,
 				F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */,
@@ -1180,7 +1172,6 @@
 				8BA05AD7072073D300365D66 /* AUSilentTimeout.h in Headers */,
 				8BA05AD8072073D300365D66 /* AUTimestampGenerator.h in Headers */,
 				8BA05AE60720742100365D66 /* CAAudioChannelLayout.h in Headers */,
-				F56018311E3F78C000400327 /* spcplayercode.h in Headers */,
 				8BA05AE80720742100365D66 /* CAMutex.h in Headers */,
 				8BA05AEA0720742100365D66 /* CAStreamBasicDescription.h in Headers */,
 				8BA05B080720754400365D66 /* CAAUParameter.h in Headers */,
@@ -1251,7 +1242,6 @@
 				F569C3B5162518C6006C91AD /* RawBRRFile.h in Headers */,
 				F569C40B16254B6E006C91AD /* XIFile.h in Headers */,
 				F569C6DF162644AE006C91AD /* PlistBRRFile.h in Headers */,
-				F56018281E3DE22100400327 /* smcplayercode.h in Headers */,
 				F5432C261627AE4200863A0B /* EchoKernel.h in Headers */,
 				F56AC10C1C393EC500787F85 /* C700TimeThread.h in Headers */,
 				F5432F311628117D00863A0B /* C700Kernel.h in Headers */,
@@ -1307,7 +1297,6 @@
 				F54331AA16296E0200863A0B /* MySlider.h in Headers */,
 				F54331AB16296E0200863A0B /* LabelOnOffButton.h in Headers */,
 				F55680301A2AA8550031451C /* DynamicVoiceManager.h in Headers */,
-				F56018291E3DE22100400327 /* smcplayercode.h in Headers */,
 				F54331AC16296E0200863A0B /* WaveView.h in Headers */,
 				F53602A91984CF600079A9BE /* aeffectx.h in Headers */,
 				F54331AD16296E0200863A0B /* DummyCntl.h in Headers */,
@@ -1323,7 +1312,6 @@
 				F54331B216296E0200863A0B /* EfxAccess.h in Headers */,
 				F59D91B41BF720EA00E5EFC6 /* spc.h in Headers */,
 				F54331B316296E0200863A0B /* DataBuffer.h in Headers */,
-				F56018321E3F78C000400327 /* spcplayercode.h in Headers */,
 				F56018201E3B8C4000400327 /* PlayingFileGenerateBase.h in Headers */,
 				F54331B416296E0200863A0B /* AudioFile.h in Headers */,
 				F54331B516296E0200863A0B /* SPCFile.h in Headers */,

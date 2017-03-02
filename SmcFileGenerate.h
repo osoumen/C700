@@ -13,20 +13,11 @@
 
 class SmcFileGenerate : public PlayingFileGenerateBase {
 public:
-    typedef struct {
-        unsigned short cop;
-        unsigned short abort;
-        unsigned short nmi;
-        unsigned short res;
-        unsigned short brk;
-        unsigned short irq;
-    } SmcVector;
-
     SmcFileGenerate(int allocSize=4*1024*1024);
     virtual ~SmcFileGenerate();
     
     virtual bool        WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec=15734 );
-    void                SetSmcPlayCode( const void *code, int size, const SmcVector *nativeVector, const SmcVector *emuVector );
+    void                SetSmcPlayCode( const void *code, int size, const void *nativeVector, const void *emuVector );
     
 protected:
     typedef struct {
@@ -45,8 +36,8 @@ protected:
 private:
     const unsigned char   *m_pSmcPlayCode;
     int                   mSmcPlayCodeSize;
-    const SmcVector       *m_pNativeVector;
-    const SmcVector       *m_pEmuVector;
+    unsigned char         mNativeVector[12];
+    unsigned char         mEmuVector[12];
 };
 
 #endif /* defined(__C700__SmcFileGenerate__) */

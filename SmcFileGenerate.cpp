@@ -7,15 +7,11 @@
 //
 
 #include "SmcFileGenerate.h"
-#include "smcplayercode.h"
-
-SmcFileGenerate::SmcVector s_nativeVector = {0x88b5, 0x88b5, 0x88b5, 0x88b5, 0x0000, 0x8674};
-SmcFileGenerate::SmcVector s_emuVector = {0x88b5, 0x0000, 0x88b5, 0x88b5, 0x8000, 0x88b5};
 
 SmcFileGenerate::SmcFileGenerate(int allocSize)
 : PlayingFileGenerateBase(allocSize)
 {
-    SetSmcPlayCode( smcplayercode, sizeof(smcplayercode), &s_nativeVector, &s_emuVector );
+    //SetSmcPlayCode( smcplayercode, sizeof(smcplayercode), &s_nativeVector, &s_emuVector );
 }
 
 SmcFileGenerate::~SmcFileGenerate()
@@ -23,12 +19,12 @@ SmcFileGenerate::~SmcFileGenerate()
     
 }
 
-void SmcFileGenerate::SetSmcPlayCode( const void *code, int size, const SmcVector *nativeVector, const SmcVector *emuVector )
+void SmcFileGenerate::SetSmcPlayCode( const void *code, int size, const void *nativeVector, const void *emuVector )
 {
     m_pSmcPlayCode = (unsigned char*)code;
     mSmcPlayCodeSize = size;
-    m_pNativeVector = nativeVector;
-    m_pEmuVector = emuVector;
+    memcpy(mNativeVector, nativeVector, 12);
+    memcpy(mEmuVector, emuVector, 12);
 }
 
 bool SmcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec )
@@ -77,9 +73,9 @@ bool SmcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     
     // ベクタの設定
     smcFile.setPos(0x7fe4);
-    smcFile.writeData(m_pNativeVector, sizeof(SmcVector));
+    smcFile.writeData(mNativeVector, 12);
     smcFile.setPos(0x7ff4);
-    smcFile.writeData(m_pEmuVector, sizeof(SmcVector));
+    smcFile.writeData(mEmuVector, 12);
     
     // CRCの修正
     unsigned short sum = 0;

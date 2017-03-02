@@ -826,8 +826,10 @@ int C700DSP::saveRegisterLog(const char *path)
     //exporter.WriteToFile(path, mLogger, 16000);
     // TODO: 設定でチェックを入れているフォーマットだけ出力する
     SmcFileGenerate exporter1;
+    exporter1.SetSmcPlayCode(mSmcPlayerCode, mSmcPlayerCodeSize, mSmcNativeVector, mSmcEmulationVector);
     exporter1.WriteToFile("/Users/osoumen/Desktop/c700dump.smc", mLogger);
     SpcFileGenerate exporter2;
+    exporter2.SetSpcPlayCode(mSpcPlayerCode, mSpcPlayerCodeSize);
     exporter2.WriteToFile("/Users/osoumen/Desktop/c700dump.spc", mLogger);
     
 	return(0);
