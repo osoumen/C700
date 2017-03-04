@@ -13,7 +13,7 @@ PropertyDescription sPropertyDescription[] = {
         kAudioUnitCustomProperty_ProgramName,   // propId
         sizeof(void*),                          // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeCString,                // dataType
         false,                                  // readOnly
         true,                                   // saveToProg
         false,                                  // saveToSong
@@ -284,7 +284,7 @@ PropertyDescription sPropertyDescription[] = {
         kAudioUnitCustomProperty_PGDictionary,  // propId
         sizeof(void*),                          // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeCFDataRef,              // dataType
         false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
@@ -295,7 +295,7 @@ PropertyDescription sPropertyDescription[] = {
         kAudioUnitCustomProperty_XIData,        // propId
         sizeof(void*),                          // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeCFDataRef,              // dataType
         true,                                   // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
@@ -658,7 +658,7 @@ PropertyDescription sPropertyDescription[] = {
         kAudioUnitCustomProperty_SourceFileRef, // propId
         sizeof(void*),                          // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeFilePath,               // dataType
         false,                                  // readOnly
         true,                                   // saveToProg
         false,                                  // saveToSong
@@ -760,9 +760,9 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_SongRecordPath,// propId
-        sizeof(void*),                          // outDataSize
+        PATH_LEN_MAX,                           // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeFilePath,               // dataType
         false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
@@ -837,9 +837,9 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_GameTitle,     // propId
-        sizeof(void*),                          // outDataSize
+        33,                                     // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeCString,                // dataType
         false,                                  // readOnly
         false,                                  // saveToProg
         true,                                   // saveToSong
@@ -848,9 +848,9 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_SongTitle,     // propId
-        sizeof(void*),                          // outDataSize
+        33,                                     // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeCString,                // dataType
         false,                                  // readOnly
         false,                                  // saveToProg
         true,                                   // saveToSong
@@ -859,9 +859,9 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_NameOfDumper,  // propId
-        sizeof(void*),                          // outDataSize
+        17,                                     // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeCString,                // dataType
         false,                                  // readOnly
         false,                                  // saveToProg
         true,                                   // saveToSong
@@ -870,9 +870,9 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_ArtistOfSong,  // propId
-        sizeof(void*),                          // outDataSize
+        33,                                     // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeCString,                // dataType
         false,                                  // readOnly
         false,                                  // saveToProg
         true,                                   // saveToSong
@@ -881,9 +881,9 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_SongComments,  // propId
-        sizeof(void*),                          // outDataSize
+        33,                                     // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeCString,                // dataType
         false,                                  // readOnly
         false,                                  // saveToProg
         true,                                   // saveToSong
@@ -894,7 +894,7 @@ PropertyDescription sPropertyDescription[] = {
         kAudioUnitCustomProperty_SongPlayerCode,// propId
         sizeof(void*),                          // outDataSize
         false,                                  // outWritable
-        propertyDataTypePtr,                    // dataType
+        propertyDataTypeCFDataRef,              // dataType
         false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong

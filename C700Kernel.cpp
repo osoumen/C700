@@ -23,9 +23,7 @@ C700Kernel::C700Kernel()
 , parameterSetFunc(NULL)
 , paramSetUserData(NULL)
 {
-#if AU
     createPropertyParamMap(mPropertyParams);
-#endif
     
 	for ( int i=0; i<kNumberOfParameters; i++ ) {
 		SetParameter(i, GetParameterDefault(i));
@@ -471,22 +469,10 @@ double C700Kernel::GetPropertyDoubleValue( int inID )
 }
 
 //-----------------------------------------------------------------------------
-void *C700Kernel::GetPropertyPtrValue( int inID )
+const void *C700Kernel::GetPropertyPtrValue( int inID )
 {
     switch (inID) {
 #if AU
-        case kAudioUnitCustomProperty_SourceFileRef:
-        {
-            const char *srcPath = GetSourceFilePath();
-            CFURLRef	url =
-            CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)srcPath, strlen(srcPath), false);
-            return (void *)url;	//使用後要release
-        }
-		case kAudioUnitCustomProperty_ProgramName:
-        {
-            CFStringRef	str = CFStringCreateWithCString(NULL, GetProgramName(), kCFStringEncodingUTF8);
-            return (void *)str;	//使用後要release
-        }
 		case kAudioUnitCustomProperty_PGDictionary:
         {
             CFDictionaryRef	pgdata;
@@ -511,30 +497,30 @@ void *C700Kernel::GetPropertyPtrValue( int inID )
             }
         }
 #endif
+        case kAudioUnitCustomProperty_SourceFileRef:
+            return GetSourceFilePath();
+            
+		case kAudioUnitCustomProperty_ProgramName:
+            return GetProgramName();
+            
         case kAudioUnitCustomProperty_SongRecordPath:
-        {
             return mDriver.GetDsp()->GetSongRecordPath();
-        }
+
         case kAudioUnitCustomProperty_GameTitle:
-        {
             return mDriver.GetDsp()->GetGameTitle();
-        }
+
         case kAudioUnitCustomProperty_SongTitle:
-        {
             return mDriver.GetDsp()->GetSongTitle();
-        }
+
         case kAudioUnitCustomProperty_NameOfDumper:
-        {
             return mDriver.GetDsp()->GetNameOfDumper();
-        }
+
         case kAudioUnitCustomProperty_ArtistOfSong:
-        {
             return mDriver.GetDsp()->GetArtistOfSong();
-        }
+
         case kAudioUnitCustomProperty_SongComments:
-        {
             return mDriver.GetDsp()->GetSongComments();
-        }
+
         default:
 			return 0;
     }
@@ -825,26 +811,10 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr )
 {
     switch (inID) {
 #if AU
-        case kAudioUnitCustomProperty_SourceFileRef:
-        {
-            CFStringRef pathStr = CFURLCopyFileSystemPath(reinterpret_cast<CFURLRef>(inPtr), kCFURLPOSIXPathStyle);
-            char		path[PATH_LEN_MAX];
-            CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
-            CFRelease(pathStr);
-            SetSourceFilePath(path);
-            return true;
-        }
 		case kAudioUnitCustomProperty_BRRData:
         {
             const BRRData *brr = reinterpret_cast<const BRRData *>(inPtr);
             SetBRRData(brr->data, brr->size);
-            return true;
-        }
-		case kAudioUnitCustomProperty_ProgramName:
-        {
-            char	pgname[PROGRAMNAME_MAX_LEN];
-            CFStringGetCString(reinterpret_cast<CFStringRef>(inPtr), pgname, PROGRAMNAME_MAX_LEN-1, kCFStringEncodingUTF8);
-            SetProgramName(pgname);
             return true;
         }
 		case kAudioUnitCustomProperty_PGDictionary:
@@ -868,6 +838,16 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr )
             return true;
         }
 #endif
+        case kAudioUnitCustomProperty_SourceFileRef:
+        {
+            SetSourceFilePath(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+		case kAudioUnitCustomProperty_ProgramName:
+        {
+            SetProgramName(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
         case kAudioUnitCustomProperty_SongRecordPath:
         {
             mDriver.GetDsp()->SetSongRecordPath(reinterpret_cast<const char *>(inPtr));
@@ -1482,6 +1462,68 @@ void C700Kernel::AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef
 }
 
 //-----------------------------------------------------------------------------
+void C700Kernel::AddStringToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const char *string)
+{
+    if (string[0] != 0) {
+        CFStringRef	str = CFStringCreateWithCString(NULL, string, kCFStringEncodingUTF8);
+        CFDictionarySetValue(dict, key, str);
+        CFRelease(str);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddFilePathToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const char *path)
+{
+    if (path[0] != 0) {
+        CFURLRef	url =
+        CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+        CFDataRef urlData = CFURLCreateData( NULL, url, kCFStringEncodingUTF8, false );
+        CFDictionarySetValue(dict, key, urlData);
+        CFRelease(urlData);
+        CFRelease(url);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddDataToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const void *data, int size)
+{
+    CFDataRef	dataRef = CFDataCreate(NULL, (UInt8*)data, size);
+	CFDictionarySetValue(dict, key, dataRef);
+	CFRelease(dataRef);
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::SetPropertyToDict(CFMutableDictionaryRef dict, const PropertyDescription &prop)
+{
+    CFStringRef saveKey = CFStringCreateWithCString(NULL, prop.savekey, kCFStringEncodingASCII);
+    switch (prop.dataType) {
+        case propertyDataTypeInt32:
+            AddNumToDictionary(dict, saveKey, GetPropertyValue(prop.propId));
+            break;
+        case propertyDataTypeFloat32:
+            AddFloatToDictionary(dict, saveKey, GetPropertyValue(prop.propId));
+            break;
+        case propertyDataTypeDouble:
+            AddDoubleToDictionary(dict, saveKey, GetPropertyDoubleValue(prop.propId));
+            break;
+        case propertyDataTypeBool:
+            AddBooleanToDictionary(dict, saveKey, GetPropertyValue(prop.propId));
+            break;
+        case propertyDataTypeStruct:
+            break;
+        case propertyDataTypeCString:
+            AddStringToDictionary(dict, saveKey, (char*)GetPropertyPtrValue(prop.propId));
+            break;
+        case propertyDataTypeFilePath:
+            AddFilePathToDictionary(dict, saveKey, (char*)GetPropertyPtrValue(prop.propId));
+            break;
+        case propertyDataTypeCFDataRef:
+            break;
+    }
+    CFRelease(saveKey);
+}
+
+//-----------------------------------------------------------------------------
 int C700Kernel::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 {
     int editProg = mEditProg;
@@ -1492,57 +1534,18 @@ int C700Kernel::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 	const InstParams	*vpSet = GetVP();
 	
     CorrectLoopFlagForSave(pgnum);
-	CFDataRef	brrdata = CFDataCreate(NULL, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
+    
     CFStringRef saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_BRRData].savekey, kCFStringEncodingASCII);
-	CFDictionarySetValue(dict, saveKey, brrdata);
+    AddDataToDictionary(dict, saveKey, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
     CFRelease(saveKey);
-	CFRelease(brrdata);
 	
     auto it = mPropertyParams.begin();
     while (it != mPropertyParams.end()) {
         if (it->second.saveToProg) {
-            saveKey = CFStringCreateWithCString(NULL, it->second.savekey, kCFStringEncodingASCII);
-            switch (it->second.dataType) {
-                case propertyDataTypeInt32:
-                    C700Kernel::AddNumToDictionary(dict, saveKey, GetPropertyValue(it->second.propId));
-                    break;
-                case propertyDataTypeFloat32:
-                    C700Kernel::AddFloatToDictionary(dict, saveKey, GetPropertyValue(it->second.propId));
-                    break;
-                case propertyDataTypeDouble:
-                    C700Kernel::AddDoubleToDictionary(dict, saveKey, GetPropertyDoubleValue(it->second.propId));
-                    break;
-                case propertyDataTypeBool:
-                    C700Kernel::AddBooleanToDictionary(dict, saveKey, GetPropertyValue(it->second.propId));
-                    break;
-                case propertyDataTypePtr:
-                case propertyDataTypeStruct:
-                    break;
-            }
-            CFRelease(saveKey);
+            SetPropertyToDict(dict, it->second);
         }
         it++;
     }
-	if ( vpSet[pgnum].sourceFile[0] ) {
-		CFURLRef	url =
-		CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)vpSet[pgnum].sourceFile,
-												strlen(vpSet[pgnum].sourceFile), false);
-		CFDataRef urlData = CFURLCreateData( NULL, url, kCFStringEncodingUTF8, false );
-        saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SourceFileRef].savekey, kCFStringEncodingASCII);
-		CFDictionarySetValue(dict, saveKey, urlData);
-        CFRelease(saveKey);
-		CFRelease(urlData);
-		CFRelease(url);
-	}
-	
-	//プログラム名
-	if (vpSet[pgnum].pgname[0] != 0) {
-		CFStringRef	str = CFStringCreateWithCString(NULL, vpSet[pgnum].pgname, kCFStringEncodingUTF8);
-        saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_ProgramName].savekey, kCFStringEncodingASCII);
-		CFDictionarySetValue(dict, saveKey, str);
-        CFRelease(saveKey);
-		CFRelease(str);
-	}
 	
     mEditProg = editProg;
     
@@ -1551,6 +1554,77 @@ int C700Kernel::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 }
 
 //-----------------------------------------------------------------------------
+void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDescription &prop)
+{
+    CFStringRef saveKey = CFStringCreateWithCString(NULL, prop.savekey, kCFStringEncodingASCII);
+    if (CFDictionaryContainsKey(dict, saveKey)) {
+        
+        switch (prop.dataType) {
+            case propertyDataTypeFloat32:
+            {
+                float value;
+                CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                CFNumberGetValue(cfnum, kCFNumberFloatType, &value);
+                SetPropertyValue(prop.propId, value);
+                break;
+            }
+            case propertyDataTypeInt32:
+            {
+                int value;
+                CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                CFNumberGetValue(cfnum, kCFNumberIntType, &value);
+                SetPropertyValue(prop.propId, value);
+                break;
+            }
+            case propertyDataTypeDouble:
+            {
+                double value;
+                CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                CFNumberGetValue(cfnum, kCFNumberDoubleType, &value);
+                SetPropertyDoubleValue(prop.propId, value);
+                break;
+            }
+            case propertyDataTypeBool:
+            {
+                CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, saveKey));
+                SetPropertyValue(prop.propId,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
+                break;
+            }
+            case propertyDataTypeStruct:
+                break;
+            case propertyDataTypeCString:
+            {
+                char	string[PROGRAMNAME_MAX_LEN];
+                CFStringGetCString(reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, saveKey)),
+                                   string, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
+                SetPropertyPtrValue(prop.propId, string);
+                break;
+            }
+            case propertyDataTypeFilePath:
+            {
+                CFDataRef	urlData = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, saveKey));
+                CFURLRef	url = CFURLCreateWithBytes( NULL, CFDataGetBytePtr(urlData),
+                                                       CFDataGetLength(urlData), kCFStringEncodingUTF8, NULL );
+                CFStringRef pathStr = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
+                char	path[PATH_LEN_MAX];
+                CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
+                SetPropertyPtrValue(prop.propId, path);
+                CFRelease(pathStr);
+                CFRelease(url);
+                break;
+            }
+            case propertyDataTypeCFDataRef:
+                break;
+        }
+    }
+    else {
+        // デフォルト値を設定
+        SetPropertyValue(prop.propId, prop.defaultValue);
+        SetPropertyDoubleValue(prop.propId, prop.defaultValue);
+    }
+    CFRelease(saveKey);
+}
+
 void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 {
 	int editProg = GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
@@ -1558,59 +1632,17 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
     
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(data);
 	
+    SetProgramName("");
+    
     auto it = mPropertyParams.begin();
     while (it != mPropertyParams.end()) {
         if (it->second.saveToProg) {
-            CFStringRef saveKey = CFStringCreateWithCString(NULL, it->second.savekey, kCFStringEncodingASCII);
-            if (CFDictionaryContainsKey(dict, saveKey)) {
-                
-                switch (it->second.dataType) {
-                    case propertyDataTypeFloat32:
-                    {
-                        float value;
-                        CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
-                        CFNumberGetValue(cfnum, kCFNumberFloatType, &value);
-                        SetPropertyValue(it->second.propId, value);
-                        break;
-                    }
-                    case propertyDataTypeInt32:
-                    {
-                        int value;
-                        CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
-                        CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-                        SetPropertyValue(it->second.propId, value);
-                        break;
-                    }
-                    case propertyDataTypeDouble:
-                    {
-                        double value;
-                        CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
-                        CFNumberGetValue(cfnum, kCFNumberDoubleType, &value);
-                        SetPropertyDoubleValue(it->second.propId, value);
-                        break;
-                    }
-                    case propertyDataTypeBool:
-                    {
-                        CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, saveKey));
-                        SetPropertyValue(it->second.propId,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-                        break;
-                    }
-                    case propertyDataTypePtr:
-                    case propertyDataTypeStruct:
-                        break;
-                }
-                
-            }
-            else {
-                // デフォルト値を設定
-                SetPropertyValue(it->second.propId, it->second.defaultValue);
-                SetPropertyDoubleValue(it->second.propId, it->second.defaultValue);
-            }
-            CFRelease(saveKey);
+            RestorePropertyFromDict(dict, it->second);
         }
         it++;
     }
 
+    // BRRの復元
     CFStringRef saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_BRRData].savekey, kCFStringEncodingASCII);
     CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, saveKey));
     CFRelease(saveKey);
@@ -1620,18 +1652,6 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	SetPropertyValue(kAudioUnitCustomProperty_Loop,
                      dataptr[size-9]&2?true:false);
 	
-    saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_ProgramName].savekey, kCFStringEncodingASCII);
-	if (CFDictionaryContainsKey(dict, saveKey)) {
-		char	pgname[PROGRAMNAME_MAX_LEN];
-		CFStringGetCString(reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, saveKey)),
-						   pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
-		SetProgramName(pgname);
-	}
-	else {
-		SetProgramName("");
-	}
-    CFRelease(saveKey);
-	
 	//元波形ファイル情報を復元
     saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SustainMode].savekey, kCFStringEncodingASCII);
     bool    isSustainModeSet = CFDictionaryContainsKey(dict, saveKey)?true:false;
@@ -1639,20 +1659,6 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
     
     saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SourceFileRef].savekey, kCFStringEncodingASCII);
 	if (CFDictionaryContainsKey(dict, saveKey)) {
-		CFDataRef	urlData = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, saveKey));
-		CFURLRef	url = CFURLCreateWithBytes( NULL, CFDataGetBytePtr(urlData),
-											   CFDataGetLength(urlData), kCFStringEncodingUTF8, NULL );
-		CFStringRef pathStr = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
-		char	path[PATH_LEN_MAX];
-		CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
-		SetSourceFilePath(path);
-		CFRelease(pathStr);
-		CFRelease(url);
-		
-#if 0
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, mPropertyParams[kAudioUnitCustomProperty_IsEmaphasized].savekey));
-		SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-#endif
         // SRをリリース時に使用するけどSustainModeの設定項目は無い過渡的なバージョン
         if (!isSustainModeSet) {
             SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
@@ -1670,7 +1676,7 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
     CFRelease(saveKey);
 	
 	//UIに変更を反映
-	if (pgnum != editProg) {
+	if (pgnum == editProg) {
 		SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
 	}
 	

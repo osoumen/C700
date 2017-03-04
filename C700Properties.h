@@ -124,8 +124,10 @@ enum PropertyDataType {
     propertyDataTypeDouble,
     propertyDataTypeInt32,
     propertyDataTypeBool,
-    propertyDataTypePtr,
     propertyDataTypeStruct,
+    propertyDataTypeCString,
+    propertyDataTypeFilePath,
+    propertyDataTypeCFDataRef,
 };
 
 typedef struct {
@@ -137,9 +139,8 @@ typedef struct {
     bool             saveToProg;
     bool             saveToSong;
     bool             saveToGlobal;
-    char             savekey[32];   // TODO: 設定する
-    double           defaultValue;  // TODO: 設定する
-    bool             allocWhenGet;  // TODO: 設定する
+    char             savekey[32];
+    double           defaultValue;
 } PropertyDescription;
 
 void createPropertyParamMap(std::map<int, PropertyDescription> &m);

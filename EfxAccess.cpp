@@ -39,7 +39,7 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
     BRRData     brr;
 	GetBRRData(&brr);
     inst.setBRRData(&brr);
-	GetProgramName(inst.pgname, PROGRAMNAME_MAX_LEN);
+	GetCStringProperty(kAudioUnitCustomProperty_ProgramName, inst.pgname, PROGRAMNAME_MAX_LEN);
 	inst.ar = GetPropertyValue(kAudioUnitCustomProperty_AR);
 	inst.dr = GetPropertyValue(kAudioUnitCustomProperty_DR);
 	inst.sl = GetPropertyValue(kAudioUnitCustomProperty_SL);
@@ -61,7 +61,7 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
     inst.noteOnPriority = GetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority);
     inst.releasePriority = GetPropertyValue(kAudioUnitCustomProperty_ReleasePriority);
 	inst.isEmphasized = GetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized)!=0?true:false;
-	GetSourceFilePath(inst.sourceFile,PATH_LEN_MAX);
+	GetFilePathProperty(kAudioUnitCustomProperty_SourceFileRef,inst.sourceFile,PATH_LEN_MAX);
 	
 	RawBRRFile	*file = new RawBRRFile(NULL,true);
 	file->StoreInst(&inst);
@@ -182,7 +182,7 @@ bool	EfxAccess::SetPlistBRRFileData( const PlistBRRFile *data )
 }
 
 //-----------------------------------------------------------------------------
-bool EfxAccess::SetSourceFilePath( const char *path )
+bool EfxAccess::SetFilePathProperty( int propertyId, const char *path )
 {
 	if ( strlen(path) == 0 ) return false;
 #if AU
@@ -190,7 +190,7 @@ bool EfxAccess::SetSourceFilePath( const char *path )
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
 
 	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SourceFileRef,
+		AudioUnitSetProperty(mAU, propertyId,
 							 kAudioUnitScope_Global, 0, &url, inSize)
 		== noErr ) {
 		CFRelease( url );
@@ -200,13 +200,13 @@ bool EfxAccess::SetSourceFilePath( const char *path )
 	return false;
 #else
 	//VST時の処理
-	mEfx->mEfx->SetSourceFilePath(path);
+	mEfx->mEfx->SetPropertyPtrValue(propertyId, path);
 	return true;
 #endif
 }
 
 //-----------------------------------------------------------------------------
-bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
+bool EfxAccess::GetFilePathProperty( int propertyId, char *path, int maxLen )
 {
 #if AU
 	CFURLRef	url;
@@ -214,7 +214,7 @@ bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
 	
 	//データを取得する
 	if (
-		AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_SourceFileRef,
+		AudioUnitGetProperty(mAU,propertyId,
 							 kAudioUnitScope_Global, 0, &url, &outSize)
 		== noErr )
 	{
@@ -232,7 +232,7 @@ bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
 	return false;
 #else
 	//VST時の処理
-	const char	*outpath = mEfx->mEfx->GetSourceFilePath();
+	const char	*outpath = mEfx->mEfx->GetPropertyPtrValue();
 	if ( outpath ) {
 		strncpy(path, outpath, maxLen-1);
 		return true;
@@ -242,15 +242,15 @@ bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
 }
 
 //-----------------------------------------------------------------------------
-bool EfxAccess::SetProgramName( const char *pgname )
+bool EfxAccess::SetCStringProperty( int propertyId, const char *string )
 {
 #if AU
 	
 	UInt32		inSize = sizeof(CFStringRef);
-	CFStringRef	pgnameRef = CFStringCreateWithCString(NULL, pgname, kCFStringEncodingUTF8);
+	CFStringRef	pgnameRef = CFStringCreateWithCString(NULL, string, kCFStringEncodingUTF8);
 	
 	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0, &pgnameRef, inSize)
+		AudioUnitSetProperty(mAU, propertyId, kAudioUnitScope_Global, 0, &pgnameRef, inSize)
 		== noErr ) {
 		CFRelease( pgnameRef );
 		return true;
@@ -259,14 +259,14 @@ bool EfxAccess::SetProgramName( const char *pgname )
 	return false;
 #else
 	//VST時の処理
-	mEfx->mEfx->SetProgramName( pgname );
-	mEfx->PropertyNotifyFunc(kAudioUnitCustomProperty_ProgramName, mEfx);
+	mEfx->mEfx->SetPropertyPtrValue( propertyId, string );
+	mEfx->PropertyNotifyFunc(propertyId, mEfx);
 	return true;
 #endif
 }
 
 //-----------------------------------------------------------------------------
-bool EfxAccess::GetProgramName( char *pgname, int maxLen )
+bool EfxAccess::GetCStringProperty( int propertyId, char *string, int maxLen )
 {
 #if AU
 	
@@ -274,23 +274,23 @@ bool EfxAccess::GetProgramName( char *pgname, int maxLen )
 	CFStringRef	pgnameRef;
 	
 	if (
-		AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0, &pgnameRef, &outSize)
+		AudioUnitGetProperty(mAU, propertyId, kAudioUnitScope_Global, 0, &pgnameRef, &outSize)
 		== noErr ) {
 		if ( pgnameRef ) {
-			CFStringGetCString(pgnameRef, pgname, maxLen-1, kCFStringEncodingUTF8);
+			CFStringGetCString(pgnameRef, string, maxLen-1, kCFStringEncodingUTF8);
 			CFRelease(pgnameRef);
 			return true;
 		}
 		else {
-			pgname[0] = 0;
+			string[0] = 0;
 		}
 	}
 	return false;
 #else
 	//VST時の処理
-	const char *outpgname = mEfx->mEfx->GetProgramName();
+	const char *outpgname = mEfx->mEfx->GetPropertyPtrValue(propertyId);
 	if ( outpgname ) {
-		strncpy(pgname, outpgname, maxLen-1);
+		strncpy(string, outpgname, maxLen-1);
 		return true;
 	}
 	return false;
@@ -370,8 +370,10 @@ double EfxAccess::GetPropertyValue( int propertyId )
             case propertyDataTypeBool:
                 value = *((bool*)outDataPtr);
                 break;
-            case propertyDataTypePtr:
             case propertyDataTypeStruct:
+            case propertyDataTypeCString:
+            case propertyDataTypeFilePath:
+            case propertyDataTypeCFDataRef:
                 break;
         }
     }
@@ -385,8 +387,10 @@ double EfxAccess::GetPropertyValue( int propertyId )
             return mEfx->mEfx->GetPropertyValue(propertyId);
         case propertyDataTypeDouble:
             return mEfx->mEfx->GetPropertyDoubleValue(propertyId);
-        case propertyDataTypePtr:
         case propertyDataTypeStruct:
+        case propertyDataTypeCString:
+        case propertyDataTypeFilePath:
+        case propertyDataTypeCFDataRef:
             break;
     }
 	return 0;
@@ -451,8 +455,10 @@ void EfxAccess::SetPropertyValue( int propertyID, double value )
                     outDataSize = sizeof(bool);
                     outDataPtr = (void*)&boolData;
                     break;
-                case propertyDataTypePtr:
                 case propertyDataTypeStruct:
+                case propertyDataTypeCString:
+                case propertyDataTypeFilePath:
+                case propertyDataTypeCFDataRef:
                     outDataPtr = NULL;
                     outDataSize = 0;
                     break;
@@ -473,104 +479,16 @@ void EfxAccess::SetPropertyValue( int propertyID, double value )
         case propertyDataTypeDouble:
             mEfx->mEfx->SetPropertyDoubleValue(propertyID, value);
             break;
-        case propertyDataTypePtr:
         case propertyDataTypeStruct:
+        case propertyDataTypeCString:
+        case propertyDataTypeFilePath:
+        case propertyDataTypeCFDataRef:
             break;
     }
 	mEfx->PropertyNotifyFunc(propertyID, mEfx);
 #endif
 }
 
-//-----------------------------------------------------------------------------
-bool EfxAccess::SetSongRecordPath( const char *path )
-{
-    if ( strlen(path) == 0 ) return false;
-#if AU
-	UInt32		inSize = sizeof(char *);
-    
-	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SongRecordPath,
-							 kAudioUnitScope_Global, 0, &path, inSize)
-		== noErr ) {
-		return true;
-	}
-	return false;
-#else
-	//VST時の処理
-	mEfx->mEfx->GetDriver()->GetDsp()->SetSongRecordPath(path);
-	return true;
-#endif
-}
-//-----------------------------------------------------------------------------
-bool EfxAccess::GetSongRecordPath( char *path, int maxLen )
-{
-#if AU
-	char    *outpath;
-	UInt32	outSize = sizeof(char *);
-	
-	//データを取得する
-	if (
-		AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_SongRecordPath,
-							 kAudioUnitScope_Global, 0, &outpath, &outSize)
-		== noErr ) {
-		strncpy(path, outpath, maxLen-1);
-	}
-	return false;
-#else
-	//VST時の処理
-	const char	*outpath = mEfx->mEfx->GetDriver()->GetDsp()->GetSongRecordPath();
-	if ( outpath ) {
-		strncpy(path, outpath, maxLen-1);
-		return true;
-	}
-	return false;
-#endif
-}
-//-----------------------------------------------------------------------------
-bool EfxAccess::SetSongInfoString( int propertyId, const char *string )
-{
-    if ( strlen(string) == 0 ) return false;
-#if AU
-	UInt32		inSize = sizeof(char *);
-    
-	if (
-		AudioUnitSetProperty(mAU, propertyId,
-							 kAudioUnitScope_Global, 0, &string, inSize)
-		== noErr ) {
-		return true;
-	}
-	return false;
-#else
-	//VST時の処理
-	mEfx->mEfx->SetPropertyPtrValue(propertyId, string);
-	return true;
-#endif
-}
-//-----------------------------------------------------------------------------
-bool EfxAccess::GetSongInfoString( int propertyId, char *string, int maxLen )
-{
-#if AU
-	char    *outpath;
-	UInt32	outSize = sizeof(char *);
-	
-	//データを取得する
-	if (
-		AudioUnitGetProperty(mAU,propertyId,
-							 kAudioUnitScope_Global, 0, &outpath, &outSize)
-		== noErr ) {
-		strncpy(string, outpath, maxLen-1);
-	}
-	return false;
-#else
-	//VST時の処理
-	const void	*outpath = mEfx->mEfx->GetPropertyPtrValue(propertyId);
-	if ( outpath ) {
-		strncpy(string, (char *)outpath, maxLen-1);
-		return true;
-	}
-	return false;
-#endif
-}
 //-----------------------------------------------------------------------------
 bool EfxAccess::LoadSongPlayerCode( const char *path )
 {
