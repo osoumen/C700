@@ -99,7 +99,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
             case kAudioUnitCustomProperty_ArtistOfSong:
             case kAudioUnitCustomProperty_SongComments:
                 if ( text ) {
-                    efxAcc->SetSongInfoString(propertyId, text);
+                    efxAcc->SetCStringProperty(propertyId, text);
                 }
                 break;
             default:
@@ -127,7 +127,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
 					bool	isSelected;
 					isSelected = getFolder(path, PATH_LEN_MAX, "");
 					if ( isSelected ) {
-						efxAcc->SetSongRecordPath(path);
+						efxAcc->SetFilePathProperty(kAudioUnitCustomProperty_SongRecordPath, path);
                         CTextLabel *textlabel = reinterpret_cast<CTextLabel*> (mCntl[kAudioUnitCustomProperty_SongRecordPath]);
                         textlabel->setText(path);
 					}
@@ -200,24 +200,24 @@ bool RecordingSettingsGUI::attached(CView* view)
     
     char str[PATH_LEN_MAX];
     CTextLabel *textlabel = reinterpret_cast<CTextLabel*> (mCntl[kAudioUnitCustomProperty_SongRecordPath]);
-    efxAcc->GetSongRecordPath(str, PATH_LEN_MAX);
+    efxAcc->GetFilePathProperty(kAudioUnitCustomProperty_SongRecordPath, str, PATH_LEN_MAX);
     textlabel->setText(str);
     
     CMyTextEdit		*textedit;
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_GameTitle]);
-    efxAcc->GetSongInfoString(kAudioUnitCustomProperty_GameTitle, str, 33);
+    efxAcc->GetCStringProperty(kAudioUnitCustomProperty_GameTitle, str, 33);
     textedit->setText(str);
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongTitle]);
-    efxAcc->GetSongInfoString(kAudioUnitCustomProperty_SongTitle, str, 33);
+    efxAcc->GetCStringProperty(kAudioUnitCustomProperty_SongTitle, str, 33);
     textedit->setText(str);
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_NameOfDumper]);
-    efxAcc->GetSongInfoString(kAudioUnitCustomProperty_NameOfDumper, str, 17);
+    efxAcc->GetCStringProperty(kAudioUnitCustomProperty_NameOfDumper, str, 17);
     textedit->setText(str);
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_ArtistOfSong]);
-    efxAcc->GetSongInfoString(kAudioUnitCustomProperty_ArtistOfSong, str, 33);
+    efxAcc->GetCStringProperty(kAudioUnitCustomProperty_ArtistOfSong, str, 33);
     textedit->setText(str);
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongComments]);
-    efxAcc->GetSongInfoString(kAudioUnitCustomProperty_SongComments, str, 33);
+    efxAcc->GetCStringProperty(kAudioUnitCustomProperty_SongComments, str, 33);
     textedit->setText(str);
     
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_RecordStartBeatPos]);

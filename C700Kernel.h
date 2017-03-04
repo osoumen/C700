@@ -29,15 +29,11 @@ public:
 
 	float			GetPropertyValue( int inID );
     double          GetPropertyDoubleValue( int inID );
-    void            *GetPropertyPtrValue( int inID );
+    const void      *GetPropertyPtrValue( int inID );
     bool            GetPropertyStructValue( int inID, void *outData );
 	bool			SetPropertyValue( int inID, float value );
     bool            SetPropertyDoubleValue( int inID, double value );
 	bool			SetPropertyPtrValue( int inID, const void *inPtr );
-	const char		*GetSourceFilePath();
-	bool			SetSourceFilePath( const char *path );
-	const char		*GetProgramName();
-	bool			SetProgramName( const char *pgname );
 	const BRRData	*GetBRRData();
 	const BRRData	*GetBRRData(int prog);
 	bool			SetBRRData( const unsigned char *data, int size, int prog=-1, bool reset=true, bool notify=true );
@@ -75,38 +71,16 @@ public:
     double          GetProcessDelayTime() { return mDriver.GetProcessDelayTime(); }
 	
 #if AU
-#if 0
-    static CFStringRef kSaveKey_ProgName;
-    static CFStringRef kSaveKey_EditProg;
-    static CFStringRef kSaveKey_EditChan;
-    static CFStringRef kSaveKey_brrdata;
-    static CFStringRef kSaveKey_looppoint;
-    static CFStringRef kSaveKey_samplerate;
-    static CFStringRef kSaveKey_basekey;
-    static CFStringRef kSaveKey_lowkey;
-    static CFStringRef kSaveKey_highkey;
-    static CFStringRef kSaveKey_ar;
-    static CFStringRef kSaveKey_dr;
-    static CFStringRef kSaveKey_sl;
-    static CFStringRef kSaveKey_sr;
-    static CFStringRef kSaveKey_volL;
-    static CFStringRef kSaveKey_volR;
-    static CFStringRef kSaveKey_echo;
-    static CFStringRef kSaveKey_bank;
-    static CFStringRef kSaveKey_IsEmphasized;
-    static CFStringRef kSaveKey_SourceFile;
-    static CFStringRef kSaveKey_SustainMode;
-    static CFStringRef kSaveKey_MonoMode;
-    static CFStringRef kSaveKey_PortamentoOn;
-    static CFStringRef kSaveKey_PortamentoRate;
-    static CFStringRef kSaveKey_NoteOnPriority;
-    static CFStringRef kSaveKey_ReleasePriority;
-#endif
     static void     AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int value);
     static void     AddFloatToDictionary(CFMutableDictionaryRef dict, CFStringRef key, float value);
     static void     AddDoubleToDictionary(CFMutableDictionaryRef dict, CFStringRef key, double value);
     static void     AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key, bool value);
+    void            AddStringToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const char *string);
+    void            AddFilePathToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const char *path);
+    void            AddDataToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const void *data, int size);
+    void            SetPropertyToDict(CFMutableDictionaryRef dict, const PropertyDescription &prop);
     int             CreatePGDataDic(CFDictionaryRef *data, int pgnum);
+    void            RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDescription &prop);
     void            RestorePGDataDic(CFPropertyListRef data, int pgnum);
 #endif
     
@@ -139,9 +113,7 @@ private:
     
     bool            mIsHwAvailable;
     
-#if AU
     std::map<int, PropertyDescription>  mPropertyParams;
-#endif
     
     void            setRPNLSB(int ch, int value);
     void            setRPNMSB(int ch, int value);
@@ -150,5 +122,10 @@ private:
     void            setDataEntryLSB(int ch, int value);
     void            setDataEntryMSB(int ch, int value);
     void            sendDataEntryValue(int ch);
+
+    const char		*GetSourceFilePath();
+	bool			SetSourceFilePath( const char *path );
+	const char		*GetProgramName();
+	bool			SetProgramName( const char *pgname );
 
 };

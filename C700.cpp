@@ -334,7 +334,14 @@ ComponentResult		C700::GetPropertyInfo (AudioUnitPropertyID	inID,
 #endif
         auto it = mPropertyParams.find(inID);
         if (it != mPropertyParams.end()) {
-            outDataSize = it->second.outDataSize;
+            if ((it->second.dataType == propertyDataTypeCString) ||
+                (it->second.dataType == propertyDataTypeFilePath)) {
+                // outDataSize‚É‚ÍÅ‘å•¶Žš”‚ªŠi”[‚³‚ê‚Ä‚¢‚é
+                outDataSize = sizeof(void *);
+            }
+            else {
+                outDataSize = it->second.outDataSize;
+            }
             outWritable = it->second.outWritable;
             return noErr;
         }
@@ -391,11 +398,30 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
                     case propertyDataTypeBool:
                         *((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
                         break;
-                    case propertyDataTypePtr:
-                        *((char **)outData) = (char *)mEfx->GetPropertyPtrValue(inID);
-                        break;
                     case propertyDataTypeStruct:
                         mEfx->GetPropertyStructValue(inID, outData);
+                        break;
+                    case propertyDataTypeCString:
+                    {
+                        const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
+                        CFStringRef	str =
+                        CFStringCreateWithCString(NULL, string, kCFStringEncodingUTF8);
+                        *((char **)outData) = (char *)str;
+                        //Žg—pŒã—vrelease
+                        break;
+                    }
+                    case propertyDataTypeFilePath:
+                    {
+                        const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
+                        CFURLRef	url =
+                        CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)string, strlen(string), false);
+                        *((char **)outData) = (char *)url;
+                        	//Žg—pŒã—vrelease
+                        break;
+                    }
+                        
+                    case propertyDataTypeCFDataRef:
+                        *((char **)outData) = (char *)mEfx->GetPropertyPtrValue(inID);
                         break;
                 }
             }
@@ -431,15 +457,33 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
                     case propertyDataTypeBool:
                         mEfx->SetPropertyValue(inID, *((bool*)inData) ? 1.0f:.0f );
                         break;
-                    case propertyDataTypePtr:
+                    case propertyDataTypeStruct:
+                        mEfx->SetPropertyPtrValue(inID, inData);
+                        break;
+                    case propertyDataTypeCString:
+                    {
+                        char **ptr = (char**)inData;
+                        char	string[PROGRAMNAME_MAX_LEN];
+                        CFStringGetCString(reinterpret_cast<CFStringRef>(*ptr), string, PROGRAMNAME_MAX_LEN-1, kCFStringEncodingUTF8);
+                        mEfx->SetPropertyPtrValue(inID, string);
+                        break;
+                    }
+                    case propertyDataTypeFilePath:
+                    {
+                        char **ptr = (char**)inData;
+                        CFStringRef pathStr = CFURLCopyFileSystemPath(reinterpret_cast<CFURLRef>(*ptr), kCFURLPOSIXPathStyle);
+                        char		path[PATH_LEN_MAX];
+                        CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
+                        CFRelease(pathStr);
+                        mEfx->SetPropertyPtrValue(inID, path);
+                        break;
+                    }
+                    case propertyDataTypeCFDataRef:
                     {
                         char **ptr = (char**)inData;
                         mEfx->SetPropertyPtrValue(inID, *ptr);
                         break;
                     }
-                    case propertyDataTypeStruct:
-                        mEfx->SetPropertyPtrValue(inID, inData);
-                        break;
                 }
             }
             return noErr;
@@ -510,29 +554,7 @@ ComponentResult	C700::SaveState(CFPropertyListRef *outData)
         auto it = mPropertyParams.begin();
         while (it != mPropertyParams.end()) {
             if (it->second.saveToSong) {
-                CFStringRef saveKey = CFStringCreateWithCString(NULL, it->second.savekey, kCFStringEncodingASCII);
-                switch (it->second.dataType) {
-                    case propertyDataTypeInt32:
-                        C700Kernel::AddNumToDictionary(dict, saveKey, mEfx->GetPropertyValue(it->second.propId));
-                        break;
-                    case propertyDataTypeFloat32:
-                        C700Kernel::AddFloatToDictionary(dict, saveKey, mEfx->GetPropertyValue(it->second.propId));
-                        break;
-                    case propertyDataTypeDouble:
-                        C700Kernel::AddDoubleToDictionary(dict, saveKey, mEfx->GetPropertyDoubleValue(it->second.propId));
-                        break;
-                    case propertyDataTypeBool:
-                        C700Kernel::AddBooleanToDictionary(dict, saveKey, mEfx->GetPropertyValue(it->second.propId));
-                        break;
-                    case propertyDataTypePtr:
-                    {
-                        
-                        break;
-                    }
-                    case propertyDataTypeStruct:
-                        break;
-                }
-                CFRelease(saveKey);
+                mEfx->SetPropertyToDict(dict, it->second);
             }
             it++;
         }
@@ -572,52 +594,12 @@ ComponentResult	C700::RestoreState(CFPropertyListRef plist)
         auto it = mPropertyParams.begin();
         while (it != mPropertyParams.end()) {
             if (it->second.saveToSong) {
-                CFStringRef saveKey = CFStringCreateWithCString(NULL, it->second.savekey, kCFStringEncodingASCII);
-                if (CFDictionaryContainsKey(dict, saveKey)) {
-                    
-                    switch (it->second.dataType) {
-                        case propertyDataTypeFloat32:
-                        {
-                            float value;
-                            CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
-                            CFNumberGetValue(cfnum, kCFNumberFloatType, &value);
-                            mEfx->SetPropertyValue(it->second.propId, value);
-                            break;
-                        }
-                        case propertyDataTypeInt32:
-                        {
-                            int value;
-                            CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
-                            CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-                            mEfx->SetPropertyValue(it->second.propId, value);
-                            break;
-                        }
-                        case propertyDataTypeDouble:
-                        {
-                            double value;
-                            CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
-                            CFNumberGetValue(cfnum, kCFNumberDoubleType, &value);
-                            mEfx->SetPropertyDoubleValue(it->second.propId, value);
-                            break;
-                        }
-                        case propertyDataTypeBool:
-                        {
-                            CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, saveKey));
-                            mEfx->SetPropertyValue(it->second.propId,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-                            break;
-                        }
-                        case propertyDataTypePtr:
-                            // TODO: C•¶Žš—ñŒn‚Ì“Ç‚Ýž‚Ý
-                            break;
-                        case propertyDataTypeStruct:
-                            break;
-                    }
-                    
-                }
-                CFRelease(saveKey);
+                mEfx->RestorePropertyFromDict(dict, it->second);
             }
             it++;
         }
+        // TODO: EditChan‚Ì•û‚ªŒã‚ÉÝ’è‚³‚ê‚Ä‚µ‚Ü‚¤‚Æ‚¤‚Ü‚­•œŒ³‚³‚ê‚È‚¢‚Ì‚Å‚È‚ñ‚Æ‚©‚µ‚½‚¢
+        mEfx->RestorePropertyFromDict(dict, mPropertyParams[kAudioUnitCustomProperty_EditingProgram]);
 	}
 	return result;
 }

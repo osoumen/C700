@@ -40,10 +40,10 @@ public:
 	bool	CreatePlistBRRFileData( PlistBRRFile **outData );
 	bool	SetPlistBRRFileData( const PlistBRRFile *data );
 	
-	bool	SetSourceFilePath( const char *path );
-	bool	GetSourceFilePath( char *path, int maxLen );
-	bool	SetProgramName( const char *pgname );
-	bool	GetProgramName( char *pgname, int maxLen );
+	bool    SetFilePathProperty( int propertyId, const char *path );
+	bool    GetFilePathProperty( int propertyId, char *path, int maxLen );
+	bool	SetCStringProperty( int propertyId, const char *string );
+	bool	GetCStringProperty( int propertyId, char *string, int maxLen );
 	bool	GetBRRData( BRRData *data );
 	bool	SetBRRData( const BRRData *data );
 	
@@ -52,10 +52,6 @@ public:
 	float	GetParameter( int parameterId );
 	void	SetParameter( void *sender, int index, float value );
 	
-    bool	SetSongRecordPath( const char *path );
-	bool	GetSongRecordPath( char *path, int maxLen );
-    bool	SetSongInfoString( int propertyId, const char *string );
-	bool	GetSongInfoString( int propertyId, char *string, int maxLen );
     bool    LoadSongPlayerCode( const char *path );
     double  GetHostBeatPos();
     

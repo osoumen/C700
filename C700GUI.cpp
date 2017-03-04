@@ -258,7 +258,7 @@ void C700GUI::valueChanged(CControl* control)
 		switch (propertyId) {
 			case kAudioUnitCustomProperty_ProgramName:
 				if ( text ) {
-					efxAcc->SetProgramName( text );
+					efxAcc->SetCStringProperty( propertyId, text );
 				}
 				break;
 			default:
@@ -314,7 +314,7 @@ void C700GUI::valueChanged(CControl* control)
 					//デフォルトファイル名の作成
 					char	pgname[PROGRAMNAME_MAX_LEN];
 					char	defaultName[PROGRAMNAME_MAX_LEN];
-					efxAcc->GetProgramName(pgname, PROGRAMNAME_MAX_LEN);
+					efxAcc->GetCStringProperty(kAudioUnitCustomProperty_ProgramName, pgname, PROGRAMNAME_MAX_LEN);
 					if ( pgname[0] == 0 || strlen(pgname) == 0 ) {
 						snprintf(defaultName, PROGRAMNAME_MAX_LEN-1, "program_%03d.brr", 
 								 (int)efxAcc->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram) );
@@ -343,7 +343,7 @@ void C700GUI::valueChanged(CControl* control)
 					//ソースファイルが存在するか確認する
 					bool	existSrcFile = false;
 					char	srcPath[PATH_LEN_MAX];
-					efxAcc->GetSourceFilePath(srcPath, PATH_LEN_MAX);
+					efxAcc->GetFilePathProperty(kAudioUnitCustomProperty_SourceFileRef, srcPath, PATH_LEN_MAX);
 					if ( strlen(srcPath) > 0 ) {
 						//オーディオファイルであるか確認する
 						AudioFile	srcFile(srcPath,false);
@@ -362,7 +362,7 @@ void C700GUI::valueChanged(CControl* control)
 					//デフォルトファイル名の作成
 					char	pgname[PROGRAMNAME_MAX_LEN];
 					char	defaultName[PROGRAMNAME_MAX_LEN];
-					efxAcc->GetProgramName(pgname, PROGRAMNAME_MAX_LEN);
+					efxAcc->GetCStringProperty(kAudioUnitCustomProperty_ProgramName, pgname, PROGRAMNAME_MAX_LEN);
 					if ( pgname[0] == 0 || strlen(pgname) == 0 ) {
 						snprintf(defaultName, PROGRAMNAME_MAX_LEN-1, "program_%03d.xi", 
 								 (int)efxAcc->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram) );
@@ -584,7 +584,7 @@ bool C700GUI::loadToCurrentProgramFromKhaos()
         instName[i] = 0x20 + mersennetwister.genrand_N(0x5f);
     }
     instName[nameLength] = 0;
-    efxAcc->SetProgramName( instName );
+    efxAcc->SetCStringProperty( kAudioUnitCustomProperty_ProgramName, instName );
     
     delete [] brrData.data;
     
@@ -606,7 +606,7 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		inst.isLoop() ? 1.0f:.0f);
 	
 	unsigned int	hasFlg = file->GetHasFlag();
-	if ( hasFlg & HAS_PGNAME ) efxAcc->SetProgramName( inst.pgname );
+	if ( hasFlg & HAS_PGNAME ) efxAcc->SetCStringProperty( kAudioUnitCustomProperty_ProgramName, inst.pgname );
 	if ( hasFlg & HAS_RATE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Rate,		inst.rate);
 	else {
 		if ( inst.isLoop() ) {
@@ -641,7 +641,7 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 	if ( hasFlg & HAS_ISEMPHASIZED ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized,inst.isEmphasized ? 1.0f:.0f);
 	if ( hasFlg & HAS_SOURCEFILE ) {
 		if ( strlen(inst.sourceFile) ) {
-			efxAcc->SetSourceFilePath( inst.sourceFile );
+			efxAcc->SetFilePathProperty( kAudioUnitCustomProperty_SourceFileRef, inst.sourceFile );
 		}
 	}
     if ( hasFlg & HAS_SUSTAINMODE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SustainMode,inst.sustainMode ? 1.0f:.0f);
@@ -702,13 +702,13 @@ bool C700GUI::loadToCurrentProgramFromAudioFile( AudioFile *file )
 	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Loop,		loop ? 1.0f:.0f);
 	
 	//元波形データの情報をセットする
-	efxAcc->SetSourceFilePath( file->GetFilePath() );
+	efxAcc->SetFilePathProperty( kAudioUnitCustomProperty_SourceFileRef, file->GetFilePath() );
 	efxAcc->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized,	IsPreemphasisOn() ? 1.0f:.0f);
 	
 	//拡張子を除いたファイル名をプログラム名に設定する
 	char	pgname[256];
 	getFileNameDeletingPathExt(file->GetFilePath(), pgname, 256);
-	efxAcc->SetProgramName( pgname );
+	efxAcc->SetCStringProperty( kAudioUnitCustomProperty_ProgramName, pgname );
 	
 	delete[] brr.data;
 	
@@ -760,7 +760,7 @@ bool C700GUI::loadToCurrentProgramFromSPC( SPCFile *file )
 		char	filename[256];
 		getFileNameDeletingPathExt(file->GetFilePath(), filename, 256);
 		snprintf(pgname, 255, "%s#%02x", filename, i);
-		efxAcc->SetProgramName(pgname);
+		efxAcc->SetCStringProperty(kAudioUnitCustomProperty_ProgramName, pgname);
 
 		cEditNum++;
 	}
