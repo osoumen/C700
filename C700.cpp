@@ -506,12 +506,36 @@ ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 			}
 		}
 		
-		// 作業状態を保存
-		int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
-		int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
-		C700Kernel::AddNumToDictionary(dict, C700Kernel::kSaveKey_EditProg, editProg);
-		C700Kernel::AddNumToDictionary(dict, C700Kernel::kSaveKey_EditChan, editChan);
-        // TODO: recording関連の設定を保存
+        // saveToSongの設定を保存
+        auto it = mPropertyParams.begin();
+        while (it != mPropertyParams.end()) {
+            if (it->second.saveToSong) {
+                CFStringRef saveKey = CFStringCreateWithCString(NULL, it->second.savekey, kCFStringEncodingASCII);
+                switch (it->second.dataType) {
+                    case propertyDataTypeInt32:
+                        C700Kernel::AddNumToDictionary(dict, saveKey, mEfx->GetPropertyValue(it->second.propId));
+                        break;
+                    case propertyDataTypeFloat32:
+                        C700Kernel::AddFloatToDictionary(dict, saveKey, mEfx->GetPropertyValue(it->second.propId));
+                        break;
+                    case propertyDataTypeDouble:
+                        C700Kernel::AddDoubleToDictionary(dict, saveKey, mEfx->GetPropertyDoubleValue(it->second.propId));
+                        break;
+                    case propertyDataTypeBool:
+                        C700Kernel::AddBooleanToDictionary(dict, saveKey, mEfx->GetPropertyValue(it->second.propId));
+                        break;
+                    case propertyDataTypePtr:
+                    {
+                        
+                        break;
+                    }
+                    case propertyDataTypeStruct:
+                        break;
+                }
+                CFRelease(saveKey);
+            }
+            it++;
+        }
 		
 		pgname = CFStringCreateCopy(NULL,CFSTR("C700"));
 		CFDictionarySetValue(dict, CFSTR(kAUPresetNameKey), pgname);
@@ -544,23 +568,56 @@ ComponentResult	C700::RestoreState(CFPropertyListRef plist)
 			CFRelease(pgnum);
 		}
 		
-		if (CFDictionaryContainsKey(dict, C700Kernel::kSaveKey_EditChan)) {
-			int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
-			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, C700Kernel::kSaveKey_EditChan));
-			CFNumberGetValue(cfnum, kCFNumberIntType, &editChan);
-			
-			//変更の通知
-			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingChannel, editChan);
-		}
-		if (CFDictionaryContainsKey(dict, C700Kernel::kSaveKey_EditProg)) {
-			int	editProg;
-			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, C700Kernel::kSaveKey_EditProg));
-			CFNumberGetValue(cfnum, kCFNumberIntType, &editProg);
-			
-			//変更の通知
-			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
-		}
-        // TODO: recording関連の設定を復元
+        // saveToSongのプロパティを復元
+        auto it = mPropertyParams.begin();
+        while (it != mPropertyParams.end()) {
+            if (it->second.saveToSong) {
+                CFStringRef saveKey = CFStringCreateWithCString(NULL, it->second.savekey, kCFStringEncodingASCII);
+                if (CFDictionaryContainsKey(dict, saveKey)) {
+                    
+                    switch (it->second.dataType) {
+                        case propertyDataTypeFloat32:
+                        {
+                            float value;
+                            CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                            CFNumberGetValue(cfnum, kCFNumberFloatType, &value);
+                            mEfx->SetPropertyValue(it->second.propId, value);
+                            break;
+                        }
+                        case propertyDataTypeInt32:
+                        {
+                            int value;
+                            CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                            CFNumberGetValue(cfnum, kCFNumberIntType, &value);
+                            mEfx->SetPropertyValue(it->second.propId, value);
+                            break;
+                        }
+                        case propertyDataTypeDouble:
+                        {
+                            double value;
+                            CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                            CFNumberGetValue(cfnum, kCFNumberDoubleType, &value);
+                            mEfx->SetPropertyDoubleValue(it->second.propId, value);
+                            break;
+                        }
+                        case propertyDataTypeBool:
+                        {
+                            CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, saveKey));
+                            mEfx->SetPropertyValue(it->second.propId,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
+                            break;
+                        }
+                        case propertyDataTypePtr:
+                            // TODO: C文字列系の読み込み
+                            break;
+                        case propertyDataTypeStruct:
+                            break;
+                    }
+                    
+                }
+                CFRelease(saveKey);
+            }
+            it++;
+        }
 	}
 	return result;
 }

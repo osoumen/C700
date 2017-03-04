@@ -12,6 +12,7 @@
 #include "C700defines.h"
 #include "C700Driver.h"
 #include "C700Parameters.h"
+#include "C700Properties.h"
 
 class C700Kernel : public C700Parameters
 {
@@ -74,6 +75,7 @@ public:
     double          GetProcessDelayTime() { return mDriver.GetProcessDelayTime(); }
 	
 #if AU
+#if 0
     static CFStringRef kSaveKey_ProgName;
     static CFStringRef kSaveKey_EditProg;
     static CFStringRef kSaveKey_EditChan;
@@ -99,8 +101,10 @@ public:
     static CFStringRef kSaveKey_PortamentoRate;
     static CFStringRef kSaveKey_NoteOnPriority;
     static CFStringRef kSaveKey_ReleasePriority;
-
+#endif
     static void     AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int value);
+    static void     AddFloatToDictionary(CFMutableDictionaryRef dict, CFStringRef key, float value);
+    static void     AddDoubleToDictionary(CFMutableDictionaryRef dict, CFStringRef key, double value);
     static void     AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key, bool value);
     int             CreatePGDataDic(CFDictionaryRef *data, int pgnum);
     void            RestorePGDataDic(CFPropertyListRef data, int pgnum);
@@ -134,6 +138,10 @@ private:
 	C700Driver      mDriver;
     
     bool            mIsHwAvailable;
+    
+#if AU
+    std::map<int, PropertyDescription>  mPropertyParams;
+#endif
     
     void            setRPNLSB(int ch, int value);
     void            setRPNMSB(int ch, int value);
