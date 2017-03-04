@@ -81,7 +81,7 @@ void C700VST::PropertyNotifyFunc(int propID, void* userData)
 	C700VST	*This = reinterpret_cast<C700VST*> (userData);
 	if ( propID == kAudioUnitCustomProperty_ProgramName ) {
 		const char *pgname;
-		pgname = This->mEfx->GetProgramName();
+		pgname = (char*)This->mEfx->GetPropertyPtrValue(propID);
 		if ( pgname ) {
 			This->mEditor->SetProgramName(pgname);
 		}
@@ -157,19 +157,19 @@ void C700VST::setProgram(VstInt32 program)
 #endif
 	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, program);
 	mEditor->setParameter(kAudioUnitCustomProperty_EditingProgram, program);
-	mEditor->SetProgramName(mEfx->GetProgramName());
+	mEditor->SetProgramName((char*)mEfx->GetPropertyPtrValue(kAudioUnitCustomProperty_ProgramName));
 }
 
 //-----------------------------------------------------------------------------------------
 void C700VST::setProgramName(char *name)
 {
-	mEfx->SetProgramName(name);
+	mEfx->SetPropertyPtrValue(kAudioUnitCustomProperty_ProgramName, name);
 }
 
 //-----------------------------------------------------------------------------------------
 void C700VST::getProgramName(char *name)
 {
-	strncpy(name, mEfx->GetProgramName(), kVstMaxProgNameLen-1);
+	strncpy(name, (char*)mEfx->GetPropertyPtrValue(kAudioUnitCustomProperty_ProgramName), kVstMaxProgNameLen-1);
 }
 
 //-----------------------------------------------------------------------------------------
@@ -302,25 +302,24 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 		delete mSaveChunk;
 	}
 	
-	const InstParams	*vp = mEfx->GetVP();
 	int		totalSize = 0;
 	int		totalProgs = 0;
 	
 	if ( isPreset ) {
-		totalSize = PGChunk::getPGChunkSize( &vp[editProg] ) + sizeof(PGChunk::MyChunkHead);
+		totalSize = mEfx->GetPGChunkSize(editProg) + sizeof(ChunkReader::MyChunkHead);
 		totalProgs = 1;
 	}
 	else {
 		for ( int i=0; i<128; i++ ) {
-			int size = PGChunk::getPGChunkSize( &vp[i] );
+			int size = mEfx->GetPGChunkSize(i);
 			if ( size > 0 ) {
-				totalSize += size + sizeof(PGChunk::MyChunkHead);
+				totalSize += size + sizeof(ChunkReader::MyChunkHead);
 				totalProgs++;
 			}
 		}
-		totalSize += (sizeof(PGChunk::MyChunkHead) + sizeof(int))*3;	//プログラム定義数
+		totalSize += (sizeof(ChunkReader::MyChunkHead) + sizeof(int))*3;	//プログラム定義数
 		//パラメータ設定値のサイズの追加
-		totalSize += (sizeof(PGChunk::MyChunkHead) + sizeof(float)) * kNumberOfParameters;
+		totalSize += (sizeof(ChunkReader::MyChunkHead) + sizeof(float)) * kNumberOfParameters;
 	}
 	
 	
@@ -329,8 +328,8 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 	printf("getChunk totalProgs=%d\n",totalProgs);
 #endif
 	
-	PGChunk		*saveChunk;
-	saveChunk = new PGChunk( totalSize );
+	ChunkReader		*saveChunk;
+	saveChunk = new ChunkReader( totalSize );
 	if ( !isPreset ) {
 		//パラメータの書き込み
 		for ( int i=0; i<kNumberOfParameters; i++ ) {
@@ -344,26 +343,18 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 	}
 	
 	if ( isPreset ) {
-		if ( vp[editProg].hasBrrData() ) {
-			PGChunk		*pg = new PGChunk( PGChunk::getPGChunkSize( &vp[editProg] ) );
-            //最終ブロックをループフラグにする
-            /*
-            if (vp[editProg].isLoop()) {
-                vp[editProg].setLoop();
-            }
-            else {
-                vp[editProg].unsetLoop();
-            }*/
-			pg->AppendDataFromVP(&vp[editProg]);
+		if ( mEfx->GetVP()[editProg].hasBrrData() ) {
+			ChunkReader		*pg = new ChunkReader( mEfx->GetPGChunkSize(editProg) );
+            mEfx->SetPGDataToChunk(pg, editProg);
 			saveChunk->addChunk(CKID_PROGRAM_DATA+editProg, pg->GetDataPtr(), pg->GetDataSize());
 			delete pg;
 		}
 	}
 	else {
 		for ( int i=0; i<128; i++ ) {
-			if ( vp[i].hasBrrData() ) {
-				PGChunk		*pg = new PGChunk( PGChunk::getPGChunkSize( &vp[i] ) );
-				pg->AppendDataFromVP(&vp[i]);
+			if ( mEfx->GetVP()[i].hasBrrData() ) {
+				ChunkReader		*pg = new ChunkReader( mEfx->GetPGChunkSize(i) );
+                mEfx->SetPGDataToChunk(pg, i);
 				saveChunk->addChunk(CKID_PROGRAM_DATA+i, pg->GetDataPtr(), pg->GetDataSize());
 				delete pg;
 			}
@@ -387,13 +378,12 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 #endif
 	int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
 	int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
-	//const InstParams	*vp = mEfx->GetVP();
 	
-	PGChunk		*saveChunk;
-	saveChunk = new PGChunk( data, byteSize );
+	ChunkReader		*saveChunk;
+	saveChunk = new ChunkReader( data, byteSize );
 	int			totalProgs;
 	
-	while ( byteSize - saveChunk->GetDataPos() > (int)sizeof( PGChunk::MyChunkHead ) ) {
+	while ( byteSize - saveChunk->GetDataPos() > (int)sizeof( ChunkReader::MyChunkHead ) ) {
 		int		ckType;
 		long	ckSize;
 		saveChunk->readChunkHead(&ckType, &ckSize);
@@ -418,21 +408,13 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 		else if ( ckType >= CKID_PROGRAM_DATA && ckType < (CKID_PROGRAM_DATA+128) ) {
 			//CKID_PROGRAM_DATA+pgnumのチャンクに入れ子でプログラムデータが入っている
 			int pgnum = ckType - CKID_PROGRAM_DATA;
-			PGChunk	*pg = new PGChunk( saveChunk->GetDataPtr()+saveChunk->GetDataPos(), ckSize );
+			ChunkReader	*pg = new ChunkReader( saveChunk->GetDataPtr()+saveChunk->GetDataPos(), ckSize );
             InstParams inst;
 			if ( isPreset ) {
-				pg->ReadDataToVP(&inst);
-                mEfx->SetVP(editProg, &inst);
-				mEfx->SetBRRData(inst.brrData(), inst.brrSize(), editProg);
-				mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
-				mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, inst.lp);
+                mEfx->RestorePGDataFromChunk(pg, editProg);
 			}
 			else {
-				pg->ReadDataToVP(&inst);
-                mEfx->SetVP(pgnum, &inst);
-				mEfx->SetBRRData(inst.brrData(), inst.brrSize(), pgnum);
-				mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, pgnum);
-				mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, inst.lp);
+                mEfx->RestorePGDataFromChunk(pg, pgnum);
 			}
 			delete pg;
 			saveChunk->AdvDataPos(ckSize);

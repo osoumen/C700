@@ -325,8 +325,6 @@
 		F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
 		F56D3540156A115300038960 /* enccodetest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56D353F156A115300038960 /* enccodetest.cpp */; };
 		F56D35A0156A185300038960 /* libMiniAiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F56D359F156A185300038960 /* libMiniAiff.a */; };
-		F5710731162EB3D40043EF00 /* PGChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = F571072F162EB3D40043EF00 /* PGChunk.h */; };
-		F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5710730162EB3D40043EF00 /* PGChunk.cpp */; };
 		F57D96C61984D1E900F2FE06 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D96C51984D1E900F2FE06 /* Carbon.framework */; };
 		F57D96C71984D1E900F2FE06 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F57D96C51984D1E900F2FE06 /* Carbon.framework */; };
 		F58DCD7E1A2B4586004BD426 /* C700DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58DCD7C1A2B4586004BD426 /* C700DSP.cpp */; };
@@ -615,8 +613,6 @@
 		F56D353F156A115300038960 /* enccodetest.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; name = enccodetest.cpp; path = encodetest/enccodetest.cpp; sourceTree = "<group>"; };
 		F56D359F156A185300038960 /* libMiniAiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMiniAiff.a; path = encodetest/libMiniAiff.a; sourceTree = "<group>"; };
 		F56D35A1156A185D00038960 /* MiniAiff.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; name = MiniAiff.h; path = encodetest/MiniAiff.h; sourceTree = "<group>"; };
-		F571072F162EB3D40043EF00 /* PGChunk.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = PGChunk.h; sourceTree = "<group>"; };
-		F5710730162EB3D40043EF00 /* PGChunk.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = PGChunk.cpp; sourceTree = "<group>"; };
 		F57D96C51984D1E900F2FE06 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		F58DCD7C1A2B4586004BD426 /* C700DSP.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C700DSP.cpp; sourceTree = "<group>"; };
 		F58DCD7D1A2B4586004BD426 /* C700DSP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700DSP.h; sourceTree = "<group>"; };
@@ -1043,8 +1039,6 @@
 			children = (
 				F54338D81629759600863A0B /* C700VST.h */,
 				F54338D91629759600863A0B /* C700VST.cpp */,
-				F571072F162EB3D40043EF00 /* PGChunk.h */,
-				F5710730162EB3D40043EF00 /* PGChunk.cpp */,
 			);
 			name = "VST Source";
 			sourceTree = "<group>";
@@ -1327,7 +1321,6 @@
 				F5FEFAF01E4F439B00F08114 /* TextKickButton.h in Headers */,
 				F54338DA1629759600863A0B /* C700VST.h in Headers */,
 				F5C856721E61DC2A0083EC15 /* PlayerCodeReader.h in Headers */,
-				F5710731162EB3D40043EF00 /* PGChunk.h in Headers */,
 				F510B704163266CB00A844B4 /* FileAccess.h in Headers */,
 				F59D91A01BF720EA00E5EFC6 /* blargg_config.h in Headers */,
 				F53602B71984CF7D0079A9BE /* audioeffect.h in Headers */,
@@ -1741,7 +1734,6 @@
 				F5D1B06F1E55E67E00C0C795 /* C700Properties.cpp in Sources */,
 				F54338DB1629759600863A0B /* C700VST.cpp in Sources */,
 				F59D91B21BF720EA00E5EFC6 /* spc.cpp in Sources */,
-				F5710732162EB3D40043EF00 /* PGChunk.cpp in Sources */,
 				F5C856701E61DC2A0083EC15 /* PlayerCodeReader.cpp in Sources */,
 				F510B705163266CB00A844B4 /* FileAccess.cpp in Sources */,
 				F560182D1E3F508C00400327 /* SpcFileGenerate.cpp in Sources */,

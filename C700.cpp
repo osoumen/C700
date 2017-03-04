@@ -406,8 +406,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
                         const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
                         CFStringRef	str =
                         CFStringCreateWithCString(NULL, string, kCFStringEncodingUTF8);
-                        *((char **)outData) = (char *)str;
-                        //使用後要release
+                        *((char **)outData) = (char *)str;  //使用後要release
                         break;
                     }
                     case propertyDataTypeFilePath:
@@ -415,8 +414,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
                         const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
                         CFURLRef	url =
                         CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)string, strlen(string), false);
-                        *((char **)outData) = (char *)url;
-                        	//使用後要release
+                        *((char **)outData) = (char *)url;  //使用後要release
                         break;
                     }
                         
@@ -578,7 +576,7 @@ ComponentResult	C700::RestoreState(CFPropertyListRef plist)
     }
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(plist);
 	if (result == noErr) {
-		//波形情報の復元
+		//プログラムの復元
 		CFStringRef pgnum;
 		CFDictionaryRef	pgdata;
 		for (int i=0; i<128; i++) {
