@@ -232,7 +232,7 @@ bool EfxAccess::GetFilePathProperty( int propertyId, char *path, int maxLen )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
-	const char	*outpath = mEfx->mEfx->GetPropertyPtrValue();
+	const char	*outpath = (char*)mEfx->mEfx->GetPropertyPtrValue(propertyId);
 	if ( outpath ) {
 		strncpy(path, outpath, maxLen-1);
 		return true;
@@ -288,7 +288,7 @@ bool EfxAccess::GetCStringProperty( int propertyId, char *string, int maxLen )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
-	const char *outpgname = mEfx->mEfx->GetPropertyPtrValue(propertyId);
+	const char *outpgname = (char*)mEfx->mEfx->GetPropertyPtrValue(propertyId);
 	if ( outpgname ) {
 		strncpy(string, outpgname, maxLen-1);
 		return true;

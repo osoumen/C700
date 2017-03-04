@@ -1683,4 +1683,201 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	GetDriver()->RefreshKeyMap();
 }
 
+#else
+// VST
+
+//-----------------------------------------------------------------------------
+void C700Kernel::SetPropertyToChunk(ChunkReader *chunk, const PropertyDescription &prop)
+{
+    CFStringRef saveKey = CFStringCreateWithCString(NULL, prop.savekey, kCFStringEncodingASCII);
+    switch (prop.dataType) {
+        case propertyDataTypeInt32:
+        case propertyDataTypeBool:
+        {
+            int		intValue = GetPropertyValue(prop.propId);
+            chunk->addChunk(prop.propId, &intValue, sizeof(int));
+            break;
+        }
+        case propertyDataTypeFloat32:
+        {
+            float	floatValue = GetPropertyValue(prop.propId);
+            chunk->addChunk(prop.propId, &floatValue, sizeof(float));
+            break;
+        }
+        case propertyDataTypeDouble:
+        {
+            double	doubleValue = GetPropertyDoubleValue(prop.propId);
+            chunk->addChunk(prop.propId, &doubleValue, sizeof(double));
+            break;
+        }
+        case propertyDataTypeStruct:
+            break;
+        case propertyDataTypeCString:
+        case propertyDataTypeFilePath:
+        {
+            char *string = (char*)GetPropertyPtrValue(prop.propId);
+            if (string[0] != 0) {
+                chunk->addChunk(prop.propId, string, prop.outDataSize);
+            }
+            break;
+        }
+        case propertyDataTypeCFDataRef:
+            break;
+    }
+    CFRelease(saveKey);
+}
+
+//-----------------------------------------------------------------------------
+bool C700Kernel::SetPGDataToChunk(ChunkReader *chunk, int pgnum)
+{
+	if ( chunk->isReadOnly() ) {
+		return false;
+	}
+    
+    int editProg = mEditProg;
+    mEditProg = pgnum;
+    
+	const InstParams	*vpSet = GetVP();
+	
+    CorrectLoopFlagForSave(pgnum);
+    
+	chunk->addChunk(kAudioUnitCustomProperty_BRRData, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
+    
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToProg) {
+            SetPropertyToChunk(chunk, it->second);
+        }
+        it++;
+    }
+	
+    mEditProg = editProg;
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------
+int C700Kernel::GetPGChunkSize( int pgnum )
+{
+    const InstParams	*vpSet = GetVP();
+    
+	int cksize = 0;
+	if ( vpSet[pgnum].hasBrrData() ) {
+        auto it = mPropertyParams.begin();
+        while (it != mPropertyParams.end()) {
+            if (it->second.saveToProg) {
+                cksize += sizeof( ChunkReader::MyChunkHead );
+                if (it->second.propId == kAudioUnitCustomProperty_BRRData) {
+                    cksize += vpSet[pgnum].brrSize();
+                }
+                else if (it->second.dataType == propertyDataTypeBool) {
+                    cksize += 4;    // bool値はint型で保存する
+                }
+                else {
+                    cksize += it->second.outDataSize;
+                }
+            }
+            it++;
+        }
+	}
+    
+	return cksize;
+}
+
+//-----------------------------------------------------------------------------
+bool C700Kernel::RestorePropertyFromData(DataBuffer *data, int ckSize, const PropertyDescription &prop)
+{
+    switch (prop.dataType) {
+        case propertyDataTypeFloat32:
+        {
+            float value;
+            data->readData(&value, ckSize);
+            SetPropertyValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeInt32:
+        {
+            int value;
+            data->readData(&value, ckSize);
+            SetPropertyValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeDouble:
+        {
+            double value;
+            data->readData(&value, ckSize);
+            SetPropertyDoubleValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeBool:
+        {
+            int value;
+            data->readData(&value, ckSize);
+            SetPropertyValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeStruct:
+            return false;
+        case propertyDataTypeCString:
+        {
+            char	string[PROGRAMNAME_MAX_LEN];
+            data->readData(&string, ckSize);
+            SetPropertyPtrValue(prop.propId, string);
+            break;
+        }
+        case propertyDataTypeFilePath:
+        {
+            char	string[PATH_LEN_MAX];
+            data->readData(&string, ckSize);
+            SetPropertyPtrValue(prop.propId, string);
+            break;
+        }
+        case propertyDataTypeCFDataRef:
+            return false;
+    }
+    if (prop.dataType != propertyDataTypeBool) {
+        assert(ckSize == prop.outDataSize);
+    }
+    
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
+{
+    int editProg = mEditProg;
+    mEditProg = pgnum;
+    
+	while ( chunk->GetWritableSize() >= (int)sizeof( ChunkReader::MyChunkHead ) ) {
+		int		ckType;
+		long	ckSize;
+		chunk->readChunkHead(&ckType, &ckSize);
+        auto it = mPropertyParams.find(ckType);
+        if (it == mPropertyParams.end()) {
+            //不明チャンクの場合は飛ばす
+            chunk->AdvDataPos(ckSize);
+        }
+        if (RestorePropertyFromData(chunk, ckSize, it->second) == false) {
+            if (ckType == kAudioUnitCustomProperty_BRRData) {
+                unsigned char   *dataptr = new unsigned char[ckSize];
+				long	actSize;
+				chunk->readData(dataptr, ckSize, &actSize);
+                SetBRRData(dataptr, actSize);
+                SetPropertyValue(kAudioUnitCustomProperty_Loop,
+                                 dataptr[actSize-9]&2?true:false);
+                delete [] dataptr;
+            }
+        }
+	}
+    // TODO: デフォルト値の設定
+    
+    mEditProg = editProg;
+    
+    GetDriver()->RefreshKeyMap();
+    
+	return true;
+}
+
+
 #endif

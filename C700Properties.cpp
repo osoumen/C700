@@ -11,7 +11,7 @@
 PropertyDescription sPropertyDescription[] = {
     {
         kAudioUnitCustomProperty_ProgramName,   // propId
-        sizeof(void*),                          // outDataSize
+        PROGRAMNAME_MAX_LEN,                    // outDataSize
         false,                                  // outWritable
         propertyDataTypeCString,                // dataType
         false,                                  // readOnly
@@ -656,7 +656,7 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_SourceFileRef, // propId
-        sizeof(void*),                          // outDataSize
+        PATH_LEN_MAX,                           // outDataSize
         false,                                  // outWritable
         propertyDataTypeFilePath,               // dataType
         false,                                  // readOnly

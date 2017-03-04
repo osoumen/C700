@@ -33,8 +33,9 @@ public:
 	void				AdvDataPos( int adv ) { mDataPos+=adv; }
 	bool				setPos( int pos );
     int                 getPos() { return mDataPos; }
+    bool                isReadOnly() { return mReadOnly; }
 
-	bool				readData( void *data, long byte, long *actualReadByte );
+	bool				readData( void *data, long byte, long *actualReadByte=NULL );
 	bool				writeData( const void *data, long byte, long *actualWriteByte=NULL );
     bool                writeByte( unsigned char byte );
     bool                writeByte( unsigned char byte, int len );

@@ -13,6 +13,7 @@
 #include "C700Driver.h"
 #include "C700Parameters.h"
 #include "C700Properties.h"
+#include "ChunkReader.h"
 
 class C700Kernel : public C700Parameters
 {
@@ -82,6 +83,12 @@ public:
     int             CreatePGDataDic(CFDictionaryRef *data, int pgnum);
     void            RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDescription &prop);
     void            RestorePGDataDic(CFPropertyListRef data, int pgnum);
+#else
+    void            SetPropertyToChunk(ChunkReader *chunk, const PropertyDescription &prop);
+    bool            SetPGDataToChunk(ChunkReader *chunk, int pgnum);
+    int             GetPGChunkSize( int pgnum );
+    bool            RestorePropertyFromData(DataBuffer *data, int ckSize, const PropertyDescription &prop);
+    bool            RestorePGDataFromChunk( ChunkReader *chunk, int pgnum );
 #endif
     
 private:
