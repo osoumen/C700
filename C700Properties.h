@@ -134,11 +134,12 @@ typedef struct {
     bool             outWritable;
     PropertyDataType dataType;
     bool             readOnly;
-    bool             saveToProg;    // 未使用
+    bool             saveToProg;
     bool             saveToSong;
-    bool             saveToGlobal;  // 未使用
+    bool             saveToGlobal;
+    char             savekey[32];   // TODO: 設定する
+    double           defaultValue;  // TODO: 設定する
     bool             allocWhenGet;  // TODO: 設定する
-    float            defaultValue;  // 未使用
 } PropertyDescription;
 
 void createPropertyParamMap(std::map<int, PropertyDescription> &m);

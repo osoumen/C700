@@ -10,7 +10,6 @@
 #include "PlayerCodeReader.h"
 #include "XIFile.h"
 #include "C700Kernel.h"
-#include "C700Properties.h"
 #include "samplebrr.h"
 #include <math.h>
 
@@ -24,6 +23,10 @@ C700Kernel::C700Kernel()
 , parameterSetFunc(NULL)
 , paramSetUserData(NULL)
 {
+#if AU
+    createPropertyParamMap(mPropertyParams);
+#endif
+    
 	for ( int i=0; i<kNumberOfParameters; i++ ) {
 		SetParameter(i, GetParameterDefault(i));
 	}
@@ -1442,36 +1445,27 @@ void C700Kernel::CorrectLoopFlagForSave(int pgnum)
 }
 
 #if AU
-CFStringRef C700Kernel::kSaveKey_ProgName = CFSTR("progname");
-CFStringRef C700Kernel::kSaveKey_EditProg = CFSTR("editprog");
-CFStringRef C700Kernel::kSaveKey_EditChan = CFSTR("editchan");
-CFStringRef C700Kernel::kSaveKey_brrdata = CFSTR("brrdata");
-CFStringRef C700Kernel::kSaveKey_looppoint = CFSTR("looppoint");
-CFStringRef C700Kernel::kSaveKey_samplerate = CFSTR("samplerate");
-CFStringRef C700Kernel::kSaveKey_basekey = CFSTR("key");
-CFStringRef C700Kernel::kSaveKey_lowkey = CFSTR("lowkey");
-CFStringRef C700Kernel::kSaveKey_highkey = CFSTR("highkey");
-CFStringRef C700Kernel::kSaveKey_ar = CFSTR("ar");
-CFStringRef C700Kernel::kSaveKey_dr = CFSTR("dr");
-CFStringRef C700Kernel::kSaveKey_sl = CFSTR("sl");
-CFStringRef C700Kernel::kSaveKey_sr = CFSTR("sr");
-CFStringRef C700Kernel::kSaveKey_volL = CFSTR("volL");
-CFStringRef C700Kernel::kSaveKey_volR = CFSTR("volR");
-CFStringRef C700Kernel::kSaveKey_echo = CFSTR("echo");
-CFStringRef C700Kernel::kSaveKey_bank = CFSTR("bank");
-CFStringRef C700Kernel::kSaveKey_IsEmphasized = CFSTR("isemph");
-CFStringRef C700Kernel::kSaveKey_SourceFile = CFSTR("srcfile");
-CFStringRef C700Kernel::kSaveKey_SustainMode = CFSTR("sustainmode");
-CFStringRef C700Kernel::kSaveKey_MonoMode = CFSTR("monomode");
-CFStringRef C700Kernel::kSaveKey_PortamentoOn = CFSTR("portamentoon");
-CFStringRef C700Kernel::kSaveKey_PortamentoRate = CFSTR("portamentorate");
-CFStringRef C700Kernel::kSaveKey_NoteOnPriority = CFSTR("noteonpriority");
-CFStringRef C700Kernel::kSaveKey_ReleasePriority = CFSTR("releasepriority");
 
 //-----------------------------------------------------------------------------
 void C700Kernel::AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int value)
 {
 	CFNumberRef num = CFNumberCreate(NULL, kCFNumberIntType, &value);
+	CFDictionarySetValue(dict, key, num);
+	CFRelease(num);
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddDoubleToDictionary(CFMutableDictionaryRef dict, CFStringRef key, double value)
+{
+    CFNumberRef	num = CFNumberCreate(NULL, kCFNumberDoubleType, &value);
+	CFDictionarySetValue(dict, key, num);
+	CFRelease(num);
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddFloatToDictionary(CFMutableDictionaryRef dict, CFStringRef key, float value)
+{
+    CFNumberRef	num = CFNumberCreate(NULL, kCFNumberFloatType, &value);
 	CFDictionarySetValue(dict, key, num);
 	CFRelease(num);
 }
@@ -1490,45 +1484,53 @@ void C700Kernel::AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef
 //-----------------------------------------------------------------------------
 int C700Kernel::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 {
+    int editProg = mEditProg;
+    mEditProg = pgnum;
+    
 	CFMutableDictionaryRef dict = CFDictionaryCreateMutable	(NULL, 0,
                                                              &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 	const InstParams	*vpSet = GetVP();
 	
     CorrectLoopFlagForSave(pgnum);
 	CFDataRef	brrdata = CFDataCreate(NULL, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
-	CFDictionarySetValue(dict, kSaveKey_brrdata, brrdata);
+    CFStringRef saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_BRRData].savekey, kCFStringEncodingASCII);
+	CFDictionarySetValue(dict, saveKey, brrdata);
+    CFRelease(saveKey);
 	CFRelease(brrdata);
 	
-	AddNumToDictionary(dict, kSaveKey_looppoint, vpSet[pgnum].lp);
-	CFNumberRef	num = CFNumberCreate(NULL, kCFNumberDoubleType, &vpSet[pgnum].rate);
-	CFDictionarySetValue(dict, kSaveKey_samplerate, num);
-	CFRelease(num);
-	AddNumToDictionary(dict, kSaveKey_basekey, vpSet[pgnum].basekey);
-	AddNumToDictionary(dict, kSaveKey_lowkey, vpSet[pgnum].lowkey);
-	AddNumToDictionary(dict, kSaveKey_highkey, vpSet[pgnum].highkey);
-	AddNumToDictionary(dict, kSaveKey_ar, vpSet[pgnum].ar);
-	AddNumToDictionary(dict, kSaveKey_dr, vpSet[pgnum].dr);
-	AddNumToDictionary(dict, kSaveKey_sl, vpSet[pgnum].sl);
-	AddNumToDictionary(dict, kSaveKey_sr, vpSet[pgnum].sr);
-    AddBooleanToDictionary(dict, kSaveKey_SustainMode, vpSet[pgnum].sustainMode);
-	AddNumToDictionary(dict, kSaveKey_volL, vpSet[pgnum].volL);
-	AddNumToDictionary(dict, kSaveKey_volR, vpSet[pgnum].volR);
-	AddBooleanToDictionary(dict, kSaveKey_echo, vpSet[pgnum].echo);
-	AddNumToDictionary(dict, kSaveKey_bank, vpSet[pgnum].bank);
-	AddBooleanToDictionary(dict, kSaveKey_MonoMode, vpSet[pgnum].monoMode);
-	AddBooleanToDictionary(dict, kSaveKey_PortamentoOn, vpSet[pgnum].portamentoOn);
-    AddNumToDictionary(dict, kSaveKey_PortamentoRate, vpSet[pgnum].portamentoRate);
-    AddNumToDictionary(dict, kSaveKey_NoteOnPriority, vpSet[pgnum].noteOnPriority);
-    AddNumToDictionary(dict, kSaveKey_ReleasePriority, vpSet[pgnum].releasePriority);
-    
-	//元波形情報
-	AddBooleanToDictionary(dict, kSaveKey_IsEmphasized, vpSet[pgnum].isEmphasized);
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToProg) {
+            saveKey = CFStringCreateWithCString(NULL, it->second.savekey, kCFStringEncodingASCII);
+            switch (it->second.dataType) {
+                case propertyDataTypeInt32:
+                    C700Kernel::AddNumToDictionary(dict, saveKey, GetPropertyValue(it->second.propId));
+                    break;
+                case propertyDataTypeFloat32:
+                    C700Kernel::AddFloatToDictionary(dict, saveKey, GetPropertyValue(it->second.propId));
+                    break;
+                case propertyDataTypeDouble:
+                    C700Kernel::AddDoubleToDictionary(dict, saveKey, GetPropertyDoubleValue(it->second.propId));
+                    break;
+                case propertyDataTypeBool:
+                    C700Kernel::AddBooleanToDictionary(dict, saveKey, GetPropertyValue(it->second.propId));
+                    break;
+                case propertyDataTypePtr:
+                case propertyDataTypeStruct:
+                    break;
+            }
+            CFRelease(saveKey);
+        }
+        it++;
+    }
 	if ( vpSet[pgnum].sourceFile[0] ) {
 		CFURLRef	url =
 		CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)vpSet[pgnum].sourceFile,
 												strlen(vpSet[pgnum].sourceFile), false);
 		CFDataRef urlData = CFURLCreateData( NULL, url, kCFStringEncodingUTF8, false );
-		CFDictionarySetValue(dict, kSaveKey_SourceFile, urlData);
+        saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SourceFileRef].savekey, kCFStringEncodingASCII);
+		CFDictionarySetValue(dict, saveKey, urlData);
+        CFRelease(saveKey);
 		CFRelease(urlData);
 		CFRelease(url);
 	}
@@ -1536,10 +1538,14 @@ int C700Kernel::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 	//プログラム名
 	if (vpSet[pgnum].pgname[0] != 0) {
 		CFStringRef	str = CFStringCreateWithCString(NULL, vpSet[pgnum].pgname, kCFStringEncodingUTF8);
-		CFDictionarySetValue(dict, kSaveKey_ProgName, str);
+        saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_ProgramName].savekey, kCFStringEncodingASCII);
+		CFDictionarySetValue(dict, saveKey, str);
+        CFRelease(saveKey);
 		CFRelease(str);
 	}
 	
+    mEditProg = editProg;
+    
 	*data = dict;
 	return 0;
 }
@@ -1551,176 +1557,89 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, pgnum);
     
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(data);
-	CFNumberRef cfnum;
 	
-	int	value;
-	if (CFDictionaryContainsKey(dict, kSaveKey_looppoint)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_looppoint));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, value);
-	}
-	
-	CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_brrdata));
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToProg) {
+            CFStringRef saveKey = CFStringCreateWithCString(NULL, it->second.savekey, kCFStringEncodingASCII);
+            if (CFDictionaryContainsKey(dict, saveKey)) {
+                
+                switch (it->second.dataType) {
+                    case propertyDataTypeFloat32:
+                    {
+                        float value;
+                        CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                        CFNumberGetValue(cfnum, kCFNumberFloatType, &value);
+                        SetPropertyValue(it->second.propId, value);
+                        break;
+                    }
+                    case propertyDataTypeInt32:
+                    {
+                        int value;
+                        CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                        CFNumberGetValue(cfnum, kCFNumberIntType, &value);
+                        SetPropertyValue(it->second.propId, value);
+                        break;
+                    }
+                    case propertyDataTypeDouble:
+                    {
+                        double value;
+                        CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                        CFNumberGetValue(cfnum, kCFNumberDoubleType, &value);
+                        SetPropertyDoubleValue(it->second.propId, value);
+                        break;
+                    }
+                    case propertyDataTypeBool:
+                    {
+                        CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, saveKey));
+                        SetPropertyValue(it->second.propId,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
+                        break;
+                    }
+                    case propertyDataTypePtr:
+                    case propertyDataTypeStruct:
+                        break;
+                }
+                
+            }
+            else {
+                // デフォルト値を設定
+                SetPropertyValue(it->second.propId, it->second.defaultValue);
+                SetPropertyDoubleValue(it->second.propId, it->second.defaultValue);
+            }
+            CFRelease(saveKey);
+        }
+        it++;
+    }
+
+    CFStringRef saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_BRRData].savekey, kCFStringEncodingASCII);
+    CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, saveKey));
+    CFRelease(saveKey);
 	int	size = CFDataGetLength(cfdata);
 	const UInt8	*dataptr = CFDataGetBytePtr(cfdata);
 	SetBRRData(dataptr, size);
 	SetPropertyValue(kAudioUnitCustomProperty_Loop,
-						   dataptr[size-9]&2?true:false);
+                     dataptr[size-9]&2?true:false);
 	
-	double	dvalue;
-	if (CFDictionaryContainsKey(dict, kSaveKey_samplerate)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_samplerate));
-		CFNumberGetValue(cfnum, kCFNumberDoubleType, &dvalue);
-		SetPropertyDoubleValue(kAudioUnitCustomProperty_Rate, dvalue);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_basekey)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_basekey));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_BaseKey, value);
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_BaseKey, 60);
-	}
-	if (CFDictionaryContainsKey(dict, kSaveKey_lowkey)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_lowkey));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_LowKey, value);
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_LowKey, 0);
-	}
-	if (CFDictionaryContainsKey(dict, kSaveKey_highkey)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_highkey));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_HighKey,value );
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_HighKey,127 );
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_ar)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_ar));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_AR, value);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_dr)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_dr));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_DR, value);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_sl)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_sl));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_SL, value);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_sr)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_sr));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_SR, value);
-	}
-	
-    bool isSustainModeSet = false;
-    if (CFDictionaryContainsKey(dict, kSaveKey_SustainMode)) {
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_SustainMode));
-		SetPropertyValue(kAudioUnitCustomProperty_SustainMode,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-        isSustainModeSet = true;
-	}
-	
-    if (CFDictionaryContainsKey(dict, kSaveKey_volL)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volL));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_VolL, value);
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_VolL, 100);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_volR)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volR));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_VolR, value);
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_VolR, 100);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_echo)) {
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_echo));
-		SetPropertyValue(kAudioUnitCustomProperty_Echo,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_Echo, .0f);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_bank)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_bank));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_Bank, value );
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_Bank, 0 );
-	}
-	
-    if (CFDictionaryContainsKey(dict, kSaveKey_MonoMode)) {
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_MonoMode));
-		SetPropertyValue(kAudioUnitCustomProperty_MonoMode,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_MonoMode, .0f);
-	}
-    
-    if (CFDictionaryContainsKey(dict, kSaveKey_PortamentoOn)) {
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_PortamentoOn));
-		SetPropertyValue(kAudioUnitCustomProperty_PortamentoOn,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_PortamentoOn, .0f);
-	}
-    
-    if (CFDictionaryContainsKey(dict, kSaveKey_PortamentoRate)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_PortamentoRate));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_PortamentoRate, value );
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_PortamentoRate, 0 );
-	}
-    
-    if (CFDictionaryContainsKey(dict, kSaveKey_NoteOnPriority)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_NoteOnPriority));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority, value );
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority, 64 );
-	}
-    
-    if (CFDictionaryContainsKey(dict, kSaveKey_ReleasePriority)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_ReleasePriority));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		SetPropertyValue(kAudioUnitCustomProperty_ReleasePriority, value );
-	}
-	else {
-		SetPropertyValue(kAudioUnitCustomProperty_ReleasePriority, 0 );
-	}
-    
-	if (CFDictionaryContainsKey(dict, kSaveKey_ProgName)) {
+    saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_ProgramName].savekey, kCFStringEncodingASCII);
+	if (CFDictionaryContainsKey(dict, saveKey)) {
 		char	pgname[PROGRAMNAME_MAX_LEN];
-		CFStringGetCString(reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, kSaveKey_ProgName)),
+		CFStringGetCString(reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, saveKey)),
 						   pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
 		SetProgramName(pgname);
 	}
 	else {
 		SetProgramName("");
 	}
+    CFRelease(saveKey);
 	
 	//元波形ファイル情報を復元
-	if (CFDictionaryContainsKey(dict, kSaveKey_SourceFile)) {
-		CFDataRef	urlData = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_SourceFile));
+    saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SustainMode].savekey, kCFStringEncodingASCII);
+    bool    isSustainModeSet = CFDictionaryContainsKey(dict, saveKey)?true:false;
+    CFRelease(saveKey);
+    
+    saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SourceFileRef].savekey, kCFStringEncodingASCII);
+	if (CFDictionaryContainsKey(dict, saveKey)) {
+		CFDataRef	urlData = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, saveKey));
 		CFURLRef	url = CFURLCreateWithBytes( NULL, CFDataGetBytePtr(urlData),
 											   CFDataGetLength(urlData), kCFStringEncodingUTF8, NULL );
 		CFStringRef pathStr = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
@@ -1730,9 +1649,10 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 		CFRelease(pathStr);
 		CFRelease(url);
 		
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_IsEmphasized));
+#if 0
+		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, mPropertyParams[kAudioUnitCustomProperty_IsEmaphasized].savekey));
 		SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-        
+#endif
         // SRをリリース時に使用するけどSustainModeの設定項目は無い過渡的なバージョン
         if (!isSustainModeSet) {
             SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
@@ -1747,9 +1667,10 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
             SetPropertyValue(kAudioUnitCustomProperty_SustainMode, .0f);
         }
 	}
+    CFRelease(saveKey);
 	
 	//UIに変更を反映
-	if (pgnum == editProg) {
+	if (pgnum != editProg) {
 		SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
 	}
 	
