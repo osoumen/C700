@@ -11,8 +11,8 @@
 #define CHUNKID(a, b, c, d) \
 ((((int)a) << 0) | (((int)b) << 8) | (((int)c) << 16) | (((int)d) << 24))
 
-PlayerCodeReader::PlayerCodeReader(const void *data, int dataSize)
-: ChunkReader(data, dataSize)
+PlayerCodeReader::PlayerCodeReader(const void *data, int dataSize, bool copy)
+: ChunkReader(data, dataSize, copy)
 , m_pSmcNativeVector(NULL)
 , m_pSmcEmulationVector(NULL)
 , m_pSmcPlayerCode(NULL)

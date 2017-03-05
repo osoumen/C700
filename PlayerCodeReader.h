@@ -13,7 +13,7 @@
 
 class PlayerCodeReader : public ChunkReader {
 public:
-    PlayerCodeReader(const void *data, int dataSize);
+    PlayerCodeReader(const void *data, int dataSize, bool copy=false);
     PlayerCodeReader(const char *path);
     virtual ~PlayerCodeReader();
     

@@ -15,9 +15,9 @@ ChunkReader::ChunkReader(int allocMemSize)
 }
 
 //-----------------------------------------------------------------------------
-ChunkReader::ChunkReader( const void *data, int dataSize )
+ChunkReader::ChunkReader( const void *data, int dataSize, bool copy )
 : FileAccess(NULL, true)
-, DataBuffer( data, dataSize )
+, DataBuffer( data, dataSize, copy )
 {
 }
 
