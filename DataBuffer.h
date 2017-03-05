@@ -26,9 +26,9 @@ public:
 	
     void                Clear();
 	const unsigned char	*GetDataPtr() const { return m_pData; }
-	int					GetDataSize() const { return mDataUsed; }
-    int					GetMaxDataSize() const { return mDataSize; }
-    int					GetWritableSize() const { return (mDataSize - mDataPos - 1); }
+	int					GetDataUsed() const { return mDataUsed; }
+    int					GetDataSize() const { return mDataSize; }
+    int					GetLeftSize() const { return (mDataSize - mDataPos - 1); }
 	int					GetDataPos() const { return mDataPos; }
 	void				AdvDataPos( int adv ) { mDataPos+=adv; }
 	bool				setPos( int pos );

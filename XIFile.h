@@ -20,18 +20,7 @@ public:
 	
 	virtual bool		Write();
 	
-#if MAC
-	void				SetCFData( CFDataRef propertydata );
-	CFDataRef			GetCFData() const;
-#endif
-	
 	bool				SetDataFromChip( const C700Driver *chip, int targetProgram, double tempo );
-	
-private:
-	
-#if MAC
-	CFDataRef		mCFData;
-#endif
 	
 public:
 	

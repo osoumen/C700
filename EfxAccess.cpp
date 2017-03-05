@@ -85,8 +85,7 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 bool	EfxAccess::CreateXIFileData( XIFile **outData )
 {
 #if AU
-	XIFile	*file = new XIFile(NULL, 0);
-	*outData = file;
+	XIFile	*file = NULL;
 	
 	//AU内部で生成されたデータを取得する
 	//問題が無ければVST時と同じでも良いかも？
@@ -99,16 +98,17 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 		== noErr )
 	{
 		if ( cfdata ) {
-			file->SetCFData( cfdata );
+            file = new XIFile(NULL, CFDataGetLength(cfdata));
+            file->writeData(CFDataGetBytePtr(cfdata), CFDataGetLength(cfdata));
 			CFRelease(cfdata);
+            *outData = file;
 			return true;
 		}
 		else {
-			delete file;
 			return false;
 		}
 	}
-	CFRelease(cfdata);
+    *outData = file;
 	return true;
 #else
 	//VST時の処理

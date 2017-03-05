@@ -489,7 +489,7 @@ const void *C700Kernel::GetPropertyPtrValue( int inID )
             
             if ( fileData.IsLoaded() ) {
                 CFDataRef xidata;
-                xidata = CFDataCreate(NULL, fileData.GetDataPtr(), fileData.GetDataSize() );
+                xidata = CFDataCreate(NULL, fileData.GetDataPtr(), fileData.GetDataUsed() );
                 return (void *)xidata;	//使用後要release
             }
             else {
@@ -1689,7 +1689,6 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 //-----------------------------------------------------------------------------
 void C700Kernel::SetPropertyToChunk(ChunkReader *chunk, const PropertyDescription &prop)
 {
-    CFStringRef saveKey = CFStringCreateWithCString(NULL, prop.savekey, kCFStringEncodingASCII);
     switch (prop.dataType) {
         case propertyDataTypeInt32:
         case propertyDataTypeBool:
@@ -1716,7 +1715,7 @@ void C700Kernel::SetPropertyToChunk(ChunkReader *chunk, const PropertyDescriptio
         case propertyDataTypeFilePath:
         {
             char *string = (char*)GetPropertyPtrValue(prop.propId);
-            if (string[0] != 0) {
+            if (string != NULL && string[0] != 0) {
                 chunk->addChunk(prop.propId, string, prop.outDataSize);
             }
             break;
@@ -1724,7 +1723,6 @@ void C700Kernel::SetPropertyToChunk(ChunkReader *chunk, const PropertyDescriptio
         case propertyDataTypeCFDataRef:
             break;
     }
-    CFRelease(saveKey);
 }
 
 //-----------------------------------------------------------------------------
@@ -1769,10 +1767,11 @@ int C700Kernel::GetPGChunkSize( int pgnum )
             if (it->second.saveToProg) {
                 cksize += sizeof( ChunkReader::MyChunkHead );
                 if (it->second.propId == kAudioUnitCustomProperty_BRRData) {
+                                    // BRRDataは可変長である
                     cksize += vpSet[pgnum].brrSize();
                 }
                 else if (it->second.dataType == propertyDataTypeBool) {
-                    cksize += 4;    // bool値はint型で保存する
+                    cksize += 4;    // VSTではbool値はint型で保存する
                 }
                 else {
                     cksize += it->second.outDataSize;
@@ -1797,7 +1796,9 @@ bool C700Kernel::RestorePropertyFromData(DataBuffer *data, int ckSize, const Pro
             break;
         }
         case propertyDataTypeInt32:
+        case propertyDataTypeBool:
         {
+            // VSTではBoolもInt32型で保存する仕様とする
             int value;
             data->readData(&value, ckSize);
             SetPropertyValue(prop.propId, value);
@@ -1810,15 +1811,6 @@ bool C700Kernel::RestorePropertyFromData(DataBuffer *data, int ckSize, const Pro
             SetPropertyDoubleValue(prop.propId, value);
             break;
         }
-        case propertyDataTypeBool:
-        {
-            int value;
-            data->readData(&value, ckSize);
-            SetPropertyValue(prop.propId, value);
-            break;
-        }
-        case propertyDataTypeStruct:
-            return false;
         case propertyDataTypeCString:
         {
             char	string[PROGRAMNAME_MAX_LEN];
@@ -1833,6 +1825,7 @@ bool C700Kernel::RestorePropertyFromData(DataBuffer *data, int ckSize, const Pro
             SetPropertyPtrValue(prop.propId, string);
             break;
         }
+        case propertyDataTypeStruct:
         case propertyDataTypeCFDataRef:
             return false;
     }
@@ -1849,7 +1842,7 @@ bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
     int editProg = mEditProg;
     mEditProg = pgnum;
     
-	while ( chunk->GetWritableSize() >= (int)sizeof( ChunkReader::MyChunkHead ) ) {
+	while ( chunk->GetLeftSize() >= (int)sizeof( ChunkReader::MyChunkHead ) ) {
 		int		ckType;
 		long	ckSize;
 		chunk->readChunkHead(&ckType, &ckSize);
