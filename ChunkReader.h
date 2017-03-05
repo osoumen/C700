@@ -16,6 +16,7 @@ class ChunkReader : public FileAccess, public DataBuffer {
 public:
 	ChunkReader( int allocMemSize );
 	ChunkReader( const void *data, int dataSize );
+    ChunkReader( const char *path );
 	virtual ~ChunkReader();
 	
 	bool	addChunk( int type, const void* data, int byte );	//容量不足で全部を書き込めないときはfalse

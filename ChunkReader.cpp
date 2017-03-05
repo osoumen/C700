@@ -22,6 +22,51 @@ ChunkReader::ChunkReader( const void *data, int dataSize )
 }
 
 //-----------------------------------------------------------------------------
+ChunkReader::ChunkReader( const char *path )
+: FileAccess(path, false)
+, DataBuffer(1)
+{
+    SetAllowExtend(true);
+#if MAC
+	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+	
+	CFReadStreamRef	filestream = CFReadStreamCreateWithFile(NULL, url);
+	if (CFReadStreamOpen(filestream) == false) {
+        CFRelease( filestream );
+		CFRelease( url );
+		return;
+	}
+    
+    UInt8   readBuf[65536];
+    CFIndex	readbytes = 0;
+    do {
+        readbytes = CFReadStreamRead(filestream, (UInt8*)readBuf, 65536);
+        writeData(readBuf, readbytes);
+    } while (readbytes > 0);
+    
+	CFReadStreamClose(filestream);
+    CFRelease( filestream );
+	CFRelease( url );
+#else
+	// Windows環境のファイル読み込み処理
+	HANDLE	hFile;
+	
+    unsigned char   readBuf[65536];
+	hFile = CreateFile( path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+	if ( hFile != INVALID_HANDLE_VALUE ) {
+		DWORD	readbytes = 0;
+        do {
+            ReadFile( hFile, readBuf, 65536, &readbytes, NULL );
+            writeData(readBuf, readbytes);
+        } while (readbytes > 0);
+		CloseHandle( hFile );
+	}
+#endif
+    setPos(0);
+    SetAllowExtend(false);
+}
+
+//-----------------------------------------------------------------------------
 ChunkReader::~ChunkReader()
 {
 }
@@ -102,28 +147,5 @@ bool ChunkReader::readChunkHead( int *type, long *byte )
 bool ChunkReader::Write()
 {
     // DataBuffer にあるデータをFileAccessに保持してあるファイルパスに書き込む
-    const char *path = GetFilePath();
-    
-#if MAC
-    CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
-    
-    CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
-    if (CFWriteStreamOpen(filestream)) {
-        CFWriteStreamWrite(filestream, GetDataPtr(), GetDataPos() );
-        CFWriteStreamClose(filestream);
-    }
-    CFRelease(filestream);
-    CFRelease(savefile);
-#else
-    HANDLE	hFile;
-	
-	hFile = CreateFile( path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-	if ( hFile != INVALID_HANDLE_VALUE ) {
-		DWORD	writeSize;
-		WriteFile( hFile, GetDataPtr(), GetDataPos(), &writeSize, NULL );
-		CloseHandle( hFile );
-	}
-    delete [] optimizedData;
-#endif
-    return true;
+    return WriteToFile(GetFilePath());
 }
