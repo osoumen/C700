@@ -125,9 +125,10 @@ enum PropertyDataType {
     propertyDataTypeInt32,
     propertyDataTypeBool,
     propertyDataTypeStruct,
-    propertyDataTypeCString,
+    propertyDataTypeString,
     propertyDataTypeFilePath,
-    propertyDataTypeCFDataRef,
+    propertyDataTypeVariableData,
+    propertyDataTypePointer,    // UIとのやりとりのみに使用し、保存しないタイプのプロパティ
 };
 
 typedef struct {

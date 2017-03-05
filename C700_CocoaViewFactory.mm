@@ -86,9 +86,10 @@ AudioUnitParameterValue		inParameterValue
                 case propertyDataTypeStruct:
                     editor->setParameter( propertyId, outDataPtr );
                     break;
-                case propertyDataTypeCString:
+                case propertyDataTypeString:
                 case propertyDataTypeFilePath:
-                case propertyDataTypeCFDataRef:
+                case propertyDataTypeVariableData:
+                case propertyDataTypePointer:
                 {
                     char **ptr = (char**)outDataPtr;
                     editor->setParameter( propertyId, *ptr );

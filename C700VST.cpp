@@ -165,7 +165,7 @@ void C700VST::setProgram(VstInt32 program)
 //-----------------------------------------------------------------------------------------
 void C700VST::setProgramName(char *name)
 {
-	mEfx->SetPropertyPtrValue(kAudioUnitCustomProperty_ProgramName, name);
+	mEfx->SetPropertyPtrValue(kAudioUnitCustomProperty_ProgramName, name, 0);
 }
 
 //-----------------------------------------------------------------------------------------
