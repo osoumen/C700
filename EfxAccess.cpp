@@ -492,38 +492,13 @@ void EfxAccess::SetPropertyValue( int propertyID, double value )
 //-----------------------------------------------------------------------------
 bool EfxAccess::LoadSongPlayerCode( const char *path )
 {
-    char        data[65536];
-    int         size;
-
-#if MAC
-	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
-	
-	CFReadStreamRef	filestream = CFReadStreamCreateWithFile(NULL, url);
-	if (CFReadStreamOpen(filestream) == false) {
-        CFRelease( filestream );
-		CFRelease( url );
-		return false;
-	}
-	CFIndex	readbytes=CFReadStreamRead(filestream, (UInt8*)data, 65536);
-	size = readbytes;
-	CFReadStreamClose(filestream);
-    CFRelease( filestream );
-	CFRelease( url );
-#else
-	//Windowsä¬ã´ÇÃÉtÉ@ÉCÉãì«Ç›çûÇ›èàóù
-	HANDLE	hFile;
-	
-	hFile = CreateFile( path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
-	if ( hFile != INVALID_HANDLE_VALUE ) {
-		DWORD	readSize;
-		ReadFile( hFile, data, 65536, &readSize, NULL );
-		size = readSize;
-		CloseHandle( hFile );
-	}
-#endif
+    PlayerCodeReader codeFile(path);
+    if (codeFile.GetDataUsed() <= 1) {
+        return false;
+    }
     
 #if AU
-    CFDataRef   dataRef = CFDataCreate(NULL, (UInt8*)data, size);
+    CFDataRef   dataRef = CFDataCreate(NULL, codeFile.GetDataPtr(), codeFile.GetDataSize());
     UInt32      inSize = sizeof(CFDataRef);
     if (
 		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SongPlayerCode,
@@ -535,8 +510,7 @@ bool EfxAccess::LoadSongPlayerCode( const char *path )
     CFRelease(dataRef);
 	return false;
 #else
-    PlayerCodeReader codeFile(data, size);
-    if (!codeFile.IsLoaded()) return true;
+    if (!codeFile.IsLoaded()) return false;
     mEfx->mEfx->GetDriver()->GetDsp()->SetSpcPlayerCode(codeFile.getSpcPlayerCode(), codeFile.getSpcPlayerCodeSize());
     mEfx->mEfx->GetDriver()->GetDsp()->SetSmcEmulationVector(codeFile.getSmcEmulationVector());
     mEfx->mEfx->GetDriver()->GetDsp()->SetSmcNativeVector(codeFile.getSmcNativeVector());
