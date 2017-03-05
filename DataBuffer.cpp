@@ -189,7 +189,7 @@ bool DataBuffer::WriteToFile(const char *path)
     
     CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
     if (CFWriteStreamOpen(filestream)) {
-        CFWriteStreamWrite(filestream, GetDataPtr(), GetDataSize() );
+        CFWriteStreamWrite(filestream, GetDataPtr(), GetDataUsed() );
         CFWriteStreamClose(filestream);
     }
     CFRelease(filestream);
@@ -203,7 +203,6 @@ bool DataBuffer::WriteToFile(const char *path)
 		WriteFile( hFile, GetDataPtr(), GetDataPos(), &writeSize, NULL );
 		CloseHandle( hFile );
 	}
-    delete [] optimizedData;
 #endif
     return true;
 }

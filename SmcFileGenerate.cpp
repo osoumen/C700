@@ -57,7 +57,7 @@ bool SmcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     header.map = 0x30;      // FastLoROM
     header.cartType = 0x00; // ROM only
     header.romSize = 1;
-    while ((1024 << header.romSize) < smcFile.GetDataSize()) {
+    while ((1024 << header.romSize) < smcFile.GetDataUsed()) {
         header.romSize++;
     }
     smcFile.setPos(1024 << header.romSize);
@@ -79,7 +79,7 @@ bool SmcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     
     // CRCの修正
     unsigned short sum = 0;
-    for (int i=0; i<smcFile.GetDataSize(); i++) {
+    for (int i=0; i<smcFile.GetDataUsed(); i++) {
         sum += smcFile.GetDataPtr()[i];
     }
     header.checksum = sum;

@@ -69,9 +69,9 @@ void PlayingFileGenerateBase::writeBrrRegionWithHeader( DataBuffer &buffer, cons
 void PlayingFileGenerateBase::writeRegLogWithLoopPoint( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec )
 {
     // タイムベースの変換
-    unsigned char *optimizedData = new unsigned char [mRegLogBuffer.GetMaxDataSize()];
+    unsigned char *optimizedData = new unsigned char [mRegLogBuffer.GetDataSize()];
     int optimizedLoopPoint;
-    int optimizedDataSize = convertLogData( reglog, tickPerSec, optimizedData, mRegLogBuffer.GetMaxDataSize(), &optimizedLoopPoint, false );
+    int optimizedDataSize = convertLogData( reglog, tickPerSec, optimizedData, mRegLogBuffer.GetDataSize(), &optimizedLoopPoint, false );
     
     int loopAddr = optimizedLoopPoint + 3;
     unsigned char loopStart[3];
@@ -178,7 +178,7 @@ int PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, doubl
     }
     
     // wait値を削減
-    return optimizeWaits(mRegLogBuffer.GetDataPtr(), mRegLogBuffer.GetDataSize(), outData, outDataSize, outLoopPoint);
+    return optimizeWaits(mRegLogBuffer.GetDataPtr(), mRegLogBuffer.GetDataUsed(), outData, outDataSize, outLoopPoint);
 }
 
 //-----------------------------------------------------------------------------
@@ -209,7 +209,7 @@ bool PlayingFileGenerateBase::addRegWrite( int device, int addr, unsigned char d
     
     writeWaitFromPrev(tick);
     
-    if ( mRegLogBuffer.GetWritableSize() >= 3 ) {
+    if ( mRegLogBuffer.GetLeftSize() >= 3 ) {
         writeByte( addr );
         writeByte( data );
         /*
@@ -238,7 +238,7 @@ bool PlayingFileGenerateBase::addPitchRegWrite( int device, int addr, unsigned c
         
         writeWaitFromPrev(tick);
         
-        if ( mRegLogBuffer.GetWritableSize() >= 4 ) {
+        if ( mRegLogBuffer.GetLeftSize() >= 4 ) {
             writeByte( addr );
             writeByte( data_m );
             writeByte( data_l );
@@ -269,7 +269,7 @@ void PlayingFileGenerateBase::endConvert(int time)
 {
     int tick = convertTime2Tick(time);
     
-	if ( mRegLogBuffer.GetDataSize() > 0 ) {
+	if ( mRegLogBuffer.GetDataUsed() > 0 ) {
 		writeWaitFromPrev(tick);
 		writeEndByte();
 		/*
@@ -287,7 +287,7 @@ void PlayingFileGenerateBase::endConvert(int time)
 //-----------------------------------------------------------------------------
 bool PlayingFileGenerateBase::writeByte( unsigned char byte )
 {
-	if ( ( mRegLogBuffer.GetDataPos() + 1 ) > (mRegLogBuffer.GetMaxDataSize()-1) ) {	//END/LOOPが書き込める様に１バイト残しておく
+	if ( ( mRegLogBuffer.GetDataPos() + 1 ) > (mRegLogBuffer.GetDataSize()-1) ) {	//END/LOOPが書き込める様に１バイト残しておく
 		return false;
 	}
     return mRegLogBuffer.writeByte(byte);

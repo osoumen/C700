@@ -346,7 +346,7 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 		if ( mEfx->GetVP()[editProg].hasBrrData() ) {
 			ChunkReader		*pg = new ChunkReader( mEfx->GetPGChunkSize(editProg) );
             mEfx->SetPGDataToChunk(pg, editProg);
-			saveChunk->addChunk(CKID_PROGRAM_DATA+editProg, pg->GetDataPtr(), pg->GetDataSize());
+			saveChunk->addChunk(CKID_PROGRAM_DATA+editProg, pg->GetDataPtr(), pg->GetDataUsed());
 			delete pg;
 		}
 	}
@@ -355,19 +355,19 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 			if ( mEfx->GetVP()[i].hasBrrData() ) {
 				ChunkReader		*pg = new ChunkReader( mEfx->GetPGChunkSize(i) );
                 mEfx->SetPGDataToChunk(pg, i);
-				saveChunk->addChunk(CKID_PROGRAM_DATA+i, pg->GetDataPtr(), pg->GetDataSize());
+				saveChunk->addChunk(CKID_PROGRAM_DATA+i, pg->GetDataPtr(), pg->GetDataUsed());
 				delete pg;
 			}
 		}
 	}
 	
 #if TESTING
-	printf("getChunk saveChunk->GetDataSize()=%d\n",saveChunk->GetDataSize());
+	printf("getChunk saveChunk->GetDataUsed()=%d\n",saveChunk->GetDataUsed());
 #endif
 	mSaveChunk = saveChunk;
 	*data = (void*)saveChunk->GetDataPtr();
 	
-	return saveChunk->GetDataSize();
+	return saveChunk->GetDataUsed();
 }
 
 //-----------------------------------------------------------------------------------------
