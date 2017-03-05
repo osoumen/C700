@@ -109,5 +109,5 @@ bool ChunkReader::readChunkHead( int *type, long *byte )
 bool ChunkReader::Write()
 {
     // DataBuffer にあるデータをFileAccessに保持してあるファイルパスに書き込む
-    return WriteToFile(GetFilePath());
+    return WriteToFile(mPath);
 }
