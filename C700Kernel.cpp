@@ -11,6 +11,9 @@
 #include "C700Kernel.h"
 #include "samplebrr.h"
 #include <math.h>
+#if MAC
+#include "macOSUtils.h"
+#endif
 
 void CalcFIRParam( const float band[5], int filter[8] );
 
@@ -22,6 +25,7 @@ C700Kernel::C700Kernel()
 , parameterSetFunc(NULL)
 , paramSetUserData(NULL)
 , mCodeFile(NULL)
+, mGlobalSettingsHasChanged(false)
 {
     createPropertyParamMap(mPropertyParams);
     
@@ -75,6 +79,8 @@ C700Kernel::C700Kernel()
         mVPset[i].releasePriority = kDefaultValue_ReleasePriority;
 	}
 	
+    restoreGlobalProperties();
+    
 	// 音源にプログラムのメモリを渡す
 	mDriver.SetVPSet(mVPset);
 }
@@ -82,6 +88,10 @@ C700Kernel::C700Kernel()
 //-----------------------------------------------------------------------------
 C700Kernel::~C700Kernel()
 {
+    if (mGlobalSettingsHasChanged) {
+        storeGlobalProperties();
+    }
+    
 	for (int i=0; i<128; i++) {
 		mVPset[i].pgname[0] = 0;
 		mVPset[i].sourceFile[0] = 0;
@@ -110,6 +120,10 @@ void C700Kernel::Reset()
 			propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteTrack_1+i, propNotifyUserData );
 		}
 	}
+    
+    if (mGlobalSettingsHasChanged) {
+        storeGlobalProperties();
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -566,6 +580,10 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 {
 	bool		boolData = value>0.5f?true:false;
 	
+    if (mPropertyParams[inID].saveToGlobal) {
+        mGlobalSettingsHasChanged = true;
+    }
+    
 	switch (inID) {
 		case kAudioUnitCustomProperty_BaseKey:
 			mVPset[mEditProg].basekey = value;
@@ -806,6 +824,10 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 //-----------------------------------------------------------------------------
 bool C700Kernel::SetPropertyDoubleValue( int inID, double value )
 {
+    if (mPropertyParams[inID].saveToGlobal) {
+        mGlobalSettingsHasChanged = true;
+    }
+    
     switch (inID) {
 		case kAudioUnitCustomProperty_Rate:
 			mVPset[mEditProg].rate = value;
@@ -830,6 +852,10 @@ bool C700Kernel::SetPropertyDoubleValue( int inID, double value )
 
 bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr, int size )
 {
+    if (mPropertyParams[inID].saveToGlobal) {
+        mGlobalSettingsHasChanged = true;
+    }
+    
     switch (inID) {
 #if AU
 		case kAudioUnitCustomProperty_BRRData:
@@ -1451,6 +1477,180 @@ void C700Kernel::CorrectLoopFlagForSave(int pgnum)
 	}
 }
 
+//-----------------------------------------------------------------------------
+void C700Kernel::restoreGlobalProperties()
+{
+    // saveToGlobalのプロパティの復元
+    char path[PATH_LEN_MAX];
+    getPreferenceFolder(path, PATH_LEN_MAX);
+    //std::cout << path << std::endl;
+    
+    ChunkReader settings(path);
+    if (settings.GetDataSize() < 2) {
+        // 読み込めなかった時は初期値の1バイトのはず
+        return;
+    }
+    
+    while ( settings.GetLeftSize() >= (int)sizeof( ChunkReader::MyChunkHead ) ) {
+		int		ckType;
+		long	ckSize;
+		settings.readChunkHead(&ckType, &ckSize);
+        
+        auto it = mPropertyParams.find(ckType);
+        if (it == mPropertyParams.end() || it->second.saveToGlobal == false) {
+            // 不明チャンクの場合は飛ばす
+            settings.AdvDataPos(ckSize);
+        }
+        else if (RestorePropertyFromData(&settings, ckSize, it->second) == false) {
+            // RestorePropertyFromDataで読み込まれなかったら読み飛ばす
+            settings.AdvDataPos(ckSize);
+        }
+    }
+    mGlobalSettingsHasChanged = false;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::storeGlobalProperties()
+{
+    char path[PATH_LEN_MAX];
+    getPreferenceFolder(path, PATH_LEN_MAX);
+    
+    ChunkReader settings(1024*2);
+    settings.SetAllowExtend(true);
+    settings.SetFilePath(path);
+    
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToGlobal) {
+            SetPropertyToChunk(&settings, it->second);
+        }
+        it++;
+    }
+    settings.Write();
+    
+    mGlobalSettingsHasChanged = false;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::getPreferenceFolder(char *outPath, int inSize)
+{
+#if MAC
+    GetHomeDirectory(outPath, inSize);
+    strncat(outPath, "/Library/Application Support/C700/C700.settings", inSize);
+#else
+    // TODO: Windowsのホームフォルダを取得
+    SHGetSpecialFolderPath(NULL, outPath, CSIDL_APPDATA, TRUE);
+    strncat(outPath, "\\C700\\C700.settings", inSize);
+#endif
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::SetPropertyToChunk(ChunkReader *chunk, const PropertyDescription &prop)
+{
+    switch (prop.dataType) {
+        case propertyDataTypeInt32:
+        case propertyDataTypeBool:
+        {
+            int		intValue = GetPropertyValue(prop.propId);
+            chunk->addChunk(prop.propId, &intValue, sizeof(int));
+            break;
+        }
+        case propertyDataTypeFloat32:
+        {
+            float	floatValue = GetPropertyValue(prop.propId);
+            chunk->addChunk(prop.propId, &floatValue, sizeof(float));
+            break;
+        }
+        case propertyDataTypeDouble:
+        {
+            double	doubleValue = GetPropertyDoubleValue(prop.propId);
+            chunk->addChunk(prop.propId, &doubleValue, sizeof(double));
+            break;
+        }
+            break;
+        case propertyDataTypeString:
+        case propertyDataTypeFilePath:
+        {
+            char *string = (char*)GetPropertyPtrValue(prop.propId);
+            if (string != NULL && string[0] != 0) {
+                chunk->addChunk(prop.propId, string, prop.outDataSize);
+            }
+            break;
+        }
+        case propertyDataTypeVariableData:
+        {
+            char *data = (char*)GetPropertyPtrValue(prop.propId);
+            if (data != NULL) {
+                chunk->addChunk(prop.propId, data, GetPropertyPtrDataSize(prop.propId));
+            }
+            break;
+        }
+        case propertyDataTypeStruct:
+        case propertyDataTypePointer:
+            break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+bool C700Kernel::RestorePropertyFromData(DataBuffer *data, int ckSize, const PropertyDescription &prop)
+{
+    switch (prop.dataType) {
+        case propertyDataTypeFloat32:
+        {
+            float value;
+            data->readData(&value, ckSize);
+            SetPropertyValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeInt32:
+        case propertyDataTypeBool:
+        {
+            // VSTではBoolもInt32型で保存する仕様とする
+            int value;
+            data->readData(&value, ckSize);
+            SetPropertyValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeDouble:
+        {
+            double value;
+            data->readData(&value, ckSize);
+            SetPropertyDoubleValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeString:
+        {
+            char	string[PROGRAMNAME_MAX_LEN];
+            data->readData(&string, ckSize);
+            SetPropertyPtrValue(prop.propId, string, 0);
+            break;
+        }
+        case propertyDataTypeFilePath:
+        {
+            char	string[PATH_LEN_MAX];
+            data->readData(&string, ckSize);
+            SetPropertyPtrValue(prop.propId, string, 0);
+            break;
+        }
+        case propertyDataTypeVariableData:
+        {
+            char    *buf = new char[ckSize];
+            data->readData(buf, ckSize);
+            SetPropertyPtrValue(prop.propId, buf, ckSize);
+            delete [] buf;
+            break;
+        }
+        case propertyDataTypeStruct:
+        case propertyDataTypePointer:
+            return false;
+    }
+    if (prop.dataType != propertyDataTypeBool) {
+        assert(ckSize == prop.outDataSize);
+    }
+    
+    return true;
+}
+
 #if AU
 
 //-----------------------------------------------------------------------------
@@ -1726,53 +1926,6 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 // VST
 
 //-----------------------------------------------------------------------------
-void C700Kernel::SetPropertyToChunk(ChunkReader *chunk, const PropertyDescription &prop)
-{
-    switch (prop.dataType) {
-        case propertyDataTypeInt32:
-        case propertyDataTypeBool:
-        {
-            int		intValue = GetPropertyValue(prop.propId);
-            chunk->addChunk(prop.propId, &intValue, sizeof(int));
-            break;
-        }
-        case propertyDataTypeFloat32:
-        {
-            float	floatValue = GetPropertyValue(prop.propId);
-            chunk->addChunk(prop.propId, &floatValue, sizeof(float));
-            break;
-        }
-        case propertyDataTypeDouble:
-        {
-            double	doubleValue = GetPropertyDoubleValue(prop.propId);
-            chunk->addChunk(prop.propId, &doubleValue, sizeof(double));
-            break;
-        }
-            break;
-        case propertyDataTypeString:
-        case propertyDataTypeFilePath:
-        {
-            char *string = (char*)GetPropertyPtrValue(prop.propId);
-            if (string != NULL && string[0] != 0) {
-                chunk->addChunk(prop.propId, string, prop.outDataSize);
-            }
-            break;
-        }
-        case propertyDataTypeVariableData:
-        {
-            char *data = (char*)GetPropertyPtrValue(prop.propId);
-            if (data != NULL) {
-                chunk->addChunk(prop.propId, data, GetPropertyPtrDataSize(prop.propId));
-            }
-            break;
-        }
-        case propertyDataTypeStruct:
-        case propertyDataTypePointer:
-            break;
-    }
-}
-
-//-----------------------------------------------------------------------------
 bool C700Kernel::SetPGDataToChunk(ChunkReader *chunk, int pgnum)
 {
 	if ( chunk->isReadOnly() ) {
@@ -1832,66 +1985,6 @@ int C700Kernel::GetPGChunkSize( int pgnum )
 }
 
 //-----------------------------------------------------------------------------
-bool C700Kernel::RestorePropertyFromData(DataBuffer *data, int ckSize, const PropertyDescription &prop)
-{
-    switch (prop.dataType) {
-        case propertyDataTypeFloat32:
-        {
-            float value;
-            data->readData(&value, ckSize);
-            SetPropertyValue(prop.propId, value);
-            break;
-        }
-        case propertyDataTypeInt32:
-        case propertyDataTypeBool:
-        {
-            // VSTではBoolもInt32型で保存する仕様とする
-            int value;
-            data->readData(&value, ckSize);
-            SetPropertyValue(prop.propId, value);
-            break;
-        }
-        case propertyDataTypeDouble:
-        {
-            double value;
-            data->readData(&value, ckSize);
-            SetPropertyDoubleValue(prop.propId, value);
-            break;
-        }
-        case propertyDataTypeString:
-        {
-            char	string[PROGRAMNAME_MAX_LEN];
-            data->readData(&string, ckSize);
-            SetPropertyPtrValue(prop.propId, string, 0);
-            break;
-        }
-        case propertyDataTypeFilePath:
-        {
-            char	string[PATH_LEN_MAX];
-            data->readData(&string, ckSize);
-            SetPropertyPtrValue(prop.propId, string, 0);
-            break;
-        }
-        case propertyDataTypeVariableData:
-        {
-            char    *buf = new char[ckSize];
-            data->readData(buf, ckSize);
-            SetPropertyPtrValue(prop.propId, buf, ckSize);
-            delete [] buf;
-            break;
-        }
-        case propertyDataTypeStruct:
-        case propertyDataTypePointer:
-            return false;
-    }
-    if (prop.dataType != propertyDataTypeBool) {
-        assert(ckSize == prop.outDataSize);
-    }
-    
-    return true;
-}
-
-//-----------------------------------------------------------------------------
 bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
 {
     int editProg = mEditProg;
@@ -1926,6 +2019,5 @@ bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
     
 	return true;
 }
-
 
 #endif

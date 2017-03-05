@@ -72,7 +72,9 @@ public:
     void            CorrectLoopFlagForSave(int pgnum);
     
     double          GetProcessDelayTime() { return mDriver.GetProcessDelayTime(); }
-	
+
+    void            SetPropertyToChunk(ChunkReader *chunk, const PropertyDescription &prop);
+    bool            RestorePropertyFromData(DataBuffer *data, int ckSize, const PropertyDescription &prop);
 #if AU
     static void     AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int value);
     static void     AddFloatToDictionary(CFMutableDictionaryRef dict, CFStringRef key, float value);
@@ -86,10 +88,8 @@ public:
     void            RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDescription &prop);
     void            RestorePGDataDic(CFPropertyListRef data, int pgnum);
 #else
-    void            SetPropertyToChunk(ChunkReader *chunk, const PropertyDescription &prop);
     bool            SetPGDataToChunk(ChunkReader *chunk, int pgnum);
     int             GetPGChunkSize( int pgnum );
-    bool            RestorePropertyFromData(DataBuffer *data, int ckSize, const PropertyDescription &prop);
     bool            RestorePGDataFromChunk( ChunkReader *chunk, int pgnum );
 #endif
     
@@ -125,6 +125,7 @@ private:
     std::map<int, PropertyDescription>  mPropertyParams;
     
     PlayerCodeReader *mCodeFile;
+    bool            mGlobalSettingsHasChanged;
     
     void            setRPNLSB(int ch, int value);
     void            setRPNMSB(int ch, int value);
@@ -138,5 +139,8 @@ private:
 	bool			SetSourceFilePath( const char *path );
 	const char		*GetProgramName();
 	bool			SetProgramName( const char *pgname );
-
+    
+    void            restoreGlobalProperties();
+    void            storeGlobalProperties();
+    void            getPreferenceFolder(char *outPath, int inSize);
 };
