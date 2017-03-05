@@ -1644,7 +1644,8 @@ bool C700Kernel::RestorePropertyFromData(DataBuffer *data, int ckSize, const Pro
         case propertyDataTypePointer:
             return false;
     }
-    if (prop.dataType != propertyDataTypeBool) {
+    if (prop.dataType != propertyDataTypeBool &&
+        prop.dataType != propertyDataTypeVariableData) {
         assert(ckSize == prop.outDataSize);
     }
     
@@ -1858,8 +1859,12 @@ void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDes
     }
     else {
         // デフォルト値を設定
-        SetPropertyValue(prop.propId, prop.defaultValue);
-        SetPropertyDoubleValue(prop.propId, prop.defaultValue);
+        if (prop.defaultValue >= 0) {
+            // 負数でデフォルト値を無効化する
+            // FIRBandが設定されていない場合に係数がデフォルトに戻ってしまうのを防止
+            SetPropertyValue(prop.propId, prop.defaultValue);
+            SetPropertyDoubleValue(prop.propId, prop.defaultValue);
+        }
     }
     CFRelease(saveKey);
 }
@@ -1976,6 +1981,7 @@ int C700Kernel::GetPGChunkSize( int pgnum )
                 else {
                     cksize += it->second.outDataSize;
                 }
+                // TODO: propertyDataTypeVariableDataのときは？
             }
             it++;
         }
