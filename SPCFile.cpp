@@ -7,6 +7,7 @@
  *
  */
 
+#include "DataBuffer.h"
 #include "SPCFile.h"
 #include "brrcodec.h"
 #include <string.h>
@@ -26,42 +27,13 @@ SPCFile::~SPCFile()
 //-----------------------------------------------------------------------------
 bool SPCFile::Load()
 {
-    unsigned char fileData[SPC_READ_SIZE];
-    
-#if MAC
-	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)mPath, strlen(mPath), false);
-	
-	CFReadStreamRef	filestream = CFReadStreamCreateWithFile(NULL, url);
-	if (CFReadStreamOpen(filestream) == false) {
-        CFRelease( filestream );
-		CFRelease( url );
-		return false;
-	}
-	
-	CFIndex	readbytes=CFReadStreamRead(filestream, fileData, SPC_READ_SIZE);
-	if (readbytes < SPC_READ_SIZE) {
-		CFRelease( url );
-		CFReadStreamClose(filestream);
-        CFRelease( filestream );
-		return false;
-	}
-	CFReadStreamClose(filestream);
-    CFRelease( filestream );
-	CFRelease( url );
-#else
-	//WindowsVST‚Ì‚Æ‚«‚ÌSPCƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ýˆ—
-	HANDLE	hFile;
-	
-	hFile = CreateFile( mPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
-	if ( hFile != INVALID_HANDLE_VALUE ) {
-		DWORD	readSize;
-		ReadFile( hFile, fileData, SPC_READ_SIZE, &readSize, NULL );
-		CloseHandle( hFile );
-	}
-#endif
+    DataBuffer  fileData(mPath);
+    if (fileData.GetDataSize() < SPC_READ_SIZE) {
+        return false;
+    }
 	
     blargg_err_t err;
-    err = mSpcPlay.load_spc(fileData, SPC_READ_SIZE);
+    err = mSpcPlay.load_spc(fileData.GetDataPtr(), SPC_READ_SIZE);
     if (err) {
         return false;
     }
