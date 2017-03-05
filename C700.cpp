@@ -334,7 +334,7 @@ ComponentResult		C700::GetPropertyInfo (AudioUnitPropertyID	inID,
 #endif
         auto it = mPropertyParams.find(inID);
         if (it != mPropertyParams.end()) {
-            if ((it->second.dataType == propertyDataTypeCString) ||
+            if ((it->second.dataType == propertyDataTypeString) ||
                 (it->second.dataType == propertyDataTypeFilePath)) {
                 // outDataSize‚É‚ÍÅ‘å•¶Žš”‚ªŠi”[‚³‚ê‚Ä‚¢‚é
                 outDataSize = sizeof(void *);
@@ -401,7 +401,7 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
                     case propertyDataTypeStruct:
                         mEfx->GetPropertyStructValue(inID, outData);
                         break;
-                    case propertyDataTypeCString:
+                    case propertyDataTypeString:
                     {
                         const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
                         CFStringRef	str =
@@ -418,7 +418,14 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
                         break;
                     }
                         
-                    case propertyDataTypeCFDataRef:
+                    case propertyDataTypeVariableData:
+                    {
+                        CFDataRef dataRef;
+                        dataRef = CFDataCreate(NULL, (UInt8*)mEfx->GetPropertyPtrValue(inID), mEfx->GetPropertyPtrDataSize(inID));
+                        *((char **)outData) = (char *)dataRef;  //Žg—pŒã—vrelease
+                        break;
+                    }
+                    case propertyDataTypePointer:
                         *((char **)outData) = (char *)mEfx->GetPropertyPtrValue(inID);
                         break;
                 }
@@ -456,30 +463,39 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
                         mEfx->SetPropertyValue(inID, *((bool*)inData) ? 1.0f:.0f );
                         break;
                     case propertyDataTypeStruct:
-                        mEfx->SetPropertyPtrValue(inID, inData);
+                        mEfx->SetPropertyPtrValue(inID, inData, it->second.outDataSize);
                         break;
-                    case propertyDataTypeCString:
+                    case propertyDataTypeString:
                     {
                         char **ptr = (char**)inData;
-                        char	string[PROGRAMNAME_MAX_LEN];
-                        CFStringGetCString(reinterpret_cast<CFStringRef>(*ptr), string, PROGRAMNAME_MAX_LEN-1, kCFStringEncodingUTF8);
-                        mEfx->SetPropertyPtrValue(inID, string);
+                        char	*string = new char[it->second.outDataSize];
+                        CFStringGetCString(reinterpret_cast<CFStringRef>(*ptr), string, it->second.outDataSize-1, kCFStringEncodingUTF8);
+                        mEfx->SetPropertyPtrValue(inID, string, it->second.outDataSize);
+                        delete [] string;
                         break;
                     }
                     case propertyDataTypeFilePath:
                     {
                         char **ptr = (char**)inData;
                         CFStringRef pathStr = CFURLCopyFileSystemPath(reinterpret_cast<CFURLRef>(*ptr), kCFURLPOSIXPathStyle);
-                        char		path[PATH_LEN_MAX];
-                        CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
+                        char		*path = new char[it->second.outDataSize];
+                        CFStringGetCString(pathStr, path, it->second.outDataSize-1, kCFStringEncodingUTF8);
                         CFRelease(pathStr);
-                        mEfx->SetPropertyPtrValue(inID, path);
+                        mEfx->SetPropertyPtrValue(inID, path, it->second.outDataSize);
+                        delete [] path;
                         break;
                     }
-                    case propertyDataTypeCFDataRef:
+                    case propertyDataTypeVariableData:
                     {
                         char **ptr = (char**)inData;
-                        mEfx->SetPropertyPtrValue(inID, *ptr);
+                        CFDataRef data = reinterpret_cast<CFDataRef>(*ptr);
+                        mEfx->SetPropertyPtrValue(inID, CFDataGetBytePtr(data), CFDataGetLength(data));
+                        break;
+                    }
+                    case propertyDataTypePointer:
+                    {
+                        char **ptr = (char**)inData;
+                        mEfx->SetPropertyPtrValue(inID, *ptr, it->second.outDataSize);
                         break;
                     }
                 }

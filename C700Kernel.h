@@ -14,6 +14,7 @@
 #include "C700Parameters.h"
 #include "C700Properties.h"
 #include "ChunkReader.h"
+#include "PlayerCodeReader.h"
 
 class C700Kernel : public C700Parameters
 {
@@ -30,11 +31,12 @@ public:
 
 	float			GetPropertyValue( int inID );
     double          GetPropertyDoubleValue( int inID );
+    int             GetPropertyPtrDataSize( int inID );
     const void      *GetPropertyPtrValue( int inID );
     bool            GetPropertyStructValue( int inID, void *outData );
 	bool			SetPropertyValue( int inID, float value );
     bool            SetPropertyDoubleValue( int inID, double value );
-	bool			SetPropertyPtrValue( int inID, const void *inPtr );
+	bool			SetPropertyPtrValue( int inID, const void *inPtr, int size );
 	const BRRData	*GetBRRData();
 	const BRRData	*GetBRRData(int prog);
 	bool			SetBRRData( const unsigned char *data, int size, int prog=-1, bool reset=true, bool notify=true );
@@ -121,6 +123,8 @@ private:
     bool            mIsHwAvailable;
     
     std::map<int, PropertyDescription>  mPropertyParams;
+    
+    PlayerCodeReader *mCodeFile;
     
     void            setRPNLSB(int ch, int value);
     void            setRPNMSB(int ch, int value);

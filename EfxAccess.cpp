@@ -200,7 +200,7 @@ bool EfxAccess::SetFilePathProperty( int propertyId, const char *path )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
-	mEfx->mEfx->SetPropertyPtrValue(propertyId, path);
+	mEfx->mEfx->SetPropertyPtrValue(propertyId, path, 0);
 	return true;
 #endif
 }
@@ -259,7 +259,7 @@ bool EfxAccess::SetCStringProperty( int propertyId, const char *string )
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
-	mEfx->mEfx->SetPropertyPtrValue( propertyId, string );
+	mEfx->mEfx->SetPropertyPtrValue( propertyId, string, 0 );
 	mEfx->PropertyNotifyFunc(propertyId, mEfx);
 	return true;
 #endif
@@ -371,9 +371,10 @@ double EfxAccess::GetPropertyValue( int propertyId )
                 value = *((bool*)outDataPtr);
                 break;
             case propertyDataTypeStruct:
-            case propertyDataTypeCString:
+            case propertyDataTypeString:
             case propertyDataTypeFilePath:
-            case propertyDataTypeCFDataRef:
+            case propertyDataTypeVariableData:
+            case propertyDataTypePointer:
                 break;
         }
     }
@@ -388,9 +389,9 @@ double EfxAccess::GetPropertyValue( int propertyId )
         case propertyDataTypeDouble:
             return mEfx->mEfx->GetPropertyDoubleValue(propertyId);
         case propertyDataTypeStruct:
-        case propertyDataTypeCString:
+        case propertyDataTypeString:
         case propertyDataTypeFilePath:
-        case propertyDataTypeCFDataRef:
+        case propertyDataTypeVariableData:
             break;
     }
 	return 0;
@@ -456,9 +457,10 @@ void EfxAccess::SetPropertyValue( int propertyID, double value )
                     outDataPtr = (void*)&boolData;
                     break;
                 case propertyDataTypeStruct:
-                case propertyDataTypeCString:
+                case propertyDataTypeString:
                 case propertyDataTypeFilePath:
-                case propertyDataTypeCFDataRef:
+                case propertyDataTypeVariableData:
+                case propertyDataTypePointer:
                     outDataPtr = NULL;
                     outDataSize = 0;
                     break;
@@ -480,9 +482,9 @@ void EfxAccess::SetPropertyValue( int propertyID, double value )
             mEfx->mEfx->SetPropertyDoubleValue(propertyID, value);
             break;
         case propertyDataTypeStruct:
-        case propertyDataTypeCString:
+        case propertyDataTypeString:
         case propertyDataTypeFilePath:
-        case propertyDataTypeCFDataRef:
+        case propertyDataTypeVariableData:
             break;
     }
 	mEfx->PropertyNotifyFunc(propertyID, mEfx);
@@ -492,7 +494,7 @@ void EfxAccess::SetPropertyValue( int propertyID, double value )
 //-----------------------------------------------------------------------------
 bool EfxAccess::LoadSongPlayerCode( const char *path )
 {
-    PlayerCodeReader codeFile(path);
+    DataBuffer codeFile(path);
     if (codeFile.GetDataUsed() <= 1) {
         return false;
     }
@@ -510,12 +512,7 @@ bool EfxAccess::LoadSongPlayerCode( const char *path )
     CFRelease(dataRef);
 	return false;
 #else
-    if (!codeFile.IsLoaded()) return false;
-    mEfx->mEfx->GetDriver()->GetDsp()->SetSpcPlayerCode(codeFile.getSpcPlayerCode(), codeFile.getSpcPlayerCodeSize());
-    mEfx->mEfx->GetDriver()->GetDsp()->SetSmcEmulationVector(codeFile.getSmcEmulationVector());
-    mEfx->mEfx->GetDriver()->GetDsp()->SetSmcNativeVector(codeFile.getSmcNativeVector());
-    mEfx->mEfx->GetDriver()->GetDsp()->SetSmcPlayerCode(codeFile.getSmcPlayerCode(), codeFile.getSmcPlayerCodeSize());
-    mEfx->mEfx->GetDriver()->GetDsp()->SetSongPlayCodeVer(codeFile.getVersion());
+    mEfx->mEfx->SetPropertyPtrValue(kAudioUnitCustomProperty_SongPlayerCode, codeFile.GetDataPtr(), codeFile.GetDataSize());
     return true;
 #endif
 }

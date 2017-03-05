@@ -7,7 +7,6 @@
  *
  */
 
-#include "PlayerCodeReader.h"
 #include "XIFile.h"
 #include "C700Kernel.h"
 #include "samplebrr.h"
@@ -22,6 +21,7 @@ C700Kernel::C700Kernel()
 , propNotifyUserData(NULL)
 , parameterSetFunc(NULL)
 , paramSetUserData(NULL)
+, mCodeFile(NULL)
 {
     createPropertyParamMap(mPropertyParams);
     
@@ -469,6 +469,19 @@ double C700Kernel::GetPropertyDoubleValue( int inID )
 }
 
 //-----------------------------------------------------------------------------
+int C700Kernel::GetPropertyPtrDataSize( int inID )
+{
+    switch (inID) {
+        case kAudioUnitCustomProperty_SongPlayerCode:
+            if (mCodeFile != NULL) {
+                return mCodeFile->GetDataUsed();
+            }
+            break;
+    }
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
 const void *C700Kernel::GetPropertyPtrValue( int inID )
 {
     switch (inID) {
@@ -497,6 +510,13 @@ const void *C700Kernel::GetPropertyPtrValue( int inID )
             }
         }
 #endif
+        case kAudioUnitCustomProperty_SongPlayerCode:
+        {
+            if (mCodeFile != NULL) {
+                return mCodeFile->GetDataPtr();
+            }
+            break;
+        }
         case kAudioUnitCustomProperty_SourceFileRef:
             return GetSourceFilePath();
             
@@ -522,8 +542,9 @@ const void *C700Kernel::GetPropertyPtrValue( int inID )
             return mDriver.GetDsp()->GetSongComments();
 
         default:
-			return 0;
+			break;
     }
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -807,7 +828,7 @@ bool C700Kernel::SetPropertyDoubleValue( int inID, double value )
     }
 }
 
-bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr )
+bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr, int size )
 {
     switch (inID) {
 #if AU
@@ -825,19 +846,25 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr )
             return true;
         }
         
+#endif
         case kAudioUnitCustomProperty_SongPlayerCode:
         {
-            CFDataRef data = reinterpret_cast<CFDataRef>(inPtr);
-            PlayerCodeReader codeFile(CFDataGetBytePtr(data), CFDataGetLength(data));
-            if (!codeFile.IsLoaded()) return true;
-            mDriver.GetDsp()->SetSpcPlayerCode(codeFile.getSpcPlayerCode(), codeFile.getSpcPlayerCodeSize());
-            mDriver.GetDsp()->SetSmcEmulationVector(codeFile.getSmcEmulationVector());
-            mDriver.GetDsp()->SetSmcNativeVector(codeFile.getSmcNativeVector());
-            mDriver.GetDsp()->SetSmcPlayerCode(codeFile.getSmcPlayerCode(), codeFile.getSmcPlayerCodeSize());
-            mDriver.GetDsp()->SetSongPlayCodeVer(codeFile.getVersion());
+            if (mCodeFile != NULL) {
+                delete mCodeFile;
+            }
+            mCodeFile = new PlayerCodeReader(inPtr, size, true);
+            if (!mCodeFile->IsLoaded()) {
+                delete mCodeFile;
+                mCodeFile = NULL;
+                return true;
+            }
+            mDriver.GetDsp()->SetSpcPlayerCode(mCodeFile->getSpcPlayerCode(), mCodeFile->getSpcPlayerCodeSize());
+            mDriver.GetDsp()->SetSmcEmulationVector(mCodeFile->getSmcEmulationVector());
+            mDriver.GetDsp()->SetSmcNativeVector(mCodeFile->getSmcNativeVector());
+            mDriver.GetDsp()->SetSmcPlayerCode(mCodeFile->getSmcPlayerCode(), mCodeFile->getSmcPlayerCodeSize());
+            mDriver.GetDsp()->SetSongPlayCodeVer(mCodeFile->getVersion());
             return true;
         }
-#endif
         case kAudioUnitCustomProperty_SourceFileRef:
         {
             SetSourceFilePath(reinterpret_cast<const char *>(inPtr));
@@ -1487,9 +1514,11 @@ void C700Kernel::AddFilePathToDictionary(CFMutableDictionaryRef dict, CFStringRe
 //-----------------------------------------------------------------------------
 void C700Kernel::AddDataToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const void *data, int size)
 {
-    CFDataRef	dataRef = CFDataCreate(NULL, (UInt8*)data, size);
-	CFDictionarySetValue(dict, key, dataRef);
-	CFRelease(dataRef);
+    if (data) {
+        CFDataRef	dataRef = CFDataCreate(NULL, (UInt8*)data, size);
+        CFDictionarySetValue(dict, key, dataRef);
+        CFRelease(dataRef);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -1511,13 +1540,17 @@ void C700Kernel::SetPropertyToDict(CFMutableDictionaryRef dict, const PropertyDe
             break;
         case propertyDataTypeStruct:
             break;
-        case propertyDataTypeCString:
+        case propertyDataTypeString:
             AddStringToDictionary(dict, saveKey, (char*)GetPropertyPtrValue(prop.propId));
             break;
         case propertyDataTypeFilePath:
             AddFilePathToDictionary(dict, saveKey, (char*)GetPropertyPtrValue(prop.propId));
             break;
-        case propertyDataTypeCFDataRef:
+        case propertyDataTypeVariableData:
+            AddDataToDictionary(dict, saveKey, GetPropertyPtrValue(prop.propId), GetPropertyPtrDataSize(prop.propId));
+            break;
+        case propertyDataTypePointer:
+            // 基本的には保存しないタイプのプロパティ
             break;
     }
     CFRelease(saveKey);
@@ -1592,12 +1625,12 @@ void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDes
             }
             case propertyDataTypeStruct:
                 break;
-            case propertyDataTypeCString:
+            case propertyDataTypeString:
             {
                 char	string[PROGRAMNAME_MAX_LEN];
                 CFStringGetCString(reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, saveKey)),
                                    string, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
-                SetPropertyPtrValue(prop.propId, string);
+                SetPropertyPtrValue(prop.propId, string, 0);
                 break;
             }
             case propertyDataTypeFilePath:
@@ -1608,12 +1641,18 @@ void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDes
                 CFStringRef pathStr = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
                 char	path[PATH_LEN_MAX];
                 CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
-                SetPropertyPtrValue(prop.propId, path);
+                SetPropertyPtrValue(prop.propId, path, 0);
                 CFRelease(pathStr);
                 CFRelease(url);
                 break;
             }
-            case propertyDataTypeCFDataRef:
+            case propertyDataTypeVariableData:
+            {
+                CFDataRef	data = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, saveKey));
+                SetPropertyPtrValue(prop.propId, CFDataGetBytePtr(data), CFDataGetLength(data));
+                break;
+            }
+            case propertyDataTypePointer:
                 break;
         }
     }
@@ -1709,9 +1748,8 @@ void C700Kernel::SetPropertyToChunk(ChunkReader *chunk, const PropertyDescriptio
             chunk->addChunk(prop.propId, &doubleValue, sizeof(double));
             break;
         }
-        case propertyDataTypeStruct:
             break;
-        case propertyDataTypeCString:
+        case propertyDataTypeString:
         case propertyDataTypeFilePath:
         {
             char *string = (char*)GetPropertyPtrValue(prop.propId);
@@ -1720,7 +1758,16 @@ void C700Kernel::SetPropertyToChunk(ChunkReader *chunk, const PropertyDescriptio
             }
             break;
         }
-        case propertyDataTypeCFDataRef:
+        case propertyDataTypeVariableData:
+        {
+            char *data = (char*)GetPropertyPtrValue(prop.propId);
+            if (data != NULL) {
+                chunk->addChunk(prop.propId, data, GetPropertyPtrDataSize(prop.propId));
+            }
+            break;
+        }
+        case propertyDataTypeStruct:
+        case propertyDataTypePointer:
             break;
     }
 }
@@ -1811,22 +1858,30 @@ bool C700Kernel::RestorePropertyFromData(DataBuffer *data, int ckSize, const Pro
             SetPropertyDoubleValue(prop.propId, value);
             break;
         }
-        case propertyDataTypeCString:
+        case propertyDataTypeString:
         {
             char	string[PROGRAMNAME_MAX_LEN];
             data->readData(&string, ckSize);
-            SetPropertyPtrValue(prop.propId, string);
+            SetPropertyPtrValue(prop.propId, string, 0);
             break;
         }
         case propertyDataTypeFilePath:
         {
             char	string[PATH_LEN_MAX];
             data->readData(&string, ckSize);
-            SetPropertyPtrValue(prop.propId, string);
+            SetPropertyPtrValue(prop.propId, string, 0);
+            break;
+        }
+        case propertyDataTypeVariableData:
+        {
+            char    *buf = new char[ckSize];
+            data->readData(buf, ckSize);
+            SetPropertyPtrValue(prop.propId, buf, ckSize);
+            delete [] buf;
             break;
         }
         case propertyDataTypeStruct:
-        case propertyDataTypeCFDataRef:
+        case propertyDataTypePointer:
             return false;
     }
     if (prop.dataType != propertyDataTypeBool) {
