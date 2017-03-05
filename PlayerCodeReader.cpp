@@ -20,20 +20,53 @@ PlayerCodeReader::PlayerCodeReader(const void *data, int dataSize)
 , m_pSpcPlayerCode(NULL)
 , mSpcPlayerCodeSize(0)
 {
+    Load();
+}
+
+PlayerCodeReader::PlayerCodeReader(const char *path)
+: ChunkReader(path)
+, m_pSmcNativeVector(NULL)
+, m_pSmcEmulationVector(NULL)
+, m_pSmcPlayerCode(NULL)
+, mSmcPlayerCodeSize(0)
+, m_pSpcPlayerCode(NULL)
+, mSpcPlayerCodeSize(0)
+{
+    Load();
+}
+
+PlayerCodeReader::~PlayerCodeReader()
+{
+    if (m_pSmcNativeVector != NULL) {
+        delete m_pSmcNativeVector;
+    }
+    if (m_pSmcEmulationVector != NULL) {
+        delete m_pSmcEmulationVector;
+    }
+    if (m_pSmcPlayerCode != NULL) {
+        delete m_pSmcPlayerCode;
+    }
+    if (m_pSpcPlayerCode != NULL) {
+        delete m_pSpcPlayerCode;
+    }
+}
+
+bool PlayerCodeReader::Load()
+{
     // 必ず先頭にあるべきheadチャンクを確認する
     int		ckType;
     long	ckSize;
     readChunkHead(&ckType, &ckSize);
     if (ckType != CHUNKID('h','e','a','d') ) {
-        return;
+        return false;
     }
     if (ckSize < 16) {
-        return;
+        return false;
     }
     char headerStr[17];
     readData(headerStr, 16, &ckSize);
     if (strncmp(headerStr, "ppse song player", 16) != 0) {
-        return;
+        return false;
     }
     
     int checkFlag = 0;  // 必要なチャンクが全てあれば0x1fになる
@@ -79,22 +112,7 @@ PlayerCodeReader::PlayerCodeReader(const void *data, int dataSize)
     if (checkFlag == 0x1f) {
         mIsLoaded = true;
     }
-}
-
-PlayerCodeReader::~PlayerCodeReader()
-{
-    if (m_pSmcNativeVector != NULL) {
-        delete m_pSmcNativeVector;
-    }
-    if (m_pSmcEmulationVector != NULL) {
-        delete m_pSmcEmulationVector;
-    }
-    if (m_pSmcPlayerCode != NULL) {
-        delete m_pSmcPlayerCode;
-    }
-    if (m_pSpcPlayerCode != NULL) {
-        delete m_pSpcPlayerCode;
-    }
+    return true;
 }
 
 int PlayerCodeReader::getVersion()

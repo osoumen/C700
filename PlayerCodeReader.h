@@ -14,8 +14,10 @@
 class PlayerCodeReader : public ChunkReader {
 public:
     PlayerCodeReader(const void *data, int dataSize);
+    PlayerCodeReader(const char *path);
     virtual ~PlayerCodeReader();
     
+    virtual bool	Load();
 	virtual bool	IsLoaded() const { return mIsLoaded; }
 
     // 以下の関数、IsLoadedがtrueでなければNULLを返す
