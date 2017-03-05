@@ -68,4 +68,6 @@ private:
 	C700Kernel			*mEfx;
 	
 	ChunkReader         *mSaveChunk;
+    
+    std::map<int, PropertyDescription>  mPropertyParams;
 };
