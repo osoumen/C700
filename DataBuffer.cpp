@@ -27,8 +27,8 @@ DataBuffer::DataBuffer(int allocMemSize)
 }
 
 //-----------------------------------------------------------------------------
-DataBuffer::DataBuffer( const void *data, int dataSize )
-: mIsBufferInternal( false )
+DataBuffer::DataBuffer( const void *data, int dataSize, bool copy )
+: mIsBufferInternal( copy )
 , m_pData( (unsigned char*)data )
 , mDataSize( dataSize )
 , mDataUsed( dataSize )
@@ -36,6 +36,10 @@ DataBuffer::DataBuffer( const void *data, int dataSize )
 , mReadOnly( true )
 , mAllowExtend( false )
 {
+    if (copy) {
+        m_pData = new unsigned char[dataSize];
+        memcpy(m_pData, data, dataSize);
+    }
 }
 
 //-----------------------------------------------------------------------------

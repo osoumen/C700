@@ -15,7 +15,7 @@
 class ChunkReader : public FileAccess, public DataBuffer {
 public:
 	ChunkReader( int allocMemSize );
-	ChunkReader( const void *data, int dataSize );
+	ChunkReader( const void *data, int dataSize, bool copy=false );
     ChunkReader( const char *path );
 	virtual ~ChunkReader();
 	
