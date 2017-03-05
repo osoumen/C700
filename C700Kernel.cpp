@@ -1847,11 +1847,11 @@ bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
 		long	ckSize;
 		chunk->readChunkHead(&ckType, &ckSize);
         auto it = mPropertyParams.find(ckType);
-        if (it == mPropertyParams.end()) {
+        if (it == mPropertyParams.end() || it->second.saveToProg == false) {
             //•s–¾ƒ`ƒƒƒ“ƒN‚Ìê‡‚Í”ò‚Î‚·
             chunk->AdvDataPos(ckSize);
         }
-        if (RestorePropertyFromData(chunk, ckSize, it->second) == false) {
+        else if (RestorePropertyFromData(chunk, ckSize, it->second) == false) {
             if (ckType == kAudioUnitCustomProperty_BRRData) {
                 unsigned char   *dataptr = new unsigned char[ckSize];
 				long	actSize;
