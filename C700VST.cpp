@@ -389,9 +389,6 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 #if TESTING
 	printf("setChunk byteSize=%d\n",byteSize);
 #endif
-	int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
-	int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
-	
 	ChunkReader		*saveChunk;
 	saveChunk = new ChunkReader( data, byteSize );
 	int			totalProgs;
@@ -401,8 +398,6 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 		long	ckSize;
 		saveChunk->readChunkHead(&ckType, &ckSize);
 		
-		//保存されているプログラム数
-		
 		if ( ckType < kNumberOfParameters && isPreset == false ) {
 			//パラメータ読み込み
 			float	param;
@@ -410,19 +405,15 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 			setParameter(ckType, param);
 		}
 		else if ( ckType == CKID_PROGRAM_TOTAL ) {
+            //保存されているプログラム数            
 			saveChunk->readData( &totalProgs, sizeof(int), &ckSize );
-		}
-		else if ( ckType == kAudioUnitCustomProperty_EditingProgram && isPreset == false ) {
-			saveChunk->readData( &editProg, sizeof(int), &ckSize );
-		}
-		else if ( ckType == kAudioUnitCustomProperty_EditingChannel && isPreset == false ) {
-			saveChunk->readData( &editChan, sizeof(int), &ckSize );
 		}
 		else if ( ckType >= CKID_PROGRAM_DATA && ckType < (CKID_PROGRAM_DATA+128) ) {
 			//CKID_PROGRAM_DATA+pgnumのチャンクに入れ子でプログラムデータが入っている
 			int pgnum = ckType - CKID_PROGRAM_DATA;
 			ChunkReader	*pg = new ChunkReader( saveChunk->GetDataPtr()+saveChunk->GetDataPos(), ckSize );
 			if ( isPreset ) {
+                int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
                 mEfx->RestorePGDataFromChunk(pg, editProg);
 			}
 			else {
@@ -432,16 +423,21 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 			saveChunk->AdvDataPos(ckSize);
 		}
 		else {
-			saveChunk->AdvDataPos(ckSize);
+            // saveToSongのプロパティを復元
+            auto it = mPropertyParams.find(ckType);
+            if (it == mPropertyParams.end() || it->second.saveToSong == false) {
+                // 不明チャンクの場合は飛ばす
+                saveChunk->AdvDataPos(ckSize);
+            }
+            else if (mEfx->RestorePropertyFromData(saveChunk, ckSize, it->second) == false) {
+                // RestorePropertyFromDataで読み込まれなかったら読み飛ばす
+                saveChunk->AdvDataPos(ckSize);
+            }
 		}
 	}
 #if TESTING
 	printf("setChunk saveChunk->GetDataPos()=%d\n",saveChunk->GetDataPos());
 #endif	
-	//UIに変更を反映
-	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg );
-	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingChannel, editChan );
-	mEfx->GetDriver()->RefreshKeyMap();
 	
 	delete saveChunk;
 	
