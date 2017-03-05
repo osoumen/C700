@@ -35,10 +35,12 @@ bool ChunkReader::addChunk( int type, const void *data, int byte )
 	
 	MyChunkHead	ckHead = {type, byte};
 	
-	//空き容量チェック
-	if ( mDataSize < ( mDataPos + byte + (int)sizeof(MyChunkHead) ) ) {
-		return false;
-	}
+    if (!mAllowExtend) {
+        //空き容量チェック
+        if ( mDataSize < ( mDataPos + byte + (int)sizeof(MyChunkHead) ) ) {
+            return false;
+        }
+    }
 	
 	long	writeSize;
 	if ( writeData(&ckHead, sizeof(MyChunkHead), &writeSize) == false ) {
@@ -60,10 +62,12 @@ bool ChunkReader::addChunkWithHeader(int type, const unsigned char *data, int by
 	
 	MyChunkHead	ckHead = {type, byte+headerByte};
 	
-	//空き容量チェック
-	if ( mDataSize < ( mDataPos + byte + (int)sizeof(MyChunkHead) ) ) {
-		return false;
-	}
+    if (!mAllowExtend) {
+        //空き容量チェック
+        if ( mDataSize < ( mDataPos + byte + (int)sizeof(MyChunkHead) ) ) {
+            return false;
+        }
+    }
 	
 	long	writeSize;
 	if ( writeData(&ckHead, sizeof(MyChunkHead), &writeSize) == false ) {

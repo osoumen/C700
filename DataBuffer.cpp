@@ -18,6 +18,7 @@ DataBuffer::DataBuffer(int allocMemSize)
 , mDataUsed( 0 )
 , mDataPos( 0 )
 , mReadOnly( false )
+, mAllowExtend( false )
 {
 	if ( allocMemSize > 0 ) {
 		m_pData = new unsigned char[allocMemSize];
@@ -33,6 +34,7 @@ DataBuffer::DataBuffer( const void *data, int dataSize )
 , mDataUsed( dataSize )
 , mDataPos( 0 )
 , mReadOnly( true )
+, mAllowExtend( false )
 {
 }
 
@@ -90,6 +92,14 @@ bool DataBuffer::writeData( const void *data, long byte, long *actualWriteByte )
 {
 	int		toWrite = byte;
 	
+    if ( mDataSize < ( mDataPos + byte ) ) {
+        if (mAllowExtend) {
+            int requiedBytes = ( mDataPos + byte ) - mDataSize;
+            int quarterBytes = mDataSize / 4;
+            extendDataSize(requiedBytes>quarterBytes?requiedBytes:quarterBytes);
+        }
+    }
+    
 	if ( mDataPos >= mDataSize ) {
 		return false;
 	}
@@ -113,6 +123,14 @@ bool DataBuffer::writeData( const void *data, long byte, long *actualWriteByte )
 //-----------------------------------------------------------------------------
 bool DataBuffer::writeByte( unsigned char byte )
 {
+    if ( mDataSize < ( mDataPos + 1 ) ) {
+        if (mAllowExtend) {
+            int requiedBytes = ( mDataPos + 1 ) - mDataSize;
+            int quarterBytes = mDataSize / 4;
+            extendDataSize(requiedBytes>quarterBytes?requiedBytes:quarterBytes);
+        }
+    }
+    
 	if ( ( mDataPos + 1 ) > mDataSize ) {
 		return false;
 	}
@@ -205,4 +223,18 @@ bool DataBuffer::WriteToFile(const char *path)
 	}
 #endif
     return true;
+}
+
+//-----------------------------------------------------------------------------
+void DataBuffer::extendDataSize(int extendBytes)
+{
+    if ( (m_pData != NULL) && mIsBufferInternal ) {
+        int newSize = mDataSize + extendBytes;
+        unsigned char	*newData = new unsigned char[newSize];
+        memcpy(newData, m_pData, mDataSize);
+        memset(newData+mDataSize, 0, extendBytes);
+        delete [] m_pData;
+        m_pData = newData;
+        mDataSize = newSize;
+    }
 }

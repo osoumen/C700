@@ -47,6 +47,8 @@ public:
 	
     bool                WriteToFile(const char *path);
     
+    void                SetAllowExtend( bool enable ) { mAllowExtend = enable; }
+    
 protected:
 	bool			mIsBufferInternal;
     
@@ -56,4 +58,7 @@ protected:
 	int				mDataPos;
     
 	bool			mReadOnly;
+    bool            mAllowExtend;
+    
+    void            extendDataSize(int extendBytes);
 };
