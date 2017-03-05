@@ -22,6 +22,7 @@ public:
     
 	DataBuffer( int allocMemSize );
 	DataBuffer( const void *data, int dataSize );   // コピーされない、解放されない
+    DataBuffer( const char *path );
 	virtual ~DataBuffer();
 	
     void                Clear();
