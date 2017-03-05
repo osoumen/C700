@@ -224,6 +224,7 @@ PropertyDescription sPropertyDescription[] = {
         true,                                   // saveToSong
         false,                                  // saveToGlobal
         "eqband1",                              // savekey
+        -1,                                     // defaultValue
     },
     {
         kAudioUnitCustomProperty_Band2,         // propId
@@ -235,6 +236,7 @@ PropertyDescription sPropertyDescription[] = {
         true,                                   // saveToSong
         false,                                  // saveToGlobal
         "eqband2",                              // savekey
+        -1,                                     // defaultValue
     },
     {
         kAudioUnitCustomProperty_Band3,         // propId
@@ -246,6 +248,7 @@ PropertyDescription sPropertyDescription[] = {
         true,                                   // saveToSong
         false,                                  // saveToGlobal
         "eqband3",                              // savekey
+        -1,                                     // defaultValue
     },
     {
         kAudioUnitCustomProperty_Band4,         // propId
@@ -257,6 +260,7 @@ PropertyDescription sPropertyDescription[] = {
         true,                                   // saveToSong
         false,                                  // saveToGlobal
         "eqband4",                              // savekey
+        -1,                                     // defaultValue
     },
     {
         kAudioUnitCustomProperty_Band5,         // propId
@@ -268,6 +272,7 @@ PropertyDescription sPropertyDescription[] = {
         true,                                   // saveToSong
         false,                                  // saveToGlobal
         "eqband5",                              // savekey
+        -1,                                     // defaultValue
     },
     {
         kAudioUnitCustomProperty_TotalRAM,      // propId
