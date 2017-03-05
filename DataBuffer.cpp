@@ -39,6 +39,59 @@ DataBuffer::DataBuffer( const void *data, int dataSize )
 }
 
 //-----------------------------------------------------------------------------
+DataBuffer::DataBuffer( const char *path )
+: mIsBufferInternal( true )
+, m_pData( NULL )
+, mDataSize( 1 )
+, mDataUsed( 0 )
+, mDataPos( 0 )
+, mReadOnly( false )
+, mAllowExtend( false )
+{
+    m_pData = new unsigned char[mDataSize];
+    memset(m_pData, 0, mDataSize);
+    
+    SetAllowExtend(true);
+#if MAC
+	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+	
+	CFReadStreamRef	filestream = CFReadStreamCreateWithFile(NULL, url);
+	if (CFReadStreamOpen(filestream) == false) {
+        CFRelease( filestream );
+		CFRelease( url );
+		return;
+	}
+    
+    UInt8   readBuf[65536];
+    CFIndex	readbytes = 0;
+    do {
+        readbytes = CFReadStreamRead(filestream, (UInt8*)readBuf, 65536);
+        writeData(readBuf, readbytes);
+    } while (readbytes > 0);
+    
+	CFReadStreamClose(filestream);
+    CFRelease( filestream );
+	CFRelease( url );
+#else
+	// WindowsŠÂ‹«‚Ìƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ýˆ—
+	HANDLE	hFile;
+	
+    unsigned char   readBuf[65536];
+	hFile = CreateFile( path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+	if ( hFile != INVALID_HANDLE_VALUE ) {
+		DWORD	readbytes = 0;
+        do {
+            ReadFile( hFile, readBuf, 65536, &readbytes, NULL );
+            writeData(readBuf, readbytes);
+        } while (readbytes > 0);
+		CloseHandle( hFile );
+	}
+#endif
+    setPos(0);
+    SetAllowExtend(false);
+}
+
+//-----------------------------------------------------------------------------
 DataBuffer::~DataBuffer()
 {
 	if ( (m_pData != NULL) && mIsBufferInternal ) {
