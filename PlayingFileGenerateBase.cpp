@@ -102,7 +102,11 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
         DataBuffer buffer(RegisterLogger::DSP_REGION_LEN);
         writeDspRegion(buffer, reglog);
         strncpy(fname, directory, PATH_LEN_MAX);
-        strncat(fname, "regdump.dat", 12);
+#if MAC
+        strncat(fname, "/regdump.dat", 12);
+#else
+        strncat(fname, "¥¥regdump.dat", 12);
+#endif
         buffer.WriteToFile(fname);
     }
     {
@@ -110,7 +114,11 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
         DataBuffer buffer(reglog.mDirRegionSize + 4);
         writeDirRegionWithHeader(buffer, reglog);
         strncpy(fname, directory, PATH_LEN_MAX);
-        strncat(fname, "dirregion.dat", 14);
+#if MAC
+        strncat(fname, "/dirregion.dat", 14);
+#else
+        strncat(fname, "¥¥dirregion.dat", 14);
+#endif
         buffer.WriteToFile(fname);
     }
     {
@@ -118,7 +126,11 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
         DataBuffer buffer(reglog.mBrrRegionSize + 4);
         writeBrrRegionWithHeader(buffer, reglog, 0x8000);
         strncpy(fname, directory, PATH_LEN_MAX);
-        strncat(fname, "brrregion.dat", 14);
+#if MAC
+        strncat(fname, "/brrregion.dat", 14);
+#else
+        strncat(fname, "¥¥brrregion.dat", 14);
+#endif
         buffer.WriteToFile(fname);
     }
     {
@@ -127,7 +139,11 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
         DataBuffer buffer(1024 * 1024 * 4);     // 仮
         writeRegLogWithLoopPoint(buffer, reglog, tickPerSec);
         strncpy(fname, directory, PATH_LEN_MAX);
-        strncat(fname, "spclog.dat", 11);
+#if MAC
+        strncat(fname, "/spclog.dat", 11);
+#else
+        strncat(fname, "¥¥spclog.dat", 11);
+#endif
         buffer.WriteToFile(fname);
     }
     {
@@ -135,7 +151,11 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
         DataBuffer buffer(WAIT_TABLE_LEN);
         writeWaitTable(buffer, reglog);
         strncpy(fname, directory, PATH_LEN_MAX);
-        strncat(fname, "waittable.dat", 14);
+#if MAC
+        strncat(fname, "/waittable.dat", 14);
+#else
+        strncat(fname, "¥¥waittable.dat", 14);
+#endif
         buffer.WriteToFile(fname);
     }
     
