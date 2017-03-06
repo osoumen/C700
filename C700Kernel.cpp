@@ -491,6 +491,9 @@ int C700Kernel::GetPropertyPtrDataSize( int inID )
                 return mCodeFile->GetDataUsed();
             }
             break;
+            
+        case kAudioUnitCustomProperty_BRRData:
+            return GetBRRData()->size;
     }
     return 0;
 }
@@ -524,6 +527,9 @@ const void *C700Kernel::GetPropertyPtrValue( int inID )
             }
         }
 #endif
+        case kAudioUnitCustomProperty_BRRData:
+            return GetBRRData()->data;
+            
         case kAudioUnitCustomProperty_SongPlayerCode:
         {
             if (mCodeFile != NULL) {
@@ -565,11 +571,6 @@ const void *C700Kernel::GetPropertyPtrValue( int inID )
 bool C700Kernel::GetPropertyStructValue( int inID, void *outData )
 {
     switch (inID) {
-#if AU
-		case kAudioUnitCustomProperty_BRRData:
-            *((BRRData *)outData) = *(GetBRRData());
-            return true;
-#endif
         default:
 			return false;
     }
@@ -858,12 +859,6 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr, int size )
     
     switch (inID) {
 #if AU
-		case kAudioUnitCustomProperty_BRRData:
-        {
-            const BRRData *brr = reinterpret_cast<const BRRData *>(inPtr);
-            SetBRRData(brr->data, brr->size);
-            return true;
-        }
 		case kAudioUnitCustomProperty_PGDictionary:
         {
             CFDictionaryRef	pgdata = reinterpret_cast<CFDictionaryRef>(inPtr);
@@ -873,6 +868,12 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr, int size )
         }
         
 #endif
+		case kAudioUnitCustomProperty_BRRData:
+        {
+            SetBRRData(reinterpret_cast<const unsigned char *>(inPtr), size);
+            return true;
+        }
+
         case kAudioUnitCustomProperty_SongPlayerCode:
         {
             if (mCodeFile != NULL) {
@@ -1051,6 +1052,9 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
             propertyNotifyFunc( kAudioUnitCustomProperty_TotalRAM, propNotifyUserData );
         }
     }
+    
+    SetPropertyValue(kAudioUnitCustomProperty_Loop, data[size-9]&2?true:false);
+    
 	return true;
 }
 
@@ -1526,6 +1530,8 @@ void C700Kernel::storeGlobalProperties()
         }
         it++;
     }
+    // TODO: ~/Library/Application Support/C700 フォルダがないときは作成する
+    
     settings.Write();
     
     mGlobalSettingsHasChanged = false;
@@ -1739,8 +1745,6 @@ void C700Kernel::SetPropertyToDict(CFMutableDictionaryRef dict, const PropertyDe
         case propertyDataTypeBool:
             AddBooleanToDictionary(dict, saveKey, GetPropertyValue(prop.propId));
             break;
-        case propertyDataTypeStruct:
-            break;
         case propertyDataTypeString:
             AddStringToDictionary(dict, saveKey, (char*)GetPropertyPtrValue(prop.propId));
             break;
@@ -1750,6 +1754,7 @@ void C700Kernel::SetPropertyToDict(CFMutableDictionaryRef dict, const PropertyDe
         case propertyDataTypeVariableData:
             AddDataToDictionary(dict, saveKey, GetPropertyPtrValue(prop.propId), GetPropertyPtrDataSize(prop.propId));
             break;
+        case propertyDataTypeStruct:
         case propertyDataTypePointer:
             // 基本的には保存しないタイプのプロパティ
             break;
@@ -1765,14 +1770,8 @@ int C700Kernel::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
     
 	CFMutableDictionaryRef dict = CFDictionaryCreateMutable	(NULL, 0,
                                                              &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-	const InstParams	*vpSet = GetVP();
-	
     CorrectLoopFlagForSave(pgnum);
     
-    CFStringRef saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_BRRData].savekey, kCFStringEncodingASCII);
-    AddDataToDictionary(dict, saveKey, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
-    CFRelease(saveKey);
-	
     auto it = mPropertyParams.begin();
     while (it != mPropertyParams.end()) {
         if (it->second.saveToProg) {
@@ -1824,8 +1823,6 @@ void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDes
                 SetPropertyValue(prop.propId,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
                 break;
             }
-            case propertyDataTypeStruct:
-                break;
             case propertyDataTypeString:
             {
                 char	string[PROGRAMNAME_MAX_LEN];
@@ -1853,6 +1850,7 @@ void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDes
                 SetPropertyPtrValue(prop.propId, CFDataGetBytePtr(data), CFDataGetLength(data));
                 break;
             }
+            case propertyDataTypeStruct:
             case propertyDataTypePointer:
                 break;
         }
@@ -1876,7 +1874,7 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
     
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(data);
 	
-    SetProgramName("");
+    SetProgramName(""); // 文字列型は初期値が設定できないのでここで設定する
     
     auto it = mPropertyParams.begin();
     while (it != mPropertyParams.end()) {
@@ -1886,18 +1884,8 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
         it++;
     }
 
-    // BRRの復元
-    CFStringRef saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_BRRData].savekey, kCFStringEncodingASCII);
-    CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, saveKey));
-    CFRelease(saveKey);
-	int	size = CFDataGetLength(cfdata);
-	const UInt8	*dataptr = CFDataGetBytePtr(cfdata);
-	SetBRRData(dataptr, size);
-	SetPropertyValue(kAudioUnitCustomProperty_Loop,
-                     dataptr[size-9]&2?true:false);
-	
-	//元波形ファイル情報を復元
-    saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SustainMode].savekey, kCFStringEncodingASCII);
+	// AU版のSustainModeが無かった期間のバージョンとの互換性のために初期値を適切に設定する
+    CFStringRef saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SustainMode].savekey, kCFStringEncodingASCII);
     bool    isSustainModeSet = CFDictionaryContainsKey(dict, saveKey)?true:false;
     CFRelease(saveKey);
     
@@ -1940,11 +1928,7 @@ bool C700Kernel::SetPGDataToChunk(ChunkReader *chunk, int pgnum)
     int editProg = mEditProg;
     mEditProg = pgnum;
     
-	const InstParams	*vpSet = GetVP();
-	
     CorrectLoopFlagForSave(pgnum);
-    
-	chunk->addChunk(kAudioUnitCustomProperty_BRRData, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
     
     auto it = mPropertyParams.begin();
     while (it != mPropertyParams.end()) {
@@ -1963,6 +1947,9 @@ bool C700Kernel::SetPGDataToChunk(ChunkReader *chunk, int pgnum)
 //-----------------------------------------------------------------------------
 int C700Kernel::GetPGChunkSize( int pgnum )
 {
+    int editProg = mEditProg;
+    mEditProg = pgnum;
+    
     const InstParams	*vpSet = GetVP();
     
 	int cksize = 0;
@@ -1971,9 +1958,8 @@ int C700Kernel::GetPGChunkSize( int pgnum )
         while (it != mPropertyParams.end()) {
             if (it->second.saveToProg) {
                 cksize += sizeof( ChunkReader::MyChunkHead );
-                if (it->second.propId == kAudioUnitCustomProperty_BRRData) {
-                                    // BRRDataは可変長である
-                    cksize += vpSet[pgnum].brrSize();
+                if (it->second.dataType == propertyDataTypeVariableData) {
+                    cksize += GetPropertyPtrDataSize(it->second.propId);
                 }
                 else if (it->second.dataType == propertyDataTypeBool) {
                     cksize += 4;    // VSTではbool値はint型で保存する
@@ -1986,6 +1972,7 @@ int C700Kernel::GetPGChunkSize( int pgnum )
             it++;
         }
 	}
+    mEditProg = editProg;
     
 	return cksize;
 }
@@ -2006,15 +1993,7 @@ bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
             chunk->AdvDataPos(ckSize);
         }
         else if (RestorePropertyFromData(chunk, ckSize, it->second) == false) {
-            if (ckType == kAudioUnitCustomProperty_BRRData) {
-                unsigned char   *dataptr = new unsigned char[ckSize];
-				long	actSize;
-				chunk->readData(dataptr, ckSize, &actSize);
-                SetBRRData(dataptr, actSize);
-                SetPropertyValue(kAudioUnitCustomProperty_Loop,
-                                 dataptr[actSize-9]&2?true:false);
-                delete [] dataptr;
-            }
+            // 特になし
         }
 	}
     // TODO: デフォルト値の設定

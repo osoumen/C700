@@ -59,6 +59,7 @@ private:
 #if AU
 	AudioUnit			mAU;
 	AUEventListenerRef	mEventListener;
+    BRRData             mLastGetBrr;
 #else
 	C700VST*			mEfx;
 #endif

@@ -22,9 +22,9 @@ PropertyDescription sPropertyDescription[] = {
     },
     {
         kAudioUnitCustomProperty_BRRData,       // propId
-        sizeof(BRRData),                        // outDataSize
+        sizeof(void*),                          // outDataSize
         false,                                  // outWritable
-        propertyDataTypeStruct,                 // dataType
+        propertyDataTypeVariableData,           // dataType
         false,                                  // readOnly
         true,                                   // saveToProg
         false,                                  // saveToSong
