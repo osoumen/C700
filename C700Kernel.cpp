@@ -1530,8 +1530,6 @@ void C700Kernel::storeGlobalProperties()
         }
         it++;
     }
-    // TODO: ~/Library/Application Support/C700 フォルダがないときは作成する
-    
     settings.Write();
     
     mGlobalSettingsHasChanged = false;
@@ -1967,7 +1965,6 @@ int C700Kernel::GetPGChunkSize( int pgnum )
                 else {
                     cksize += it->second.outDataSize;
                 }
-                // TODO: propertyDataTypeVariableDataのときは？
             }
             it++;
         }

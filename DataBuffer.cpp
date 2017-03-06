@@ -9,6 +9,11 @@
 
 #include "DataBuffer.h"
 #include <string.h>
+#if MAC
+#include <sys/stat.h>
+void createParentfolder(const char *path);
+void getFileNameParentPath(const char *path, char *out, int maxLen);
+#endif
 
 //-----------------------------------------------------------------------------
 DataBuffer::DataBuffer(int allocMemSize)
@@ -260,6 +265,9 @@ bool DataBuffer::WriteToFile(const char *path)
     // Buffer にあるデータを指定したファイルパスに書き込む
     
 #if MAC
+    // 親フォルダが存在しなければ作成する
+    createParentfolder(path);
+    
     CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
     
     CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
@@ -281,6 +289,28 @@ bool DataBuffer::WriteToFile(const char *path)
 #endif
     return true;
 }
+
+//-----------------------------------------------------------------------------
+#if MAC
+void createParentfolder(const char *path)
+{
+    char directory[PATH_LEN_MAX];
+    
+    getFileNameParentPath(path, directory, PATH_LEN_MAX);
+    
+    struct stat m;
+    stat(directory, &m);
+    if (S_ISDIR(m.st_mode)) {
+        // 親フォルダは存在する
+        return;
+    }
+    if (strncmp(path, directory, PATH_LEN_MAX) == 0) {
+        return;
+    }
+    createParentfolder(directory);
+    mkdir(directory, 0777);
+}
+#endif
 
 //-----------------------------------------------------------------------------
 void DataBuffer::extendDataSize(int extendBytes)

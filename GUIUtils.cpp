@@ -48,14 +48,13 @@ void getFileNameParentPath( const char *path, char *out, int maxLen )
 	CFRelease(filename);
 	CFRelease(extlesspath);
 	CFRelease(url);
-    strncat(out, "/", 1);
 #else
 	// Windowsでの親フォルダパス取得処理
 	int	len = static_cast<int>(strlen(path));
 	int bcPos = 0;
 	for ( int i=0; i<len; i++ ) {
 		if ( path[i] == '¥¥' ) {
-			bcPos = i+1;
+			bcPos = i;
 		}
 	}
 	strncpy(out, path, bcPos);
