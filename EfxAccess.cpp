@@ -318,9 +318,15 @@ bool EfxAccess::GetBRRData( BRRData *data )
         if (mLastGetBrr.data != NULL) {
             delete [] mLastGetBrr.data;
         }
-        mLastGetBrr.data = new unsigned char[CFDataGetLength(out)];
-        mLastGetBrr.size = CFDataGetLength(out);
-        memcpy(mLastGetBrr.data, CFDataGetBytePtr(out), mLastGetBrr.size);
+        if ((CFDataGetLength(out) == 0) || (CFDataGetBytePtr(out) == NULL)) {
+            mLastGetBrr.data = NULL;
+            mLastGetBrr.size = 0;
+        }
+        else {
+            mLastGetBrr.data = new unsigned char[CFDataGetLength(out)];
+            mLastGetBrr.size = CFDataGetLength(out);
+            memcpy(mLastGetBrr.data, CFDataGetBytePtr(out), mLastGetBrr.size);
+        }
         CFRelease(out);
         *data = mLastGetBrr;
 		return true;
