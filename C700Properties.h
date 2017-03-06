@@ -120,28 +120,28 @@ enum
 };
 
 enum PropertyDataType {
-    propertyDataTypeFloat32,
-    propertyDataTypeDouble,
-    propertyDataTypeInt32,
-    propertyDataTypeBool,
-    propertyDataTypeStruct,
-    propertyDataTypeString,
-    propertyDataTypeFilePath,
-    propertyDataTypeVariableData,
-    propertyDataTypePointer,    // UIとのやりとりのみに使用し、保存しないタイプのプロパティ
+    propertyDataTypeFloat32,        // 32bit実数型
+    propertyDataTypeDouble,         // 64bit実数型
+    propertyDataTypeInt32,          // 32bit整数型
+    propertyDataTypeBool,           // bool型 vstではintとして持つ
+    propertyDataTypeStruct,         // outDataSizeをサイズとする構造体
+    propertyDataTypeString,         // AUではCFStringにwrapされる VSTではoutDataSizeを最大文字数とするCString
+    propertyDataTypeFilePath,       // AUではCFURLにwrapされる VSTではoutDataSizeを最大文字数とするCString
+    propertyDataTypeVariableData,   // AUではCFDataにwrapされる可変長データ VSTではSetGet時にsizeを設定する
+    propertyDataTypePointer,        // 単なるポインタ型 UIとのやりとりのみに使用し、保存しないタイプのプロパティ
 };
 
 typedef struct {
-    unsigned int     propId;
-    unsigned int     outDataSize;
-    bool             outWritable;
-    PropertyDataType dataType;
-    bool             readOnly;
-    bool             saveToProg;
-    bool             saveToSong;
-    bool             saveToGlobal;
-    char             savekey[32];
-    double           defaultValue;
+    unsigned int     propId;        // プロパティID
+    unsigned int     outDataSize;   // データのサイズ boolは1を示すが、VSTでchunk保存時には4バイトを使用する
+    bool             outWritable;   // AUでGetしたデータに書き込みが出来るかどうか
+    PropertyDataType dataType;      // データのタイプ
+    bool             readOnly;      // setを実装しない場合にtrueを設定する
+    bool             saveToProg;    // プログラム(音色)の中に含める
+    bool             saveToSong;    // 曲保存時に含める
+    bool             saveToGlobal;  // 初期設定の中に含める
+    char             savekey[32];   // AUで保存の際に使用するキー 保存フラグのいずれかを指定した場合必要
+    double           defaultValue;  // 未設定の場合に使用される初期値 負数を指定すると無効にできる
 } PropertyDescription;
 
 void createPropertyParamMap(std::map<int, PropertyDescription> &m);
