@@ -493,6 +493,9 @@ int C700Kernel::GetPropertyPtrDataSize( int inID )
             break;
             
         case kAudioUnitCustomProperty_BRRData:
+            if (GetBRRData()->data == NULL) {
+                return 0;
+            }
             return GetBRRData()->size;
     }
     return 0;
@@ -1022,7 +1025,7 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
     }
 
 	//brrデータをこちら側に移動する
-	if (data) {
+	if ((data != NULL) && (size > 0)) {
 		if ( mVPset[prog].hasBrrData() ) {
 			mVPset[prog].releaseBrr();
 		}
@@ -1033,6 +1036,8 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
         mVPset[prog].setBRRData(&brr);
         // 波形の転送
         mDriver.SetBrrSample(prog, data, size, mVPset[prog].lp);
+        
+        SetPropertyValue(kAudioUnitCustomProperty_Loop, data[size-9]&2?true:false);
 	}
 	else {
         //NULLデータをセットされると削除を行う
@@ -1052,8 +1057,6 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
             propertyNotifyFunc( kAudioUnitCustomProperty_TotalRAM, propNotifyUserData );
         }
     }
-    
-    SetPropertyValue(kAudioUnitCustomProperty_Loop, data[size-9]&2?true:false);
     
 	return true;
 }
