@@ -235,8 +235,12 @@ void C700Edit::setParameter(int index, const void *inPtr)
     switch ( index ) {
 		case kAudioUnitCustomProperty_BRRData:
         {
-            BRRData		*brrdata = (BRRData*)inPtr;
-            SetBRRData( brrdata );
+            CFDataRef   data = reinterpret_cast<CFDataRef>(inPtr);
+            BRRData		brrdata;
+            brrdata.data = (unsigned char *)CFDataGetBytePtr(data);
+            brrdata.size = CFDataGetLength(data);
+            SetBRRData( &brrdata );
+            CFRelease(inPtr);
             break;
         }
 		case kAudioUnitCustomProperty_ProgramName:

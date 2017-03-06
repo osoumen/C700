@@ -22,12 +22,21 @@ EfxAccess::EfxAccess( void *efx )
 : mEfx((C700VST*)efx)
 #endif
 {
+#if AU
+    mLastGetBrr.data = NULL;
+    mLastGetBrr.size = 0;
+#endif
     createPropertyParamMap(mPropertyParams);
 }
 
 //-----------------------------------------------------------------------------
 EfxAccess::~EfxAccess()
 {
+#if AU
+    if (mLastGetBrr.data != NULL) {
+        delete [] mLastGetBrr.data;
+    }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -301,10 +310,19 @@ bool EfxAccess::GetCStringProperty( int propertyId, char *string, int maxLen )
 bool EfxAccess::GetBRRData( BRRData *data )
 {
 #if AU
-	UInt32		outSize = sizeof(BRRData);
+	UInt32		outSize = sizeof(CFDataRef);
+    CFDataRef   out;
 	if (
-	AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, data, &outSize)
+	AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, &out, &outSize)
 		== noErr ) {
+        if (mLastGetBrr.data != NULL) {
+            delete [] mLastGetBrr.data;
+        }
+        mLastGetBrr.data = new unsigned char[CFDataGetLength(out)];
+        mLastGetBrr.size = CFDataGetLength(out);
+        memcpy(mLastGetBrr.data, CFDataGetBytePtr(out), mLastGetBrr.size);
+        CFRelease(out);
+        *data = mLastGetBrr;
 		return true;
 	}
 	return false;
@@ -323,13 +341,15 @@ bool EfxAccess::GetBRRData( BRRData *data )
 bool EfxAccess::SetBRRData( const BRRData *data )
 {
 #if AU
-	UInt32		inSize = sizeof(BRRData);
-	
+	UInt32		inSize = sizeof(CFDataRef);
+    CFDataRef   brr = CFDataCreate(NULL, data->data, data->size);
 	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, data, inSize)
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, &brr, inSize)
 		== noErr ) {
+        CFRelease(brr);
 		return true;
 	}
+    CFRelease(brr);
 	return false;
 #else
 	//VSTŽž‚Ìˆ—
@@ -392,6 +412,7 @@ double EfxAccess::GetPropertyValue( int propertyId )
         case propertyDataTypeString:
         case propertyDataTypeFilePath:
         case propertyDataTypeVariableData:
+        case propertyDataTypePointer:
             break;
     }
 	return 0;
@@ -485,6 +506,7 @@ void EfxAccess::SetPropertyValue( int propertyID, double value )
         case propertyDataTypeString:
         case propertyDataTypeFilePath:
         case propertyDataTypeVariableData:
+        case propertyDataTypePointer:
             break;
     }
 	mEfx->PropertyNotifyFunc(propertyID, mEfx);
