@@ -12,6 +12,12 @@ SpcFileGenerate::SpcFileGenerate(int allocSize)
 : PlayingFileGenerateBase(allocSize)
 {
     //SetSpcPlayCode( spcplayercode, sizeof(spcplayercode) );
+    strncpy(mSongTitle, "C700 spc", 32);
+    strncpy(mGameTitle, "Game title", 32);
+    strncpy(mNameOfDumper, "dumper", 16);
+    strncpy(mArtistOfSong, "Artist of song", 32);
+    strncpy(mSongComments, "Comments", 32);
+    
 }
 
 SpcFileGenerate::~SpcFileGenerate()
@@ -48,14 +54,14 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     spcFile.writeByte(0xff);    // SP
     spcFile.writeByte(0, 2);    // reserved
     
-    spcFile.writeData("C700 spctest                    ", 32);  // Song title
-    spcFile.writeData("Game title                      ", 32);  // Game title
-    spcFile.writeData("dumper          ", 16);                  // Name of dumper
-    spcFile.writeData("Comments                        ", 32);  // Comments
-    spcFile.writeData("2016/07/17", 11);                        // Date SPC was dumped (MM/DD/YYYY)
-    spcFile.writeData("120", 3);                                // Number of seconds to play song before fading out
-    spcFile.writeData("20000", 5);                              // Length of fade in milliseconds
-    spcFile.writeData("Artist of song                  ", 32);  // Artist of song
+    spcFile.writeData(mSongTitle, 32);      // Song title
+    spcFile.writeData(mGameTitle, 32);      // Game title
+    spcFile.writeData(mNameOfDumper, 16);   // Name of dumper
+    spcFile.writeData(mSongComments, 32);   // Comments
+    spcFile.writeData("2016/07/17", 11);    // Date SPC was dumped (MM/DD/YYYY)
+    spcFile.writeData("120", 3);            // Number of seconds to play song before fading out
+    spcFile.writeData("20000", 5);          // Length of fade in milliseconds
+    spcFile.writeData(mArtistOfSong, 32);   // Artist of song
     spcFile.writeByte(0);       // Default channel disables (0 = enable, 1 = disable)
     spcFile.writeByte(0);       // Emulator used to dump SPC: 0 = unknown, 1 = ZSNES, 2 = Snes9x
     spcFile.writeByte(0, 45);   // reserved (set to all 0's)
@@ -102,4 +108,40 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     delete [] reglogData;
     
     return true;
+}
+
+void SpcFileGenerate::SetGameTitle(const char *title)
+{
+    setHeaderString(mGameTitle, title, 32);
+}
+
+void SpcFileGenerate::SetSongTitle(const char *title)
+{
+    setHeaderString(mSongTitle, title, 32);
+}
+
+void SpcFileGenerate::SetNameOfDumper(const char *dumper)
+{
+    setHeaderString(mNameOfDumper, dumper, 16);
+}
+
+void SpcFileGenerate::SetArtistOfSong(const char *artist)
+{
+    setHeaderString(mArtistOfSong, artist, 32);
+}
+
+void SpcFileGenerate::SetSongComments(const char *comments)
+{
+    setHeaderString(mSongComments, comments, 32);
+}
+
+void SpcFileGenerate::setHeaderString(char *dst, const char *src, int len)
+{
+    if (src[0] == 0) {
+        return;
+    }
+    memset(dst, 0x20, len);
+    for (int i=0; (i<len) && (src[i]!=0); i++) {
+        dst[i] = src[i];
+    }
 }

@@ -12,6 +12,8 @@ SmcFileGenerate::SmcFileGenerate(int allocSize)
 : PlayingFileGenerateBase(allocSize)
 {
     //SetSmcPlayCode( smcplayercode, sizeof(smcplayercode), &s_nativeVector, &s_emuVector );
+    strncpy(mGameTitle, "C700Player", 21);
+    mCountryCode = 0;
 }
 
 SmcFileGenerate::~SmcFileGenerate()
@@ -53,7 +55,7 @@ bool SmcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     // ROMヘッダーの書き出し
     SmcHeader header;
     memset(&header, 0, sizeof(SmcHeader));
-    strncpy(header.title, "C700Player           ", 21); // TODO: 設定方法
+    setHeaderString(header.title, mGameTitle, 21);
     header.map = 0x30;      // FastLoROM
     header.cartType = 0x00; // ROM only
     header.romSize = 1;
@@ -62,8 +64,8 @@ bool SmcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     }
     smcFile.setPos(1024 << header.romSize);
     header.sramSize = 0;
+    header.country = mCountryCode;
     header.licenseeCode = 0;
-    header.country = 0;
     header.version = 0;
     
     smcFile.setPos(0x7fb2);
@@ -94,4 +96,23 @@ bool SmcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     smcFile.WriteToFile(path);
     
     return true;
+}
+
+void SmcFileGenerate::SetGameTitle(const char *title)
+{
+    strncpy(mGameTitle, title, 21);
+    mGameTitle[21] = 0;
+}
+
+void SmcFileGenerate::setHeaderString(char *dst, const char *src, int len)
+{
+    memset(dst, 0x20, len);
+    for (int i=0; (i<len) && (src[i]!=0); i++) {
+        dst[i] = src[i];
+    }
+}
+
+void SmcFileGenerate::SetCountryCode(int country)
+{
+    mCountryCode = country;
 }
