@@ -34,6 +34,12 @@ static unsigned char silence_brr[] = {
 	0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+#if WIN32
+char C700DSP::mPathSeparatorChar = '\\';
+#else
+char C700DSP::mPathSeparatorChar = '/';
+#endif
+
 //-----------------------------------------------------------------------------
 void C700DSP::DSPState::Reset()
 {
@@ -809,7 +815,7 @@ void C700DSP::EndRegisterLog()
 		mIsLoggerRunning = false;
         
         // ファイルへ書き出しテスト
-        saveRegisterLog("/Users/osoumen/Desktop/c700dump.spc");    // TODO: UI上で選択できるようにする
+        saveRegisterLog(mSongRecordPath);
 	}
 }
 
@@ -818,21 +824,60 @@ int C700DSP::saveRegisterLog(const char *path)
 	if ( *path == 0 ) {
 		return(-1);
 	}
+    if (path[0] == 0) {
+        // 保存パスが未設定
+        return(-1);
+    }
 	if ( canSaveRegisterLog() == false ) {
 		return(-1);
 	}
     
+    char saveFilePath[PATH_LEN_MAX];
+    strncpy(saveFilePath, path, PATH_LEN_MAX);
+    strncat(saveFilePath, &mPathSeparatorChar, 1);
+    if (mSongTitle[0] != 0) {
+        strncat(saveFilePath, mSongTitle, 32);
+    }
+    else if (mGameTitle[0] != 0) {
+        strncat(saveFilePath, mGameTitle, 32);
+    }
+    else {
+        strncat(saveFilePath, "c700song", 32);
+    }
     //PlayingFileGenerateBase exporter;
     //exporter.WriteToFile(path, mLogger, 16000);
-    // TODO: 設定でチェックを入れているフォーマットだけ出力する
-    SmcFileGenerate exporter1;
-    exporter1.SetSmcPlayCode(mSmcPlayerCode, mSmcPlayerCodeSize, mSmcNativeVector, mSmcEmulationVector);
-    exporter1.WriteToFile("/Users/osoumen/Desktop/c700dump.smc", mLogger);
-    SpcFileGenerate exporter2;
-    exporter2.SetSpcPlayCode(mSpcPlayerCode, mSpcPlayerCodeSize);
-    exporter2.WriteToFile("/Users/osoumen/Desktop/c700dump.spc", mLogger);
     
-	return(0);
+    // 設定でチェックを入れているフォーマットだけ出力する
+    if (mRecSaveAsSmc) {
+        char targetFilePath[PATH_LEN_MAX];
+        strncpy(targetFilePath, saveFilePath, PATH_LEN_MAX);
+        strncat(targetFilePath, ".smc", 4);
+        SmcFileGenerate exporter;
+        exporter.SetSmcPlayCode(mSmcPlayerCode, mSmcPlayerCodeSize, mSmcNativeVector, mSmcEmulationVector);
+        exporter.SetGameTitle(mGameTitle);
+        if (mTimeBaseForSmc == SmcTimeBaseNTSC) {
+            exporter.SetCountryCode(0);
+            exporter.WriteToFile(targetFilePath, mLogger, 15734);
+        }
+        else if (mTimeBaseForSmc == SmcTimeBasePAL) {
+            exporter.SetCountryCode(2);
+            exporter.WriteToFile(targetFilePath, mLogger, 15625);
+        }
+    }
+    if (mRecSaveAsSpc) {
+        char targetFilePath[PATH_LEN_MAX];
+        strncpy(targetFilePath, saveFilePath, PATH_LEN_MAX);
+        strncat(targetFilePath, ".spc", 4);
+        SpcFileGenerate exporter;
+        exporter.SetSpcPlayCode(mSpcPlayerCode, mSpcPlayerCodeSize);
+        exporter.SetGameTitle(mGameTitle);
+        exporter.SetSongTitle(mSongTitle);
+        exporter.SetNameOfDumper(mNameOfDumper);
+        exporter.SetArtistOfSong(mArtistOfSong);
+        exporter.SetSongComments(mSongComments);
+        exporter.WriteToFile(targetFilePath, mLogger);
+    }
+	return 0;
 }
 
 bool C700DSP::canSaveRegisterLog()

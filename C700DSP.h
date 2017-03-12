@@ -187,6 +187,8 @@ private:
     unsigned char   *mSpcPlayerCode;
     int             mSpcPlayerCodeSize;
     int             mCodeVer;
+    
+    static char     mPathSeparatorChar;
 };
 
 #endif /* defined(__C700__C700DSP__) */

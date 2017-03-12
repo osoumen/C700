@@ -18,6 +18,8 @@ public:
     
     virtual bool        WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec=15734 );
     void                SetSmcPlayCode( const void *code, int size, const void *nativeVector, const void *emuVector );
+    void                SetGameTitle(const char *title);
+    void                SetCountryCode(int country);
     
 protected:
     typedef struct {
@@ -26,8 +28,8 @@ protected:
         unsigned char cartType;
         unsigned char romSize;
         unsigned char sramSize;
-        unsigned char licenseeCode;
         unsigned char country;
+        unsigned char licenseeCode;
         unsigned char version;
         unsigned short checksum_complement;
         unsigned short checksum;
@@ -38,6 +40,10 @@ private:
     int                   mSmcPlayCodeSize;
     unsigned char         mNativeVector[12];
     unsigned char         mEmuVector[12];
+    char                  mGameTitle[22];
+    unsigned char         mCountryCode;
+    
+    void setHeaderString(char *dst, const char *src, int len);
 };
 
 #endif /* defined(__C700__SmcFileGenerate__) */

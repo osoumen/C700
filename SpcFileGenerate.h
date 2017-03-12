@@ -18,6 +18,11 @@ public:
     
     virtual bool        WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec=16000 );
     void                SetSpcPlayCode( const void *code, int size );
+    void                SetGameTitle(const char *title);
+    void                SetSongTitle(const char *title);
+    void                SetNameOfDumper(const char *dumper);
+    void                SetArtistOfSong(const char *artist);
+    void                SetSongComments(const char *comments);
     
 protected:
     
@@ -27,6 +32,13 @@ protected:
 private:
     const unsigned char   *m_pSpcPlayCode;
     int                   mSpcPlayCodeSize;
+    char                  mGameTitle[32];
+    char                  mSongTitle[32];
+    char                  mNameOfDumper[16];
+    char                  mArtistOfSong[32];
+    char                  mSongComments[32];
+    
+    void setHeaderString(char *dst, const char *src, int len);
 };
 
 #endif /* defined(__C700__SpcFileGenerate__) */
