@@ -12,7 +12,7 @@ SpcFileGenerate::SpcFileGenerate(int allocSize)
 : PlayingFileGenerateBase(allocSize)
 {
     //SetSpcPlayCode( spcplayercode, sizeof(spcplayercode) );
-    strncpy(mSongTitle, "C700 spc", 32);
+    strncpy(mSongTitle, "Song title", 32);
     strncpy(mGameTitle, "Game title", 32);
     strncpy(mNameOfDumper, "dumper", 16);
     strncpy(mArtistOfSong, "Artist of song", 32);
@@ -58,7 +58,15 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     spcFile.writeData(mGameTitle, 32);      // Game title
     spcFile.writeData(mNameOfDumper, 16);   // Name of dumper
     spcFile.writeData(mSongComments, 32);   // Comments
-    spcFile.writeData("2016/07/17", 11);    // Date SPC was dumped (MM/DD/YYYY)
+    {
+        time_t timer;
+        struct tm *local;
+        timer = time(NULL);
+        local = localtime(&timer);
+        char dateStr[16];
+        sprintf(dateStr, "%02d/%02d/%04d", local->tm_mon + 1, local->tm_mday, local->tm_year + 1900);
+        spcFile.writeData(dateStr, 11);    // Date SPC was dumped (MM/DD/YYYY)
+    }
     spcFile.writeData("120", 3);            // Number of seconds to play song before fading out
     spcFile.writeData("20000", 5);          // Length of fade in milliseconds
     spcFile.writeData(mArtistOfSong, 32);   // Artist of song

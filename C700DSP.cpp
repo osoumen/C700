@@ -842,7 +842,14 @@ int C700DSP::saveRegisterLog(const char *path)
         strncat(saveFilePath, mGameTitle, 32);
     }
     else {
+        time_t timer;
+        struct tm *local;
+        timer = time(NULL);
+        local = localtime(&timer);
+        char dateStr[16];
+        sprintf(dateStr, "%04d%02d%02d%02d%02d", local->tm_year + 1900, local->tm_mon + 1, local->tm_mday, local->tm_hour, local->tm_min);
         strncat(saveFilePath, "c700song", 32);
+        strncat(saveFilePath, dateStr, 12);
     }
     //PlayingFileGenerateBase exporter;
     //exporter.WriteToFile(path, mLogger, 16000);
