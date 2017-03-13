@@ -213,3 +213,25 @@ void RegisterLogger::EndDump(int time)
     }
 }
 
+//-----------------------------------------------------------------------------
+double RegisterLogger::CalcBeforeLoopTime()
+{
+    int samples = m_pLogCommands[mLogCommandsLoopPoint].time;
+    // ŠJn’¼Œã‚Ì‹ó”’ŠÔ‚ğœ‚­
+    int trueStart = 0;
+    while ((m_pLogCommands[trueStart].time == 0) && (trueStart < mLogCommandsPos)) {
+        trueStart++;
+    }
+    samples -= m_pLogCommands[trueStart].time;
+    return ((double)samples / (double)mProcessSampleRate);
+}
+
+//-----------------------------------------------------------------------------
+double RegisterLogger::CalcAfterLoopTime()
+{
+    if (!mIsEnded) {
+        return 0;
+    }
+    int samples = m_pLogCommands[mLogCommandsPos-1].time - m_pLogCommands[mLogCommandsLoopPoint].time;
+    return ((double)samples / (double)mProcessSampleRate);
+}
