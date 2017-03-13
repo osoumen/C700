@@ -53,7 +53,6 @@ public:
 	void	SetParameter( void *sender, int index, float value );
 	
     bool    LoadSongPlayerCode( const char *path );
-    double  GetHostBeatPos();
     
 private:
 #if AU

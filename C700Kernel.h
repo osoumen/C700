@@ -25,7 +25,9 @@ public:
 	void			Reset();
 	
 	void			SetSampleRate( double samplerate ) { mDriver.SetSampleRate(samplerate); }
-	void			SetTempo( double tempo );
+	void			SetTempo( double tempo );       // 毎フレームRenderを呼ぶ前に呼び出す
+    void            SetCurrentSampleInTimeLine( double currentSample ); // 毎フレームRenderを呼ぶ前に呼び出す
+    void            SetIsPlaying( bool isPlaying );
 	virtual float	GetParameter( int id );
 	virtual bool	SetParameter( int id, float value );
 
@@ -127,6 +129,13 @@ private:
     PlayerCodeReader *mCodeFile;
     bool            mGlobalSettingsHasChanged;
     
+    double          mCurrentSampleInTimeLine;
+    bool            mIsPlaying;
+    
+    double          mRecordStartBeatPos;
+    double          mRecordLoopStartBeatPos;
+    double          mRecordEndBeatPos;
+	
     void            setRPNLSB(int ch, int value);
     void            setRPNMSB(int ch, int value);
     void            setNRPNLSB(int ch, int value);

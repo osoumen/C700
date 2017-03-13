@@ -137,7 +137,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
             case kControlButtonSetRecordStart:
             {
                 if ( value > 0 ) {
-                    double pos = efxAcc->GetHostBeatPos();
+                    double pos = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_HostBeatPos);
                     efxAcc->SetPropertyValue(kAudioUnitCustomProperty_RecordStartBeatPos, pos);
                     mCntl[kAudioUnitCustomProperty_RecordStartBeatPos]->setValue(pos);
                 }
@@ -146,7 +146,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
             case kControlButtonSetRecordLoopStart:
             {
                 if ( value > 0 ) {
-                    double pos = efxAcc->GetHostBeatPos();
+                    double pos = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_HostBeatPos);
                     efxAcc->SetPropertyValue(kAudioUnitCustomProperty_RecordLoopStartBeatPos, pos);
                     mCntl[kAudioUnitCustomProperty_RecordLoopStartBeatPos]->setValue(pos);
                 }
@@ -155,7 +155,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
             case kControlButtonSetRecordEnd:
             {
                 if ( value > 0 ) {
-                    double pos = efxAcc->GetHostBeatPos();
+                    double pos = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_HostBeatPos);
                     efxAcc->SetPropertyValue(kAudioUnitCustomProperty_RecordEndBeatPos, pos);
                     mCntl[kAudioUnitCustomProperty_RecordEndBeatPos]->setValue(pos);
                 }

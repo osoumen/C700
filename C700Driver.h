@@ -175,13 +175,6 @@ public:
     
     C700DSP*    GetDsp() { return &mDSP; }
     
-    void        SetRecordStartBeatPos(double pos);
-    void        SetRecordLoopStartBeatPos(double pos);
-    void        SetRecordEndBeatPos(double pos);
-    double      GetRecordStartBeatPos() { return mRecordStartBeatPos; }
-    double      GetRecordLoopStartBeatPos() { return mRecordLoopStartBeatPos; }
-    double      GetRecordEndBeatPos() { return mRecordEndBeatPos; }
-	
 private:
 	static const int INTERNAL_CLOCK = 32000;
     static const int CYCLES_PER_SAMPLE = 21168;
@@ -254,10 +247,6 @@ private:
     bool            mIsAccurateMode;
     bool            mFastReleaseAsKeyOff;   // sustainmodeでsr=31の場合キーオフで処理する
     
-    double          mRecordStartBeatPos;
-    double          mRecordLoopStartBeatPos;
-    double          mRecordEndBeatPos;
-	
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
     void calcPanVolume(int value, int *volL, int *volR);

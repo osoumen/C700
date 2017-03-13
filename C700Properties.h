@@ -100,9 +100,9 @@ enum
     kAudioUnitCustomProperty_SongRecordPath,    // char[PATH_LEN_MAX] ->dsp
     kAudioUnitCustomProperty_RecSaveAsSpc,      // bool ->dsp
     kAudioUnitCustomProperty_RecSaveAsSmc,      // bool ->dsp
-    kAudioUnitCustomProperty_RecordStartBeatPos,// double ->driver
-    kAudioUnitCustomProperty_RecordLoopStartBeatPos,// double ->driver
-    kAudioUnitCustomProperty_RecordEndBeatPos,  // double ->driver
+    kAudioUnitCustomProperty_RecordStartBeatPos,// double ->kernel
+    kAudioUnitCustomProperty_RecordLoopStartBeatPos,// double ->kernel
+    kAudioUnitCustomProperty_RecordEndBeatPos,  // double ->kernel
     kAudioUnitCustomProperty_TimeBaseForSmc,    // int ->dsp
     kAudioUnitCustomProperty_GameTitle,         // char[32](smc出力時には21バイトに切り詰められる) ->dsp
     kAudioUnitCustomProperty_SongTitle,         // char[32] ->dsp

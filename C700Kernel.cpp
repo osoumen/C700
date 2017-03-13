@@ -41,7 +41,13 @@ C700Kernel::C700Kernel()
 	mEditChannel = 0;
     
     mIsHwAvailable = false;
-	
+    
+    mCurrentSampleInTimeLine = .0;
+    mRecordStartBeatPos = .0;
+    mRecordLoopStartBeatPos = .0;
+    mRecordEndBeatPos = .0;
+    mIsPlaying = false;
+    
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
@@ -132,6 +138,17 @@ void C700Kernel::SetTempo( double tempo )
 	mTempo = tempo;
 }
 
+//-----------------------------------------------------------------------------
+void C700Kernel::SetCurrentSampleInTimeLine( double currentSample )
+{
+    mCurrentSampleInTimeLine = currentSample;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::SetIsPlaying( bool isPlaying )
+{
+    mIsPlaying = isPlaying;
+}
 //-----------------------------------------------------------------------------
 
 bool C700Kernel::SetParameter( int id, float value )
@@ -453,6 +470,9 @@ float C700Kernel::GetPropertyValue( int inID )
         case kAudioUnitCustomProperty_SongPlayerCodeVer:
             return mDriver.GetDsp()->GetSongPlayCodeVer();
             
+        case kAudioUnitCustomProperty_HostBeatPos:
+            return mCurrentSampleInTimeLine;
+            
 		default:
 			return 0;
 	}	
@@ -466,16 +486,19 @@ double C700Kernel::GetPropertyDoubleValue( int inID )
 			return mVPset[mEditProg].rate;
             
         case kAudioUnitCustomProperty_RecordStartBeatPos:
-            return mDriver.GetRecordStartBeatPos();
+            return mRecordStartBeatPos;
             
         case kAudioUnitCustomProperty_RecordLoopStartBeatPos:
-            return mDriver.GetRecordLoopStartBeatPos();
+            return mRecordLoopStartBeatPos;
             
         case kAudioUnitCustomProperty_RecordEndBeatPos:
-            return mDriver.GetRecordEndBeatPos();
+            return mRecordEndBeatPos;
             
         case kAudioUnitCustomProperty_SongPlayerCodeVer:
             return mDriver.GetDsp()->GetSongPlayCodeVer();
+            
+        case kAudioUnitCustomProperty_HostBeatPos:
+            return mCurrentSampleInTimeLine;
             
         default:
 			return 0;
@@ -838,15 +861,15 @@ bool C700Kernel::SetPropertyDoubleValue( int inID, double value )
 			return true;
 			
         case kAudioUnitCustomProperty_RecordStartBeatPos:
-            mDriver.SetRecordStartBeatPos(value);
+            mRecordStartBeatPos = value;
             return true;
             
         case kAudioUnitCustomProperty_RecordLoopStartBeatPos:
-            mDriver.SetRecordLoopStartBeatPos(value);
+            mRecordLoopStartBeatPos = value;
             return true;
             
         case kAudioUnitCustomProperty_RecordEndBeatPos:
-            mDriver.SetRecordEndBeatPos(value);
+            mRecordEndBeatPos = value;
             return true;
             
         default:
@@ -1185,6 +1208,22 @@ bool C700Kernel::SelectPreset( int num )
 
 void C700Kernel::Render( unsigned int frames, float *output[2] )
 {
+    // 記録開始、終了
+    if (mIsPlaying) {
+        if ((mCurrentSampleInTimeLine <= mRecordStartBeatPos) &&
+            (mRecordStartBeatPos < (mCurrentSampleInTimeLine + frames))) {
+            mDriver.StartRegisterLog(mRecordStartBeatPos-mCurrentSampleInTimeLine);
+        }
+        if ((mCurrentSampleInTimeLine <= mRecordLoopStartBeatPos) &&
+            (mRecordLoopStartBeatPos < (mCurrentSampleInTimeLine + frames))) {
+            mDriver.MarkLoopRegisterLog(mRecordLoopStartBeatPos-mCurrentSampleInTimeLine);
+        }
+        if ((mCurrentSampleInTimeLine <= mRecordEndBeatPos) &&
+            (mRecordEndBeatPos < (mCurrentSampleInTimeLine + frames))) {
+            mDriver.EndRegisterLog(mRecordEndBeatPos-mCurrentSampleInTimeLine);
+        }
+    }
+    
 	mDriver.Process(frames, output);
     
     // MIDIインジケーターへの反映
@@ -1214,7 +1253,6 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 
 void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFrame )
 {
-    // TODO: ログ開始終了のノート番号を設定出来るようにする
     if (note == 0) {
         mDriver.StartRegisterLog(inFrame);
     }
@@ -1227,6 +1265,7 @@ void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFr
     else {
         mDriver.NoteOn(ch, note, vel, uniqueID, inFrame);
     }
+    //printf("NoteOn inFrame:%d\n", inFrame);
 }
 
 //-----------------------------------------------------------------------------
@@ -1236,6 +1275,7 @@ void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
     if (note > 2) {
         mDriver.NoteOff(ch, note, 0, uniqueID, inFrame);
     }
+    //printf("NoteOff inFrame:%d\n", inFrame);
 }
 
 //-----------------------------------------------------------------------------

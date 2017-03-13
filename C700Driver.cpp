@@ -116,10 +116,6 @@ C700Driver::C700Driver()
 	}
     mVoiceManager.Initialize(8);
     
-    mRecordStartBeatPos = .0;
-    mRecordLoopStartBeatPos = .0;
-    mRecordEndBeatPos = .0;
-    
 	Reset();
 }
 
@@ -1258,8 +1254,6 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
     
     mDSP.BeginFrameProcess((double)frames / mSampleRate);
     
-    // TODO: REGLOGイベントの登録
-    
 	for (unsigned int frame=0; frame<frames; ++frame) {
         // REGLOGイベントの処理
         MutexLock(mREGLOGEvtMtx);
@@ -1525,22 +1519,4 @@ void C700Driver::SetVPSet( InstParams *vp )
 double C700Driver::GetProcessDelayTime()
 {
     return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) + 8) / static_cast<double>(INTERNAL_CLOCK);    // 8ms + resample
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::SetRecordStartBeatPos(double pos)
-{
-    mRecordStartBeatPos = pos;
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::SetRecordLoopStartBeatPos(double pos)
-{
-    mRecordLoopStartBeatPos = pos;
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::SetRecordEndBeatPos(double pos)
-{
-    mRecordEndBeatPos = pos;
 }
