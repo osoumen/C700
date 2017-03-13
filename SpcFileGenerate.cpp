@@ -17,7 +17,9 @@ SpcFileGenerate::SpcFileGenerate(int allocSize)
     strncpy(mNameOfDumper, "dumper", 16);
     strncpy(mArtistOfSong, "Artist of song", 32);
     strncpy(mSongComments, "Comments", 32);
-    
+    mPlaySec = 120;
+    mFadeMs = 5000;
+
 }
 
 SpcFileGenerate::~SpcFileGenerate()
@@ -67,8 +69,16 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
         sprintf(dateStr, "%02d/%02d/%04d", local->tm_mon + 1, local->tm_mday, local->tm_year + 1900);
         spcFile.writeData(dateStr, 11);    // Date SPC was dumped (MM/DD/YYYY)
     }
-    spcFile.writeData("120", 3);            // Number of seconds to play song before fading out
-    spcFile.writeData("20000", 5);          // Length of fade in milliseconds
+    {
+        char str[4] = {0,0,0,0};
+        sprintf(str, "%d", mPlaySec);
+        spcFile.writeData(str, 3);            // Number of seconds to play song before fading out
+    }
+    {
+        char str[6] = {0,0,0,0,0,0};
+        sprintf(str, "%d", mFadeMs);
+        spcFile.writeData(str, 5);          // Length of fade in milliseconds
+    }
     spcFile.writeData(mArtistOfSong, 32);   // Artist of song
     spcFile.writeByte(0);       // Default channel disables (0 = enable, 1 = disable)
     spcFile.writeByte(0);       // Emulator used to dump SPC: 0 = unknown, 1 = ZSNES, 2 = Snes9x
@@ -151,5 +161,27 @@ void SpcFileGenerate::setHeaderString(char *dst, const char *src, int len)
     memset(dst, 0x20, len);
     for (int i=0; (i<len) && (src[i]!=0); i++) {
         dst[i] = src[i];
+    }
+}
+
+void SpcFileGenerate::SetPlaySeconds(int sec)
+{
+    mPlaySec = sec;
+    if (mPlaySec > 999) {
+        mPlaySec = 999;
+    }
+    if (mPlaySec < 0) {
+        mPlaySec = 0;
+    }
+}
+
+void SpcFileGenerate::SetFadeMs(int ms)
+{
+    mFadeMs = ms;
+    if (mFadeMs > 99999) {
+        mFadeMs = 99999;
+    }
+    if (mFadeMs < 0) {
+        mFadeMs = 0;
     }
 }

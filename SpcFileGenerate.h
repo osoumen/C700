@@ -23,6 +23,8 @@ public:
     void                SetNameOfDumper(const char *dumper);
     void                SetArtistOfSong(const char *artist);
     void                SetSongComments(const char *comments);
+    void                SetPlaySeconds(int sec);
+    void                SetFadeMs(int ms);
     
 protected:
     
@@ -37,6 +39,8 @@ private:
     char                  mNameOfDumper[16];
     char                  mArtistOfSong[32];
     char                  mSongComments[32];
+    int                   mPlaySec;
+    int                   mFadeMs;
     
     void setHeaderString(char *dst, const char *src, int len);
 };

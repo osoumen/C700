@@ -50,6 +50,9 @@ public:
     bool                DumpApuPitch( int device, int addr, unsigned char data_l, unsigned char data_m, int time );
 	void				MarkLoopPoint();
 	void				EndDump(int time);
+    
+    double              CalcBeforeLoopTime();
+    double              CalcAfterLoopTime();
 
     friend PlayingFileGenerateBase;
     
