@@ -496,7 +496,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		"",	//title
 		0,	//Value
 		0,	//Minimum
-		0,	//Maximum
+		99999,	//Maximum
 		0,	//sig
 		kAudioUnitCustomProperty_FadeMsTimeForSpc,	//id
 		0,	//command

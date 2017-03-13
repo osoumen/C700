@@ -905,6 +905,7 @@ PropertyDescription sPropertyDescription[] = {
         true,                                   // saveToSong
         false,                                  // saveToGlobal
         "repeatnumforspc",                      // savekey
+        1.0f,                                   // defaultValue
     },
     {
         kAudioUnitCustomProperty_FadeMsTimeForSpc,// propId
@@ -916,6 +917,7 @@ PropertyDescription sPropertyDescription[] = {
         true,                                   // saveToSong
         false,                                  // saveToGlobal
         "fademstimeforspc",                     // savekey
+        5000,                                   // defaultValue
     },
     {
         kAudioUnitCustomProperty_SongPlayerCode,// propId
