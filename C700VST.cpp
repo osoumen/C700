@@ -463,6 +463,19 @@ void C700VST::setBlockSize(VstInt32 blockSize)
 void C700VST::processReplacing(float **inputs, float **outputs, int sampleFrames)
 {
     setInitialDelay(mEfx->GetProcessDelayTime() * sampleRate);
+
+    VstTimeInfo*	info = getTimeInfo(kVstPpqPosValid | kVstTempoValid);
+	if ( info ) {
+        if (info->flags & kVstTransportPlaying) {
+            mEfx->SetCurrentSampleInTimeLine(info->samplePos);
+            //printf("currentSample:%f\n", info->samplePos);
+            mEfx->SetIsPlaying(true);
+        }
+        else {
+            mEfx->SetCurrentSampleInTimeLine(((info->ppqPos * 60.0) / info->tempo) * info->sampleRate);
+            mEfx->SetIsPlaying(false);
+        }
+	}
 	memset(outputs[0], 0, sampleFrames*sizeof(float));
 	memset(outputs[1], 0, sampleFrames*sizeof(float));
 	mEfx->Render(sampleFrames, outputs);

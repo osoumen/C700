@@ -123,10 +123,6 @@ private:
 	static void PropertyNotifyFunc(int propID, void* userData);
 	static void ParameterSetFunc(int paramID, float value, void* userData);
 	
-	double				mTempo;
-    double              mBeatPos;
-    double              mCurrentSampleInTimeLine;
-	
 	C700Kernel			*mEfx;
 	AUPreset			*mPresets;
     bool                mParameterHasChanged[kNumberOfParameters];

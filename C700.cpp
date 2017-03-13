@@ -118,9 +118,17 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 {
 	OSStatus result = MusicDeviceBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
 	
-	CallHostBeatAndTempo(&mBeatPos, &mTempo);
-    CallHostTransportState(NULL, NULL, &mCurrentSampleInTimeLine, NULL, NULL, NULL);
-	mEfx->SetTempo( mTempo );
+    {
+        double tempo;
+        double currentSampleInTimeLine;
+        Boolean isPlaying;
+        CallHostBeatAndTempo(NULL, &tempo);
+        CallHostTransportState(&isPlaying, NULL, &currentSampleInTimeLine, NULL, NULL, NULL);
+        mEfx->SetTempo( tempo );
+        mEfx->SetCurrentSampleInTimeLine( currentSampleInTimeLine );
+        mEfx->SetSampleRate( GetOutput(0)->GetStreamFormat().mSampleRate );
+        mEfx->SetIsPlaying(isPlaying?true:false);
+    }
 	//バッファの確保
 	float				*output[2];
 	AudioBufferList&	bufferList = GetOutput(0)->GetBufferList();
@@ -151,8 +159,6 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
             }
         }
 	}
-	
-	mEfx->SetSampleRate( GetOutput(0)->GetStreamFormat().mSampleRate );
 	
 	mEfx->Render(inNumberFrames, output);
 	
@@ -381,54 +387,49 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 #endif
         auto it = mPropertyParams.find(inID);
         if (it != mPropertyParams.end()) {
-            if (it->second.propId == kAudioUnitCustomProperty_HostBeatPos) {
-                *((double *)outData) = mCurrentSampleInTimeLine;
-            }
-            else {
-                switch (it->second.dataType) {
-                    case propertyDataTypeFloat32:
-                        *((Float32 *)outData) = mEfx->GetPropertyValue(inID);
-                        break;
-                    case propertyDataTypeDouble:
-                        *((double *)outData) = mEfx->GetPropertyDoubleValue(inID);
-                        break;
-                    case propertyDataTypeInt32:
-                        *((int *)outData) = mEfx->GetPropertyValue(inID);
-                        break;
-                    case propertyDataTypeBool:
-                        *((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
-                        break;
-                    case propertyDataTypeStruct:
-                        mEfx->GetPropertyStructValue(inID, outData);
-                        break;
-                    case propertyDataTypeString:
-                    {
-                        const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
-                        CFStringRef	str =
-                        CFStringCreateWithCString(NULL, string, kCFStringEncodingUTF8);
-                        *((char **)outData) = (char *)str;  //使用後要release
-                        break;
-                    }
-                    case propertyDataTypeFilePath:
-                    {
-                        const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
-                        CFURLRef	url =
-                        CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)string, strlen(string), false);
-                        *((char **)outData) = (char *)url;  //使用後要release
-                        break;
-                    }
-                        
-                    case propertyDataTypeVariableData:
-                    {
-                        CFDataRef dataRef;
-                        dataRef = CFDataCreate(NULL, (UInt8*)mEfx->GetPropertyPtrValue(inID), mEfx->GetPropertyPtrDataSize(inID));
-                        *((char **)outData) = (char *)dataRef;  //使用後要release
-                        break;
-                    }
-                    case propertyDataTypePointer:
-                        *((char **)outData) = (char *)mEfx->GetPropertyPtrValue(inID);
-                        break;
+            switch (it->second.dataType) {
+                case propertyDataTypeFloat32:
+                    *((Float32 *)outData) = mEfx->GetPropertyValue(inID);
+                    break;
+                case propertyDataTypeDouble:
+                    *((double *)outData) = mEfx->GetPropertyDoubleValue(inID);
+                    break;
+                case propertyDataTypeInt32:
+                    *((int *)outData) = mEfx->GetPropertyValue(inID);
+                    break;
+                case propertyDataTypeBool:
+                    *((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
+                    break;
+                case propertyDataTypeStruct:
+                    mEfx->GetPropertyStructValue(inID, outData);
+                    break;
+                case propertyDataTypeString:
+                {
+                    const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
+                    CFStringRef	str =
+                    CFStringCreateWithCString(NULL, string, kCFStringEncodingUTF8);
+                    *((char **)outData) = (char *)str;  //使用後要release
+                    break;
                 }
+                case propertyDataTypeFilePath:
+                {
+                    const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
+                    CFURLRef	url =
+                    CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)string, strlen(string), false);
+                    *((char **)outData) = (char *)url;  //使用後要release
+                    break;
+                }
+                    
+                case propertyDataTypeVariableData:
+                {
+                    CFDataRef dataRef;
+                    dataRef = CFDataCreate(NULL, (UInt8*)mEfx->GetPropertyPtrValue(inID), mEfx->GetPropertyPtrDataSize(inID));
+                    *((char **)outData) = (char *)dataRef;  //使用後要release
+                    break;
+                }
+                case propertyDataTypePointer:
+                    *((char **)outData) = (char *)mEfx->GetPropertyPtrValue(inID);
+                    break;
             }
             return noErr;
         }
