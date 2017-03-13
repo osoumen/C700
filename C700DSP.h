@@ -97,12 +97,16 @@ public:
     char* GetNameOfDumper() { return mNameOfDumper; }
     char* GetArtistOfSong() { return mArtistOfSong; }
     char* GetSongComments() { return mSongComments; }
+    float GetRepeatNumForSpc() { return mRepeatNumForSpc; }
+    int GetFadeMsTimeForSpc() { return mFadeMsTimeForSpc; }
     int GetSongPlayCodeVer();
     void SetSmcNativeVector(const void *vec);
     void SetSmcEmulationVector(const void *vec);
     void SetSmcPlayerCode(const void *code, int size);
     void SetSpcPlayerCode(const void *code, int size);
     void SetSongPlayCodeVer(int ver);
+    void SetRepeatNumForSpc(float num);
+    void SetFadeMsTimeForSpc(int time);
     
 private:
     bool writeDsp(int addr, unsigned char data);
@@ -180,6 +184,8 @@ private:
     char            mNameOfDumper[17];
     char            mArtistOfSong[33];
     char            mSongComments[33];
+    float           mRepeatNumForSpc;
+    int             mFadeMsTimeForSpc;
     unsigned char   mSmcNativeVector[12];
     unsigned char   mSmcEmulationVector[12];
     unsigned char   *mSmcPlayerCode;

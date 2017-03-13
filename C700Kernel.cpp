@@ -468,6 +468,12 @@ float C700Kernel::GetPropertyValue( int inID )
             }
         }
         
+        case kAudioUnitCustomProperty_RepeatNumForSpc:
+            return mDriver.GetDsp()->GetRepeatNumForSpc();
+            
+        case kAudioUnitCustomProperty_FadeMsTimeForSpc:
+            return mDriver.GetDsp()->GetFadeMsTimeForSpc();
+            
         case kAudioUnitCustomProperty_SongPlayerCodeVer:
             return mDriver.GetDsp()->GetSongPlayCodeVer();
             
@@ -844,6 +850,15 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             }
             return true;
         }
+            
+        case kAudioUnitCustomProperty_RepeatNumForSpc:
+            mDriver.GetDsp()->SetRepeatNumForSpc(value);
+            return true;
+            
+        case kAudioUnitCustomProperty_FadeMsTimeForSpc:
+            mDriver.GetDsp()->SetFadeMsTimeForSpc(value);
+            return true;
+            
 		default:
 			return false;
 	}

@@ -110,6 +110,8 @@ mUseRealEmulation( true )
     mNameOfDumper[0] = 0;
     mArtistOfSong[0] = 0;
     mSongComments[0] = 0;
+    mRepeatNumForSpc = 1;
+    mFadeMsTimeForSpc = 5000;
     mSmcNativeVector[0] = 0;
     mSmcEmulationVector[0] = 0;
     mSmcPlayerCode = NULL;
@@ -1005,4 +1007,14 @@ int C700DSP::GetSongPlayCodeVer()
 void C700DSP::SetSongPlayCodeVer(int ver)
 {
     mCodeVer = ver;
+}
+
+void C700DSP::SetRepeatNumForSpc(float num)
+{
+    mRepeatNumForSpc = num;
+}
+
+void C700DSP::SetFadeMsTimeForSpc(int time)
+{
+    mFadeMsTimeForSpc = time;
 }
