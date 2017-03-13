@@ -120,12 +120,12 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 	
     {
         double tempo;
-        double currentSampleInTimeLine;
+        double currentBeat;
         Boolean isPlaying;
-        CallHostBeatAndTempo(NULL, &tempo);
-        CallHostTransportState(&isPlaying, NULL, &currentSampleInTimeLine, NULL, NULL, NULL);
+        CallHostBeatAndTempo(&currentBeat, &tempo);
+        CallHostTransportState(&isPlaying, NULL, NULL, NULL, NULL, NULL);
         mEfx->SetTempo( tempo );
-        mEfx->SetCurrentSampleInTimeLine( currentSampleInTimeLine );
+        mEfx->SetCurrentSampleInTimeLine( currentBeat );
         mEfx->SetSampleRate( GetOutput(0)->GetStreamFormat().mSampleRate );
         mEfx->SetIsPlaying(isPlaying?true:false);
     }

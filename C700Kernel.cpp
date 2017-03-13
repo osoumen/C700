@@ -42,11 +42,12 @@ C700Kernel::C700Kernel()
     
     mIsHwAvailable = false;
     
-    mCurrentSampleInTimeLine = .0;
+    mCurrentPosInTimeLine = .0;
     mRecordStartBeatPos = .0;
     mRecordLoopStartBeatPos = .0;
     mRecordEndBeatPos = .0;
     mIsPlaying = false;
+    mSampleRate = 44100.0;
     
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
@@ -141,7 +142,7 @@ void C700Kernel::SetTempo( double tempo )
 //-----------------------------------------------------------------------------
 void C700Kernel::SetCurrentSampleInTimeLine( double currentSample )
 {
-    mCurrentSampleInTimeLine = currentSample;
+    mCurrentPosInTimeLine = currentSample;
 }
 
 //-----------------------------------------------------------------------------
@@ -471,7 +472,7 @@ float C700Kernel::GetPropertyValue( int inID )
             return mDriver.GetDsp()->GetSongPlayCodeVer();
             
         case kAudioUnitCustomProperty_HostBeatPos:
-            return mCurrentSampleInTimeLine;
+            return mCurrentPosInTimeLine;
             
 		default:
 			return 0;
@@ -498,7 +499,7 @@ double C700Kernel::GetPropertyDoubleValue( int inID )
             return mDriver.GetDsp()->GetSongPlayCodeVer();
             
         case kAudioUnitCustomProperty_HostBeatPos:
-            return mCurrentSampleInTimeLine;
+            return mCurrentPosInTimeLine;
             
         default:
 			return 0;
@@ -1210,17 +1211,19 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 {
     // 記録開始、終了
     if (mIsPlaying) {
-        if ((mCurrentSampleInTimeLine <= mRecordStartBeatPos) &&
-            (mRecordStartBeatPos < (mCurrentSampleInTimeLine + frames))) {
-            mDriver.StartRegisterLog(mRecordStartBeatPos-mCurrentSampleInTimeLine);
+        double beatFrameRatio = (mSampleRate * 60) / mTempo;
+        double framesBeat = frames / beatFrameRatio;
+        if ((mCurrentPosInTimeLine <= mRecordStartBeatPos) &&
+            (mRecordStartBeatPos < (mCurrentPosInTimeLine + framesBeat))) {
+            mDriver.StartRegisterLog((mRecordStartBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
         }
-        if ((mCurrentSampleInTimeLine <= mRecordLoopStartBeatPos) &&
-            (mRecordLoopStartBeatPos < (mCurrentSampleInTimeLine + frames))) {
-            mDriver.MarkLoopRegisterLog(mRecordLoopStartBeatPos-mCurrentSampleInTimeLine);
+        if ((mCurrentPosInTimeLine <= mRecordLoopStartBeatPos) &&
+            (mRecordLoopStartBeatPos < (mCurrentPosInTimeLine + framesBeat))) {
+            mDriver.MarkLoopRegisterLog((mRecordLoopStartBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
         }
-        if ((mCurrentSampleInTimeLine <= mRecordEndBeatPos) &&
-            (mRecordEndBeatPos < (mCurrentSampleInTimeLine + frames))) {
-            mDriver.EndRegisterLog(mRecordEndBeatPos-mCurrentSampleInTimeLine);
+        if ((mCurrentPosInTimeLine <= mRecordEndBeatPos) &&
+            (mRecordEndBeatPos < (mCurrentPosInTimeLine + framesBeat))) {
+            mDriver.EndRegisterLog((mRecordEndBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
         }
     }
     
@@ -1253,18 +1256,7 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 
 void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFrame )
 {
-    if (note == 0) {
-        mDriver.StartRegisterLog(inFrame);
-    }
-    else if (note == 1) {
-        mDriver.MarkLoopRegisterLog(inFrame);
-    }
-    else if (note == 2) {
-        mDriver.EndRegisterLog(inFrame);
-    }
-    else {
-        mDriver.NoteOn(ch, note, vel, uniqueID, inFrame);
-    }
+    mDriver.NoteOn(ch, note, vel, uniqueID, inFrame);
     //printf("NoteOn inFrame:%d\n", inFrame);
 }
 
@@ -1272,9 +1264,7 @@ void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFr
 
 void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 {
-    if (note > 2) {
-        mDriver.NoteOff(ch, note, 0, uniqueID, inFrame);
-    }
+    mDriver.NoteOff(ch, note, 0, uniqueID, inFrame);
     //printf("NoteOff inFrame:%d\n", inFrame);
 }
 
