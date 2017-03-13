@@ -884,7 +884,7 @@ int C700DSP::saveRegisterLog(const char *path)
         exporter.SetNameOfDumper(mNameOfDumper);
         exporter.SetArtistOfSong(mArtistOfSong);
         exporter.SetSongComments(mSongComments);
-        exporter.SetPlaySeconds(mLogger.CalcBeforeLoopTime() + mLogger.CalcAfterLoopTime() * mRepeatNumForSpc);
+        exporter.SetPlaySeconds(ceil(mLogger.CalcBeforeLoopTime() + mLogger.CalcAfterLoopTime() * mRepeatNumForSpc));
         exporter.SetFadeMs(mFadeMsTimeForSpc);
         exporter.WriteToFile(targetFilePath, mLogger);
     }
