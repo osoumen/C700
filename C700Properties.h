@@ -109,6 +109,8 @@ enum
     kAudioUnitCustomProperty_NameOfDumper,      // char[16] ->dsp
     kAudioUnitCustomProperty_ArtistOfSong,      // char[32] ->dsp
     kAudioUnitCustomProperty_SongComments,      // char[32] ->dsp
+    kAudioUnitCustomProperty_RepeatNumForSpc,   // float ->dsp
+    kAudioUnitCustomProperty_FadeMsTimeForSpc,  // int ->dsp
     
     kAudioUnitCustomProperty_SongPlayerCode,    // CFData ->dsp write only
     kAudioUnitCustomProperty_SongPlayerCodeVer, // int32 read only

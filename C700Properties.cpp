@@ -896,6 +896,28 @@ PropertyDescription sPropertyDescription[] = {
         "songcomments",                         // savekey
     },
     {
+        kAudioUnitCustomProperty_RepeatNumForSpc,// propId
+        sizeof(float),                          // outDataSize
+        false,                                  // outWritable
+        propertyDataTypeFloat32,                // dataType
+        false,                                  // readOnly
+        false,                                  // saveToProg
+        true,                                   // saveToSong
+        false,                                  // saveToGlobal
+        "repeatnumforspc",                      // savekey
+    },
+    {
+        kAudioUnitCustomProperty_FadeMsTimeForSpc,// propId
+        sizeof(int),                            // outDataSize
+        false,                                  // outWritable
+        propertyDataTypeInt32,                  // dataType
+        false,                                  // readOnly
+        false,                                  // saveToProg
+        true,                                   // saveToSong
+        false,                                  // saveToGlobal
+        "fademstimeforspc",                     // savekey
+    },
+    {
         kAudioUnitCustomProperty_SongPlayerCode,// propId
         sizeof(void*),                          // outDataSize
         false,                                  // outWritable
