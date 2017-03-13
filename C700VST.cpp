@@ -466,15 +466,9 @@ void C700VST::processReplacing(float **inputs, float **outputs, int sampleFrames
 
     VstTimeInfo*	info = getTimeInfo(kVstPpqPosValid | kVstTempoValid);
 	if ( info ) {
-        if (info->flags & kVstTransportPlaying) {
-            mEfx->SetCurrentSampleInTimeLine(info->samplePos);
-            //printf("currentSample:%f\n", info->samplePos);
-            mEfx->SetIsPlaying(true);
-        }
-        else {
-            mEfx->SetCurrentSampleInTimeLine(((info->ppqPos * 60.0) / info->tempo) * info->sampleRate);
-            mEfx->SetIsPlaying(false);
-        }
+        mEfx->SetTempo(info->tempo);
+        mEfx->SetCurrentSampleInTimeLine(info->ppqPos);
+        mEfx->SetIsPlaying((info->flags & kVstTransportPlaying)!=0?true:false);
 	}
 	memset(outputs[0], 0, sampleFrames*sizeof(float));
 	memset(outputs[1], 0, sampleFrames*sizeof(float));
