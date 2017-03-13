@@ -68,7 +68,7 @@ C700GUI::C700GUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
 	onOffButton->forget();
 	rocker->forget();
 	
-    CRect size (0, 0, inSize.getWidth() - 100, inSize.getHeight() - 100);
+    CRect size (0, 0, inSize.getWidth() - 114, inSize.getHeight() - 100);
     size.offset (50, 50);
     recordWindow = new RecordingSettingsGUI(size, frame, NULL);
     recordWindow->setBackgroundColor(kGreyCColor);

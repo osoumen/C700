@@ -456,7 +456,74 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//style
 		0	//future use
 	},
-    
+    {
+		'airy',	//sig
+		'dtxt',	//kind
+		"Arial 9 180 248 255 0 2 0.1 0",	//title
+		0,	//Value
+		0,	//Minimum
+		99,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_RepeatNumForSpc,	//id
+		0,	//command
+		10, 228, 32, 12,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+        "Repeat num (for spc)",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		0,	//sig
+		-1,	//id
+		0,	//command
+		160, 228, 120, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'eutx',	//kind
+		"",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		0,	//sig
+		kAudioUnitCustomProperty_FadeMsTimeForSpc,	//id
+		0,	//command
+		10, 244, 64, 14,	//x,y,w,h
+		"Arial",	//fontname
+		9,	//fontsize
+		kCenterText,	//fontalign
+		k3DOut,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+        "Fade msTime (for spc)",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		0,	//sig
+		-1,	//id
+		0,	//command
+		160, 244, 120, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
     {
 		'appl',	//sig
 		'stxt',	//kind
@@ -467,7 +534,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kAudioUnitCustomProperty_SongPlayerCodeVer,	//id
 		0,	//command
-		10, 228, 64, 14,	//x,y,w,h
+		10, 260, 64, 14,	//x,y,w,h
 		"Arial",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
@@ -484,7 +551,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kControlButtonLoadPlayerCode,	//id
 		0,	//command
-		100, 228, 32, 14,	//x,y,w,h
+		100, 260, 32, 14,	//x,y,w,h
 		"Arial Black",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
@@ -501,7 +568,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 228, 120, 11,	//x,y,w,h
+		160, 260, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -518,7 +585,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kControlButtonRecordSettingExit,	//id
 		0,	//command
-		200, 260, 33, 14,	//x,y,w,h
+		200, 276, 33, 14,	//x,y,w,h
 		"Arial Black",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
