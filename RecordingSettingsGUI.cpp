@@ -102,6 +102,17 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
                     efxAcc->SetCStringProperty(propertyId, text);
                 }
                 break;
+            case kAudioUnitCustomProperty_RepeatNumForSpc:
+                efxAcc->SetPropertyValue( propertyId, value / 10.0 );
+                break;
+            case kAudioUnitCustomProperty_FadeMsTimeForSpc:
+                if ( text ) {
+                    value = std::atoi(text);
+                    if (value > 99999) value = 99999;
+                    if (value < 0) value = 0;
+                    CMyTextEdit *textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_FadeMsTimeForSpc]);
+                    textedit->setValue(value);
+                }
             default:
                 efxAcc->SetPropertyValue( propertyId, value );
                 break;
@@ -226,6 +237,11 @@ bool RecordingSettingsGUI::attached(CView* view)
     textedit->setValue(efxAcc->GetPropertyValue(kAudioUnitCustomProperty_RecordLoopStartBeatPos));
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_RecordEndBeatPos]);
     textedit->setValue(efxAcc->GetPropertyValue(kAudioUnitCustomProperty_RecordEndBeatPos));
+    
+    textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_RepeatNumForSpc]);
+    textedit->setValue(10 * efxAcc->GetPropertyValue(kAudioUnitCustomProperty_RepeatNumForSpc));
+    textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_FadeMsTimeForSpc]);
+    textedit->setValue(efxAcc->GetPropertyValue(kAudioUnitCustomProperty_FadeMsTimeForSpc));
 
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongPlayerCodeVer]);
     int codeVer = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_SongPlayerCodeVer);
