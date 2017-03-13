@@ -1215,15 +1215,21 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
         double framesBeat = frames / beatFrameRatio;
         if ((mCurrentPosInTimeLine <= mRecordStartBeatPos) &&
             (mRecordStartBeatPos < (mCurrentPosInTimeLine + framesBeat))) {
-            mDriver.StartRegisterLog((mRecordStartBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
+            if (mRecordStartBeatPos != mRecordEndBeatPos) {
+                mDriver.StartRegisterLog((mRecordStartBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
+            }
         }
         if ((mCurrentPosInTimeLine <= mRecordLoopStartBeatPos) &&
             (mRecordLoopStartBeatPos < (mCurrentPosInTimeLine + framesBeat))) {
-            mDriver.MarkLoopRegisterLog((mRecordLoopStartBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
+            if (mRecordStartBeatPos != mRecordEndBeatPos) {
+                mDriver.MarkLoopRegisterLog((mRecordLoopStartBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
+            }
         }
         if ((mCurrentPosInTimeLine <= mRecordEndBeatPos) &&
             (mRecordEndBeatPos < (mCurrentPosInTimeLine + framesBeat))) {
-            mDriver.EndRegisterLog((mRecordEndBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
+            if (mRecordStartBeatPos != mRecordEndBeatPos) {
+                mDriver.EndRegisterLog((mRecordEndBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
+            }
         }
     }
     
