@@ -9,6 +9,7 @@
 #include "RecordingSettingsGUI.h"
 #include "RecordingViewCntls.h"
 #include "MyTextEdit.h"
+#include "UrlLinkBox.h"
 #include "cfileselector.h"
 
 RecordingSettingsGUI::RecordingSettingsGUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
@@ -34,8 +35,6 @@ RecordingSettingsGUI::RecordingSettingsGUI(const CRect &inSize, CFrame *frame, C
 		}
     }
     
-    onOffButton->forget();
-    
 #if 0
     extern CFontRef kLabelFont;
     
@@ -43,18 +42,19 @@ RecordingSettingsGUI::RecordingSettingsGUI(const CRect &inSize, CFrame *frame, C
     //--CTextKickButton--------------------------------------
 	CRect csize(0, 0, 80, 16);
 	csize.offset(50, 20);
-	cTextKickButton = new CTextKickButton(csize, this, 77778, NULL, "O.K.", kLabelFont);
+	cTextKickButton = new CTextKickButton(csize, this, kControlButtonRecordSettingExit, NULL, "O.K.", kLabelFont);
 	addView(cTextKickButton);
 	cTextKickButton->setAttribute(kCViewTooltipAttribute,strlen("CTextKickButton")+1,"CTextKickButton");
     
-    CFrameTextView *cFrameTextView;
-    //--CFrameTextView--------------------------------------
-    csize(0, 0, 120, 16);
-	csize.offset(50, 50);
-    cFrameTextView = new CFrameTextView(csize, "CFrameTextView");
-    addView(cFrameTextView);
-    cFrameTextView->setAttribute(kCViewTooltipAttribute,strlen("CFrameTextView")+1,"CFrameTextView");
+    CUrlLinkBox     *cUrlLinkBox;
+    //--CUrlLinkBox--------------------------------------
+    csize(0, 0, 200, 200);
+    cUrlLinkBox = new CUrlLinkBox(csize, frame, this, -1, onOffButton, "http://picopicose.com");
+    addView(cUrlLinkBox);
+    cUrlLinkBox->setAttribute(kCViewTooltipAttribute,strlen("CUrlLinkBox")+1,"CUrlLinkBox");
 #endif
+    
+    onOffButton->forget();
 }
 
 RecordingSettingsGUI::~RecordingSettingsGUI()

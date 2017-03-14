@@ -459,7 +459,7 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'airy',	//sig
 		'dtxt',	//kind
-		"Arial 9 180 248 255 0 2 0.1 0",	//title
+		"Arial 9 180 248 255 0 2 0.1 x",	//title
 		0,	//Value
 		0,	//Minimum
 		99,	//Maximum
