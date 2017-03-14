@@ -53,7 +53,6 @@ RecordingSettingsGUI::RecordingSettingsGUI(const CRect &inSize, CFrame *frame, C
     addView(cUrlLinkBox);
     cUrlLinkBox->setAttribute(kCViewTooltipAttribute,strlen("CUrlLinkBox")+1,"CUrlLinkBox");
 #endif
-    
     onOffButton->forget();
 }
 
@@ -179,18 +178,8 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
 					bool	isSelected;
 					isSelected = getLoadFile(path, PATH_LEN_MAX, "");
 					if ( isSelected ) {
-                        efxAcc->LoadSongPlayerCode(path);
+                        loadCode(path);
 					}
-                    CMyTextEdit *textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongPlayerCodeVer]);
-                    int codeVer = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_SongPlayerCodeVer);
-                    if (codeVer > 0) {
-                        char str[20];
-                        sprintf(str, "%08x...OK!", codeVer);
-                        textedit->setText(str);
-                    }
-                    else {
-                        textedit->setText("not Loaded");
-                    }
                 }
                 break;
             }
@@ -349,4 +338,21 @@ bool RecordingSettingsGUI::getFolder( char *path, int maxLen, const char *title 
 	}
 #endif
 	return false;
+}
+
+bool RecordingSettingsGUI::loadCode(const char *path)
+{
+    bool isLoaded = efxAcc->LoadSongPlayerCode(path);
+    CMyTextEdit *textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongPlayerCodeVer]);
+    int codeVer = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_SongPlayerCodeVer);
+    if (codeVer > 0) {
+        char str[20];
+        sprintf(str, "%08x...OK!", codeVer);
+        textedit->setText(str);
+    }
+    else {
+        textedit->setText("not Loaded");
+        isLoaded = false;
+    }
+    return isLoaded;
 }

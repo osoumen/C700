@@ -7,6 +7,7 @@
 //
 
 #include "UrlLinkBox.h"
+#include "RecordingSettingsGUI.h"
 #if MAC
 #include "macOSUtils.h"
 #endif
@@ -31,11 +32,16 @@ void CUrlLinkBox::draw(CDrawContext *pContext)
 //-----------------------------------------------------------------------------
 bool CUrlLinkBox::onDrop(CDragContainer* drag, const CPoint& where)
 {
-	long size, type;
+    RecordingSettingsGUI	*guiview = reinterpret_cast<RecordingSettingsGUI*> (getParentView());
+	if ( !guiview->isTypeOf("RecordingSettingsGUI") ) {
+		return false;
+	}
+	
+    long size, type;
 	void* ptr = drag->first(size, type);
 	if ( ptr ) {
 		if ( type == CDragContainer::kFile ) {
-			// TODO: LoadSongPlayerCode を実行
+            return guiview->loadCode((char *)ptr);
 		}
 	}
 	return false;
