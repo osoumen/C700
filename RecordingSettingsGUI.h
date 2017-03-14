@@ -32,6 +32,8 @@ public:
 	bool			removed(CView* parent);
 	CMessageResult	notify(CBaseObject* sender, const char* message);
     
+    bool            loadCode(const char *path);
+    
     CLASS_METHODS(RecordingSettingsGUI, CViewContainer)
     
 private:

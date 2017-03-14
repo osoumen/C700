@@ -75,6 +75,7 @@ DataBuffer::DataBuffer( const char *path )
     CFIndex	readbytes = 0;
     do {
         readbytes = CFReadStreamRead(filestream, (UInt8*)readBuf, 65536);
+        if (readbytes == -1) break;
         writeData(readBuf, readbytes);
     } while (readbytes > 0);
     
