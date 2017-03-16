@@ -14,6 +14,7 @@
 #include "GUIUtils.h"
 #include "EfxAccess.h"
 #include "TextKickButton.h"
+#include "UrlLinkBox.h"
 
 #include <map>
 
@@ -40,6 +41,8 @@ private:
     EfxAccess                   *efxAcc;
     
     std::map<long, CControl*>   mCntl;
+    
+    CUrlLinkBox     *cUrlLinkBox;
     
     bool getLoadFile( char *path, int maxLen, const char *title );
     bool getFolder( char *path, int maxLen, const char *title );

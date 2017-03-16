@@ -26,7 +26,8 @@ CUrlLinkBox::~CUrlLinkBox()
 //-----------------------------------------------------------------------------
 void CUrlLinkBox::draw(CDrawContext *pContext)
 {
-    
+    CRect r(0, 0, getWidth(), getHeight());
+    pBackground->draw(pContext, r);
 }
 
 //-----------------------------------------------------------------------------

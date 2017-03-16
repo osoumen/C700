@@ -9,7 +9,6 @@
 #include "RecordingSettingsGUI.h"
 #include "RecordingViewCntls.h"
 #include "MyTextEdit.h"
-#include "UrlLinkBox.h"
 #include "cfileselector.h"
 
 RecordingSettingsGUI::RecordingSettingsGUI(const CRect &inSize, CFrame *frame, CBitmap *pBackground)
@@ -34,7 +33,17 @@ RecordingSettingsGUI::RecordingSettingsGUI(const CRect &inSize, CFrame *frame, C
             }
 		}
     }
+    onOffButton->forget();
     
+    CBitmap					*firstOpen;
+	firstOpen = new CBitmap("firstopen.png");
+    CRect csize(0,0,inSize.width(), inSize.height()-32);
+    cUrlLinkBox = new CUrlLinkBox(csize, frame, this, -1, firstOpen, "http://picopicose.com/software.html");
+    addView(cUrlLinkBox);
+    cUrlLinkBox->setAttribute(kCViewTooltipAttribute,strlen("CUrlLinkBox")+1,"CUrlLinkBox");
+    firstOpen->forget();
+    cUrlLinkBox->setVisible(false);
+
 #if 0
     extern CFontRef kLabelFont;
     
@@ -46,14 +55,19 @@ RecordingSettingsGUI::RecordingSettingsGUI(const CRect &inSize, CFrame *frame, C
 	addView(cTextKickButton);
 	cTextKickButton->setAttribute(kCViewTooltipAttribute,strlen("CTextKickButton")+1,"CTextKickButton");
     
-    CUrlLinkBox     *cUrlLinkBox;
+    CBitmap					*firstOpen;
+	firstOpen = new CBitmap("firstopen.png");
+    
     //--CUrlLinkBox--------------------------------------
-    csize(0, 0, 200, 200);
-    cUrlLinkBox = new CUrlLinkBox(csize, frame, this, -1, onOffButton, "http://picopicose.com");
+    csize = inSize;
+    csize.offset(-inSize.x, -inSize.y);
+    cUrlLinkBox = new CUrlLinkBox(csize, frame, this, -1, firstOpen, "http://picopicose.com");
     addView(cUrlLinkBox);
     cUrlLinkBox->setAttribute(kCViewTooltipAttribute,strlen("CUrlLinkBox")+1,"CUrlLinkBox");
+    firstOpen->forget();
+    cUrlLinkBox->setVisible(false);
 #endif
-    onOffButton->forget();
+    
 }
 
 RecordingSettingsGUI::~RecordingSettingsGUI()
@@ -237,9 +251,11 @@ bool RecordingSettingsGUI::attached(CView* view)
     if (codeVer > 0) {
         sprintf(str, "%08x...OK!", codeVer);
         textedit->setText(str);
+        cUrlLinkBox->setVisible(false);
     }
     else {
         textedit->setText("not Loaded");
+        cUrlLinkBox->setVisible(true);
     }
     
     return CViewContainer::attached(view);
@@ -349,6 +365,8 @@ bool RecordingSettingsGUI::loadCode(const char *path)
         char str[20];
         sprintf(str, "%08x...OK!", codeVer);
         textedit->setText(str);
+        cUrlLinkBox->setVisible(false);
+        setDirty();
     }
     else {
         textedit->setText("not Loaded");

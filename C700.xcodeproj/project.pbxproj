@@ -85,6 +85,8 @@
 		F500CA821E78215D00920AB2 /* UrlLinkBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F500CA7F1E78215D00920AB2 /* UrlLinkBox.cpp */; };
 		F500CA831E78215D00920AB2 /* UrlLinkBox.h in Headers */ = {isa = PBXBuildFile; fileRef = F500CA801E78215D00920AB2 /* UrlLinkBox.h */; };
 		F500CA841E78215D00920AB2 /* UrlLinkBox.h in Headers */ = {isa = PBXBuildFile; fileRef = F500CA801E78215D00920AB2 /* UrlLinkBox.h */; };
+		F500CA861E7AB58000920AB2 /* firstopen.png in Resources */ = {isa = PBXBuildFile; fileRef = F500CA851E7AB58000920AB2 /* firstopen.png */; };
+		F500CA871E7AB58000920AB2 /* firstopen.png in Resources */ = {isa = PBXBuildFile; fileRef = F500CA851E7AB58000920AB2 /* firstopen.png */; };
 		F510B704163266CB00A844B4 /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F510B702163266CB00A844B4 /* FileAccess.h */; };
 		F510B705163266CB00A844B4 /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510B703163266CB00A844B4 /* FileAccess.cpp */; };
 		F510B706163266CB00A844B4 /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F510B702163266CB00A844B4 /* FileAccess.h */; };
@@ -502,6 +504,7 @@
 		8D01CCD20486CAD60068D4B7 /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
 		F500CA7F1E78215D00920AB2 /* UrlLinkBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UrlLinkBox.cpp; sourceTree = "<group>"; };
 		F500CA801E78215D00920AB2 /* UrlLinkBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlLinkBox.h; sourceTree = "<group>"; };
+		F500CA851E7AB58000920AB2 /* firstopen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = firstopen.png; path = graphics/firstopen.png; sourceTree = "<group>"; };
 		F510B702163266CB00A844B4 /* FileAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileAccess.h; sourceTree = "<group>"; };
 		F510B703163266CB00A844B4 /* FileAccess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileAccess.cpp; sourceTree = "<group>"; };
 		F51D83CF1D295E8B00A23008 /* RegisterLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = RegisterLogger.cpp; sourceTree = "<group>"; };
@@ -749,6 +752,7 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F500CA851E7AB58000920AB2 /* firstopen.png */,
 				F529ABB91C3199ED0023A689 /* hwconn.png */,
 				F56A752819C6B65B00348177 /* bt_khaos.png */,
 				F5BEFCA419BC4F8C0083F8D9 /* help.png */,
@@ -1448,6 +1452,7 @@
 				8ACF4C420B2144FD00EC1825 /* AUBackground.png in Resources */,
 				8ACF4C4B0B2144FD00EC1825 /* knobBack.png in Resources */,
 				8ACF4C5A0B2144FD00EC1825 /* sliderThumb.png in Resources */,
+				F500CA861E7AB58000920AB2 /* firstopen.png in Resources */,
 				F569AA86161BFFA8006C91AD /* bt_check.png in Resources */,
 				F569AD18161D3277006C91AD /* rocker_sw.png in Resources */,
 				F5BEFCA519BC4F8C0083F8D9 /* help.png in Resources */,
@@ -1492,6 +1497,7 @@
 				F54331BF16296E0200863A0B /* AUBackground.png in Resources */,
 				F54331C016296E0200863A0B /* knobBack.png in Resources */,
 				F54331C116296E0200863A0B /* sliderThumb.png in Resources */,
+				F500CA871E7AB58000920AB2 /* firstopen.png in Resources */,
 				F54331C216296E0200863A0B /* bt_check.png in Resources */,
 				F54331C316296E0200863A0B /* rocker_sw.png in Resources */,
 				F5BEFCA619BC4F8C0083F8D9 /* help.png in Resources */,
