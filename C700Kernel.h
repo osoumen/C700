@@ -156,4 +156,5 @@ private:
     void            restoreGlobalProperties();
     void            storeGlobalProperties();
     void            getPreferenceFolder(char *outPath, int inSize);
+    void            getDocumentsFolder(char *outPath, int inSize);
 };

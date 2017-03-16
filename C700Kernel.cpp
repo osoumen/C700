@@ -1538,8 +1538,12 @@ void C700Kernel::CorrectLoopFlagForSave(int pgnum)
 //-----------------------------------------------------------------------------
 void C700Kernel::restoreGlobalProperties()
 {
-    // saveToGlobalのプロパティの復元
     char path[PATH_LEN_MAX];
+    // SongRecordPathの初期値を設定
+    getDocumentsFolder(path, PATH_LEN_MAX);
+    mDriver.GetDsp()->SetSongRecordPath(path);
+    
+    // saveToGlobalのプロパティの復元
     getPreferenceFolder(path, PATH_LEN_MAX);
     //std::cout << path << std::endl;
     
@@ -1596,9 +1600,21 @@ void C700Kernel::getPreferenceFolder(char *outPath, int inSize)
     GetHomeDirectory(outPath, inSize);
     strncat(outPath, "/Library/Application Support/C700/C700.settings", inSize);
 #else
-    // TODO: Windowsのホームフォルダを取得
+    // TODO: Windowsのホームフォルダを取得 動作確認
     SHGetSpecialFolderPath(NULL, outPath, CSIDL_APPDATA, TRUE);
     strncat(outPath, "\\C700\\C700.settings", inSize);
+#endif
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::getDocumentsFolder(char *outPath, int inSize)
+{
+#if MAC
+    GetHomeDirectory(outPath, inSize);
+    strncat(outPath, "/Documents", inSize);
+#else
+    // TODO: Windowsのホームフォルダを取得 動作確認
+    SHGetSpecialFolderPath(NULL, outPath, CSIDL_COMMON_DOCUMENTS, TRUE);
 #endif
 }
 
