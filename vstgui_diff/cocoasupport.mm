@@ -309,7 +309,7 @@ HIDDEN void nsViewSetMouseCursor (CCursorType type)
 		case kCursorSizeAll: cur = [NSCursor crosshairCursor]; break;
 		case kCursorNESWSize: cur = [NSCursor arrowCursor]; break;
 		case kCursorNWSESize: cur = [NSCursor arrowCursor]; break;
-		case kCursorCopy: cur = [NSCursor performSelector:@selector(_copyDragCursor)]; break;
+		case kCursorCopy: cur = [NSCursor performSelector:@selector(dragCopyCursor)]; break;
 		case kCursorNotAllowed: cur = [NSCursor performSelector:@selector(operationNotAllowedCursor)]; break;
 		case kCursorHand: cur = [NSCursor openHandCursor]; break;
 		default: cur = [NSCursor arrowCursor]; break;
