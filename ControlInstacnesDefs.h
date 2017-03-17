@@ -2981,14 +2981,14 @@ ControlInstances	sCntl[] = {
 		
 		'VeMa',	//sig
 		'push',	//kind
-		"song Recording...",	//title
+		"Set Recorder...",	//title
 		0,	//Value
 		0,	//Minimum
 		1,	//Maximum
 		0,	//sig
 		kControlButtonOpenRecordingSettings,	//id
 		0,	//command
-		216, 389, 100, 14,	//x,y,w,h
+		180, 382, 160, 14,	//x,y,w,h
 		"Arial Black",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
