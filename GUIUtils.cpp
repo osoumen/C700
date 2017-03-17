@@ -264,6 +264,7 @@ CControl *makeControlFrom( const ControlInstances *desc, CFrame *frame, CControl
 				case 'eutx':
 				{
 					CMyTextEdit	*textEdit;
+                    cntlSize.offset(0, -2);
 					textEdit = new CMyTextEdit(cntlSize, listener, desc->id, desc->title, desc->futureuse==2?true:false, desc->futureuse==1?true:false);
 					textEdit->setFontColor(MakeCColor(180, 248, 255, 255));
 					textEdit->setAntialias(true);
