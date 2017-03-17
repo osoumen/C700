@@ -249,7 +249,7 @@ bool RecordingSettingsGUI::attached(CView* view)
     textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_SongPlayerCodeVer]);
     int codeVer = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_SongPlayerCodeVer);
     if (codeVer > 0) {
-        sprintf(str, "%08x...OK!", codeVer);
+        sprintf(str, "Valid [%08x]", codeVer);
         textedit->setText(str);
         cUrlLinkBox->setVisible(false);
     }
@@ -363,7 +363,7 @@ bool RecordingSettingsGUI::loadCode(const char *path)
     int codeVer = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_SongPlayerCodeVer);
     if (codeVer > 0) {
         char str[20];
-        sprintf(str, "%08x...OK!", codeVer);
+        sprintf(str, "Valid [%08x]", codeVer);
         textedit->setText(str);
         cUrlLinkBox->setVisible(false);
         setDirty();

@@ -17,7 +17,7 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Record Path",	//title
+		"Save Path",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
@@ -109,7 +109,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kAudioUnitCustomProperty_RecordStartBeatPos,	//id
 		0,	//command
-		10, 84, 64, 14,	//x,y,w,h
+		10, 92, 64, 14,	//x,y,w,h
 		"Arial",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
@@ -126,7 +126,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kControlButtonSetRecordStart,	//id
 		0,	//command
-		100, 82, 32, 14,	//x,y,w,h
+		378, 90, 32, 14,	//x,y,w,h
 		"Arial Black",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
@@ -136,14 +136,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Record Start",	//title
+		"Record Start Pos (ppq)",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 84, 80, 11,	//x,y,w,h
+		210, 93, 100, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -160,7 +160,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kAudioUnitCustomProperty_RecordLoopStartBeatPos,	//id
 		0,	//command
-		10, 100, 64, 14,	//x,y,w,h
+		10, 108, 64, 14,	//x,y,w,h
 		"Arial",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
@@ -177,7 +177,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kControlButtonSetRecordLoopStart,	//id
 		0,	//command
-		100, 98, 32, 14,	//x,y,w,h
+		378, 106, 32, 14,	//x,y,w,h
 		"Arial Black",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
@@ -187,14 +187,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Loop Start",	//title
+		"Loop Start Pos (ppq)",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 100, 80, 11,	//x,y,w,h
+		210, 109, 100, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -211,7 +211,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kAudioUnitCustomProperty_RecordEndBeatPos,	//id
 		0,	//command
-		10, 116, 64, 14,	//x,y,w,h
+		10, 124, 64, 14,	//x,y,w,h
 		"Arial",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
@@ -228,7 +228,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kControlButtonSetRecordEnd,	//id
 		0,	//command
-		100, 114, 32, 14,	//x,y,w,h
+		378, 122, 32, 14,	//x,y,w,h
 		"Arial Black",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
@@ -238,14 +238,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Record End",	//title
+		"Record End Pos (ppq)",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 116, 80, 11,	//x,y,w,h
+		210, 125, 100, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -262,7 +262,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kAudioUnitCustomProperty_TimeBaseForSmc,	//id
 		0,	//command
-		10, 132, 50, 12,	//x,y,w,h
+		346, 52, 64, 12,	//x,y,w,h
 		"",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
@@ -272,14 +272,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Timebase for smc",	//title
+		"smc Format",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 132, 80, 11,	//x,y,w,h
+		210, 53, 80, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -296,7 +296,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_GameTitle,	//id
 		0,	//command
-		10, 148, 120, 14,	//x,y,w,h
+		10, 148, 180, 14,	//x,y,w,h
 		"Arial",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -313,7 +313,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 148, 80, 11,	//x,y,w,h
+		210, 149, 80, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -330,7 +330,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_SongTitle,	//id
 		0,	//command
-		10, 164, 120, 14,	//x,y,w,h
+		10, 164, 180, 14,	//x,y,w,h
 		"Arial",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -340,14 +340,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Song Title (for spc)",	//title
+		"Song Title for spc",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 164, 120, 11,	//x,y,w,h
+		210, 165, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -364,7 +364,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_NameOfDumper,	//id
 		0,	//command
-		10, 180, 120, 14,	//x,y,w,h
+		10, 180, 180, 14,	//x,y,w,h
 		"Arial",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -374,14 +374,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Name of dumper (for spc)",	//title
+		"Name of dumper for spc",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 180, 120, 11,	//x,y,w,h
+		210, 181, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -398,7 +398,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_ArtistOfSong,	//id
 		0,	//command
-		10, 196, 120, 14,	//x,y,w,h
+		10, 196, 180, 14,	//x,y,w,h
 		"Arial",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -408,14 +408,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Artist of Song (for spc)",	//title
+		"Artist of Song for spc",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 196, 120, 11,	//x,y,w,h
+		210, 197, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -432,7 +432,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_SongComments,	//id
 		0,	//command
-		10, 212, 120, 14,	//x,y,w,h
+		10, 212, 180, 14,	//x,y,w,h
 		"Arial",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -442,14 +442,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-        "Comments (for spc)",	//title
+        "Comments for spc",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 212, 120, 11,	//x,y,w,h
+		210, 213, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -466,7 +466,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_RepeatNumForSpc,	//id
 		0,	//command
-		10, 228, 32, 12,	//x,y,w,h
+		10, 228, 64, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -476,14 +476,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-        "Repeat num (for spc)",	//title
+        "Repeat num for spc",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 228, 120, 11,	//x,y,w,h
+		210, 229, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -510,14 +510,14 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-        "Fade msTime (for spc)",	//title
+        "Fade milliseconds for spc",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 244, 120, 11,	//x,y,w,h
+		210, 245, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -534,28 +534,11 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kAudioUnitCustomProperty_SongPlayerCodeVer,	//id
 		0,	//command
-		10, 260, 64, 14,	//x,y,w,h
+		300, 68, 74, 14,	//x,y,w,h
 		"Arial",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
 		k3DOut,	//style
-		0	//future use
-	},
-    {
-		'VeMa',	//sig
-		'push',	//kind
-		"Load",	//title
-		0,	//Value
-		0,	//Minimum
-		1,	//Maximum
-		0,	//sig
-		kControlButtonLoadPlayerCode,	//id
-		0,	//command
-		100, 260, 32, 14,	//x,y,w,h
-		"Arial Black",	//fontname
-		9,	//fontsize
-		kCenterText,	//fontalign
-		0,	//style
 		0	//future use
 	},
     {
@@ -568,10 +551,27 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		-1,	//id
 		0,	//command
-		160, 260, 120, 11,	//x,y,w,h
+		210, 69, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'VeMa',	//sig
+		'push',	//kind
+		"Load",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		0,	//sig
+		kControlButtonLoadPlayerCode,	//id
+		0,	//command
+		378, 66, 32, 14,	//x,y,w,h
+		"Arial Black",	//fontname
+		9,	//fontsize
+		kCenterText,	//fontalign
 		0,	//style
 		0	//future use
 	},
@@ -585,7 +585,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		kControlButtonRecordSettingExit,	//id
 		0,	//command
-		200, 276, 33, 14,	//x,y,w,h
+		346, 276, 64, 14,	//x,y,w,h
 		"Arial Black",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
