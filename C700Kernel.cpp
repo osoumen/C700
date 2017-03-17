@@ -2050,6 +2050,20 @@ bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
     int editProg = mEditProg;
     mEditProg = pgnum;
     
+    // デフォルト値の設定
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToProg) {
+            if (it->second.defaultValue >= 0) {
+                // 負数でデフォルト値を無効化する
+                // FIRBandが設定されていない場合に係数がデフォルトに戻ってしまうのを防止
+                SetPropertyValue(it->second.propId, it->second.defaultValue);
+                SetPropertyDoubleValue(it->second.propId, it->second.defaultValue);
+            }
+        }
+        it++;
+    }
+    
 	while ( chunk->GetLeftSize() >= (int)sizeof( ChunkReader::MyChunkHead ) ) {
 		int		ckType;
 		long	ckSize;
@@ -2063,7 +2077,6 @@ bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
             // 特になし
         }
 	}
-    // TODO: デフォルト値の設定
     
     mEditProg = editProg;
     
