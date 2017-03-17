@@ -469,9 +469,10 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
                     case propertyDataTypeString:
                     {
                         char **ptr = (char**)inData;
-                        char	*string = new char[it->second.outDataSize];
-                        CFStringGetCString(reinterpret_cast<CFStringRef>(*ptr), string, it->second.outDataSize-1, kCFStringEncodingUTF8);
-                        mEfx->SetPropertyPtrValue(inID, string, it->second.outDataSize);
+                        CFIndex length = CFStringGetLength(reinterpret_cast<CFStringRef>(*ptr)) + 1;
+                        char	*string = new char[length];
+                        CFStringGetCString(reinterpret_cast<CFStringRef>(*ptr), string, length, kCFStringEncodingUTF8);
+                        mEfx->SetPropertyPtrValue(inID, string, length);
                         delete [] string;
                         break;
                     }
@@ -480,7 +481,7 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
                         char **ptr = (char**)inData;
                         CFStringRef pathStr = CFURLCopyFileSystemPath(reinterpret_cast<CFURLRef>(*ptr), kCFURLPOSIXPathStyle);
                         char		*path = new char[it->second.outDataSize];
-                        CFStringGetCString(pathStr, path, it->second.outDataSize-1, kCFStringEncodingUTF8);
+                        CFStringGetCString(pathStr, path, it->second.outDataSize, kCFStringEncodingUTF8);
                         CFRelease(pathStr);
                         mEfx->SetPropertyPtrValue(inID, path, it->second.outDataSize);
                         delete [] path;
