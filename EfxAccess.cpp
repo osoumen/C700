@@ -286,7 +286,7 @@ bool EfxAccess::GetCStringProperty( int propertyId, char *string, int maxLen )
 		AudioUnitGetProperty(mAU, propertyId, kAudioUnitScope_Global, 0, &pgnameRef, &outSize)
 		== noErr ) {
 		if ( pgnameRef ) {
-			CFStringGetCString(pgnameRef, string, maxLen-1, kCFStringEncodingUTF8);
+			CFStringGetCString(pgnameRef, string, maxLen, kCFStringEncodingUTF8);
 			CFRelease(pgnameRef);
 			return true;
 		}
@@ -300,6 +300,7 @@ bool EfxAccess::GetCStringProperty( int propertyId, char *string, int maxLen )
 	const char *outpgname = (char*)mEfx->mEfx->GetPropertyPtrValue(propertyId);
 	if ( outpgname ) {
 		strncpy(string, outpgname, maxLen-1);
+        string[maxLen-1] = 0;
 		return true;
 	}
 	return false;
