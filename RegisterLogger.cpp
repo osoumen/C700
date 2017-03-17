@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------------------------
 RegisterLogger::RegisterLogger(int allocSize)
-: ChunkReader(1024 * 1024 * 32)  // TODO: 適切なサイズを計算する
+: ChunkReader(1024 * 1024 * 8)
 , mProcessSampleRate( 32000 )
 {
 	if ( allocSize > 0 ) {
@@ -40,6 +40,8 @@ RegisterLogger::RegisterLogger(int allocSize)
     mDirRegionSize = 0;
     mBrrRegionLocateAddr = 0;
     mBrrRegionSize = 0;
+    
+    SetAllowExtend(true);
     
 	BeginDump(0);
 }
