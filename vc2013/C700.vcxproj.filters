@@ -61,9 +61,6 @@
     <ClInclude Include="..\C700VST.h">
       <Filter>C700source\VST Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\PGChunk.h">
-      <Filter>C700source\VST Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\AudioFile.h">
       <Filter>C700source\Common Source</Filter>
     </ClInclude>
@@ -128,9 +125,6 @@
       <Filter>C700source\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\ControlInstacnesDefs.h">
-      <Filter>C700source\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ControlInstances.h">
       <Filter>C700source\UI</Filter>
     </ClInclude>
     <ClInclude Include="..\DummyCntl.h">
@@ -262,6 +256,42 @@
     <ClInclude Include="..\c700timethread.h">
       <Filter>C700source\Common Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\TextKickButton.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UrlLinkBox.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SpcFileGenerate.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SmcFileGenerate.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RecordingSettingsGUI.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RecordingViewCntls.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RegisterLogger.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PlayerCodeReader.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GUIUtils.h">
+      <Filter>C700source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\C700Properties.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PlayingFileGenerateBase.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ChunkReader.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp">
@@ -274,9 +304,6 @@
       <Filter>Source Files\vst2.x</Filter>
     </ClCompile>
     <ClCompile Include="..\C700VST.cpp">
-      <Filter>C700source\VST Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\PGChunk.cpp">
       <Filter>C700source\VST Source</Filter>
     </ClCompile>
     <ClCompile Include="..\AudioFile.cpp">
@@ -506,6 +533,39 @@
     </ClCompile>
     <ClCompile Include="..\zlib\zutil.c">
       <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TextKickButton.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UrlLinkBox.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SpcFileGenerate.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SmcFileGenerate.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RecordingSettingsGUI.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RegisterLogger.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PlayerCodeReader.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GUIUtils.cpp">
+      <Filter>C700source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C700Properties.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PlayingFileGenerateBase.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ChunkReader.cpp">
+      <Filter>C700source\Common Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

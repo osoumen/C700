@@ -1,4 +1,4 @@
-//
+﻿//
 //  UrlLinkBox.cpp
 //  C700
 //
@@ -10,6 +10,13 @@
 #include "RecordingSettingsGUI.h"
 #if MAC
 #include "macOSUtils.h"
+#else
+void OpenURL(const char *curl);
+
+void OpenURL(const char *curl)
+{
+
+}
 #endif
 
 CUrlLinkBox::CUrlLinkBox(CRect &size, CFrame *pFrame, CControlListener* listener, long tag, CBitmap *pBackground, const char *jumpUrl)

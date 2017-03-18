@@ -1,4 +1,4 @@
-//
+﻿//
 //  SmcFileGenerate.cpp
 //  C700
 //

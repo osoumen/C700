@@ -960,10 +960,10 @@ void createPropertyParamMap(std::map<int, PropertyDescription> &m)
     int numProperties = sizeof(sPropertyDescription) / sizeof(PropertyDescription);
     
     for (int i=0; i<numProperties; i++) {
-        assert((sPropertyDescription[i].savekey[0] != 0) ||
-               (//(sPropertyDescription[i].saveToGlobal == 0) &&
-                (sPropertyDescription[i].saveToProg == 0) &&
-                (sPropertyDescription[i].saveToSong == 0)));
+//        assert((sPropertyDescription[i].savekey[0] != 0) ||
+//               (//(sPropertyDescription[i].saveToGlobal == 0) &&
+//                (sPropertyDescription[i].saveToProg == 0) &&
+//                (sPropertyDescription[i].saveToSong == 0)));
         m[sPropertyDescription[i].propId] = sPropertyDescription[i];
     }
 }

@@ -1,4 +1,4 @@
-//
+﻿//
 //  PlayingFileGenerateBase.cpp
 //  C700
 //
