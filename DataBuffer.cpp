@@ -285,7 +285,7 @@ bool DataBuffer::WriteToFile(const char *path)
 	hFile = CreateFile( path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 	if ( hFile != INVALID_HANDLE_VALUE ) {
 		DWORD	writeSize;
-		WriteFile( hFile, GetDataPtr(), GetDataPos(), &writeSize, NULL );
+		WriteFile(hFile, GetDataPtr(), GetDataUsed(), &writeSize, NULL);
 		CloseHandle( hFile );
 	}
 #endif
