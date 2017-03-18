@@ -54,7 +54,7 @@ void getFileNameParentPath( const char *path, char *out, int maxLen )
 	int	len = static_cast<int>(strlen(path));
 	int bcPos = 0;
 	for ( int i=0; i<len; i++ ) {
-		if ( path[i] == '\\' ) {
+		if (path[i] == '\\') {
 			bcPos = i;
 		}
 	}
@@ -86,7 +86,7 @@ void getFileNameDeletingPathExt( const char *path, char *out, int maxLen )
 		}
 	}
 	for ( int i=0; i<len; i++ ) {
-		if ( path[i] == '¥¥' ) {
+		if (path[i] == '\\') {
 			bcPos = i+1;
 		}
 	}
