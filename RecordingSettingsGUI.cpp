@@ -149,7 +149,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
                 if ( value > 0 ) {
 					char	path[PATH_LEN_MAX];
 					bool	isSelected;
-					isSelected = getFolder(path, PATH_LEN_MAX, "");
+					isSelected = getFolder(path, PATH_LEN_MAX, "Choose Folder...");
 					if ( isSelected ) {
 						efxAcc->SetFilePathProperty(kAudioUnitCustomProperty_SongRecordPath, path);
                         CTextLabel *textlabel = reinterpret_cast<CTextLabel*> (mCntl[kAudioUnitCustomProperty_SongRecordPath]);
@@ -289,20 +289,14 @@ bool RecordingSettingsGUI::getLoadFile( char *path, int maxLen, const char *titl
 		return false;
 	}
 #else
-	VstFileType brrType("AddmusicM(Raw) BRR Sample", "", "brr", "brr");
-	VstFileType waveType("Wave File", "WAVE", "wav", "wav",  "audio/wav", "audio/x-wav");
-	VstFileType spcType("SPC File", "", "spc", "spc");
-	VstFileType types[] = {brrType, waveType, spcType};
-    
-    //	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
 	CFileSelector OpenFile(0);
 	VstFileSelect Filedata;
 	memset(&Filedata, 0, sizeof(VstFileSelect));
 	Filedata.command=kVstFileLoad;
 	Filedata.type= kVstFileType;
 	strncpy(Filedata.title, title, maxLen-1 );
-	Filedata.nbFileTypes=3;
-	Filedata.fileTypes=types;
+	Filedata.nbFileTypes=0;
+	Filedata.fileTypes=NULL;
 	Filedata.returnPath= path;
 	Filedata.initialPath = 0;
 	Filedata.future[0] = 0;
@@ -332,20 +326,14 @@ bool RecordingSettingsGUI::getFolder( char *path, int maxLen, const char *title 
 		return false;
 	}
 #else
-	VstFileType brrType("AddmusicM(Raw) BRR Sample", "", "brr", "brr");
-	VstFileType waveType("Wave File", "WAVE", "wav", "wav",  "audio/wav", "audio/x-wav");
-	VstFileType spcType("SPC File", "", "spc", "spc");
-	VstFileType types[] = {brrType, waveType, spcType};
-    
-    //	CFileSelector OpenFile( ((AEffGUIEditor *)getEditor())->getEffect() );
 	CFileSelector OpenFile(0);
 	VstFileSelect Filedata;
 	memset(&Filedata, 0, sizeof(VstFileSelect));
 	Filedata.command=kVstDirectorySelect;
 	Filedata.type= kVstFileType;
 	strncpy(Filedata.title, title, maxLen-1 );
-	Filedata.nbFileTypes=3;
-	Filedata.fileTypes=types;
+	Filedata.nbFileTypes=0;
+	Filedata.fileTypes=NULL;
 	Filedata.returnPath= path;
 	Filedata.initialPath = 0;
 	Filedata.future[0] = 0;
