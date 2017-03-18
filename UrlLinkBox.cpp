@@ -15,7 +15,7 @@ void OpenURL(const char *curl);
 
 void OpenURL(const char *curl)
 {
-
+	ShellExecute(0, 0, curl, 0, 0, SW_SHOW);
 }
 #endif
 
