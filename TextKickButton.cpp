@@ -1,4 +1,4 @@
-//
+﻿//
 //  TextKickButton.cpp
 //  C700
 //
@@ -60,45 +60,62 @@ const char* CTextKickButton::getText() const
 //-----------------------------------------------------------------------------
 void CTextKickButton::drawRoundRect(CDrawContext* pContext, const CRect &_rect, int radius, const CDrawStyle drawStyle)
 {
+#if WIN32
+	radius--;
+#endif
     int diameter = radius * 2;
     CRect   corner(0,0,diameter,diameter);
+	CRect	rect = _rect;
+#if MAC
+	rect.x2 -= 1;
+	rect.y += 1;
+#else
+	rect.x2 -= 1;
+	rect.y2 -= 1;
+#endif
     CPoint  points[8];
-    points[0](_rect.x, _rect.y+radius);
-    points[1](_rect.x, _rect.y2-radius);
-    points[2](_rect.x+radius, _rect.y2);
-    points[3](_rect.x2-radius, _rect.y2);
-    points[4](_rect.x2-1, _rect.y2-radius);
-    points[5](_rect.x2-1, _rect.y+radius);
-    points[6](_rect.x2-radius, _rect.y+1);
-    points[7](_rect.x+radius, _rect.y+1);
+
+	points[0](rect.x, rect.y + radius);
+	points[1](rect.x, rect.y2 - radius);
+	points[2](rect.x + radius, rect.y2);
+	points[3](rect.x2 - radius, rect.y2);
+	points[4](rect.x2, rect.y2 - radius);
+	points[5](rect.x2, rect.y + radius);
+	points[6](rect.x2 - radius, rect.y);
+	points[7](rect.x + radius, rect.y);
     
     pContext->setDrawMode(kAntialias);
     
-    corner.moveTo(_rect.x, _rect.y);
+#if MAC
+    corner.moveTo(rect.x, rect.y);
     pContext->drawArc(corner, 0, 90, drawStyle);
-    
-    pContext->moveTo(points[0]);
-    pContext->lineTo(points[1]);
-    
-    corner.moveTo(_rect.x, _rect.y2-diameter);
+    corner.moveTo(rect.x, rect.y2-diameter);
     pContext->drawArc(corner, 90, 180, drawStyle);
-    
-    pContext->moveTo(points[2]);
-    pContext->lineTo(points[3]);
-
-    corner.moveTo(_rect.x2-diameter, _rect.y2-diameter);
+    corner.moveTo(rect.x2-diameter, rect.y2-diameter);
     pContext->drawArc(corner, 180, 270, drawStyle);
-    
-    pContext->moveTo(points[4]);
-    pContext->lineTo(points[5]);
-
-    corner.moveTo(_rect.x2-diameter, _rect.y);
+    corner.moveTo(rect.x2-diameter, rect.y);
     pContext->drawArc(corner, 270, 360, drawStyle);
+#else
+	corner.moveTo(rect.x, rect.y);
+	pContext->drawArc(corner, 180, 270, drawStyle);
+	corner.moveTo(rect.x, rect.y2 - diameter);
+	pContext->drawArc(corner, 90, 180, drawStyle);
+	corner.moveTo(rect.x2 - diameter, rect.y2 - diameter);
+	pContext->drawArc(corner, 0, 90, drawStyle);
+	corner.moveTo(rect.x2 - diameter, rect.y);
+	pContext->drawArc(corner, 270, 360, drawStyle);
+#endif
 
-    pContext->moveTo(points[6]);
-    pContext->lineTo(points[7]);
-    
-    if (drawStyle == kDrawFilled || drawStyle == kDrawFilledAndStroked) {
+	pContext->moveTo(points[0]);
+	pContext->lineTo(points[1]);
+	pContext->moveTo(points[2]);
+	pContext->lineTo(points[3]);
+	pContext->moveTo(points[4]);
+	pContext->lineTo(points[5]);
+	pContext->moveTo(points[6]);
+	pContext->lineTo(points[7]);
+
+	if (drawStyle == kDrawFilled || drawStyle == kDrawFilledAndStroked) {
         pContext->setDrawMode(kCopyMode);
         pContext->drawPolygon(points, 8, drawStyle, true);
     }
@@ -133,6 +150,10 @@ void CTextKickButton::draw(CDrawContext* pContext)
     else {
         pContext->setFontColor(kBlackCColor);
     }
+
+#if WIN32
+	newClip.offset(0, 2);
+#endif
 	
 #if VSTGUI_USES_UTF8
 	pContext->drawStringUTF8(text, newClip, kCenterText, true);
