@@ -33,32 +33,48 @@ unsigned char DspController::dspregAccCode[] =
     ,0x64 ,0xF4       //     	cmp a,SPC_PORT0		; 3
     ,0xF0 ,0xFC       //     	beq loop			; 2
     ,0xE4 ,0xF4       //     	mov a,SPC_PORT0		; 3
-    ,0x30 ,0x18       //     	bmi toram			; 2
+    ,0x30 ,0x26       //     	bmi toram			; 2
     ,0xF8 ,0xF6       //     	mov x,SPC_PORT2		; 3
     ,0xD8 ,0xF2       //     	mov SPC_REGADDR,x	; 4
     ,0xFA ,0xF5 ,0xF3 //       	mov SPC_REGDATA,SPC_PORT1
     ,0xC4 ,0xF4       //     	mov SPC_PORT0,a		; 4
     // 	; wait 64 - 32 cycle
     ,0xC8 ,0x4C       //     	cmp x,#DSP_KON	; 3
-    ,0xF0 ,0x04       //     	beq wait	; 4
+    ,0xF0 ,0x12       //     	beq konWait	; 4
     ,0xC8 ,0x5C       //     	cmp x,#DSP_KOF	; 3
     ,0xD0 ,0xE7       //     	bne loop	; 4
-    // wait:
+    // koffWait:
+    ,0x8D ,0x0A       //     	mov y,#10	; 2
+    // -
+    ,0xFE ,0xFE       //     	dbnz y,-	; 4/6
+    ,0x8F ,0x00 ,0xF3 //       	mov SPC_REGDATA,#0	;5
+    //
     ,0x8D ,0x05       //     	mov y,#5	; 2
     // -
     ,0xFE ,0xFE       //     	dbnz y,-	; 4/6
     ,0x00             //   	nop			; 2
-    ,0x2F ,0xE0       //     	bra loop	; 4
+    ,0x2F ,0xD9       //     	bra loop	; 4
+    // konWait:
+    ,0x8D ,0x05       //     	mov y,#5	; 2
+    // -
+    ,0xFE ,0xFE       //     	dbnz y,-	; 4/6
+    ,0x00             //   	nop			; 2
+    ,0x2F ,0xD2       //     	bra loop	; 4
     // toram:
     ,0x5D             //   	mov x,a
-    ,0x28 ,0x40       //     	and a,#$40
-    ,0xD0 ,0x0B       //     	bne blockTrans
+    //
+    ,0x80             //   	setc
+    ,0xA8 ,0x40       //     	sbc a,#P0FLG_BLKTRAS
+    ,0x30 ,0x0F       //     	bmi blockTrans
+    ,0x28 ,0x20       //     	and a,#P0FLG_P0RST
+    ,0xD0 ,0x39       //     	bne resetP0
+    //
     ,0x8D ,0x00       //     	mov y,#0
     ,0xE4 ,0xF5       //     	mov a,SPC_PORT1
     ,0xD7 ,0xF6       //     	mov [SPC_PORT2]+y,a
     ,0x7D             //   	mov a,x
     ,0xC4 ,0xF4       //     	mov SPC_PORT0,a
-    ,0x2F ,0xD0       //     	bra loop
+    ,0x2F ,0xBD       //     	bra loop
     // blockTrans:
     ,0x8F ,0x00 ,0xF7 //       	mov SPC_PORT3,#$0
     ,0xFA ,0xF6 ,0x04 //       	mov $04,SPC_PORT2
@@ -70,7 +86,7 @@ unsigned char DspController::dspregAccCode[] =
     ,0x64 ,0xF4       //     	cmp a,SPC_PORT0
     ,0xF0 ,0xFC       //     	beq loop2
     ,0xE4 ,0xF4       //     	mov a,SPC_PORT0
-    ,0x30 ,0xB7       //     	bmi ack
+    ,0x30 ,0xA4       //     	bmi ack
     ,0x5D             //   	mov x,a
     ,0xE4 ,0xF5       //     	mov a,SPC_PORT1
     ,0xD7 ,0x04       //     	mov [$04]+y,a
@@ -84,6 +100,11 @@ unsigned char DspController::dspregAccCode[] =
     ,0x7D             //   	mov a,x
     ,0xC4 ,0xF4       //     	mov SPC_PORT0,a
     ,0x2F ,0xE0       //     	bra loop2
+    // resetP0:
+    ,0x8F ,0xB0 ,0xF1 //       	mov SPC_CONTROL,#$b0
+    ,0x20             //   	clrp
+    ,0xD8 ,0xF4       //     	mov SPC_PORT0,x
+    ,0x5F ,0xC0 ,0xFF //       	jmp !$ffc0
 };
 
 DspController::DspController()
@@ -149,6 +170,9 @@ void DspController::init()
     // PMONをオフ
     WriteDsp(DSP_PMON, 0x00, true);
     mDspMirror[DSP_PMON] = 0;
+    
+    mDspMirror[DSP_EDL] = 0x00;
+    mDspMirror[DSP_ESA] = 0x06;
     
     mSpcDev.setDeviceAddedFunc(onDeviceAdded, this);
     mSpcDev.setDeviceRemovedFunc(onDeviceRemoved, this);

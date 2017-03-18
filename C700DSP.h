@@ -12,6 +12,7 @@
 #include "DspController.h"
 #include "EchoKernel.h"
 #include "C700defines.h"
+#include "RegisterLogger.h"
 
 //-----------------------------------------------------------------------------
 typedef enum
@@ -24,6 +25,11 @@ typedef enum
 
 class C700DSP {
 public:
+    enum SmcTimeBase {
+        SmcTimeBaseNTSC,
+        SmcTimeBasePAL
+    };
+    
     C700DSP();
     ~C700DSP();
     
@@ -43,12 +49,15 @@ public:
     void SetFIRTap( int tap, int value );
     void SetAR(int v, int value);
     void SetDR(int v, int value);
+    void SetARDR(int v, int ar, int dr);
+    void SetSLSR(int v, int sl, int sr);
     void SetSL(int v, int value);
     void SetSR(int v, int value);
     void SetVol_L(int v, int value);
     void SetVol_R(int v, int value);
     void SetPitch(int v, int value);
     void SetEchoOn(int v, bool isOn);
+    void SetEchoOnFlg(int flg, int mask);
     void SetSrcn(int v, int value);
     void SetDir(int value);
     
@@ -56,6 +65,7 @@ public:
     void WriteRam(int addr, unsigned char data);
     
     void KeyOffVoice(int v);
+    void KeyOffVoiceFlg(int flg);
     void KeyOnVoice(int v);
     void KeyOnVoiceFlg(int flg);
     
@@ -65,7 +75,44 @@ public:
     bool IsHwAvailable() { return mDsp.IsHwAvailable(); }
     
     void setBrr(int v, unsigned char *brrdata, unsigned int loopPoint);
+    
+    void BeginRegisterLog();
+    void MarkRegisterLogLoop();
+    void EndRegisterLog();
+    void SetSongRecordPath(const char *path);
+    void SetRecSaveAsSpc(bool enable);
+    void SetRecSaveAsSmc(bool enable);
+    void SetTimeBaseForSmc(SmcTimeBase timebase);
+    void SetGameTitle(const char *title);
+    void SetSongTitle(const char *title);
+    void SetNameOfDumper(const char *dumper);
+    void SetArtistOfSong(const char *artist);
+    void SetSongComments(const char *comments);
+    char* GetSongRecordPath() { return mSongRecordPath; }
+    bool GetRecSaveAsSpc() { return mRecSaveAsSpc; }
+    bool GetRecSaveAsSmc() { return mRecSaveAsSmc; }
+    SmcTimeBase GetTimeBaseForSmc() { return mTimeBaseForSmc; }
+    char* GetGameTitle() { return mGameTitle; }
+    char* GetSongTitle() { return mSongTitle; }
+    char* GetNameOfDumper() { return mNameOfDumper; }
+    char* GetArtistOfSong() { return mArtistOfSong; }
+    char* GetSongComments() { return mSongComments; }
+    float GetRepeatNumForSpc() { return mRepeatNumForSpc; }
+    int GetFadeMsTimeForSpc() { return mFadeMsTimeForSpc; }
+    int GetSongPlayCodeVer();
+    void SetSmcNativeVector(const void *vec);
+    void SetSmcEmulationVector(const void *vec);
+    void SetSmcPlayerCode(const void *code, int size);
+    void SetSpcPlayerCode(const void *code, int size);
+    void SetSongPlayCodeVer(int ver);
+    void SetRepeatNumForSpc(float num);
+    void SetFadeMsTimeForSpc(int time);
+    
 private:
+    bool writeDsp(int addr, unsigned char data);
+
+    int saveRegisterLog(const char *path);
+    bool canSaveRegisterLog();
 
     static void onDeviceReady(void *ref);
     static void onDeviceStop(void *ref);
@@ -123,7 +170,31 @@ private:
     int             mBrrEndAddr;
     
     DspController   mDsp;
+    
+    RegisterLogger  mLogger;
+    bool            mIsLoggerRunning;
+    int             mLoggerSamplePos;
 
+    char            mSongRecordPath[PATH_LEN_MAX];
+    bool            mRecSaveAsSpc;
+    bool            mRecSaveAsSmc;
+    SmcTimeBase     mTimeBaseForSmc;
+    char            mGameTitle[33];
+    char            mSongTitle[33];
+    char            mNameOfDumper[17];
+    char            mArtistOfSong[33];
+    char            mSongComments[33];
+    float           mRepeatNumForSpc;
+    int             mFadeMsTimeForSpc;
+    unsigned char   mSmcNativeVector[12];
+    unsigned char   mSmcEmulationVector[12];
+    unsigned char   *mSmcPlayerCode;
+    int             mSmcPlayerCodeSize;
+    unsigned char   *mSpcPlayerCode;
+    int             mSpcPlayerCodeSize;
+    int             mCodeVer;
+    
+    static char     mPathSeparatorChar;
 };
 
 #endif /* defined(__C700__C700DSP__) */

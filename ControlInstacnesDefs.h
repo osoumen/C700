@@ -9,7 +9,8 @@
 
 #pragma once
 
-#include "ControlInstances.h"
+#include "C700Properties.h"
+#include "GUIUtils.h"
 
 ControlInstances	sCntl[] = {
     {
@@ -73,7 +74,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		172, 42, 73, 11,	//x,y,w,h
+		196, 42, 73, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1304,6 +1305,7 @@ ControlInstances	sCntl[] = {
 		0,	//style
 		0	//future use
 	},
+    /*
 	{
 		'appl',	//sig
 		'stxt',	//kind
@@ -1338,6 +1340,7 @@ ControlInstances	sCntl[] = {
 		0,	//style
 		0	//future use
 	},
+     */
 	{
 		'airy',	//sig
 		'slid',	//kind
@@ -1535,7 +1538,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		52,	//id
 		0,	//command
-		487, 285, 24, 14,	//x,y,w,h
+		487, 287, 24, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1552,7 +1555,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		51,	//id
 		0,	//command
-		461, 285, 24, 14,	//x,y,w,h
+		461, 287, 24, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1569,7 +1572,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		50,	//id
 		0,	//command
-		436, 285, 24, 14,	//x,y,w,h
+		436, 287, 24, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1586,7 +1589,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		49,	//id
 		0,	//command
-		411, 285, 24, 14,	//x,y,w,h
+		411, 287, 24, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1603,7 +1606,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		48,	//id
 		0,	//command
-		386, 285, 24, 14,	//x,y,w,h
+		386, 287, 24, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1620,7 +1623,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		47,	//id
 		0,	//command
-		361, 285, 24, 14,	//x,y,w,h
+		361, 287, 24, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1637,7 +1640,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		46,	//id
 		0,	//command
-		336, 285, 24, 14,	//x,y,w,h
+		336, 287, 24, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1654,7 +1657,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		45,	//id
 		0,	//command
-		310, 285, 24, 14,	//x,y,w,h
+		310, 287, 24, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -1960,7 +1963,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64016,	//id
 		0,	//command
-		114, 90, 23, 14,	//x,y,w,h
+		114, 92, 23, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kRightText,	//fontalign
@@ -1977,7 +1980,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64006,	//id
 		0,	//command
-		12, 186, 46, 14,	//x,y,w,h
+		12, 188, 46, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kRightText,	//fontalign
@@ -1994,7 +1997,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64005,	//id
 		0,	//command
-		45, 112, 32, 14,	//x,y,w,h
+		45, 114, 32, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kRightText,	//fontalign
@@ -2011,7 +2014,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64004,	//id
 		0,	//command
-		45, 132, 32, 14,	//x,y,w,h
+		45, 134, 32, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kRightText,	//fontalign
@@ -2028,7 +2031,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64002,	//id
 		0,	//command
-		12, 218, 66, 14,	//x,y,w,h
+		12, 220, 66, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kRightText,	//fontalign
@@ -2079,7 +2082,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64000,	//id
 		0,	//command
-		153, 90, 249, 14,	//x,y,w,h
+		153, 92, 249, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -2096,7 +2099,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64003,	//id
 		0,	//command
-		45, 152, 32, 14,	//x,y,w,h
+		45, 154, 32, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kRightText,	//fontalign
@@ -2266,7 +2269,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_MonoMode,	//id
 		0,	//command
-		414, 107, 33, 14,	//x,y,w,h
+		414, 107, 35, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2283,7 +2286,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_PortamentoOn,	//id
 		0,	//command
-		414, 123, 33, 14,	//x,y,w,h
+		414, 123, 35, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2351,7 +2354,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		55,	//id
 		0,	//command
-		342, 59, 80, 12,	//x,y,w,h
+		352, 59, 70, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2368,7 +2371,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		54,	//id
 		0,	//command
-		342, 47, 80, 12,	//x,y,w,h
+		352, 47, 70, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2385,7 +2388,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		53,	//id
 		0,	//command
-		259, 59, 80, 12,	//x,y,w,h
+		279, 59, 70, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2402,7 +2405,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		10,	//id
 		0,	//command
-		259, 47, 80, 12,	//x,y,w,h
+		279, 47, 70, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2419,7 +2422,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		6,	//id
 		0,	//command
-		169, 53, 80, 12,	//x,y,w,h
+		196, 53, 80, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2436,7 +2439,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		1004,	//id
 		0,	//command
-		476, 59, 40, 14,	//x,y,w,h
+		476, 61, 40, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2453,7 +2456,7 @@ ControlInstances	sCntl[] = {
 		'AUid',	//sig
 		1005,	//id
 		0,	//command
-		430, 59, 40, 14,	//x,y,w,h
+		430, 61, 40, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2916,7 +2919,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		50, 63, 40, 11,	//x,y,w,h
+		6, 63, 40, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -2933,8 +2936,60 @@ ControlInstances	sCntl[] = {
 		0,	//sig
 		kParam_engine,	//id
 		0,	//command
-		84, 61, 50, 12,	//x,y,w,h
+		40, 61, 50, 12,	//x,y,w,h
 		"",	//fontname
+		9,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+		"VoiceAlloc",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		96, 63, 50, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kLeftText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'VeMa',	//sig
+		'menu',	//kind
+		"Oldest;SameCh",	//title
+		2,	//Value
+		0,	//Minimum
+		2,	//Maximum
+		0,	//sig
+		kParam_voiceAllocMode,	//id
+		0,	//command
+		145, 61, 50, 12,	//x,y,w,h
+		"",	//fontname
+		9,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		
+		'VeMa',	//sig
+		'push',	//kind
+		"Set Recorder...",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		0,	//sig
+		kControlButtonOpenRecordingSettings,	//id
+		0,	//command
+		180, 382, 160, 14,	//x,y,w,h
+		"Arial Black",	//fontname
 		9,	//fontsize
 		kCenterText,	//fontalign
 		0,	//style

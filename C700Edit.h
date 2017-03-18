@@ -21,6 +21,7 @@
 #include "C700GUI.h"
 #include "C700defines.h"
 #include "EfxAccess.h"
+#include "C700Properties.h"
 
 class C700Edit : public AEffGUIEditor, CControlListener
 {
@@ -37,11 +38,14 @@ public:
 	virtual bool	open(void *ptr);
 	virtual void	close();
 	
+    void            setParameter(int index, const void *inPtr);
 	virtual void	setParameter(int index, float value);
 	virtual void	valueChanged(CControl *pControl);	
 	long			getTag();
 
 	virtual void	idle();
+
+    std::map<int, PropertyDescription>  mPropertyParams;
 
 private:
 	void			SetLoopPoint( int lp );

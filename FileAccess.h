@@ -9,15 +9,13 @@
 
 #pragma once
 
-#include "C700defines.h"
-
 #if _WIN32
 #include <windows.h>
 #endif
 
 class FileAccess {
 public:
-	FileAccess( const char *path, bool isWriteable );
+	FileAccess( const char *path, bool isWriteable, int pathLenMax=PATH_LEN_MAX );
 	virtual ~FileAccess();
 	
 	const char*		GetFilePath() { return mPath; }
@@ -27,7 +25,8 @@ public:
 	virtual bool	IsLoaded() const { return mIsLoaded; }
 	
 protected:
-	char		mPath[PATH_LEN_MAX];
+	char		*mPath;
 	bool		mIsWriteable;
 	bool		mIsLoaded;
+    int         mPathLenMax;
 };

@@ -30,6 +30,12 @@ typedef enum
     kEngineType_Accurate
 } engine_type;
 //-----------------------------------------------------------------------------
+typedef enum
+{
+    kVoiceAllocMode_Oldest = 0,
+    kVoiceAllocMode_SameChannel,
+} voicealloc_mode;
+//-----------------------------------------------------------------------------
 class C700Driver
 {
 public:
@@ -93,6 +99,10 @@ public:
 	void		AllNotesOff();
 	void		AllSoundOff();
 	void		ResetAllControllers();
+    
+    void        StartRegisterLog( int inFrame );
+    void        MarkLoopRegisterLog( int inFrame );
+    void        EndRegisterLog( int inFrame );
 	
     // channel params
 	void		ModWheel( int ch, int value );
@@ -127,6 +137,8 @@ public:
 	void		SetPBRange( float value );
 	void		SetPBRange( int ch, float value );
 	void		SetEngineType( engine_type type );
+    void        SetVoiceAllocMode( voicealloc_mode mode );
+    void        SetFastReleaseAsKeyOff( bool value );
 	void		SetMultiMode( int bank, bool value );
 	bool		GetMultiMode( int bank ) const;
 	void		SetVelocityMode( velocity_mode value );
@@ -159,8 +171,10 @@ public:
     
 	void		RefreshKeyMap(void);
     
-    bool        IsHwAvailable() { return mDSP.IsHwAvailable(); }
-	
+    //bool        IsHwAvailable() { return mDSP.IsHwAvailable(); }
+    
+    C700DSP*    GetDsp() { return &mDSP; }
+    
 private:
 	static const int INTERNAL_CLOCK = 32000;
     static const int CYCLES_PER_SAMPLE = 21168;
@@ -177,7 +191,10 @@ private:
 		NOTE_OFF,
         PROGRAM_CHANGE,
         PITCH_BEND,
-        CONTROL_CHANGE
+        CONTROL_CHANGE,
+        START_REGLOG,
+        MARKLOOP_REGLOG,
+        END_REGLOG
 	};
 	
 	typedef struct {
@@ -195,10 +212,15 @@ private:
 	int				mProcessbuf[2][16];		//リサンプリング用バッファ
 	int				mProcessbufPtr;			//リサンプリング用バッファ書き込み位置
 	
+    MutexObject         mREGLOGEvtMtx;
+    std::list<MIDIEvt>	mREGLOGEvt;			//レジスタログのためのキュー
     MutexObject         mMIDIEvtMtx;
 	std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
 	std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
     bool                mKeyOnFlag[kMaximumVoices]; // 次のProcessでKeyOnする
+    bool                mKeyOffFlag[kMaximumVoices]; // 次のProcessでKeyOffする
+    int                 mEchoOnFlag; // 次のProcessでEchoOnする
+    bool                mEchoOnMask[kMaximumVoices]; // 次のProcessでEchoを変更する
 	
     DynamicVoiceManager mVoiceManager;
 	    
@@ -223,7 +245,8 @@ private:
     
     int             mVoiceLimit;
     bool            mIsAccurateMode;
-	
+    bool            mFastReleaseAsKeyOff;   // sustainmodeでsr=31の場合キーオフで処理する
+    
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
     void calcPanVolume(int value, int *volL, int *volR);
@@ -235,6 +258,7 @@ private:
     bool    doNoteOn1( MIDIEvt dEvt );
 	void	doNoteOn2(const MIDIEvt *evt);
 	int		doNoteOff( const MIDIEvt *evt );
+    bool doRegLogEvents( const MIDIEvt *evt );
     bool doEvents1( const MIDIEvt *evt );
     bool doEvents2( const MIDIEvt *evt );
     int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }

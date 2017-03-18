@@ -9,9 +9,10 @@
 
 #pragma once
 
+#include <map>
 #include "vstgui.h"
 #include "C700defines.h"
-#include "ControlInstances.h"
+#include "GUIUtils.h"
 #include "EfxAccess.h"
 
 #include "DummyCntl.h"
@@ -22,9 +23,9 @@
 #include "SeparatorLine.h"
 #include "MyParamDisplay.h"
 #include "MyTextEdit.h"
+#include "RecordingSettingsGUI.h"
 
 #include "SPCFile.h"
-//#include "PlistBRRFile.h"
 #include "RawBRRFile.h"
 #include "AudioFile.h"
 #include "XIFile.h"
@@ -36,7 +37,12 @@ public:
 	~C700GUI();
 	
 	CControl*	FindControlByTag( long tag );
-	void		SetEfxAccess(EfxAccess* efxacc) { efxAcc = efxacc; }
+	void		SetEfxAccess(EfxAccess* efxacc) {
+        efxAcc = efxacc;
+        if (recordWindow) {
+            recordWindow->SetEfxAccess(efxacc);
+        }
+    }
 	
 	// CViewÇÊÇË
 	virtual void	valueChanged(CControl* control);
@@ -48,7 +54,6 @@ public:
 	
 	CLASS_METHODS(C700GUI, CViewContainer)
 private:
-	CControl		*makeControlFrom( const ControlInstances *desc, CFrame *frame );
 	void			copyFIRParamToClipBoard();
     bool            loadToCurrentProgramFromKhaos();
 	bool			loadToCurrentProgramFromBRR( RawBRRFile *file );
@@ -63,25 +68,8 @@ private:
 	void			autocalcCurrentProgramBaseKey();
 	bool			IsPreemphasisOn();
 	
-	CFontRef				mLabelFont;
-	int						mNumCntls;
-	CControl				**mCntl;
+    std::map<long, CControl*> mCntl;
+    RecordingSettingsGUI    *recordWindow;
 	
 	EfxAccess				*efxAcc;
-	
-	//èâä˙âªéûÇ…ÇÃÇ›égóp
-	CBitmap					*sliderHandleBitmap;
-	CBitmap					*onOffButton;
-	CBitmap					*bgKnob;
-	CBitmap					*rocker;
-	
-	//Testóp
-#if 0
-	CMyKnob				*cKnob;
-	CMySlider			*cVerticalSlider;
-	CLabelOnOffButton	*cCheckBox;
-	CRockerSwitch		*cRockerSwitch;
-	CWaveView			*cWaveView;
-	CDummyCntl			*cDummyTest;
-#endif
 };

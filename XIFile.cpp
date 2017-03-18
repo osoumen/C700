@@ -23,20 +23,12 @@ int GetSRTicks( int sr, double tempo );
 XIFile::XIFile( const char *path, int allocMemSize )
 : FileAccess(path, true)
 , DataBuffer( allocMemSize )
-#if MAC
-, mCFData( NULL )
-#endif
 {
 }
 
 //-----------------------------------------------------------------------------
 XIFile::~XIFile()
 {
-#if MAC
-	if ( mCFData ) {
-		CFRelease(mCFData);
-	}
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -273,60 +265,10 @@ bool XIFile::SetDataFromChip( const C700Driver *chip, int targetProgram, double 
 //-----------------------------------------------------------------------------
 bool XIFile::Write()
 {
-	if ( IsLoaded() == false ) return false;
+	if ( mDataUsed == 0 ) return false;
 	if ( mPath == NULL ) return false;
-#if MAC
-	//CFURLを作成
-	CFURLRef	savefile = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)mPath, strlen(mPath), false);
-	
-	//バイナリ形式に変換
-	CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
-	if (CFWriteStreamOpen(filestream)) {
-		if ( mCFData == NULL ) {
-			mCFData = CFDataCreate(NULL, GetDataPtr(), GetDataSize() );
-		}
-		CFWriteStreamWrite(filestream,CFDataGetBytePtr(mCFData),CFDataGetLength(mCFData));
-		CFWriteStreamClose(filestream);
-	}
-	CFRelease(filestream);
-	CFRelease(savefile);
-	
-	return true;
-#else
-	//VSTのときのXIファイル書き出し処理
-	HANDLE	hFile;
-
-	hFile = CreateFile( mPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
-	if ( hFile != INVALID_HANDLE_VALUE ) {
-		DWORD	writeSize;
-		WriteFile( hFile, GetDataPtr(), GetDataSize(), &writeSize, NULL );
-		CloseHandle( hFile );
-	}
-	return true;
-#endif
+    return WriteToFile(mPath);
 }
-
-//-----------------------------------------------------------------------------
-#if MAC
-void XIFile::SetCFData( CFDataRef data )
-{
-	if ( mIsLoaded ) {
-		CFRelease(mCFData);
-	}
-	mCFData = data;
-	CFRetain(mCFData);
-	mIsLoaded = true;
-}
-
-//-----------------------------------------------------------------------------
-CFDataRef XIFile::GetCFData() const
-{
-	if ( IsLoaded() == false ) return NULL;
-	
-	return mCFData;
-}
-#endif
-
 
 //-----------------------------------------------------------------------------
 int	RenumberKeyMap( unsigned char *snum, int size )

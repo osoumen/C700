@@ -7,9 +7,15 @@
  *
  */
 
+#include "XIFile.h"
 #include "C700Kernel.h"
 #include "samplebrr.h"
 #include <math.h>
+#if MAC
+#include "macOSUtils.h"
+#else
+#include <Shlobj.h>
+#endif
 
 void CalcFIRParam( const float band[5], int filter[8] );
 
@@ -20,7 +26,11 @@ C700Kernel::C700Kernel()
 , propNotifyUserData(NULL)
 , parameterSetFunc(NULL)
 , paramSetUserData(NULL)
+, mCodeFile(NULL)
+, mGlobalSettingsHasChanged(false)
 {
+    createPropertyParamMap(mPropertyParams);
+    
 	for ( int i=0; i<kNumberOfParameters; i++ ) {
 		SetParameter(i, GetParameterDefault(i));
 	}
@@ -33,7 +43,14 @@ C700Kernel::C700Kernel()
 	mEditChannel = 0;
     
     mIsHwAvailable = false;
-	
+    
+    mCurrentPosInTimeLine = .0;
+    mRecordStartBeatPos = .0;
+    mRecordLoopStartBeatPos = .0;
+    mRecordEndBeatPos = .0;
+    mIsPlaying = false;
+    mSampleRate = 44100.0;
+    
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
@@ -71,13 +88,19 @@ C700Kernel::C700Kernel()
         mVPset[i].releasePriority = kDefaultValue_ReleasePriority;
 	}
 	
+    restoreGlobalProperties();
+    
 	// 音源にプログラムのメモリを渡す
-	mGenerator.SetVPSet(mVPset);
+	mDriver.SetVPSet(mVPset);
 }
 
 //-----------------------------------------------------------------------------
 C700Kernel::~C700Kernel()
 {
+    if (mGlobalSettingsHasChanged) {
+        storeGlobalProperties();
+    }
+    
 	for (int i=0; i<128; i++) {
 		mVPset[i].pgname[0] = 0;
 		mVPset[i].sourceFile[0] = 0;
@@ -89,7 +112,7 @@ C700Kernel::~C700Kernel()
 void C700Kernel::Reset()
 {
 	//音源リセット
-	mGenerator.Reset();
+	mDriver.Reset();
 	
 	for ( int i=0; i<16; i++ ) {
         //プラグイン状態のリセット
@@ -106,6 +129,10 @@ void C700Kernel::Reset()
 			propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteTrack_1+i, propNotifyUserData );
 		}
 	}
+    
+    if (mGlobalSettingsHasChanged) {
+        storeGlobalProperties();
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -115,6 +142,17 @@ void C700Kernel::SetTempo( double tempo )
 }
 
 //-----------------------------------------------------------------------------
+void C700Kernel::SetCurrentSampleInTimeLine( double currentSample )
+{
+    mCurrentPosInTimeLine = currentSample;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::SetIsPlaying( bool isPlaying )
+{
+    mIsPlaying = isPlaying;
+}
+//-----------------------------------------------------------------------------
 
 bool C700Kernel::SetParameter( int id, float value )
 {
@@ -122,69 +160,69 @@ bool C700Kernel::SetParameter( int id, float value )
 	
 	switch ( id ) {
 		case kParam_poly:
-			mGenerator.SetVoiceLimit(value);
+			mDriver.SetVoiceLimit(value);
 			break;
 			
 		case kParam_mainvol_L:
-			mGenerator.SetMainVol_L(value);
+			mDriver.SetMainVol_L(value);
 			break;
 			
 		case kParam_mainvol_R:
-			mGenerator.SetMainVol_R(value);
+			mDriver.SetMainVol_R(value);
 			break;
 			
 		case kParam_vibdepth:
-			mGenerator.ModWheel(0, value);
+			mDriver.ModWheel(0, value);
 			break;
 			
 		case kParam_vibrate:
-			mGenerator.SetVibFreq(-1, value);   // -1が全チャンネルを表す
+			mDriver.SetVibFreq(-1, value);   // -1が全チャンネルを表す
 			break;
 			
 		case kParam_vibdepth2:
-			mGenerator.SetVibDepth(-1, value);  // -1は全チャンネルを表す
+			mDriver.SetVibDepth(-1, value);  // -1は全チャンネルを表す
 			break;
 			
 		case kParam_velocity:
 			switch ( (int)value ) {
 				case 0:
-					mGenerator.SetVelocityMode( kVelocityMode_Constant );
+					mDriver.SetVelocityMode( kVelocityMode_Constant );
 					break;
 				case 1:
-					mGenerator.SetVelocityMode( kVelocityMode_Square );
+					mDriver.SetVelocityMode( kVelocityMode_Square );
 					break;
 				case 2:
-					mGenerator.SetVelocityMode( kVelocityMode_Linear );
+					mDriver.SetVelocityMode( kVelocityMode_Linear );
 					break;
 				default:
-					mGenerator.SetVelocityMode( kVelocityMode_Square );
+					mDriver.SetVelocityMode( kVelocityMode_Square );
 			}
 			break;
 			
 		case kParam_bendrange:
-			mGenerator.SetPBRange(value);
+			mDriver.SetPBRange(value);
 			break;
 			
 		case kParam_program:
-			mGenerator.ProgramChange(0, value, 0);
+			mDriver.ProgramChange(0, value, 0);
 			break;
 			
 		case kParam_engine:
             switch ( (int)value ) {
                 case 0:
-                    mGenerator.SetEngineType(kEngineType_Old);
+                    mDriver.SetEngineType(kEngineType_Old);
                     break;
                 case 1:
-                    mGenerator.SetEngineType(kEngineType_Relaxed);
+                    mDriver.SetEngineType(kEngineType_Relaxed);
                     break;
                 case 2:
-                    mGenerator.SetEngineType(kEngineType_Accurate);
+                    mDriver.SetEngineType(kEngineType_Accurate);
                     break;
             }
 			break;
 			
 		case kParam_bankAmulti:
-			mGenerator.SetMultiMode(0, value==0 ? false:true);
+			mDriver.SetMultiMode(0, value==0 ? false:true);
 			break;
 			
 
@@ -203,7 +241,7 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_program_14:
 		case kParam_program_15:
 		case kParam_program_16:
-			mGenerator.ProgramChange( id - kParam_program_2 + 1, value, 0 );
+			mDriver.ProgramChange( id - kParam_program_2 + 1, value, 0 );
 			break;
 			
 		case kParam_vibdepth_2:
@@ -221,23 +259,23 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_vibdepth_14:
 		case kParam_vibdepth_15:
 		case kParam_vibdepth_16:
-			mGenerator.ModWheel( id - kParam_vibdepth_2 + 1, value);
+			mDriver.ModWheel( id - kParam_vibdepth_2 + 1, value);
 			break;
 			
 		case kParam_echovol_L:
-			mGenerator.SetEchoVol_L( value );
+			mDriver.SetEchoVol_L( value );
 			break;
 			
 		case kParam_echovol_R:
-			mGenerator.SetEchoVol_R( value );
+			mDriver.SetEchoVol_R( value );
 			break;
 			
 		case kParam_echoFB:
-			mGenerator.SetFeedBackLevel(value);
+			mDriver.SetFeedBackLevel(value);
 			break;
 			
 		case kParam_echodelay:
-			mGenerator.SetDelayTime(value);
+			mDriver.SetDelayTime(value);
 			break;
 			
 		case kParam_fir0:
@@ -248,23 +286,39 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_fir5:
 		case kParam_fir6:
 		case kParam_fir7:
-			mGenerator.SetFIRTap( id - kParam_fir0, value );
+			mDriver.SetFIRTap( id - kParam_fir0, value );
 			break;
 			
 		case kParam_bankBmulti:
-			mGenerator.SetMultiMode(1, value==0 ? false:true);
+			mDriver.SetMultiMode(1, value==0 ? false:true);
 			break;
 			
 		case kParam_bankCmulti:
-			mGenerator.SetMultiMode(2, value==0 ? false:true);
+			mDriver.SetMultiMode(2, value==0 ? false:true);
 			break;
 			
 		case kParam_bankDmulti:
-			mGenerator.SetMultiMode(3, value==0 ? false:true);
+			mDriver.SetMultiMode(3, value==0 ? false:true);
 			break;
 			
         case kParam_alwaysDelayNote:
-            mGenerator.SetEventDelayClocks(value==0 ? 0:8192);
+            mDriver.SetEventDelayClocks(value==0 ? 0:8192);
+            break;
+            
+        case kParam_voiceAllocMode:
+            // voiceAllocモードを設定
+            switch ( (int)value ) {
+                case 0:
+                    mDriver.SetVoiceAllocMode(kVoiceAllocMode_Oldest);
+                    break;
+                case 1:
+                    mDriver.SetVoiceAllocMode(kVoiceAllocMode_SameChannel);
+                    break;
+            }
+            break;
+            
+        case kParam_fastReleaseAsKeyOff:
+            mDriver.SetFastReleaseAsKeyOff(value==0 ? false:true);
             break;
             
 		default:
@@ -280,7 +334,6 @@ float C700Kernel::GetParameter( int id )
 }
 
 //-----------------------------------------------------------------------------
-
 float C700Kernel::GetPropertyValue( int inID )
 {
 	switch (inID) {
@@ -399,40 +452,183 @@ float C700Kernel::GetPropertyValue( int inID )
             return mVPset[mEditProg].releasePriority;
             
         case kAudioUnitCustomProperty_IsHwConnected:
-            return mGenerator.IsHwAvailable() ? 1.0f:.0f;
-			
-		case kAudioUnitCustomProperty_SourceFileRef:
-		case kAudioUnitCustomProperty_BRRData:
-		case kAudioUnitCustomProperty_ProgramName:
-		case kAudioUnitCustomProperty_PGDictionary:
-		case kAudioUnitCustomProperty_XIData:
+            return mDriver.GetDsp()->IsHwAvailable() ? 1.0f:.0f;
+            
+        case kAudioUnitCustomProperty_RecSaveAsSpc:
+            return mDriver.GetDsp()->GetRecSaveAsSpc() ? 1.0f:0.f;
+            
+        case kAudioUnitCustomProperty_RecSaveAsSmc:
+            return mDriver.GetDsp()->GetRecSaveAsSmc() ? 1.0f:0.f;
+            
+        case kAudioUnitCustomProperty_TimeBaseForSmc:
+        {
+            switch (mDriver.GetDsp()->GetTimeBaseForSmc()) {
+                case C700DSP::SmcTimeBaseNTSC:
+                    return 0;   // NTSC
+                case C700DSP::SmcTimeBasePAL:
+                    return 1;
+            }
+        }
+        
+        case kAudioUnitCustomProperty_RepeatNumForSpc:
+            return mDriver.GetDsp()->GetRepeatNumForSpc();
+            
+        case kAudioUnitCustomProperty_FadeMsTimeForSpc:
+            return mDriver.GetDsp()->GetFadeMsTimeForSpc();
+            
+        case kAudioUnitCustomProperty_SongPlayerCodeVer:
+            return mDriver.GetDsp()->GetSongPlayCodeVer();
+            
+        case kAudioUnitCustomProperty_HostBeatPos:
+            return mCurrentPosInTimeLine;
+            
 		default:
 			return 0;
 	}	
 }
 
 //-----------------------------------------------------------------------------
+double C700Kernel::GetPropertyDoubleValue( int inID )
+{
+    switch (inID) {
+        case kAudioUnitCustomProperty_Rate:
+			return mVPset[mEditProg].rate;
+            
+        case kAudioUnitCustomProperty_RecordStartBeatPos:
+            return mRecordStartBeatPos;
+            
+        case kAudioUnitCustomProperty_RecordLoopStartBeatPos:
+            return mRecordLoopStartBeatPos;
+            
+        case kAudioUnitCustomProperty_RecordEndBeatPos:
+            return mRecordEndBeatPos;
+            
+        case kAudioUnitCustomProperty_SongPlayerCodeVer:
+            return mDriver.GetDsp()->GetSongPlayCodeVer();
+            
+        case kAudioUnitCustomProperty_HostBeatPos:
+            return mCurrentPosInTimeLine;
+            
+        default:
+			return 0;
+    }
+}
 
+//-----------------------------------------------------------------------------
+int C700Kernel::GetPropertyPtrDataSize( int inID )
+{
+    switch (inID) {
+        case kAudioUnitCustomProperty_SongPlayerCode:
+            if (mCodeFile != NULL) {
+                return mCodeFile->GetDataUsed();
+            }
+            break;
+            
+        case kAudioUnitCustomProperty_BRRData:
+            if (GetBRRData()->data == NULL) {
+                return 0;
+            }
+            return GetBRRData()->size;
+    }
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+const void *C700Kernel::GetPropertyPtrValue( int inID )
+{
+    switch (inID) {
+#if AU
+		case kAudioUnitCustomProperty_PGDictionary:
+        {
+            CFDictionaryRef	pgdata;
+            int				editProg = GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+            CreatePGDataDic(&pgdata, editProg);
+            return (void *)pgdata;	//使用後要release
+        }
+		case kAudioUnitCustomProperty_XIData:
+        {
+            XIFile	fileData(NULL);
+            
+            fileData.SetDataFromChip(GetDriver(),
+                                     GetPropertyValue(kAudioUnitCustomProperty_EditingProgram), mTempo);
+            
+            if ( fileData.IsLoaded() ) {
+                CFDataRef xidata;
+                xidata = CFDataCreate(NULL, fileData.GetDataPtr(), fileData.GetDataUsed() );
+                return (void *)xidata;	//使用後要release
+            }
+            else {
+                return NULL;
+            }
+        }
+#endif
+        case kAudioUnitCustomProperty_BRRData:
+            return GetBRRData()->data;
+            
+        case kAudioUnitCustomProperty_SongPlayerCode:
+        {
+            if (mCodeFile != NULL) {
+                return mCodeFile->GetDataPtr();
+            }
+            break;
+        }
+        case kAudioUnitCustomProperty_SourceFileRef:
+            return GetSourceFilePath();
+            
+		case kAudioUnitCustomProperty_ProgramName:
+            return GetProgramName();
+            
+        case kAudioUnitCustomProperty_SongRecordPath:
+            return mDriver.GetDsp()->GetSongRecordPath();
+
+        case kAudioUnitCustomProperty_GameTitle:
+            return mDriver.GetDsp()->GetGameTitle();
+
+        case kAudioUnitCustomProperty_SongTitle:
+            return mDriver.GetDsp()->GetSongTitle();
+
+        case kAudioUnitCustomProperty_NameOfDumper:
+            return mDriver.GetDsp()->GetNameOfDumper();
+
+        case kAudioUnitCustomProperty_ArtistOfSong:
+            return mDriver.GetDsp()->GetArtistOfSong();
+
+        case kAudioUnitCustomProperty_SongComments:
+            return mDriver.GetDsp()->GetSongComments();
+
+        default:
+			break;
+    }
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
+bool C700Kernel::GetPropertyStructValue( int inID, void *outData )
+{
+	return false;
+}
+
+//-----------------------------------------------------------------------------
 bool C700Kernel::SetPropertyValue( int inID, float value )
 {
 	bool		boolData = value>0.5f?true:false;
 	
+    if (mPropertyParams[inID].saveToGlobal) {
+        mGlobalSettingsHasChanged = true;
+    }
+    
 	switch (inID) {
-		case kAudioUnitCustomProperty_Rate:
-			mVPset[mEditProg].rate = value;
-			return true;
-			
 		case kAudioUnitCustomProperty_BaseKey:
 			mVPset[mEditProg].basekey = value;
-			mGenerator.RefreshKeyMap();
+			mDriver.RefreshKeyMap();
 			return true;
 		case kAudioUnitCustomProperty_LowKey:
 			mVPset[mEditProg].lowkey = value;
-			mGenerator.RefreshKeyMap();
+			mDriver.RefreshKeyMap();
 			return true;
 		case kAudioUnitCustomProperty_HighKey:
 			mVPset[mEditProg].highkey = value;
-			mGenerator.RefreshKeyMap();
+			mDriver.RefreshKeyMap();
 			return true;
 			
 		case kAudioUnitCustomProperty_LoopPoint:
@@ -444,7 +640,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			if ( mVPset[mEditProg].lp < 0 ) {
 				mVPset[mEditProg].lp = 0;
 			}
-            mGenerator.UpdateLoopPoint(mEditProg);
+            mDriver.UpdateLoopPoint(mEditProg);
 			return true;
 			
 		case kAudioUnitCustomProperty_Loop:
@@ -455,7 +651,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             else {
                 mVPset[mEditProg].unsetLoop();
             }
-            mGenerator.UpdateLoopFlag(mEditProg);
+            mDriver.UpdateLoopFlag(mEditProg);
 			return true;
 			
 		case kAudioUnitCustomProperty_Echo:
@@ -464,7 +660,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 		case kAudioUnitCustomProperty_Bank:
 			mVPset[mEditProg].bank = value;
-            mGenerator.RefreshKeyMap();
+            mDriver.RefreshKeyMap();
 			return true;
 			
 		case kAudioUnitCustomProperty_AR:
@@ -619,33 +815,168 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             
         case kAudioUnitCustomProperty_PortamentoRate:
             mVPset[mEditProg].portamentoRate = value;
-            mGenerator.UpdatePortamentoTime(mEditProg);
+            mDriver.UpdatePortamentoTime(mEditProg);
             return true;
 
         case kAudioUnitCustomProperty_NoteOnPriority:
             mVPset[mEditProg].noteOnPriority = value;
-            mGenerator.AllNotesOff();
+            mDriver.AllNotesOff();
             return true;
             
         case kAudioUnitCustomProperty_ReleasePriority:
             mVPset[mEditProg].releasePriority = value;
-            mGenerator.AllNotesOff();
+            mDriver.AllNotesOff();
             return true;
             
         case kAudioUnitCustomProperty_IsHwConnected:
             return true;
 
-		case kAudioUnitCustomProperty_SourceFileRef:
-		case kAudioUnitCustomProperty_BRRData:
-		case kAudioUnitCustomProperty_ProgramName:
-		case kAudioUnitCustomProperty_PGDictionary:
-		case kAudioUnitCustomProperty_XIData:			
-		case kAudioUnitCustomProperty_TotalRAM:
+        case kAudioUnitCustomProperty_RecSaveAsSpc:
+            mDriver.GetDsp()->SetRecSaveAsSpc(value==0 ? false:true);
+            return true;
+            
+        case kAudioUnitCustomProperty_RecSaveAsSmc:
+            mDriver.GetDsp()->SetRecSaveAsSmc(value==0 ? false:true);
+            return true;
+            
+        case kAudioUnitCustomProperty_TimeBaseForSmc:
+        {
+            if (value == 0) {
+                mDriver.GetDsp()->SetTimeBaseForSmc(C700DSP::SmcTimeBaseNTSC);
+            }
+            else {
+                mDriver.GetDsp()->SetTimeBaseForSmc(C700DSP::SmcTimeBasePAL);
+            }
+            return true;
+        }
+            
+        case kAudioUnitCustomProperty_RepeatNumForSpc:
+            mDriver.GetDsp()->SetRepeatNumForSpc(value);
+            return true;
+            
+        case kAudioUnitCustomProperty_FadeMsTimeForSpc:
+            mDriver.GetDsp()->SetFadeMsTimeForSpc(value);
+            return true;
+            
 		default:
 			return false;
 	}
 }
 
+//-----------------------------------------------------------------------------
+bool C700Kernel::SetPropertyDoubleValue( int inID, double value )
+{
+    if (mPropertyParams[inID].saveToGlobal) {
+        mGlobalSettingsHasChanged = true;
+    }
+    
+    switch (inID) {
+		case kAudioUnitCustomProperty_Rate:
+			mVPset[mEditProg].rate = value;
+			return true;
+			
+        case kAudioUnitCustomProperty_RecordStartBeatPos:
+            mRecordStartBeatPos = value;
+            return true;
+            
+        case kAudioUnitCustomProperty_RecordLoopStartBeatPos:
+            mRecordLoopStartBeatPos = value;
+            return true;
+            
+        case kAudioUnitCustomProperty_RecordEndBeatPos:
+            mRecordEndBeatPos = value;
+            return true;
+            
+        default:
+			return false;
+    }
+}
+
+bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr, int size )
+{
+    if (mPropertyParams[inID].saveToGlobal) {
+        mGlobalSettingsHasChanged = true;
+    }
+    
+    switch (inID) {
+#if AU
+		case kAudioUnitCustomProperty_PGDictionary:
+        {
+            CFDictionaryRef	pgdata = reinterpret_cast<CFDictionaryRef>(inPtr);
+            int				editProg = GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+            RestorePGDataDic(pgdata, editProg);
+            return true;
+        }
+        
+#endif
+		case kAudioUnitCustomProperty_BRRData:
+        {
+            SetBRRData(reinterpret_cast<const unsigned char *>(inPtr), size);
+            return true;
+        }
+
+        case kAudioUnitCustomProperty_SongPlayerCode:
+        {
+			PlayerCodeReader *code = new PlayerCodeReader(inPtr, size, true);
+            if (!code->IsLoaded()) {
+				delete code;
+                return true;
+            }
+			if (mCodeFile != NULL) {
+				delete mCodeFile;
+			}
+			mCodeFile = code;
+            mDriver.GetDsp()->SetSpcPlayerCode(mCodeFile->getSpcPlayerCode(), mCodeFile->getSpcPlayerCodeSize());
+            mDriver.GetDsp()->SetSmcEmulationVector(mCodeFile->getSmcEmulationVector());
+            mDriver.GetDsp()->SetSmcNativeVector(mCodeFile->getSmcNativeVector());
+            mDriver.GetDsp()->SetSmcPlayerCode(mCodeFile->getSmcPlayerCode(), mCodeFile->getSmcPlayerCodeSize());
+            mDriver.GetDsp()->SetSongPlayCodeVer(mCodeFile->getVersion());
+            return true;
+        }
+        case kAudioUnitCustomProperty_SourceFileRef:
+        {
+            SetSourceFilePath(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+		case kAudioUnitCustomProperty_ProgramName:
+        {
+            SetProgramName(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_SongRecordPath:
+        {
+            mDriver.GetDsp()->SetSongRecordPath(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_GameTitle:
+        {
+            mDriver.GetDsp()->SetGameTitle(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_SongTitle:
+        {
+            mDriver.GetDsp()->SetSongTitle(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_NameOfDumper:
+        {
+            mDriver.GetDsp()->SetNameOfDumper(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_ArtistOfSong:
+        {
+            mDriver.GetDsp()->SetArtistOfSong(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        case kAudioUnitCustomProperty_SongComments:
+        {
+            mDriver.GetDsp()->SetSongComments(reinterpret_cast<const char *>(inPtr));
+            return true;
+        }
+        default:
+			return false;
+    }
+}
 //-----------------------------------------------------------------------------
 void CalcFIRParam( const float band[5], int filter[8] )
 {
@@ -732,7 +1063,7 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
     }
 
 	//brrデータをこちら側に移動する
-	if (data) {
+	if ((data != NULL) && (size > 0)) {
 		if ( mVPset[prog].hasBrrData() ) {
 			mVPset[prog].releaseBrr();
 		}
@@ -742,7 +1073,9 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
 		memmove(brr.data, data, size);
         mVPset[prog].setBRRData(&brr);
         // 波形の転送
-        mGenerator.SetBrrSample(prog, data, size, mVPset[prog].lp);
+        mDriver.SetBrrSample(prog, data, size, mVPset[prog].lp);
+        
+        SetPropertyValue(kAudioUnitCustomProperty_Loop, data[size-9]&2?true:false);
 	}
 	else {
         //NULLデータをセットされると削除を行う
@@ -750,7 +1083,7 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
             mVPset[prog].releaseBrr();
 			mVPset[prog].pgname[0] = 0;
             // 波形メモリの解放
-            mGenerator.DelBrrSample(prog);
+            mDriver.DelBrrSample(prog);
 			if ( propertyNotifyFunc ) {
 				propertyNotifyFunc( kAudioUnitCustomProperty_ProgramName, propNotifyUserData );
 			}
@@ -762,6 +1095,7 @@ bool C700Kernel::SetBRRData( const unsigned char *data, int size, int prog, bool
             propertyNotifyFunc( kAudioUnitCustomProperty_TotalRAM, propNotifyUserData );
         }
     }
+    
 	return true;
 }
 
@@ -880,7 +1214,7 @@ bool C700Kernel::SelectPreset( int num )
 			return false;
 	}
 	
-	mGenerator.RefreshKeyMap();
+	mDriver.RefreshKeyMap();
 	
 	return true;
 }
@@ -889,11 +1223,35 @@ bool C700Kernel::SelectPreset( int num )
 
 void C700Kernel::Render( unsigned int frames, float *output[2] )
 {
-	mGenerator.Process(frames, output);
+    // 記録開始、終了
+    if (mIsPlaying) {
+        double beatFrameRatio = (mSampleRate * 60) / mTempo;
+        double framesBeat = frames / beatFrameRatio;
+        if ((mCurrentPosInTimeLine <= mRecordStartBeatPos) &&
+            (mRecordStartBeatPos < (mCurrentPosInTimeLine + framesBeat))) {
+            if (mRecordStartBeatPos != mRecordEndBeatPos) {
+                mDriver.StartRegisterLog((mRecordStartBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
+            }
+        }
+        if ((mCurrentPosInTimeLine <= mRecordLoopStartBeatPos) &&
+            (mRecordLoopStartBeatPos < (mCurrentPosInTimeLine + framesBeat))) {
+            if (mRecordStartBeatPos != mRecordEndBeatPos) {
+                mDriver.MarkLoopRegisterLog((mRecordLoopStartBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
+            }
+        }
+        if ((mCurrentPosInTimeLine <= mRecordEndBeatPos) &&
+            (mRecordEndBeatPos < (mCurrentPosInTimeLine + framesBeat))) {
+            if (mRecordStartBeatPos != mRecordEndBeatPos) {
+                mDriver.EndRegisterLog((mRecordEndBeatPos-mCurrentPosInTimeLine) * beatFrameRatio);
+            }
+        }
+    }
+    
+	mDriver.Process(frames, output);
     
     // MIDIインジケーターへの反映
     for (int i=0; i<16; i++) {
-        int onNotes = mGenerator.GetNoteOnNotes(i);
+        int onNotes = mDriver.GetNoteOnNotes(i);
         if (onNotes != mOnNotes[i]) {
             mOnNotes[i] = onNotes;
             if ( propertyNotifyFunc ) {
@@ -908,8 +1266,8 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
         }
     }
     
-    if (mIsHwAvailable != mGenerator.IsHwAvailable()) {
-        mIsHwAvailable = mGenerator.IsHwAvailable();
+    if (mIsHwAvailable != mDriver.GetDsp()->IsHwAvailable()) {
+        mIsHwAvailable = mDriver.GetDsp()->IsHwAvailable();
         propertyNotifyFunc( kAudioUnitCustomProperty_IsHwConnected, propNotifyUserData );
     }
 }
@@ -918,21 +1276,23 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 
 void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFrame )
 {
-	mGenerator.NoteOn(ch, note, vel, uniqueID, inFrame);
+    mDriver.NoteOn(ch, note, vel, uniqueID, inFrame);
+    //printf("NoteOn inFrame:%d\n", inFrame);
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 {
-	mGenerator.NoteOff(ch, note, 0, uniqueID, inFrame);
+    mDriver.NoteOff(ch, note, 0, uniqueID, inFrame);
+    //printf("NoteOff inFrame:%d\n", inFrame);
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
 {
-	mGenerator.PitchBend(ch, pitch1, pitch2, inFrame);
+	mDriver.PitchBend(ch, pitch1, pitch2, inFrame);
 }
 
 //-----------------------------------------------------------------------------
@@ -1016,7 +1376,7 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             // ECEN ON/OFF
             
         default:
-           mGenerator.ControlChange( ch, controlNum, value, inFrame);
+           mDriver.ControlChange( ch, controlNum, value, inFrame);
            break;
     }
 }
@@ -1072,7 +1432,7 @@ void C700Kernel::sendDataEntryValue(int ch)
     else  {
         switch (mRPN[ch]) {
             case 0x0000:
-                mGenerator.SetPBRange(ch, mDataEntryValue[ch]);
+                mDriver.SetPBRange(ch, mDataEntryValue[ch]);
                 break;
                 
             default:
@@ -1097,21 +1457,21 @@ void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
 #ifdef DEBUG_PRINT
     std::cout << "pg:" << pg << " inFrame:" << inFrame << std::endl;
 #endif
-    mGenerator.ProgramChange(ch, pg, inFrame);
+    mDriver.ProgramChange(ch, pg, inFrame);
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleResetAllControllers( int ch, int inFrame )
 {
-	mGenerator.ResetAllControllers();
+	mDriver.ResetAllControllers();
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleAllNotesOff( int ch, int inFrame )
 {
-	mGenerator.AllNotesOff();
+	mDriver.AllNotesOff();
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
@@ -1125,7 +1485,7 @@ void C700Kernel::HandleAllNotesOff( int ch, int inFrame )
 
 void C700Kernel::HandleAllSoundOff( int ch, int inFrame )
 {
-	mGenerator.AllSoundOff();
+	mDriver.AllSoundOff();
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
@@ -1173,3 +1533,555 @@ void C700Kernel::CorrectLoopFlagForSave(int pgnum)
         mVPset[pgnum].unsetLoop();
 	}
 }
+
+//-----------------------------------------------------------------------------
+void C700Kernel::restoreGlobalProperties()
+{
+    char path[PATH_LEN_MAX];
+    // SongRecordPathの初期値を設定
+    getDocumentsFolder(path, PATH_LEN_MAX);
+    mDriver.GetDsp()->SetSongRecordPath(path);
+    
+    // saveToGlobalのプロパティの復元
+    getPreferenceFolder(path, PATH_LEN_MAX);
+    //std::cout << path << std::endl;
+    
+    ChunkReader settings(path);
+    if (settings.GetDataSize() < 2) {
+        // 読み込めなかった時は初期値の1バイトのはず
+        return;
+    }
+    
+    while ( settings.GetLeftSize() >= (int)sizeof( ChunkReader::MyChunkHead ) ) {
+		int		ckType;
+		long	ckSize;
+		settings.readChunkHead(&ckType, &ckSize);
+        
+        auto it = mPropertyParams.find(ckType);
+        if (it == mPropertyParams.end() || it->second.saveToGlobal == false) {
+            // 不明チャンクの場合は飛ばす
+            settings.AdvDataPos(ckSize);
+        }
+        else if (RestorePropertyFromData(&settings, ckSize, it->second) == false) {
+            // RestorePropertyFromDataで読み込まれなかったら読み飛ばす
+            settings.AdvDataPos(ckSize);
+        }
+    }
+    mGlobalSettingsHasChanged = false;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::storeGlobalProperties()
+{
+    char path[PATH_LEN_MAX];
+    getPreferenceFolder(path, PATH_LEN_MAX);
+    
+    ChunkReader settings(1024*2);
+    settings.SetAllowExtend(true);
+    settings.SetFilePath(path);
+    
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToGlobal) {
+            SetPropertyToChunk(&settings, it->second);
+        }
+        it++;
+    }
+    settings.Write();
+    
+    mGlobalSettingsHasChanged = false;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::getPreferenceFolder(char *outPath, int inSize)
+{
+#if MAC
+    GetHomeDirectory(outPath, inSize);
+    strncat(outPath, "/Library/Application Support/C700/C700.settings", inSize);
+#else
+    // Windowsのホームフォルダを取得
+    SHGetSpecialFolderPath(NULL, outPath, CSIDL_APPDATA, TRUE);
+    strncat(outPath, "\\C700\\C700.settings", inSize);
+#endif
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::getDocumentsFolder(char *outPath, int inSize)
+{
+#if MAC
+    GetHomeDirectory(outPath, inSize);
+    strncat(outPath, "/Documents", inSize);
+#else
+    // Windowsのホームフォルダを取得
+	SHGetSpecialFolderPath(NULL, outPath, CSIDL_MYDOCUMENTS, TRUE);
+#endif
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::SetPropertyToChunk(ChunkReader *chunk, const PropertyDescription &prop)
+{
+    switch (prop.dataType) {
+        case propertyDataTypeInt32:
+        case propertyDataTypeBool:
+        {
+            int		intValue = GetPropertyValue(prop.propId);
+            chunk->addChunk(prop.propId, &intValue, sizeof(int));
+            break;
+        }
+        case propertyDataTypeFloat32:
+        {
+            float	floatValue = GetPropertyValue(prop.propId);
+            chunk->addChunk(prop.propId, &floatValue, sizeof(float));
+            break;
+        }
+        case propertyDataTypeDouble:
+        {
+            double	doubleValue = GetPropertyDoubleValue(prop.propId);
+            chunk->addChunk(prop.propId, &doubleValue, sizeof(double));
+            break;
+        }
+            break;
+        case propertyDataTypeString:
+        case propertyDataTypeFilePath:
+        {
+            char *string = (char*)GetPropertyPtrValue(prop.propId);
+            if (string != NULL && string[0] != 0) {
+                chunk->addChunk(prop.propId, string, prop.outDataSize);
+            }
+            break;
+        }
+        case propertyDataTypeVariableData:
+        {
+            char *data = (char*)GetPropertyPtrValue(prop.propId);
+            if (data != NULL) {
+                chunk->addChunk(prop.propId, data, GetPropertyPtrDataSize(prop.propId));
+            }
+            break;
+        }
+        case propertyDataTypeStruct:
+        case propertyDataTypePointer:
+            break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+bool C700Kernel::RestorePropertyFromData(DataBuffer *data, int ckSize, const PropertyDescription &prop)
+{
+    switch (prop.dataType) {
+        case propertyDataTypeFloat32:
+        {
+            float value;
+            data->readData(&value, ckSize);
+            SetPropertyValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeInt32:
+        case propertyDataTypeBool:
+        {
+            // VSTではBoolもInt32型で保存する仕様とする
+            int value;
+            data->readData(&value, ckSize);
+            SetPropertyValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeDouble:
+        {
+            double value;
+            data->readData(&value, ckSize);
+            SetPropertyDoubleValue(prop.propId, value);
+            break;
+        }
+        case propertyDataTypeString:
+        {
+            char	string[PROGRAMNAME_MAX_LEN];
+            data->readData(&string, ckSize);
+            SetPropertyPtrValue(prop.propId, string, 0);
+            break;
+        }
+        case propertyDataTypeFilePath:
+        {
+            char	string[PATH_LEN_MAX];
+            data->readData(&string, ckSize);
+            SetPropertyPtrValue(prop.propId, string, 0);
+            break;
+        }
+        case propertyDataTypeVariableData:
+        {
+            char    *buf = new char[ckSize];
+            data->readData(buf, ckSize);
+            SetPropertyPtrValue(prop.propId, buf, ckSize);
+            delete [] buf;
+            break;
+        }
+        case propertyDataTypeStruct:
+        case propertyDataTypePointer:
+            return false;
+    }
+    if (prop.dataType != propertyDataTypeBool &&
+        prop.dataType != propertyDataTypeVariableData) {
+        assert(ckSize == prop.outDataSize);
+    }
+    
+    return true;
+}
+
+#if AU
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int value)
+{
+	CFNumberRef num = CFNumberCreate(NULL, kCFNumberIntType, &value);
+	CFDictionarySetValue(dict, key, num);
+	CFRelease(num);
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddDoubleToDictionary(CFMutableDictionaryRef dict, CFStringRef key, double value)
+{
+    CFNumberRef	num = CFNumberCreate(NULL, kCFNumberDoubleType, &value);
+	CFDictionarySetValue(dict, key, num);
+	CFRelease(num);
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddFloatToDictionary(CFMutableDictionaryRef dict, CFStringRef key, float value)
+{
+    CFNumberRef	num = CFNumberCreate(NULL, kCFNumberFloatType, &value);
+	CFDictionarySetValue(dict, key, num);
+	CFRelease(num);
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key, bool value)
+{
+	if ( value ) {
+		CFDictionarySetValue(dict, key, kCFBooleanTrue);
+	}
+	else {
+		CFDictionarySetValue(dict, key, kCFBooleanFalse);
+	}
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddStringToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const char *string)
+{
+    if (string[0] != 0) {
+        CFStringRef	str = CFStringCreateWithCString(NULL, string, kCFStringEncodingUTF8);
+        CFDictionarySetValue(dict, key, str);
+        CFRelease(str);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddFilePathToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const char *path)
+{
+    if (path[0] != 0) {
+        CFURLRef	url =
+        CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
+        CFDataRef urlData = CFURLCreateData( NULL, url, kCFStringEncodingUTF8, false );
+        CFDictionarySetValue(dict, key, urlData);
+        CFRelease(urlData);
+        CFRelease(url);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::AddDataToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const void *data, int size)
+{
+    if (data) {
+        CFDataRef	dataRef = CFDataCreate(NULL, (UInt8*)data, size);
+        CFDictionarySetValue(dict, key, dataRef);
+        CFRelease(dataRef);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::SetPropertyToDict(CFMutableDictionaryRef dict, const PropertyDescription &prop)
+{
+    CFStringRef saveKey = CFStringCreateWithCString(NULL, prop.savekey, kCFStringEncodingASCII);
+    switch (prop.dataType) {
+        case propertyDataTypeInt32:
+            AddNumToDictionary(dict, saveKey, GetPropertyValue(prop.propId));
+            break;
+        case propertyDataTypeFloat32:
+            AddFloatToDictionary(dict, saveKey, GetPropertyValue(prop.propId));
+            break;
+        case propertyDataTypeDouble:
+            AddDoubleToDictionary(dict, saveKey, GetPropertyDoubleValue(prop.propId));
+            break;
+        case propertyDataTypeBool:
+            AddBooleanToDictionary(dict, saveKey, GetPropertyValue(prop.propId));
+            break;
+        case propertyDataTypeString:
+            AddStringToDictionary(dict, saveKey, (char*)GetPropertyPtrValue(prop.propId));
+            break;
+        case propertyDataTypeFilePath:
+            AddFilePathToDictionary(dict, saveKey, (char*)GetPropertyPtrValue(prop.propId));
+            break;
+        case propertyDataTypeVariableData:
+            AddDataToDictionary(dict, saveKey, GetPropertyPtrValue(prop.propId), GetPropertyPtrDataSize(prop.propId));
+            break;
+        case propertyDataTypeStruct:
+        case propertyDataTypePointer:
+            // 基本的には保存しないタイプのプロパティ
+            break;
+    }
+    CFRelease(saveKey);
+}
+
+//-----------------------------------------------------------------------------
+int C700Kernel::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
+{
+    int editProg = mEditProg;
+    mEditProg = pgnum;
+    
+	CFMutableDictionaryRef dict = CFDictionaryCreateMutable	(NULL, 0,
+                                                             &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CorrectLoopFlagForSave(pgnum);
+    
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToProg) {
+            SetPropertyToDict(dict, it->second);
+        }
+        it++;
+    }
+	
+    mEditProg = editProg;
+    
+	*data = dict;
+	return 0;
+}
+
+//-----------------------------------------------------------------------------
+void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDescription &prop)
+{
+    CFStringRef saveKey = CFStringCreateWithCString(NULL, prop.savekey, kCFStringEncodingASCII);
+    if (CFDictionaryContainsKey(dict, saveKey)) {
+        
+        switch (prop.dataType) {
+            case propertyDataTypeFloat32:
+            {
+                float value;
+                CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                CFNumberGetValue(cfnum, kCFNumberFloatType, &value);
+                SetPropertyValue(prop.propId, value);
+                break;
+            }
+            case propertyDataTypeInt32:
+            {
+                int value;
+                CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                CFNumberGetValue(cfnum, kCFNumberIntType, &value);
+                SetPropertyValue(prop.propId, value);
+                break;
+            }
+            case propertyDataTypeDouble:
+            {
+                double value;
+                CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, saveKey));
+                CFNumberGetValue(cfnum, kCFNumberDoubleType, &value);
+                SetPropertyDoubleValue(prop.propId, value);
+                break;
+            }
+            case propertyDataTypeBool:
+            {
+                CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, saveKey));
+                SetPropertyValue(prop.propId,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
+                break;
+            }
+            case propertyDataTypeString:
+            {
+                char	string[PROGRAMNAME_MAX_LEN];
+                CFStringGetCString(reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, saveKey)),
+                                   string, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
+                SetPropertyPtrValue(prop.propId, string, 0);
+                break;
+            }
+            case propertyDataTypeFilePath:
+            {
+                CFDataRef	urlData = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, saveKey));
+                CFURLRef	url = CFURLCreateWithBytes( NULL, CFDataGetBytePtr(urlData),
+                                                       CFDataGetLength(urlData), kCFStringEncodingUTF8, NULL );
+                CFStringRef pathStr = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
+                char	path[PATH_LEN_MAX];
+                CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
+                SetPropertyPtrValue(prop.propId, path, 0);
+                CFRelease(pathStr);
+                CFRelease(url);
+                break;
+            }
+            case propertyDataTypeVariableData:
+            {
+                CFDataRef	data = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, saveKey));
+                SetPropertyPtrValue(prop.propId, CFDataGetBytePtr(data), CFDataGetLength(data));
+                break;
+            }
+            case propertyDataTypeStruct:
+            case propertyDataTypePointer:
+                break;
+        }
+    }
+    else {
+        // デフォルト値を設定
+        if (prop.defaultValue >= 0) {
+            // 負数でデフォルト値を無効化する
+            // FIRBandが設定されていない場合に係数がデフォルトに戻ってしまうのを防止
+            SetPropertyValue(prop.propId, prop.defaultValue);
+            SetPropertyDoubleValue(prop.propId, prop.defaultValue);
+        }
+    }
+    CFRelease(saveKey);
+}
+
+void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
+{
+	int editProg = GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
+	SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, pgnum);
+    
+	CFDictionaryRef dict = static_cast<CFDictionaryRef>(data);
+	
+    SetProgramName(""); // 文字列型は初期値が設定できないのでここで設定する
+    
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToProg) {
+            RestorePropertyFromDict(dict, it->second);
+        }
+        it++;
+    }
+
+	// AU版のSustainModeが無かった期間のバージョンとの互換性のために初期値を適切に設定する
+    CFStringRef saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SustainMode].savekey, kCFStringEncodingASCII);
+    bool    isSustainModeSet = CFDictionaryContainsKey(dict, saveKey)?true:false;
+    CFRelease(saveKey);
+    
+    saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SourceFileRef].savekey, kCFStringEncodingASCII);
+	if (CFDictionaryContainsKey(dict, saveKey)) {
+        // SRをリリース時に使用するけどSustainModeの設定項目は無い過渡的なバージョン
+        if (!isSustainModeSet) {
+            SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
+        }
+	}
+	else {
+		SetSourceFilePath("");
+		SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, .0f);
+        
+        // SRをそのまま使う古いバージョン
+        if (!isSustainModeSet) {
+            SetPropertyValue(kAudioUnitCustomProperty_SustainMode, .0f);
+        }
+	}
+    CFRelease(saveKey);
+	
+	//UIに変更を反映
+	if (pgnum == editProg) {
+		SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
+	}
+	
+	GetDriver()->RefreshKeyMap();
+}
+
+#else
+// VST
+
+//-----------------------------------------------------------------------------
+bool C700Kernel::SetPGDataToChunk(ChunkReader *chunk, int pgnum)
+{
+	if ( chunk->isReadOnly() ) {
+		return false;
+	}
+    
+    int editProg = mEditProg;
+    mEditProg = pgnum;
+    
+    CorrectLoopFlagForSave(pgnum);
+    
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToProg) {
+            SetPropertyToChunk(chunk, it->second);
+        }
+        it++;
+    }
+	
+    mEditProg = editProg;
+
+	return true;
+}
+
+
+//-----------------------------------------------------------------------------
+int C700Kernel::GetPGChunkSize( int pgnum )
+{
+    int editProg = mEditProg;
+    mEditProg = pgnum;
+    
+    const InstParams	*vpSet = GetVP();
+    
+	int cksize = 0;
+	if ( vpSet[pgnum].hasBrrData() ) {
+        auto it = mPropertyParams.begin();
+        while (it != mPropertyParams.end()) {
+            if (it->second.saveToProg) {
+                cksize += sizeof( ChunkReader::MyChunkHead );
+                if (it->second.dataType == propertyDataTypeVariableData) {
+                    cksize += GetPropertyPtrDataSize(it->second.propId);
+                }
+                else if (it->second.dataType == propertyDataTypeBool) {
+                    cksize += 4;    // VSTではbool値はint型で保存する
+                }
+                else {
+                    cksize += it->second.outDataSize;
+                }
+            }
+            it++;
+        }
+	}
+    mEditProg = editProg;
+    
+	return cksize;
+}
+
+//-----------------------------------------------------------------------------
+bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
+{
+    int editProg = mEditProg;
+    mEditProg = pgnum;
+    
+    // デフォルト値の設定
+    auto it = mPropertyParams.begin();
+    while (it != mPropertyParams.end()) {
+        if (it->second.saveToProg) {
+            if (it->second.defaultValue >= 0) {
+                // 負数でデフォルト値を無効化する
+                // FIRBandが設定されていない場合に係数がデフォルトに戻ってしまうのを防止
+                SetPropertyValue(it->second.propId, it->second.defaultValue);
+                SetPropertyDoubleValue(it->second.propId, it->second.defaultValue);
+            }
+        }
+        it++;
+    }
+    
+	while ( chunk->GetLeftSize() >= (int)sizeof( ChunkReader::MyChunkHead ) ) {
+		int		ckType;
+		long	ckSize;
+		chunk->readChunkHead(&ckType, &ckSize);
+        auto it = mPropertyParams.find(ckType);
+        if (it == mPropertyParams.end() || it->second.saveToProg == false) {
+            //不明チャンクの場合は飛ばす
+            chunk->AdvDataPos(ckSize);
+        }
+        else if (RestorePropertyFromData(chunk, ckSize, it->second) == false) {
+            // 特になし
+        }
+	}
+    
+    mEditProg = editProg;
+    
+    GetDriver()->RefreshKeyMap();
+    
+	return true;
+}
+
+#endif

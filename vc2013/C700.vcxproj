@@ -89,7 +89,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;DEBUG_PRINT;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;PATH_LEN_MAX=1024;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;DEBUG_PRINT;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -114,7 +114,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;DEBUG_PRINT;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;PATH_LEN_MAX=1024;_DEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;DEBUG_PRINT;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -134,7 +134,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;PATH_LEN_MAX=1024;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level2</WarningLevel>
@@ -160,7 +160,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\;$(SolutionDir)..\libpng;$(SolutionDir)..\zlib;$(SolutionDir)..\vstgui;$(SolutionDir)..\vstsdk2.4;$(SolutionDir)..\vstsdk2.4\pluginterfaces\vst2.x;$(SolutionDir)..\vstsdk2.4\public.sdk\source\vst2.x;$(SolutionDir)..\commusb;$(SolutionDir)..\snes_spc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;PATH_LEN_MAX=1024;NDEBUG;_WINDOWS;_USRDLL;AGAIN_EXPORTS;VST_64BIT_PLATFORM=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
@@ -190,12 +190,13 @@
     <ClInclude Include="..\C700GUI.h" />
     <ClInclude Include="..\C700Kernel.h" />
     <ClInclude Include="..\C700Parameters.h" />
+    <ClInclude Include="..\C700Properties.h" />
     <ClInclude Include="..\c700timethread.h" />
     <ClInclude Include="..\C700VST.h" />
+    <ClInclude Include="..\ChunkReader.h" />
     <ClInclude Include="..\commusb\ControlUSB.h" />
     <ClInclude Include="..\commusb\SpcControlDevice.h" />
     <ClInclude Include="..\ControlInstacnesDefs.h" />
-    <ClInclude Include="..\ControlInstances.h" />
     <ClInclude Include="..\DataBuffer.h" />
     <ClInclude Include="..\DspController.h" />
     <ClInclude Include="..\DspRegFIFO.h" />
@@ -205,6 +206,7 @@
     <ClInclude Include="..\EfxAccess.h" />
     <ClInclude Include="..\FileAccess.h" />
     <ClInclude Include="..\gauss.h" />
+    <ClInclude Include="..\GUIUtils.h" />
     <ClInclude Include="..\LabelOnOffButton.h" />
     <ClInclude Include="..\libpng\png.h" />
     <ClInclude Include="..\libpng\pngconf.h" />
@@ -215,11 +217,16 @@
     <ClInclude Include="..\MySlider.h" />
     <ClInclude Include="..\MyTextEdit.h" />
     <ClInclude Include="..\noveclib\fft_czt.h" />
-    <ClInclude Include="..\PGChunk.h" />
+    <ClInclude Include="..\PlayerCodeReader.h" />
+    <ClInclude Include="..\PlayingFileGenerateBase.h" />
     <ClInclude Include="..\PlistBRRFile.h" />
     <ClInclude Include="..\RawBRRFile.h" />
+    <ClInclude Include="..\RecordingSettingsGUI.h" />
+    <ClInclude Include="..\RecordingViewCntls.h" />
+    <ClInclude Include="..\RegisterLogger.h" />
     <ClInclude Include="..\samplebrr.h" />
     <ClInclude Include="..\SeparatorLine.h" />
+    <ClInclude Include="..\SmcFileGenerate.h" />
     <ClInclude Include="..\snes_spc\blargg_common.h" />
     <ClInclude Include="..\snes_spc\blargg_config.h" />
     <ClInclude Include="..\snes_spc\blargg_endian.h" />
@@ -231,6 +238,9 @@
     <ClInclude Include="..\snes_spc\SPC_DSP.h" />
     <ClInclude Include="..\snes_spc\SPC_Filter.h" />
     <ClInclude Include="..\SPCFile.h" />
+    <ClInclude Include="..\SpcFileGenerate.h" />
+    <ClInclude Include="..\TextKickButton.h" />
+    <ClInclude Include="..\UrlLinkBox.h" />
     <ClInclude Include="..\vstgui\aeffguieditor.h" />
     <ClInclude Include="..\vstgui\cfileselector.h" />
     <ClInclude Include="..\vstgui\ctooltipsupport.h" />
@@ -265,7 +275,9 @@
     <ClCompile Include="..\C700GUI.cpp" />
     <ClCompile Include="..\C700Kernel.cpp" />
     <ClCompile Include="..\C700Parameters.cpp" />
+    <ClCompile Include="..\C700Properties.cpp" />
     <ClCompile Include="..\C700VST.cpp" />
+    <ClCompile Include="..\ChunkReader.cpp" />
     <ClCompile Include="..\commusb\ControlUSB.cpp" />
     <ClCompile Include="..\commusb\SpcControlDevice.cpp" />
     <ClCompile Include="..\DataBuffer.cpp" />
@@ -276,6 +288,7 @@
     <ClCompile Include="..\EchoKernel.cpp" />
     <ClCompile Include="..\EfxAccess.cpp" />
     <ClCompile Include="..\FileAccess.cpp" />
+    <ClCompile Include="..\GUIUtils.cpp" />
     <ClCompile Include="..\LabelOnOffButton.cpp" />
     <ClCompile Include="..\libpng\png.c" />
     <ClCompile Include="..\libpng\pngerror.c" />
@@ -299,10 +312,14 @@
     <ClCompile Include="..\MyTextEdit.cpp" />
     <ClCompile Include="..\noveclib\czt.cpp" />
     <ClCompile Include="..\noveclib\fft.cpp" />
-    <ClCompile Include="..\PGChunk.cpp" />
+    <ClCompile Include="..\PlayerCodeReader.cpp" />
+    <ClCompile Include="..\PlayingFileGenerateBase.cpp" />
     <ClCompile Include="..\PlistBRRFile.cpp" />
     <ClCompile Include="..\RawBRRFile.cpp" />
+    <ClCompile Include="..\RecordingSettingsGUI.cpp" />
+    <ClCompile Include="..\RegisterLogger.cpp" />
     <ClCompile Include="..\SeparatorLine.cpp" />
+    <ClCompile Include="..\SmcFileGenerate.cpp" />
     <ClCompile Include="..\snes_spc\dsp.cpp" />
     <ClCompile Include="..\snes_spc\SNES_SPC.cpp" />
     <ClCompile Include="..\snes_spc\SNES_SPC_misc.cpp" />
@@ -311,6 +328,9 @@
     <ClCompile Include="..\snes_spc\SPC_DSP.cpp" />
     <ClCompile Include="..\snes_spc\SPC_Filter.cpp" />
     <ClCompile Include="..\SPCFile.cpp" />
+    <ClCompile Include="..\SpcFileGenerate.cpp" />
+    <ClCompile Include="..\TextKickButton.cpp" />
+    <ClCompile Include="..\UrlLinkBox.cpp" />
     <ClCompile Include="..\vstgui\aeffguieditor.cpp" />
     <ClCompile Include="..\vstgui\cfileselector.cpp" />
     <ClCompile Include="..\vstgui\ctooltipsupport.cpp" />

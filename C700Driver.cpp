@@ -75,6 +75,7 @@ C700Driver::C700Driver()
   mVelocityMode( kVelocityMode_Square ),
   mVPset(NULL)
 {
+    MutexInit(mREGLOGEvtMtx);
     MutexInit(mMIDIEvtMtx);
     
 	for ( int i=0; i<NUM_BANKS; i++ ) {
@@ -91,6 +92,7 @@ C700Driver::C700Driver()
     
     mVoiceLimit = 8;
     mIsAccurateMode = false;
+    mFastReleaseAsKeyOff = true;
 
     mEventDelayClocks = 8192;   // 8ms
     mEventDelaySamples = calcEventDelaySamples();
@@ -113,6 +115,7 @@ C700Driver::C700Driver()
         mChStat[i].lastNote = 0;
 	}
     mVoiceManager.Initialize(8);
+    
 	Reset();
 }
 
@@ -120,6 +123,7 @@ C700Driver::C700Driver()
 C700Driver::~C700Driver()
 {
     MutexDestroy(mMIDIEvtMtx);
+    MutexDestroy(mREGLOGEvtMtx);
 }
 //-----------------------------------------------------------------------------
 void C700Driver::Reset()
@@ -187,6 +191,51 @@ void C700Driver::ControlChange( int ch, int controlNum, int value, int inFrame )
 }
 
 //-----------------------------------------------------------------------------
+void C700Driver::StartRegisterLog( int inFrame )
+{
+    MIDIEvt			evt;
+	evt.type = START_REGLOG;
+	evt.ch = 0;
+	evt.note = 0;
+	evt.velo = 0;
+	evt.uniqueID = 0;
+	evt.remain_samples = inFrame;
+    MutexLock(mREGLOGEvtMtx);
+	mREGLOGEvt.push_back( evt );
+    MutexUnlock(mREGLOGEvtMtx);
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::MarkLoopRegisterLog( int inFrame )
+{
+    MIDIEvt			evt;
+	evt.type = MARKLOOP_REGLOG;
+	evt.ch = 0;
+	evt.note = 0;
+	evt.velo = 0;
+	evt.uniqueID = 0;
+	evt.remain_samples = inFrame;
+    MutexLock(mREGLOGEvtMtx);
+	mREGLOGEvt.push_back( evt );
+    MutexUnlock(mREGLOGEvtMtx);
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::EndRegisterLog( int inFrame )
+{
+    MIDIEvt			evt;
+	evt.type = END_REGLOG;
+	evt.ch = 0;
+	evt.note = 0;
+	evt.velo = 0;
+	evt.uniqueID = 0;
+	evt.remain_samples = inFrame;
+    MutexLock(mREGLOGEvtMtx);
+	mREGLOGEvt.push_back( evt );
+    MutexUnlock(mREGLOGEvtMtx);
+}
+
+//-----------------------------------------------------------------------------
 void C700Driver::AllNotesOff()
 {
     //mClearEvent = true;
@@ -194,6 +243,9 @@ void C700Driver::AllNotesOff()
 	for ( int i=0; i<kMaximumVoices; i++ ) {
         mVoiceStat[i].Reset();
         mKeyOnFlag[i] = false;
+        mKeyOffFlag[i] = false;
+        mEchoOnFlag = 0;
+        mEchoOnMask[i] = false;
 	}
     mVoiceManager.Reset();
 }
@@ -355,6 +407,27 @@ void C700Driver::SetEngineType( engine_type type )
             mDSP.SetVoiceLimit(8);
             break;
     }
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::SetVoiceAllocMode( voicealloc_mode mode )
+{
+    switch (mode) {
+        case kVoiceAllocMode_Oldest:
+            mVoiceManager.SetVoiceAllocMode(DynamicVoiceManager::ALLOC_MODE_OLDEST);
+            break;
+        case kVoiceAllocMode_SameChannel:
+            mVoiceManager.SetVoiceAllocMode(DynamicVoiceManager::ALLOC_MODE_SAMECH);
+            break;
+        default:
+            break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::SetFastReleaseAsKeyOff( bool value )
+{
+    mFastReleaseAsKeyOff = value;
 }
 
 //-----------------------------------------------------------------------------
@@ -832,17 +905,16 @@ bool C700Driver::doNoteOn1( MIDIEvt dEvt )
         
         if (v != -1) {
             if (legato == false) {
-                mDSP.KeyOffVoice(v);
+                //mDSP.KeyOffVoice(v);
+                mKeyOffFlag[v] = true;
                 
                 //mDSP.SetEchoOn(v, vp.echo);
-                mDSP.SetAR(v, vp.ar);
-                mDSP.SetDR(v, vp.dr);
-                mDSP.SetSL(v, vp.sl);
+                mDSP.SetARDR(v, vp.ar, vp.dr);
                 if (vp.sustainMode) {
-                    mDSP.SetSR(v, 0);		//ノートオフ時に設定値になる
+                    mDSP.SetSLSR(v, vp.sl, 0);		//ノートオフ時に設定値になる
                 }
                 else {
-                    mDSP.SetSR(v, vp.sr);
+                    mDSP.SetSLSR(v, vp.sl, vp.sr);
                 }
             }
             // 上位4bitに確保したボイス番号を入れる
@@ -928,15 +1000,19 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
             mDSP.setBrr(v, vp.brrData(), vp.lp);
         }
         
-        mDSP.SetEchoOn(v, vp.echo);
-        mDSP.SetAR(v, vp.ar);
-        mDSP.SetDR(v, vp.dr);
-        mDSP.SetSL(v, vp.sl);
+        //mDSP.SetEchoOn(v, vp.echo);
+        mEchoOnFlag &= ~(1 << v);
+        if (vp.echo) {
+            mEchoOnFlag |= 1 << v;
+        }
+        mEchoOnMask[v] = true;
+        
+        mDSP.SetARDR(v, vp.ar, vp.dr);
         if (vp.sustainMode) {
-            mDSP.SetSR(v, 0);		//ノートオフ時に設定値になる
+            mDSP.SetSLSR(v, vp.sl, 0);		//ノートオフ時に設定値になる
         }
         else {
-            mDSP.SetSR(v, vp.sr);
+            mDSP.SetSLSR(v, vp.sl, vp.sr);
         }
         
         // キーオン
@@ -962,17 +1038,38 @@ int C700Driver::doNoteOff( const MIDIEvt *evt )
     int             vo=-1;
     stops = mVoiceManager.ReleaseVoice(vp.releasePriority, evt->ch, evt->uniqueID, &vo);
     if (stops > 0) {
-        if (vp.sustainMode) {
+        if (vp.sustainMode && (vp.sr != 31 || !mFastReleaseAsKeyOff)) {
             //キーオフさせずにsrを変更する
             mDSP.SetDR(vo, 7);
             mDSP.SetSR(vo, vp.sr);
         }
         else {
             // キーオフ
-            mDSP.KeyOffVoice(vo);
+            //mDSP.KeyOffVoice(vo);
+            mKeyOffFlag[vo] = true;
         }
     }
 	return stops;
+}
+
+//-----------------------------------------------------------------------------
+bool C700Driver::doRegLogEvents( const MIDIEvt *evt )
+{
+    bool    handled = true;
+    
+    if (evt->type == START_REGLOG) {
+        mDSP.BeginRegisterLog();
+    }
+    else if (evt->type == MARKLOOP_REGLOG) {
+        mDSP.MarkRegisterLogLoop();
+    }
+    else if (evt->type == END_REGLOG) {
+        mDSP.EndRegisterLog();
+    }
+    else {
+        handled = false;
+    }
+    return handled;
 }
 
 //-----------------------------------------------------------------------------
@@ -990,7 +1087,7 @@ bool C700Driver::doEvents1( const MIDIEvt *evt )
         }
     }
     else {
-        // ノートオフ以外のイベントは全て遅延実行する
+        // ノートオフとレジスタログ以外のイベントは全て遅延実行する
         doNoteOn1(*evt);
     }
     
@@ -1158,6 +1255,25 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
     mDSP.BeginFrameProcess((double)frames / mSampleRate);
     
 	for (unsigned int frame=0; frame<frames; ++frame) {
+        // REGLOGイベントの処理
+        MutexLock(mREGLOGEvtMtx);
+		if ( mREGLOGEvt.size() != 0 ) {
+			std::list<MIDIEvt>::iterator	it = mREGLOGEvt.begin();
+			while ( it != mREGLOGEvt.end() ) {
+				if ( it->remain_samples >= 0 ) {
+					it->remain_samples--;
+                }
+                if ( it->remain_samples < 0 ) {
+                    if (doRegLogEvents(&(*it))) {
+                        it = mREGLOGEvt.erase( it );
+                        continue;
+                    }
+                }
+				it++;
+			}
+		}
+        MutexUnlock(mREGLOGEvtMtx);
+        
 		//イベント処理
         MutexLock(mMIDIEvtMtx);
 		if ( mMIDIEvt.size() != 0 ) {
@@ -1192,6 +1308,19 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 			}
 		}
         
+        {
+            int koff = 0;
+            for ( int v=0; v<kMaximumVoices; v++ ) {
+                if (mKeyOffFlag[v]) {
+                    koff |= 1 << v;
+                    mKeyOffFlag[v] = false;
+                }
+            }
+            if (koff) {
+                mDSP.KeyOffVoiceFlg(koff);
+            }
+        }
+        
         while (mPortamentCount >= 0) {
             // ポルタメント処理
 #if 0
@@ -1215,6 +1344,7 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 		
 		for ( ; mProcessFrac >= 0; mProcessFrac -= CYCLES_PER_SAMPLE ) {
             int kon = 0;
+            int ecen = 0;
             for ( int v=0; v<kMaximumVoices; v++ ) {
 				//ピッチの算出
                 if (mPitchCount[v] >= 0) {
@@ -1260,13 +1390,20 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
                 mDSP.SetVol_L(v, volL);
                 mDSP.SetVol_R(v, volR);
                 
+                if (mEchoOnMask[v]) {
+                    ecen |= 1 << v;
+                    mEchoOnMask[v] = false;
+                }
                 if (mKeyOnFlag[v]) {
                     kon |= 1 << v;
                     mKeyOnFlag[v] = false;
                 }
+                
                 mPitchCount[v]++;
             }
-            
+            if (ecen) {
+                mDSP.SetEchoOnFlg(mEchoOnFlag, ecen);
+            }
             if (kon) {
                 mDSP.KeyOnVoiceFlg(kon);
             }

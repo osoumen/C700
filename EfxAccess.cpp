@@ -7,6 +7,7 @@
  *
  */
 
+#include "PlayerCodeReader.h"
 #include "EfxAccess.h"
 #ifndef AU
 #include "C700VST.h"
@@ -21,11 +22,21 @@ EfxAccess::EfxAccess( void *efx )
 : mEfx((C700VST*)efx)
 #endif
 {
+#if AU
+    mLastGetBrr.data = NULL;
+    mLastGetBrr.size = 0;
+#endif
+    createPropertyParamMap(mPropertyParams);
 }
 
 //-----------------------------------------------------------------------------
 EfxAccess::~EfxAccess()
 {
+#if AU
+    if (mLastGetBrr.data != NULL) {
+        delete [] mLastGetBrr.data;
+    }
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -37,7 +48,7 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
     BRRData     brr;
 	GetBRRData(&brr);
     inst.setBRRData(&brr);
-	GetProgramName(inst.pgname, PROGRAMNAME_MAX_LEN);
+	GetCStringProperty(kAudioUnitCustomProperty_ProgramName, inst.pgname, PROGRAMNAME_MAX_LEN);
 	inst.ar = GetPropertyValue(kAudioUnitCustomProperty_AR);
 	inst.dr = GetPropertyValue(kAudioUnitCustomProperty_DR);
 	inst.sl = GetPropertyValue(kAudioUnitCustomProperty_SL);
@@ -59,7 +70,7 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
     inst.noteOnPriority = GetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority);
     inst.releasePriority = GetPropertyValue(kAudioUnitCustomProperty_ReleasePriority);
 	inst.isEmphasized = GetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized)!=0?true:false;
-	GetSourceFilePath(inst.sourceFile,PATH_LEN_MAX);
+	GetFilePathProperty(kAudioUnitCustomProperty_SourceFileRef,inst.sourceFile,PATH_LEN_MAX);
 	
 	RawBRRFile	*file = new RawBRRFile(NULL,true);
 	file->StoreInst(&inst);
@@ -83,8 +94,7 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 bool	EfxAccess::CreateXIFileData( XIFile **outData )
 {
 #if AU
-	XIFile	*file = new XIFile(NULL, 0);
-	*outData = file;
+	XIFile	*file = NULL;
 	
 	//AU内部で生成されたデータを取得する
 	//問題が無ければVST時と同じでも良いかも？
@@ -97,16 +107,17 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 		== noErr )
 	{
 		if ( cfdata ) {
-			file->SetCFData( cfdata );
+            file = new XIFile(NULL, CFDataGetLength(cfdata));
+            file->writeData(CFDataGetBytePtr(cfdata), CFDataGetLength(cfdata));
 			CFRelease(cfdata);
+            *outData = file;
 			return true;
 		}
 		else {
-			delete file;
 			return false;
 		}
 	}
-	CFRelease(cfdata);
+    *outData = file;
 	return true;
 #else
 	//VST時の処理
@@ -118,7 +129,7 @@ bool	EfxAccess::CreateXIFileData( XIFile **outData )
 	}
 	
 	XIFile	*file = new XIFile(NULL);
-	file->SetDataFromChip( mEfx->mEfx->GetGenerator(),
+	file->SetDataFromChip( mEfx->mEfx->GetDriver(),
 							 mEfx->mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram),
 							 tempo );
 	if ( file->IsLoaded() ) {
@@ -180,7 +191,7 @@ bool	EfxAccess::SetPlistBRRFileData( const PlistBRRFile *data )
 }
 
 //-----------------------------------------------------------------------------
-bool EfxAccess::SetSourceFilePath( const char *path )
+bool EfxAccess::SetFilePathProperty( int propertyId, const char *path )
 {
 	if ( strlen(path) == 0 ) return false;
 #if AU
@@ -188,7 +199,7 @@ bool EfxAccess::SetSourceFilePath( const char *path )
 	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)path, strlen(path), false);
 
 	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SourceFileRef,
+		AudioUnitSetProperty(mAU, propertyId,
 							 kAudioUnitScope_Global, 0, &url, inSize)
 		== noErr ) {
 		CFRelease( url );
@@ -198,13 +209,13 @@ bool EfxAccess::SetSourceFilePath( const char *path )
 	return false;
 #else
 	//VST時の処理
-	mEfx->mEfx->SetSourceFilePath(path);
+	mEfx->mEfx->SetPropertyPtrValue(propertyId, path, 0);
 	return true;
 #endif
 }
 
 //-----------------------------------------------------------------------------
-bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
+bool EfxAccess::GetFilePathProperty( int propertyId, char *path, int maxLen )
 {
 #if AU
 	CFURLRef	url;
@@ -212,7 +223,7 @@ bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
 	
 	//データを取得する
 	if (
-		AudioUnitGetProperty(mAU,kAudioUnitCustomProperty_SourceFileRef,
+		AudioUnitGetProperty(mAU,propertyId,
 							 kAudioUnitScope_Global, 0, &url, &outSize)
 		== noErr )
 	{
@@ -230,7 +241,7 @@ bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
 	return false;
 #else
 	//VST時の処理
-	const char	*outpath = mEfx->mEfx->GetSourceFilePath();
+	const char	*outpath = (char*)mEfx->mEfx->GetPropertyPtrValue(propertyId);
 	if ( outpath ) {
 		strncpy(path, outpath, maxLen-1);
 		return true;
@@ -240,15 +251,15 @@ bool EfxAccess::GetSourceFilePath( char *path, int maxLen )
 }
 
 //-----------------------------------------------------------------------------
-bool EfxAccess::SetProgramName( const char *pgname )
+bool EfxAccess::SetCStringProperty( int propertyId, const char *string )
 {
 #if AU
 	
 	UInt32		inSize = sizeof(CFStringRef);
-	CFStringRef	pgnameRef = CFStringCreateWithCString(NULL, pgname, kCFStringEncodingUTF8);
+	CFStringRef	pgnameRef = CFStringCreateWithCString(NULL, string, kCFStringEncodingUTF8);
 	
 	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0, &pgnameRef, inSize)
+		AudioUnitSetProperty(mAU, propertyId, kAudioUnitScope_Global, 0, &pgnameRef, inSize)
 		== noErr ) {
 		CFRelease( pgnameRef );
 		return true;
@@ -257,14 +268,14 @@ bool EfxAccess::SetProgramName( const char *pgname )
 	return false;
 #else
 	//VST時の処理
-	mEfx->mEfx->SetProgramName( pgname );
-	mEfx->PropertyNotifyFunc(kAudioUnitCustomProperty_ProgramName, mEfx);
+	mEfx->mEfx->SetPropertyPtrValue( propertyId, string, 0 );
+	mEfx->PropertyNotifyFunc(propertyId, mEfx);
 	return true;
 #endif
 }
 
 //-----------------------------------------------------------------------------
-bool EfxAccess::GetProgramName( char *pgname, int maxLen )
+bool EfxAccess::GetCStringProperty( int propertyId, char *string, int maxLen )
 {
 #if AU
 	
@@ -272,23 +283,24 @@ bool EfxAccess::GetProgramName( char *pgname, int maxLen )
 	CFStringRef	pgnameRef;
 	
 	if (
-		AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_ProgramName, kAudioUnitScope_Global, 0, &pgnameRef, &outSize)
+		AudioUnitGetProperty(mAU, propertyId, kAudioUnitScope_Global, 0, &pgnameRef, &outSize)
 		== noErr ) {
 		if ( pgnameRef ) {
-			CFStringGetCString(pgnameRef, pgname, maxLen-1, kCFStringEncodingUTF8);
+			CFStringGetCString(pgnameRef, string, maxLen, kCFStringEncodingUTF8);
 			CFRelease(pgnameRef);
 			return true;
 		}
 		else {
-			pgname[0] = 0;
+			string[0] = 0;
 		}
 	}
 	return false;
 #else
 	//VST時の処理
-	const char *outpgname = mEfx->mEfx->GetProgramName();
+	const char *outpgname = (char*)mEfx->mEfx->GetPropertyPtrValue(propertyId);
 	if ( outpgname ) {
-		strncpy(pgname, outpgname, maxLen-1);
+		strncpy(string, outpgname, maxLen-1);
+        string[maxLen-1] = 0;
 		return true;
 	}
 	return false;
@@ -299,10 +311,25 @@ bool EfxAccess::GetProgramName( char *pgname, int maxLen )
 bool EfxAccess::GetBRRData( BRRData *data )
 {
 #if AU
-	UInt32		outSize = sizeof(BRRData);
+	UInt32		outSize = sizeof(CFDataRef);
+    CFDataRef   out;
 	if (
-	AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, data, &outSize)
+	AudioUnitGetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, &out, &outSize)
 		== noErr ) {
+        if (mLastGetBrr.data != NULL) {
+            delete [] mLastGetBrr.data;
+        }
+        if ((CFDataGetLength(out) == 0) || (CFDataGetBytePtr(out) == NULL)) {
+            mLastGetBrr.data = NULL;
+            mLastGetBrr.size = 0;
+        }
+        else {
+            mLastGetBrr.data = new unsigned char[CFDataGetLength(out)];
+            mLastGetBrr.size = CFDataGetLength(out);
+            memcpy(mLastGetBrr.data, CFDataGetBytePtr(out), mLastGetBrr.size);
+        }
+        CFRelease(out);
+        *data = mLastGetBrr;
 		return true;
 	}
 	return false;
@@ -321,13 +348,15 @@ bool EfxAccess::GetBRRData( BRRData *data )
 bool EfxAccess::SetBRRData( const BRRData *data )
 {
 #if AU
-	UInt32		inSize = sizeof(BRRData);
-	
+	UInt32		inSize = sizeof(CFDataRef);
+    CFDataRef   brr = CFDataCreate(NULL, data->data, data->size);
 	if (
-		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, data, inSize)
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_BRRData, kAudioUnitScope_Global, 0, &brr, inSize)
 		== noErr ) {
+        CFRelease(brr);
 		return true;
 	}
+    CFRelease(brr);
 	return false;
 #else
 	//VST時の処理
@@ -338,110 +367,62 @@ bool EfxAccess::SetBRRData( const BRRData *data )
 }
 
 //-----------------------------------------------------------------------------
-float EfxAccess::GetPropertyValue( int propertyId )
+double EfxAccess::GetPropertyValue( int propertyId )
 {
 #if AU
-	float		value = .0f;
+	double		value = .0;
 	char		outDataPtr[16];
 	UInt32		outDataSize=16;
 	
-	if ( 
+	if (
+        propertyId != kAudioUnitCustomProperty_ProgramName &&
 		propertyId != kAudioUnitCustomProperty_PGDictionary &&
 		propertyId != kAudioUnitCustomProperty_XIData &&
 		propertyId != kAudioUnitCustomProperty_SourceFileRef ) {
 		AudioUnitGetProperty(mAU, propertyId, kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
 	}
 	
-	switch (propertyId) {
-		case kAudioUnitCustomProperty_BaseKey:
-		case kAudioUnitCustomProperty_LowKey:
-		case kAudioUnitCustomProperty_HighKey:
-		case kAudioUnitCustomProperty_AR:
-		case kAudioUnitCustomProperty_DR:
-		case kAudioUnitCustomProperty_SL:
-		case kAudioUnitCustomProperty_SR:
-		case kAudioUnitCustomProperty_VolL:
-		case kAudioUnitCustomProperty_VolR:
-		case kAudioUnitCustomProperty_EditingProgram:
-		case kAudioUnitCustomProperty_EditingChannel:
-		case kAudioUnitCustomProperty_Bank:
-		case kAudioUnitCustomProperty_TotalRAM:
-		case kAudioUnitCustomProperty_LoopPoint:
-        case kAudioUnitCustomProperty_PortamentoRate:
-        case kAudioUnitCustomProperty_NoteOnPriority:
-        case kAudioUnitCustomProperty_ReleasePriority:
-			value = *((int*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_Rate:
-			value = *((double*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_Loop:
-		case kAudioUnitCustomProperty_Echo:
-		case kAudioUnitCustomProperty_IsEmaphasized:
-        case kAudioUnitCustomProperty_SustainMode:
-        case kAudioUnitCustomProperty_MonoMode:
-        case kAudioUnitCustomProperty_PortamentoOn:
-        case kAudioUnitCustomProperty_IsHwConnected:
-			value = *((bool*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_Band1:
-		case kAudioUnitCustomProperty_Band2:
-		case kAudioUnitCustomProperty_Band3:
-		case kAudioUnitCustomProperty_Band4:
-		case kAudioUnitCustomProperty_Band5:
-			value = *((Float32*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_NoteOnTrack_1:
-		case kAudioUnitCustomProperty_NoteOnTrack_2:
-		case kAudioUnitCustomProperty_NoteOnTrack_3:
-		case kAudioUnitCustomProperty_NoteOnTrack_4:
-		case kAudioUnitCustomProperty_NoteOnTrack_5:	
-		case kAudioUnitCustomProperty_NoteOnTrack_6:
-		case kAudioUnitCustomProperty_NoteOnTrack_7:
-		case kAudioUnitCustomProperty_NoteOnTrack_8:
-		case kAudioUnitCustomProperty_NoteOnTrack_9:
-		case kAudioUnitCustomProperty_NoteOnTrack_10:
-		case kAudioUnitCustomProperty_NoteOnTrack_11:
-		case kAudioUnitCustomProperty_NoteOnTrack_12:
-		case kAudioUnitCustomProperty_NoteOnTrack_13:
-		case kAudioUnitCustomProperty_NoteOnTrack_14:
-		case kAudioUnitCustomProperty_NoteOnTrack_15:
-		case kAudioUnitCustomProperty_NoteOnTrack_16:
-		case kAudioUnitCustomProperty_MaxNoteTrack_1:
-		case kAudioUnitCustomProperty_MaxNoteTrack_2:
-		case kAudioUnitCustomProperty_MaxNoteTrack_3:
-		case kAudioUnitCustomProperty_MaxNoteTrack_4:
-		case kAudioUnitCustomProperty_MaxNoteTrack_5:
-		case kAudioUnitCustomProperty_MaxNoteTrack_6:
-		case kAudioUnitCustomProperty_MaxNoteTrack_7:
-		case kAudioUnitCustomProperty_MaxNoteTrack_8:
-		case kAudioUnitCustomProperty_MaxNoteTrack_9:
-		case kAudioUnitCustomProperty_MaxNoteTrack_10:
-		case kAudioUnitCustomProperty_MaxNoteTrack_11:
-		case kAudioUnitCustomProperty_MaxNoteTrack_12:
-		case kAudioUnitCustomProperty_MaxNoteTrack_13:
-		case kAudioUnitCustomProperty_MaxNoteTrack_14:
-		case kAudioUnitCustomProperty_MaxNoteTrack_15:
-		case kAudioUnitCustomProperty_MaxNoteTrack_16:
-			value = *((UInt32*)outDataPtr);
-			break;
-			
-		case kAudioUnitCustomProperty_BRRData:
-		case kAudioUnitCustomProperty_ProgramName:
-		case kAudioUnitCustomProperty_PGDictionary:
-		case kAudioUnitCustomProperty_XIData:
-		case kAudioUnitCustomProperty_SourceFileRef:
-		default:
-			value = .0f;
-	}
+    auto it = mPropertyParams.find(propertyId);
+    if (it != mPropertyParams.end()) {
+        switch (it->second.dataType) {
+            case propertyDataTypeFloat32:
+                value = *((Float32*)outDataPtr);
+                break;
+            case propertyDataTypeDouble:
+                value = *((double*)outDataPtr);
+                break;
+            case propertyDataTypeInt32:
+                value = *((int*)outDataPtr);
+                break;
+            case propertyDataTypeBool:
+                value = *((bool*)outDataPtr);
+                break;
+            case propertyDataTypeStruct:
+            case propertyDataTypeString:
+            case propertyDataTypeFilePath:
+            case propertyDataTypeVariableData:
+            case propertyDataTypePointer:
+                break;
+        }
+    }
 	return value;
 #else
 	//VST時の処理
-	return mEfx->mEfx->GetPropertyValue(propertyId);
+    switch (mPropertyParams[propertyId].dataType) {
+        case propertyDataTypeFloat32:
+        case propertyDataTypeInt32:
+        case propertyDataTypeBool:
+            return mEfx->mEfx->GetPropertyValue(propertyId);
+        case propertyDataTypeDouble:
+            return mEfx->mEfx->GetPropertyDoubleValue(propertyId);
+        case propertyDataTypeStruct:
+        case propertyDataTypeString:
+        case propertyDataTypeFilePath:
+        case propertyDataTypeVariableData:
+        case propertyDataTypePointer:
+            break;
+    }
+	return 0;
 #endif
 }
 
@@ -473,7 +454,7 @@ void EfxAccess::SetParameter( void *sender, int index, float value )
 }
 
 //-----------------------------------------------------------------------------
-void EfxAccess::SetPropertyValue( int propertyID, float value )
+void EfxAccess::SetPropertyValue( int propertyID, double value )
 {
 #if AU
 	double		doubleData = value;
@@ -483,124 +464,85 @@ void EfxAccess::SetPropertyValue( int propertyID, float value )
 	void*		outDataPtr = NULL;
 	UInt32		outDataSize = 0;
 	
-	switch (propertyID) {
-		case kAudioUnitCustomProperty_BaseKey:
-		case kAudioUnitCustomProperty_LowKey:
-		case kAudioUnitCustomProperty_HighKey:
-		case kAudioUnitCustomProperty_AR:
-		case kAudioUnitCustomProperty_DR:
-		case kAudioUnitCustomProperty_SL:
-		case kAudioUnitCustomProperty_SR:
-		case kAudioUnitCustomProperty_VolL:
-		case kAudioUnitCustomProperty_VolR:
-		case kAudioUnitCustomProperty_EditingProgram:
-		case kAudioUnitCustomProperty_EditingChannel:
-		case kAudioUnitCustomProperty_LoopPoint:
-		case kAudioUnitCustomProperty_Bank:
-        case kAudioUnitCustomProperty_PortamentoRate:
-        case kAudioUnitCustomProperty_NoteOnPriority:
-        case kAudioUnitCustomProperty_ReleasePriority:
-			outDataSize	= sizeof(int);
-			outDataPtr	= (void*)&intData;
-			break;
-			
-		case kAudioUnitCustomProperty_Rate:
-			outDataSize = sizeof(double);
-			outDataPtr = (void*)&doubleData;
-			break;
-			
-		case kAudioUnitCustomProperty_Loop:
-		case kAudioUnitCustomProperty_Echo:
-        case kAudioUnitCustomProperty_SustainMode:
-        case kAudioUnitCustomProperty_MonoMode:
-        case kAudioUnitCustomProperty_PortamentoOn:
-			outDataSize = sizeof(bool);
-			outDataPtr = (void*)&boolData;
-			break;
-			
-		case kAudioUnitCustomProperty_BRRData:
-			//別関数で処理
-			break;
-			
-		case kAudioUnitCustomProperty_PGDictionary:
-			//別関数で処理
-			break;
-			
-		case kAudioUnitCustomProperty_XIData:
-			//read only
-			break;
-			
-		case kAudioUnitCustomProperty_ProgramName:
-			//別関数で処理
-			break;
-			
-		case kAudioUnitCustomProperty_TotalRAM:
-			//read only
-			break;
-			
-		case kAudioUnitCustomProperty_Band1:
-		case kAudioUnitCustomProperty_Band2:
-		case kAudioUnitCustomProperty_Band3:
-		case kAudioUnitCustomProperty_Band4:
-		case kAudioUnitCustomProperty_Band5:
-			outDataSize = sizeof(Float32);
-			outDataPtr = (void*)&floatData;
-			break;
-			
-		case kAudioUnitCustomProperty_NoteOnTrack_1:
-		case kAudioUnitCustomProperty_NoteOnTrack_2:
-		case kAudioUnitCustomProperty_NoteOnTrack_3:
-		case kAudioUnitCustomProperty_NoteOnTrack_4:
-		case kAudioUnitCustomProperty_NoteOnTrack_5:	
-		case kAudioUnitCustomProperty_NoteOnTrack_6:
-		case kAudioUnitCustomProperty_NoteOnTrack_7:
-		case kAudioUnitCustomProperty_NoteOnTrack_8:
-		case kAudioUnitCustomProperty_NoteOnTrack_9:
-		case kAudioUnitCustomProperty_NoteOnTrack_10:
-		case kAudioUnitCustomProperty_NoteOnTrack_11:
-		case kAudioUnitCustomProperty_NoteOnTrack_12:
-		case kAudioUnitCustomProperty_NoteOnTrack_13:
-		case kAudioUnitCustomProperty_NoteOnTrack_14:
-		case kAudioUnitCustomProperty_NoteOnTrack_15:
-		case kAudioUnitCustomProperty_NoteOnTrack_16:
-		case kAudioUnitCustomProperty_MaxNoteTrack_1:
-		case kAudioUnitCustomProperty_MaxNoteTrack_2:
-		case kAudioUnitCustomProperty_MaxNoteTrack_3:
-		case kAudioUnitCustomProperty_MaxNoteTrack_4:
-		case kAudioUnitCustomProperty_MaxNoteTrack_5:
-		case kAudioUnitCustomProperty_MaxNoteTrack_6:
-		case kAudioUnitCustomProperty_MaxNoteTrack_7:
-		case kAudioUnitCustomProperty_MaxNoteTrack_8:
-		case kAudioUnitCustomProperty_MaxNoteTrack_9:
-		case kAudioUnitCustomProperty_MaxNoteTrack_10:
-		case kAudioUnitCustomProperty_MaxNoteTrack_11:
-		case kAudioUnitCustomProperty_MaxNoteTrack_12:
-		case kAudioUnitCustomProperty_MaxNoteTrack_13:
-		case kAudioUnitCustomProperty_MaxNoteTrack_14:
-		case kAudioUnitCustomProperty_MaxNoteTrack_15:
-		case kAudioUnitCustomProperty_MaxNoteTrack_16:
-			//read only
-			break;
-			
-		case kAudioUnitCustomProperty_SourceFileRef:
-			//別関数で処理
-			break;
-			
-		case kAudioUnitCustomProperty_IsEmaphasized:
-			//別関数で処理
-			break;
-			
-		default:
-			outDataPtr = NULL;
-			outDataSize = 0;
-	}
-	
+    auto it = mPropertyParams.find(propertyID);
+    if (it != mPropertyParams.end()) {
+        if (it->second.readOnly == false) {
+            switch (it->second.dataType) {
+                case propertyDataTypeFloat32:
+                    outDataSize = sizeof(Float32);
+                    outDataPtr = (void*)&floatData;
+                    break;
+                case propertyDataTypeDouble:
+                    outDataSize = sizeof(double);
+                    outDataPtr = (void*)&doubleData;
+                    break;
+                case propertyDataTypeInt32:
+                    outDataSize	= sizeof(int);
+                    outDataPtr	= (void*)&intData;
+                    break;
+                case propertyDataTypeBool:
+                    outDataSize = sizeof(bool);
+                    outDataPtr = (void*)&boolData;
+                    break;
+                case propertyDataTypeStruct:
+                case propertyDataTypeString:
+                case propertyDataTypeFilePath:
+                case propertyDataTypeVariableData:
+                case propertyDataTypePointer:
+                    outDataPtr = NULL;
+                    outDataSize = 0;
+                    break;
+            }
+        }
+    }
 	if ( outDataPtr ) {
 		AudioUnitSetProperty(mAU, propertyID, kAudioUnitScope_Global, 0, outDataPtr, outDataSize);
 	}
 #else
 	//VST時の処理
-	mEfx->mEfx->SetPropertyValue(propertyID, value);
+    switch (mPropertyParams[propertyID].dataType) {
+        case propertyDataTypeFloat32:
+        case propertyDataTypeInt32:
+        case propertyDataTypeBool:
+            mEfx->mEfx->SetPropertyValue(propertyID, value);
+            break;
+        case propertyDataTypeDouble:
+            mEfx->mEfx->SetPropertyDoubleValue(propertyID, value);
+            break;
+        case propertyDataTypeStruct:
+        case propertyDataTypeString:
+        case propertyDataTypeFilePath:
+        case propertyDataTypeVariableData:
+        case propertyDataTypePointer:
+            break;
+    }
 	mEfx->PropertyNotifyFunc(propertyID, mEfx);
 #endif
 }
+
+//-----------------------------------------------------------------------------
+bool EfxAccess::LoadSongPlayerCode( const char *path )
+{
+    DataBuffer codeFile(path);
+    if (codeFile.GetDataUsed() <= 1) {
+        return false;
+    }
+    
+#if AU
+    CFDataRef   dataRef = CFDataCreate(NULL, codeFile.GetDataPtr(), codeFile.GetDataSize());
+    UInt32      inSize = sizeof(CFDataRef);
+    if (
+		AudioUnitSetProperty(mAU, kAudioUnitCustomProperty_SongPlayerCode,
+							 kAudioUnitScope_Global, 0, &dataRef, inSize)
+		== noErr ) {
+        CFRelease(dataRef);
+		return true;
+	}
+    CFRelease(dataRef);
+	return false;
+#else
+    mEfx->mEfx->SetPropertyPtrValue(kAudioUnitCustomProperty_SongPlayerCode, codeFile.GetDataPtr(), codeFile.GetDataSize());
+    return true;
+#endif
+}
+

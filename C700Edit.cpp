@@ -32,6 +32,8 @@ C700Edit::C700Edit( void *pEffect )
 	rect.top	= 0;
 	rect.right	= (short)m_pBackground->getWidth();
 	rect.bottom = (short)m_pBackground->getHeight();
+    
+    createPropertyParamMap(mPropertyParams);
 }
 
 //-----------------------------------------------------------------------------
@@ -227,6 +229,60 @@ void C700Edit::setParameter(int index, float value)
 }
 
 //-----------------------------------------------------------------------------
+void C700Edit::setParameter(int index, const void *inPtr)
+{
+#if AU
+    switch ( index ) {
+		case kAudioUnitCustomProperty_BRRData:
+        {
+            CFDataRef   data = reinterpret_cast<CFDataRef>(inPtr);
+            BRRData		brrdata;
+            brrdata.data = (unsigned char *)CFDataGetBytePtr(data);
+            brrdata.size = CFDataGetLength(data);
+            SetBRRData( &brrdata );
+            CFRelease(inPtr);
+            break;
+        }
+		case kAudioUnitCustomProperty_ProgramName:
+        {
+            CFStringRef		cfpgname = reinterpret_cast<CFStringRef>(inPtr);
+            if ( cfpgname == NULL )
+            {
+                SetProgramName( "" );
+            }
+            else {
+                char	pgname[PROGRAMNAME_MAX_LEN];
+                CFStringGetCString(cfpgname, pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
+                SetProgramName( pgname );
+                CFRelease(cfpgname);
+            }
+            break;
+        }
+        case kAudioUnitCustomProperty_PGDictionary:
+        case kAudioUnitCustomProperty_XIData:
+            if (inPtr != NULL) {
+                CFRelease(inPtr);
+            }
+            break;
+        default:
+        {
+            auto it = mPropertyParams.find(index);
+            if (it != mPropertyParams.end()) {
+                if (it->second.dataType == propertyDataTypeString ||
+                    it->second.dataType == propertyDataTypeFilePath ||
+                    it->second.dataType == propertyDataTypeVariableData) {
+                    if (inPtr != NULL) {
+                        CFRelease(inPtr);
+                    }
+                }
+            }
+            break;
+        }
+    }
+#endif
+}
+
+//-----------------------------------------------------------------------------
 void C700Edit::SetLoopPoint( int lp )
 {
 	if (!frame) return;
@@ -358,6 +414,7 @@ void C700Edit::SetBRRData( const BRRData *brr )
 //-----------------------------------------------------------------------------
 void C700Edit::UpdateXMSNESText()
 {
+#if 0
 	if (!frame) return;
 	if (m_pUIView == NULL) return;
 	
@@ -421,6 +478,7 @@ void C700Edit::UpdateXMSNESText()
 	
 	CTextLabel	*textbox = reinterpret_cast<CTextLabel*> (m_pUIView->FindControlByTag(kControlXMSNESText));
 	textbox->setText(param_str);
+#endif
 }
 
 //-----------------------------------------------------------------------------
