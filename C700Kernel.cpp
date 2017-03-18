@@ -917,15 +917,15 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr, int size )
 
         case kAudioUnitCustomProperty_SongPlayerCode:
         {
-            if (mCodeFile != NULL) {
-                delete mCodeFile;
-            }
-            mCodeFile = new PlayerCodeReader(inPtr, size, true);
-            if (!mCodeFile->IsLoaded()) {
-                delete mCodeFile;
-                mCodeFile = NULL;
+			PlayerCodeReader *code = new PlayerCodeReader(inPtr, size, true);
+            if (!code->IsLoaded()) {
+				delete code;
                 return true;
             }
+			if (mCodeFile != NULL) {
+				delete mCodeFile;
+			}
+			mCodeFile = code;
             mDriver.GetDsp()->SetSpcPlayerCode(mCodeFile->getSpcPlayerCode(), mCodeFile->getSpcPlayerCodeSize());
             mDriver.GetDsp()->SetSmcEmulationVector(mCodeFile->getSmcEmulationVector());
             mDriver.GetDsp()->SetSmcNativeVector(mCodeFile->getSmcNativeVector());
