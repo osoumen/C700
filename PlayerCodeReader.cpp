@@ -1,4 +1,4 @@
-//
+﻿//
 //  PlayerCodeReader.cpp
 //  C700
 //

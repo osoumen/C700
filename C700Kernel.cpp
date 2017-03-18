@@ -13,6 +13,8 @@
 #include <math.h>
 #if MAC
 #include "macOSUtils.h"
+#else
+#include <Shlobj.h>
 #endif
 
 void CalcFIRParam( const float band[5], int filter[8] );
@@ -603,10 +605,7 @@ const void *C700Kernel::GetPropertyPtrValue( int inID )
 //-----------------------------------------------------------------------------
 bool C700Kernel::GetPropertyStructValue( int inID, void *outData )
 {
-    switch (inID) {
-        default:
-			return false;
-    }
+	return false;
 }
 
 //-----------------------------------------------------------------------------

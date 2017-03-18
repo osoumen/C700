@@ -1,4 +1,4 @@
-//
+﻿//
 //  GUIUtils.cpp
 //  C700
 //
@@ -18,6 +18,7 @@
 #include "MyParamDisplay.h"
 #include "MyTextEdit.h"
 #include "TextKickButton.h"
+#include <stdio.h>
 
 static CFontDesc g_LabelFont("Helvetica", 9, kBoldFace);
 CFontRef kLabelFont = &g_LabelFont;
@@ -53,7 +54,7 @@ void getFileNameParentPath( const char *path, char *out, int maxLen )
 	int	len = static_cast<int>(strlen(path));
 	int bcPos = 0;
 	for ( int i=0; i<len; i++ ) {
-		if ( path[i] == '¥¥' ) {
+		if ( path[i] == '\\' ) {
 			bcPos = i;
 		}
 	}
