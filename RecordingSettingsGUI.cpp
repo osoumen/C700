@@ -15,6 +15,9 @@ RecordingSettingsGUI::RecordingSettingsGUI(const CRect &inSize, CFrame *frame, C
 : CViewContainer (inSize, frame, pBackground)
 , efxAcc(NULL)
 {
+    CColor bgColor = {144,144,144,255};
+    setBackgroundColor(bgColor);
+    
 	CBitmap					*onOffButton;
 	onOffButton = new CBitmap("bt_check.png");
     
