@@ -1599,7 +1599,7 @@ void C700Kernel::getPreferenceFolder(char *outPath, int inSize)
     GetHomeDirectory(outPath, inSize);
     strncat(outPath, "/Library/Application Support/C700/C700.settings", inSize);
 #else
-    // TODO: Windowsのホームフォルダを取得 動作確認
+    // Windowsのホームフォルダを取得
     SHGetSpecialFolderPath(NULL, outPath, CSIDL_APPDATA, TRUE);
     strncat(outPath, "\\C700\\C700.settings", inSize);
 #endif
@@ -1612,8 +1612,8 @@ void C700Kernel::getDocumentsFolder(char *outPath, int inSize)
     GetHomeDirectory(outPath, inSize);
     strncat(outPath, "/Documents", inSize);
 #else
-    // TODO: Windowsのホームフォルダを取得 動作確認
-    SHGetSpecialFolderPath(NULL, outPath, CSIDL_COMMON_DOCUMENTS, TRUE);
+    // Windowsのホームフォルダを取得
+	SHGetSpecialFolderPath(NULL, outPath, CSIDL_MYDOCUMENTS, TRUE);
 #endif
 }
 
