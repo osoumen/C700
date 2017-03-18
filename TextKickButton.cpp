@@ -69,6 +69,7 @@ void CTextKickButton::drawRoundRect(CDrawContext* pContext, const CRect &_rect, 
 #if MAC
 	rect.x2 -= 1;
 	rect.y += 1;
+    radius--;
 #else
 	rect.x2 -= 1;
 	rect.y2 -= 1;
@@ -87,6 +88,7 @@ void CTextKickButton::drawRoundRect(CDrawContext* pContext, const CRect &_rect, 
 #if MAC
 	rect.x2 += 1;
 	rect.y -= 1;
+    radius++;
 #endif
     
     pContext->setDrawMode(kAntialias);
