@@ -20,7 +20,7 @@
 #include "TextKickButton.h"
 #include <stdio.h>
 
-static CFontDesc g_LabelFont("Helvetica", 9, kBoldFace);
+static CFontDesc g_LabelFont("Arial", 9, kBoldFace);
 CFontRef kLabelFont = &g_LabelFont;
 
 //-----------------------------------------------------------------------------

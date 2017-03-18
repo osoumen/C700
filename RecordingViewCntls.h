@@ -143,7 +143,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		-1,	//id
 		0,	//command
-		210, 93, 100, 11,	//x,y,w,h
+		210, 93, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -194,7 +194,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		-1,	//id
 		0,	//command
-		210, 109, 100, 11,	//x,y,w,h
+		210, 109, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
@@ -245,7 +245,7 @@ ControlInstances	sRecordingViewCntls[] = {
 		0,	//sig
 		-1,	//id
 		0,	//command
-		210, 125, 100, 11,	//x,y,w,h
+		210, 125, 120, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kLeftText,	//fontalign
