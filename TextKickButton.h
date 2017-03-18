@@ -34,6 +34,8 @@ protected:
     
 private:
     float   fEntryState;
+    
+    void drawRoundRect(CDrawContext* pContext, const CRect &_rect, int radius, const CDrawStyle drawStyle);
 };
 
 
