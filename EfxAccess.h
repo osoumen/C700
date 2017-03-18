@@ -24,6 +24,7 @@ class C700VST;
 #include "RawBRRFile.h"
 #include "AudioFile.h"
 #include "XIFile.h"
+#include "C700Properties.h"
 
 class EfxAccess
 {
@@ -39,23 +40,27 @@ public:
 	bool	CreatePlistBRRFileData( PlistBRRFile **outData );
 	bool	SetPlistBRRFileData( const PlistBRRFile *data );
 	
-	bool	SetSourceFilePath( const char *path );
-	bool	GetSourceFilePath( char *path, int maxLen );
-	bool	SetProgramName( const char *pgname );
-	bool	GetProgramName( char *pgname, int maxLen );
+	bool    SetFilePathProperty( int propertyId, const char *path );
+	bool    GetFilePathProperty( int propertyId, char *path, int maxLen );
+	bool	SetCStringProperty( int propertyId, const char *string );
+	bool	GetCStringProperty( int propertyId, char *string, int maxLen );
 	bool	GetBRRData( BRRData *data );
 	bool	SetBRRData( const BRRData *data );
 	
-	float	GetPropertyValue( int propertyId );
-	void	SetPropertyValue( int propertyID, float value );
+	double	GetPropertyValue( int propertyId );
+	void	SetPropertyValue( int propertyID, double value );
 	float	GetParameter( int parameterId );
 	void	SetParameter( void *sender, int index, float value );
 	
+    bool    LoadSongPlayerCode( const char *path );
+    
 private:
 #if AU
 	AudioUnit			mAU;
 	AUEventListenerRef	mEventListener;
+    BRRData             mLastGetBrr;
 #else
 	C700VST*			mEfx;
 #endif
+    std::map<int, PropertyDescription>  mPropertyParams;
 };

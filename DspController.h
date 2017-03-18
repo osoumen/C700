@@ -61,6 +61,8 @@ public:
     void StartMuteEmulation();
     void EndMuteEmulation();
     
+    int GetDspMirror(int addr) { return mDspMirror[addr & 0x7f]; }
+    
     void setDeviceReadyFunc( void (*func) (void* ownerClass), void* ownerClass );
 	void setDeviceExitFunc( void (*func) (void* ownerClass) , void* ownerClass );
     

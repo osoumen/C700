@@ -2,34 +2,6 @@
 #include "C700.h"
 #include "brrcodec.h"
 #include "AudioFile.h"
-#include "XIFile.h"
-
-static CFStringRef kSaveKey_ProgName = CFSTR("progname");
-static CFStringRef kSaveKey_EditProg = CFSTR("editprog");
-static CFStringRef kSaveKey_EditChan = CFSTR("editchan");
-static CFStringRef kSaveKey_brrdata = CFSTR("brrdata");
-static CFStringRef kSaveKey_looppoint = CFSTR("looppoint");
-static CFStringRef kSaveKey_samplerate = CFSTR("samplerate");
-static CFStringRef kSaveKey_basekey = CFSTR("key");
-static CFStringRef kSaveKey_lowkey = CFSTR("lowkey");
-static CFStringRef kSaveKey_highkey = CFSTR("highkey");
-static CFStringRef kSaveKey_ar = CFSTR("ar");
-static CFStringRef kSaveKey_dr = CFSTR("dr");
-static CFStringRef kSaveKey_sl = CFSTR("sl");
-static CFStringRef kSaveKey_sr = CFSTR("sr");
-static CFStringRef kSaveKey_volL = CFSTR("volL");
-static CFStringRef kSaveKey_volR = CFSTR("volR");
-static CFStringRef kSaveKey_echo = CFSTR("echo");
-static CFStringRef kSaveKey_bank = CFSTR("bank");
-static CFStringRef kSaveKey_IsEmphasized = CFSTR("isemph");
-static CFStringRef kSaveKey_SourceFile = CFSTR("srcfile");
-static CFStringRef kSaveKey_SustainMode = CFSTR("sustainmode");
-static CFStringRef kSaveKey_MonoMode = CFSTR("monomode");
-static CFStringRef kSaveKey_PortamentoOn = CFSTR("portamentoon");
-static CFStringRef kSaveKey_PortamentoRate = CFSTR("portamentorate");
-static CFStringRef kSaveKey_NoteOnPriority = CFSTR("noteonpriority");
-static CFStringRef kSaveKey_ReleasePriority = CFSTR("releasepriority");
-
 
 //-----------------------------------------------------------------------------
 
@@ -42,6 +14,8 @@ C700::C700(AudioUnit component)
 : MusicDeviceBase(component, 0, 1, 32, 0)
 , mEfx(NULL)
 {
+    createPropertyParamMap(mPropertyParams);
+    
 	CreateElements();
 	Globals()->UseIndexedParameters(kNumberOfParameters);
 	
@@ -144,8 +118,17 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 {
 	OSStatus result = MusicDeviceBase::Render(ioActionFlags, inTimeStamp, inNumberFrames);
 	
-	CallHostBeatAndTempo(NULL, &mTempo);
-	mEfx->SetTempo( mTempo );
+    {
+        double tempo;
+        double currentBeat;
+        Boolean isPlaying;
+        CallHostBeatAndTempo(&currentBeat, &tempo);
+        CallHostTransportState(&isPlaying, NULL, NULL, NULL, NULL, NULL);
+        mEfx->SetTempo( tempo );
+        mEfx->SetCurrentSampleInTimeLine( currentBeat );
+        mEfx->SetSampleRate( GetOutput(0)->GetStreamFormat().mSampleRate );
+        mEfx->SetIsPlaying(isPlaying?true:false);
+    }
 	//バッファの確保
 	float				*output[2];
 	AudioBufferList&	bufferList = GetOutput(0)->GetBufferList();
@@ -176,8 +159,6 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
             }
         }
 	}
-	
-	mEfx->SetSampleRate( GetOutput(0)->GetStreamFormat().mSampleRate );
 	
 	mEfx->Render(inNumberFrames, output);
 	
@@ -298,7 +279,12 @@ AudioUnitParameterUnit getParameterUnit( int id )
 			return kAudioUnitParameterUnit_Indexed;
 		case kParam_fir7:
 			return kAudioUnitParameterUnit_Indexed;
-			
+            
+        case kParam_voiceAllocMode:
+            return kAudioUnitParameterUnit_Indexed;
+        case kParam_fastReleaseAsKeyOff:
+            return kAudioUnitParameterUnit_Boolean;
+            
 		default:
 			return kAudioUnitParameterUnit_Indexed;
 	}
@@ -345,172 +331,26 @@ ComponentResult		C700::GetPropertyInfo (AudioUnitPropertyID	inID,
 											  Boolean &		outWritable)
 {
 	if (inScope == kAudioUnitScope_Global) {
-		switch (inID) {
 #ifndef USE_CARBON_UI
-			case kAudioUnitProperty_CocoaUI:
-				outWritable = false;
-				outDataSize = sizeof (AudioUnitCocoaViewInfo);
-				return noErr;
+        if (inID == kAudioUnitProperty_CocoaUI) {
+            outWritable = false;
+            outDataSize = sizeof (AudioUnitCocoaViewInfo);
+            return noErr;
+        }
 #endif
-			
-			case kAudioUnitCustomProperty_BaseKey:
-			case kAudioUnitCustomProperty_LowKey:
-			case kAudioUnitCustomProperty_HighKey:
-			case kAudioUnitCustomProperty_AR:
-			case kAudioUnitCustomProperty_DR:
-			case kAudioUnitCustomProperty_SL:
-			case kAudioUnitCustomProperty_SR:
-			case kAudioUnitCustomProperty_VolL:
-			case kAudioUnitCustomProperty_VolR:
-			case kAudioUnitCustomProperty_EditingProgram:
-			case kAudioUnitCustomProperty_EditingChannel:
-			case kAudioUnitCustomProperty_LoopPoint:
-				outDataSize = sizeof(int);
-				outWritable = false;
-				return noErr;
-				
-			case kAudioUnitCustomProperty_Rate:
-				outDataSize = sizeof(double);
-				outWritable = false;
-				return noErr;
-			
-			case kAudioUnitCustomProperty_Loop:
-				outDataSize = sizeof(bool);
-				outWritable = false;
-				return noErr;
-			
-			case kAudioUnitCustomProperty_Echo:
-				outDataSize = sizeof(bool);
-				outWritable = false;
-				return noErr;
-
-			case kAudioUnitCustomProperty_Bank:
-				outDataSize = sizeof(UInt32);
-				outWritable = false;
-				return noErr;
-				
-			case kAudioUnitCustomProperty_BRRData:
-				outDataSize = sizeof(BRRData);
-				outWritable = false;
-				return noErr;
-				
-			case kAudioUnitCustomProperty_PGDictionary:
-				outDataSize = sizeof(CFDictionaryRef);
-				outWritable = false;
-				return noErr;
-				
-			case kAudioUnitCustomProperty_XIData:
-				outDataSize = sizeof(CFDataRef);
-				outWritable = false;
-				return noErr;
-			
-			case kAudioUnitCustomProperty_ProgramName:
-				outDataSize = sizeof(CFStringRef);
-				outWritable = false;
-				return noErr;
-				
-			case kAudioUnitCustomProperty_TotalRAM:
-				outDataSize = sizeof(UInt32);
-				outWritable = false;
-				return noErr;
-			
-			//エコー
-			case kAudioUnitCustomProperty_Band1:
-			case kAudioUnitCustomProperty_Band2:
-			case kAudioUnitCustomProperty_Band3:
-			case kAudioUnitCustomProperty_Band4:
-			case kAudioUnitCustomProperty_Band5:
-				outWritable = false;
-				outDataSize = sizeof(Float32);
-				return noErr;
-				
-			// トラックインジケーター
-			case kAudioUnitCustomProperty_NoteOnTrack_1:
-			case kAudioUnitCustomProperty_NoteOnTrack_2:
-			case kAudioUnitCustomProperty_NoteOnTrack_3:
-			case kAudioUnitCustomProperty_NoteOnTrack_4:
-			case kAudioUnitCustomProperty_NoteOnTrack_5:	
-			case kAudioUnitCustomProperty_NoteOnTrack_6:
-			case kAudioUnitCustomProperty_NoteOnTrack_7:
-			case kAudioUnitCustomProperty_NoteOnTrack_8:
-			case kAudioUnitCustomProperty_NoteOnTrack_9:
-			case kAudioUnitCustomProperty_NoteOnTrack_10:
-			case kAudioUnitCustomProperty_NoteOnTrack_11:
-			case kAudioUnitCustomProperty_NoteOnTrack_12:
-			case kAudioUnitCustomProperty_NoteOnTrack_13:
-			case kAudioUnitCustomProperty_NoteOnTrack_14:
-			case kAudioUnitCustomProperty_NoteOnTrack_15:
-			case kAudioUnitCustomProperty_NoteOnTrack_16:
-				outWritable = false;
-				outDataSize = sizeof(UInt32);
-				return noErr;
-				
-			//トラック最大発音数
-			case kAudioUnitCustomProperty_MaxNoteTrack_1:
-			case kAudioUnitCustomProperty_MaxNoteTrack_2:
-			case kAudioUnitCustomProperty_MaxNoteTrack_3:
-			case kAudioUnitCustomProperty_MaxNoteTrack_4:
-			case kAudioUnitCustomProperty_MaxNoteTrack_5:
-			case kAudioUnitCustomProperty_MaxNoteTrack_6:
-			case kAudioUnitCustomProperty_MaxNoteTrack_7:
-			case kAudioUnitCustomProperty_MaxNoteTrack_8:
-			case kAudioUnitCustomProperty_MaxNoteTrack_9:
-			case kAudioUnitCustomProperty_MaxNoteTrack_10:
-			case kAudioUnitCustomProperty_MaxNoteTrack_11:
-			case kAudioUnitCustomProperty_MaxNoteTrack_12:
-			case kAudioUnitCustomProperty_MaxNoteTrack_13:
-			case kAudioUnitCustomProperty_MaxNoteTrack_14:
-			case kAudioUnitCustomProperty_MaxNoteTrack_15:
-			case kAudioUnitCustomProperty_MaxNoteTrack_16:
-				outWritable = false;
-				outDataSize = sizeof(UInt32);
-				return noErr;
-				
-			case kAudioUnitCustomProperty_SourceFileRef:
-				outDataSize = sizeof(CFURLRef);
-				outWritable = false;
-				return noErr;
-								
-			case kAudioUnitCustomProperty_IsEmaphasized:
-				outDataSize = sizeof(bool);
-				outWritable = false;
-				return noErr;
-                
-            case kAudioUnitCustomProperty_SustainMode:
-                outDataSize = sizeof(bool);
-                outWritable = false;
-                return noErr;
-								
-            case kAudioUnitCustomProperty_MonoMode:
-                outDataSize = sizeof(bool);
-                outWritable = false;
-                return noErr;
-                
-            case kAudioUnitCustomProperty_PortamentoOn:
-                outDataSize = sizeof(bool);
-                outWritable = false;
-                return noErr;
-                
-            case kAudioUnitCustomProperty_PortamentoRate:
-                outDataSize = sizeof(int);
-                outWritable = false;
-                return noErr;
-                
-            case kAudioUnitCustomProperty_NoteOnPriority:
-                outDataSize = sizeof(int);
-                outWritable = false;
-                return noErr;
-                
-            case kAudioUnitCustomProperty_ReleasePriority:
-                outDataSize = sizeof(int);
-                outWritable = false;
-                return noErr;
-                
-            case kAudioUnitCustomProperty_IsHwConnected:
-                outDataSize = sizeof(bool);
-                outWritable = false;
-                return noErr;
-		}
+        auto it = mPropertyParams.find(inID);
+        if (it != mPropertyParams.end()) {
+            if ((it->second.dataType == propertyDataTypeString) ||
+                (it->second.dataType == propertyDataTypeFilePath)) {
+                // outDataSizeには最大文字数が格納されている
+                outDataSize = sizeof(void *);
+            }
+            else {
+                outDataSize = it->second.outDataSize;
+            }
+            outWritable = it->second.outWritable;
+            return noErr;
+        }
 	}
 	
 	return MusicDeviceBase::GetPropertyInfo(inID, inScope, inElement, outDataSize, outWritable);
@@ -525,156 +365,75 @@ ComponentResult		C700::GetProperty(	AudioUnitPropertyID inID,
 											void *			outData )
 {
 	if (inScope == kAudioUnitScope_Global) {
-		switch (inID) {
 #ifndef USE_CARBON_UI
-			case kAudioUnitProperty_CocoaUI:
-			{
-				// Look for a resource in the main bundle by name and type.
-				CFBundleRef bundle = CFBundleGetBundleWithIdentifier( CFSTR("com.picopicose.audiounit.C700") );
-				
-				if (bundle == NULL) return fnfErr;
-
-				CFURLRef bundleURL = CFBundleCopyBundleURL( bundle );
-				
-				if (bundleURL == NULL) return fnfErr;
-				
-				AudioUnitCocoaViewInfo cocoaInfo;
-				cocoaInfo.mCocoaAUViewBundleLocation = bundleURL;
-				cocoaInfo.mCocoaAUViewClass[0] = CFStringCreateWithCString(NULL, "C700_CocoaViewFactory", kCFStringEncodingUTF8);
-				
-				*((AudioUnitCocoaViewInfo *)outData) = cocoaInfo;
-				
-				return noErr;
-			}
+        if (inID == kAudioUnitProperty_CocoaUI) {
+            // Look for a resource in the main bundle by name and type.
+            CFBundleRef bundle = CFBundleGetBundleWithIdentifier( CFSTR("com.picopicose.audiounit.C700") );
+            
+            if (bundle == NULL) return fnfErr;
+            
+            CFURLRef bundleURL = CFBundleCopyBundleURL( bundle );
+            
+            if (bundleURL == NULL) return fnfErr;
+            
+            AudioUnitCocoaViewInfo cocoaInfo;
+            cocoaInfo.mCocoaAUViewBundleLocation = bundleURL;
+            cocoaInfo.mCocoaAUViewClass[0] = CFStringCreateWithCString(NULL, "C700_CocoaViewFactory", kCFStringEncodingUTF8);
+            
+            *((AudioUnitCocoaViewInfo *)outData) = cocoaInfo;
+            
+            return noErr;
+        }
 #endif
-			
-			case kAudioUnitCustomProperty_Rate:
-				*((double *)outData) = mEfx->GetPropertyValue(inID);
-				return noErr;
-			
-			case kAudioUnitCustomProperty_BaseKey:
-			case kAudioUnitCustomProperty_LowKey:
-			case kAudioUnitCustomProperty_HighKey:
-			case kAudioUnitCustomProperty_LoopPoint:
-			case kAudioUnitCustomProperty_Bank:
-			case kAudioUnitCustomProperty_AR:
-			case kAudioUnitCustomProperty_DR:
-			case kAudioUnitCustomProperty_SL:
-			case kAudioUnitCustomProperty_SR:
-			case kAudioUnitCustomProperty_VolL:
-			case kAudioUnitCustomProperty_VolR:
-			case kAudioUnitCustomProperty_EditingProgram:
-			case kAudioUnitCustomProperty_EditingChannel:
-			case kAudioUnitCustomProperty_NoteOnTrack_1:
-			case kAudioUnitCustomProperty_NoteOnTrack_2:
-			case kAudioUnitCustomProperty_NoteOnTrack_3:
-			case kAudioUnitCustomProperty_NoteOnTrack_4:
-			case kAudioUnitCustomProperty_NoteOnTrack_5:
-			case kAudioUnitCustomProperty_NoteOnTrack_6:
-			case kAudioUnitCustomProperty_NoteOnTrack_7:
-			case kAudioUnitCustomProperty_NoteOnTrack_8:
-			case kAudioUnitCustomProperty_NoteOnTrack_9:
-			case kAudioUnitCustomProperty_NoteOnTrack_10:
-			case kAudioUnitCustomProperty_NoteOnTrack_11:
-			case kAudioUnitCustomProperty_NoteOnTrack_12:
-			case kAudioUnitCustomProperty_NoteOnTrack_13:
-			case kAudioUnitCustomProperty_NoteOnTrack_14:
-			case kAudioUnitCustomProperty_NoteOnTrack_15:
-			case kAudioUnitCustomProperty_NoteOnTrack_16:
-			case kAudioUnitCustomProperty_MaxNoteTrack_1:
-			case kAudioUnitCustomProperty_MaxNoteTrack_2:
-			case kAudioUnitCustomProperty_MaxNoteTrack_3:
-			case kAudioUnitCustomProperty_MaxNoteTrack_4:
-			case kAudioUnitCustomProperty_MaxNoteTrack_5:
-			case kAudioUnitCustomProperty_MaxNoteTrack_6:
-			case kAudioUnitCustomProperty_MaxNoteTrack_7:
-			case kAudioUnitCustomProperty_MaxNoteTrack_8:
-			case kAudioUnitCustomProperty_MaxNoteTrack_9:
-			case kAudioUnitCustomProperty_MaxNoteTrack_10:
-			case kAudioUnitCustomProperty_MaxNoteTrack_11:
-			case kAudioUnitCustomProperty_MaxNoteTrack_12:
-			case kAudioUnitCustomProperty_MaxNoteTrack_13:
-			case kAudioUnitCustomProperty_MaxNoteTrack_14:
-			case kAudioUnitCustomProperty_MaxNoteTrack_15:
-			case kAudioUnitCustomProperty_MaxNoteTrack_16:
-            case kAudioUnitCustomProperty_PortamentoRate:
-            case kAudioUnitCustomProperty_NoteOnPriority:
-            case kAudioUnitCustomProperty_ReleasePriority:
-				*((int *)outData) = mEfx->GetPropertyValue(inID);
-				return noErr;
-				
-			case kAudioUnitCustomProperty_Loop:
-			case kAudioUnitCustomProperty_Echo:
-			case kAudioUnitCustomProperty_IsEmaphasized:
-            case kAudioUnitCustomProperty_SustainMode:
-            case kAudioUnitCustomProperty_MonoMode:
-            case kAudioUnitCustomProperty_PortamentoOn:
-            case kAudioUnitCustomProperty_IsHwConnected:
-				*((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
-				return noErr;
-				
-			case kAudioUnitCustomProperty_TotalRAM:
-				*((UInt32 *)outData) = mEfx->GetPropertyValue(inID);
-				return noErr;
-							
-			//エコー
-			case kAudioUnitCustomProperty_Band1:
-			case kAudioUnitCustomProperty_Band2:
-			case kAudioUnitCustomProperty_Band3:
-			case kAudioUnitCustomProperty_Band4:
-			case kAudioUnitCustomProperty_Band5:
-				*((Float32 *)outData) = mEfx->GetPropertyValue(inID);
-				return noErr;
-				
-			case kAudioUnitCustomProperty_BRRData:
-				*((BRRData *)outData) = *(mEfx->GetBRRData());
-				return noErr;
-				
-			case kAudioUnitCustomProperty_PGDictionary:
-			{
-				CFDictionaryRef	pgdata;
-				int				editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
-				CreatePGDataDic(&pgdata, editProg);
-				*((CFDictionaryRef *)outData) = pgdata;	//使用後要release
-				return noErr;
-			}
-				
-			case kAudioUnitCustomProperty_XIData:
-			{
-				XIFile	fileData(NULL);
-				
-				fileData.SetDataFromChip(mEfx->GetGenerator(), 
-										 mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram), mTempo);
-				
-				if ( fileData.IsLoaded() ) {
-					CFDataRef xidata;
-					xidata = CFDataCreate(NULL, fileData.GetDataPtr(), fileData.GetDataSize() );
-					*((CFDataRef *)outData) = xidata;	//使用後要release
-				}
-				else {
-					*((CFDataRef *)outData) = NULL;
-				}
-				return noErr;
-			}
-				
-			case kAudioUnitCustomProperty_ProgramName:
-			{
-				CFStringRef	str = CFStringCreateWithCString(NULL, mEfx->GetProgramName(), kCFStringEncodingUTF8);
-				*((CFStringRef *)outData) = str;	//使用後要release
-				return noErr;
-			}
-
-			case kAudioUnitCustomProperty_SourceFileRef:
-			{
-				const char *srcPath = mEfx->GetSourceFilePath();
-				CFURLRef	url = 
-				CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)srcPath, strlen(srcPath), false);
-				*((CFURLRef *)outData) = url;	//使用後要release
-				return noErr;
-			}				
-				
-		}
-	}
+        auto it = mPropertyParams.find(inID);
+        if (it != mPropertyParams.end()) {
+            switch (it->second.dataType) {
+                case propertyDataTypeFloat32:
+                    *((Float32 *)outData) = mEfx->GetPropertyValue(inID);
+                    break;
+                case propertyDataTypeDouble:
+                    *((double *)outData) = mEfx->GetPropertyDoubleValue(inID);
+                    break;
+                case propertyDataTypeInt32:
+                    *((int *)outData) = mEfx->GetPropertyValue(inID);
+                    break;
+                case propertyDataTypeBool:
+                    *((bool *)outData) = mEfx->GetPropertyValue(inID)>0.5f? true:false;
+                    break;
+                case propertyDataTypeStruct:
+                    mEfx->GetPropertyStructValue(inID, outData);
+                    break;
+                case propertyDataTypeString:
+                {
+                    const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
+                    CFStringRef	str =
+                    CFStringCreateWithCString(NULL, string, kCFStringEncodingUTF8);
+                    *((char **)outData) = (char *)str;  //使用後要release
+                    break;
+                }
+                case propertyDataTypeFilePath:
+                {
+                    const char *string = (char *)mEfx->GetPropertyPtrValue(inID);
+                    CFURLRef	url =
+                    CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)string, strlen(string), false);
+                    *((char **)outData) = (char *)url;  //使用後要release
+                    break;
+                }
+                    
+                case propertyDataTypeVariableData:
+                {
+                    CFDataRef dataRef;
+                    dataRef = CFDataCreate(NULL, (UInt8*)mEfx->GetPropertyPtrValue(inID), mEfx->GetPropertyPtrDataSize(inID));
+                    *((char **)outData) = (char *)dataRef;  //使用後要release
+                    break;
+                }
+                case propertyDataTypePointer:
+                    *((char **)outData) = (char *)mEfx->GetPropertyPtrValue(inID);
+                    break;
+            }
+            return noErr;
+        }
+    }
 	return MusicDeviceBase::GetProperty(inID, inScope, inElement, outData);
 }
 
@@ -688,127 +447,63 @@ ComponentResult		C700::SetProperty(	AudioUnitPropertyID inID,
 											UInt32              inDataSize)
 {
 	if (inScope == kAudioUnitScope_Global) {
-		switch (inID) {
-			
-			case kAudioUnitCustomProperty_BRRData:
-			{
-				BRRData *brr = (BRRData *)inData;
-				mEfx->SetBRRData(brr->data, brr->size);
-				return noErr;
-			}
-
-			case kAudioUnitCustomProperty_Rate:
-				mEfx->SetPropertyValue(inID, *((double*)inData));
-				return noErr;
-				
-			case kAudioUnitCustomProperty_BaseKey:
-			case kAudioUnitCustomProperty_LowKey:
-			case kAudioUnitCustomProperty_HighKey:
-			case kAudioUnitCustomProperty_LoopPoint:
-			case kAudioUnitCustomProperty_Bank:
-			case kAudioUnitCustomProperty_AR:
-			case kAudioUnitCustomProperty_DR:
-			case kAudioUnitCustomProperty_SL:
-			case kAudioUnitCustomProperty_SR:
-			case kAudioUnitCustomProperty_VolL:
-			case kAudioUnitCustomProperty_VolR:
-			case kAudioUnitCustomProperty_EditingProgram:
-			case kAudioUnitCustomProperty_EditingChannel:
-			case kAudioUnitCustomProperty_MaxNoteTrack_1:
-			case kAudioUnitCustomProperty_MaxNoteTrack_2:
-			case kAudioUnitCustomProperty_MaxNoteTrack_3:
-			case kAudioUnitCustomProperty_MaxNoteTrack_4:
-			case kAudioUnitCustomProperty_MaxNoteTrack_5:
-			case kAudioUnitCustomProperty_MaxNoteTrack_6:
-			case kAudioUnitCustomProperty_MaxNoteTrack_7:
-			case kAudioUnitCustomProperty_MaxNoteTrack_8:
-			case kAudioUnitCustomProperty_MaxNoteTrack_9:
-			case kAudioUnitCustomProperty_MaxNoteTrack_10:
-			case kAudioUnitCustomProperty_MaxNoteTrack_11:
-			case kAudioUnitCustomProperty_MaxNoteTrack_12:
-			case kAudioUnitCustomProperty_MaxNoteTrack_13:
-			case kAudioUnitCustomProperty_MaxNoteTrack_14:
-			case kAudioUnitCustomProperty_MaxNoteTrack_15:
-			case kAudioUnitCustomProperty_MaxNoteTrack_16:
-            case kAudioUnitCustomProperty_PortamentoRate:
-            case kAudioUnitCustomProperty_NoteOnPriority:
-            case kAudioUnitCustomProperty_ReleasePriority:
-				mEfx->SetPropertyValue(inID, *((int*)inData) );
-				return noErr;
-				
-			case kAudioUnitCustomProperty_Loop:
-			case kAudioUnitCustomProperty_Echo:
-			case kAudioUnitCustomProperty_IsEmaphasized:
-            case kAudioUnitCustomProperty_SustainMode:
-            case kAudioUnitCustomProperty_MonoMode:
-            case kAudioUnitCustomProperty_PortamentoOn:
-				mEfx->SetPropertyValue(inID, *((bool*)inData) ? 1.0f:.0f );
-				return noErr;
-				
-			case kAudioUnitCustomProperty_TotalRAM:
-				return noErr;
-				
-			case kAudioUnitCustomProperty_PGDictionary:
-			{
-				CFDictionaryRef	pgdata = *((CFDictionaryRef*)inData);
-				int				editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
-				RestorePGDataDic(pgdata, editProg);
-				return noErr;
-			}
-				
-			case kAudioUnitCustomProperty_XIData:
-			{
-				return noErr;
-			}
-			
-			case kAudioUnitCustomProperty_ProgramName:
-			{
-				char	pgname[PROGRAMNAME_MAX_LEN];
-				CFStringGetCString(*((CFStringRef*)inData), pgname, PROGRAMNAME_MAX_LEN-1, kCFStringEncodingUTF8);
-				mEfx->SetProgramName(pgname);
-				return noErr;
-			}
-				
-			//エコー
-			case kAudioUnitCustomProperty_Band1:
-			case kAudioUnitCustomProperty_Band2:
-			case kAudioUnitCustomProperty_Band3:
-			case kAudioUnitCustomProperty_Band4:
-			case kAudioUnitCustomProperty_Band5:
-				mEfx->SetPropertyValue(inID, *((float*)inData) );
-				return noErr;
-				
-			case kAudioUnitCustomProperty_NoteOnTrack_1:
-			case kAudioUnitCustomProperty_NoteOnTrack_2:
-			case kAudioUnitCustomProperty_NoteOnTrack_3:
-			case kAudioUnitCustomProperty_NoteOnTrack_4:
-			case kAudioUnitCustomProperty_NoteOnTrack_5:
-			case kAudioUnitCustomProperty_NoteOnTrack_6:
-			case kAudioUnitCustomProperty_NoteOnTrack_7:
-			case kAudioUnitCustomProperty_NoteOnTrack_8:
-			case kAudioUnitCustomProperty_NoteOnTrack_9:
-			case kAudioUnitCustomProperty_NoteOnTrack_10:
-			case kAudioUnitCustomProperty_NoteOnTrack_11:
-			case kAudioUnitCustomProperty_NoteOnTrack_12:
-			case kAudioUnitCustomProperty_NoteOnTrack_13:
-			case kAudioUnitCustomProperty_NoteOnTrack_14:
-			case kAudioUnitCustomProperty_NoteOnTrack_15:
-			case kAudioUnitCustomProperty_NoteOnTrack_16:
-				return noErr;
-				
-			case kAudioUnitCustomProperty_SourceFileRef:
-			{
-				CFStringRef pathStr = CFURLCopyFileSystemPath(*((CFURLRef*)inData), kCFURLPOSIXPathStyle);
-				char		path[PATH_LEN_MAX];
-				CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
-				CFRelease(pathStr);
-				mEfx->SetSourceFilePath(path);
-				return noErr;
-			}
-                
-            case kAudioUnitCustomProperty_IsHwConnected:
-                return noErr;
-		}
+        auto it = mPropertyParams.find(inID);
+        if (it != mPropertyParams.end()) {
+            if (it->second.readOnly == false) {
+                switch (it->second.dataType) {
+                    case propertyDataTypeFloat32:
+                        mEfx->SetPropertyValue(inID, *((float*)inData) );
+                        break;
+                    case propertyDataTypeDouble:
+                        mEfx->SetPropertyDoubleValue(inID, *((double*)inData));
+                        break;
+                    case propertyDataTypeInt32:
+                        mEfx->SetPropertyValue(inID, *((int*)inData) );
+                        break;
+                    case propertyDataTypeBool:
+                        mEfx->SetPropertyValue(inID, *((bool*)inData) ? 1.0f:.0f );
+                        break;
+                    case propertyDataTypeStruct:
+                        mEfx->SetPropertyPtrValue(inID, inData, it->second.outDataSize);
+                        break;
+                    case propertyDataTypeString:
+                    {
+                        char **ptr = (char**)inData;
+                        CFIndex length = CFStringGetLength(reinterpret_cast<CFStringRef>(*ptr)) + 1;
+                        char	*string = new char[length];
+                        CFStringGetCString(reinterpret_cast<CFStringRef>(*ptr), string, length, kCFStringEncodingUTF8);
+                        mEfx->SetPropertyPtrValue(inID, string, length);
+                        delete [] string;
+                        break;
+                    }
+                    case propertyDataTypeFilePath:
+                    {
+                        char **ptr = (char**)inData;
+                        CFStringRef pathStr = CFURLCopyFileSystemPath(reinterpret_cast<CFURLRef>(*ptr), kCFURLPOSIXPathStyle);
+                        char		*path = new char[it->second.outDataSize];
+                        CFStringGetCString(pathStr, path, it->second.outDataSize, kCFStringEncodingUTF8);
+                        CFRelease(pathStr);
+                        mEfx->SetPropertyPtrValue(inID, path, it->second.outDataSize);
+                        delete [] path;
+                        break;
+                    }
+                    case propertyDataTypeVariableData:
+                    {
+                        char **ptr = (char**)inData;
+                        CFDataRef data = reinterpret_cast<CFDataRef>(*ptr);
+                        mEfx->SetPropertyPtrValue(inID, CFDataGetBytePtr(data), CFDataGetLength(data));
+                        break;
+                    }
+                    case propertyDataTypePointer:
+                    {
+                        char **ptr = (char**)inData;
+                        mEfx->SetPropertyPtrValue(inID, *ptr, it->second.outDataSize);
+                        break;
+                    }
+                }
+            }
+            return noErr;
+        }
 	}
 	return MusicDeviceBase::SetProperty(inID, inScope, inElement, inData, inDataSize);
 }
@@ -847,26 +542,6 @@ OSStatus C700::NewFactoryPresetSet(const AUPreset &inNewFactoryPreset)
 	return kAudioUnitErr_InvalidPropertyValue;
 }
 
-
-//-----------------------------------------------------------------------------
-static void AddNumToDictionary(CFMutableDictionaryRef dict, CFStringRef key, int value)
-{
-	CFNumberRef num = CFNumberCreate(NULL, kCFNumberIntType, &value);
-	CFDictionarySetValue(dict, key, num);
-	CFRelease(num);
-}
-
-//-----------------------------------------------------------------------------
-static void AddBooleanToDictionary(CFMutableDictionaryRef dict, CFStringRef key, bool value)
-{
-	if ( value ) {
-		CFDictionarySetValue(dict, key, kCFBooleanTrue);
-	}
-	else {
-		CFDictionarySetValue(dict, key, kCFBooleanFalse);
-	}
-}
-
 //-----------------------------------------------------------------------------
 //	C700::SaveState
 //-----------------------------------------------------------------------------
@@ -883,7 +558,7 @@ ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 		for (int i=0; i<128; i++) {
 			const BRRData		*brr = mEfx->GetBRRData(i);
 			if (brr->data) {
-				CreatePGDataDic(&pgdata, i);
+				mEfx->CreatePGDataDic(&pgdata, i);
 				pgnum = CFStringCreateWithFormat(NULL,NULL,CFSTR("pg%03d"),i);
 				CFDictionarySetValue(dict, pgnum, pgdata);
 				CFRelease(pgdata);
@@ -891,11 +566,14 @@ ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 			}
 		}
 		
-		// 作業状態を保存
-		int	editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
-		int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
-		AddNumToDictionary(dict, kSaveKey_EditProg, editProg);
-		AddNumToDictionary(dict, kSaveKey_EditChan, editChan);
+        // saveToSongの設定を保存
+        auto it = mPropertyParams.begin();
+        while (it != mPropertyParams.end()) {
+            if (it->second.saveToSong) {
+                mEfx->SetPropertyToDict(dict, it->second);
+            }
+            it++;
+        }
 		
 		pgname = CFStringCreateCopy(NULL,CFSTR("C700"));
 		CFDictionarySetValue(dict, CFSTR(kAUPresetNameKey), pgname);
@@ -916,306 +594,32 @@ ComponentResult	C700::RestoreState(CFPropertyListRef plist)
     }
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(plist);
 	if (result == noErr) {
-		//波形情報の復元
+		//プログラムの復元
 		CFStringRef pgnum;
 		CFDictionaryRef	pgdata;
 		for (int i=0; i<128; i++) {
 			pgnum = CFStringCreateWithFormat(NULL,NULL,CFSTR("pg%03d"),i);
 			if (CFDictionaryContainsKey(dict, pgnum)) {
 				pgdata = reinterpret_cast<CFDictionaryRef>(CFDictionaryGetValue(dict, pgnum));
-				RestorePGDataDic(pgdata, i);
+				mEfx->RestorePGDataDic(pgdata, i);
 			}
 			CFRelease(pgnum);
 		}
 		
-		if (CFDictionaryContainsKey(dict, kSaveKey_EditChan)) {
-			int	editChan = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingChannel);
-			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_EditChan));
-			CFNumberGetValue(cfnum, kCFNumberIntType, &editChan);
-			
-			//変更の通知
-			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingChannel, editChan);
-		}
-		if (CFDictionaryContainsKey(dict, kSaveKey_EditProg)) {
-			int	editProg;
-			CFNumberRef cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_EditProg));
-			CFNumberGetValue(cfnum, kCFNumberIntType, &editProg);
-			
-			//変更の通知
-			mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
-		}
+        // saveToSongのプロパティを復元
+        auto it = mPropertyParams.begin();
+        while (it != mPropertyParams.end()) {
+            if (it->second.saveToSong) {
+                mEfx->RestorePropertyFromDict(dict, it->second);
+            }
+            it++;
+        }
+        // TODO: EditChanの方が後に設定されてしまうとうまく復元されないのでなんとかしたい
+        mEfx->RestorePropertyFromDict(dict, mPropertyParams[kAudioUnitCustomProperty_EditingProgram]);
 	}
 	return result;
 }
 
-//-----------------------------------------------------------------------------
-int C700::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
-{
-	CFMutableDictionaryRef dict = CFDictionaryCreateMutable	(NULL, 0, 
-								&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-	const InstParams	*vpSet = mEfx->GetVP();
-	
-    mEfx->CorrectLoopFlagForSave(pgnum);
-	CFDataRef	brrdata = CFDataCreate(NULL, vpSet[pgnum].brrData(), vpSet[pgnum].brrSize());
-	CFDictionarySetValue(dict, kSaveKey_brrdata, brrdata);
-	CFRelease(brrdata);
-	
-	AddNumToDictionary(dict, kSaveKey_looppoint, vpSet[pgnum].lp);
-	CFNumberRef	num = CFNumberCreate(NULL, kCFNumberDoubleType, &vpSet[pgnum].rate);
-	CFDictionarySetValue(dict, kSaveKey_samplerate, num);
-	CFRelease(num);
-	AddNumToDictionary(dict, kSaveKey_basekey, vpSet[pgnum].basekey);
-	AddNumToDictionary(dict, kSaveKey_lowkey, vpSet[pgnum].lowkey);
-	AddNumToDictionary(dict, kSaveKey_highkey, vpSet[pgnum].highkey);
-	AddNumToDictionary(dict, kSaveKey_ar, vpSet[pgnum].ar);
-	AddNumToDictionary(dict, kSaveKey_dr, vpSet[pgnum].dr);
-	AddNumToDictionary(dict, kSaveKey_sl, vpSet[pgnum].sl);
-	AddNumToDictionary(dict, kSaveKey_sr, vpSet[pgnum].sr);
-    AddBooleanToDictionary(dict, kSaveKey_SustainMode, vpSet[pgnum].sustainMode);
-	AddNumToDictionary(dict, kSaveKey_volL, vpSet[pgnum].volL);
-	AddNumToDictionary(dict, kSaveKey_volR, vpSet[pgnum].volR);
-	AddBooleanToDictionary(dict, kSaveKey_echo, vpSet[pgnum].echo);
-	AddNumToDictionary(dict, kSaveKey_bank, vpSet[pgnum].bank);
-	AddBooleanToDictionary(dict, kSaveKey_MonoMode, vpSet[pgnum].monoMode);
-	AddBooleanToDictionary(dict, kSaveKey_PortamentoOn, vpSet[pgnum].portamentoOn);
-    AddNumToDictionary(dict, kSaveKey_PortamentoRate, vpSet[pgnum].portamentoRate);
-    AddNumToDictionary(dict, kSaveKey_NoteOnPriority, vpSet[pgnum].noteOnPriority);
-    AddNumToDictionary(dict, kSaveKey_ReleasePriority, vpSet[pgnum].releasePriority);
-    
-	//元波形情報
-	AddBooleanToDictionary(dict, kSaveKey_IsEmphasized, vpSet[pgnum].isEmphasized);
-	if ( vpSet[pgnum].sourceFile[0] ) {
-		CFURLRef	url = 
-		CFURLCreateFromFileSystemRepresentation(NULL, (UInt8*)vpSet[pgnum].sourceFile, 
-												strlen(vpSet[pgnum].sourceFile), false);
-		CFDataRef urlData = CFURLCreateData( NULL, url, kCFStringEncodingUTF8, false );
-		CFDictionarySetValue(dict, kSaveKey_SourceFile, urlData);
-		CFRelease(urlData);
-		CFRelease(url);
-	}
-	
-	//プログラム名
-	if (vpSet[pgnum].pgname[0] != 0) {
-		CFStringRef	str = CFStringCreateWithCString(NULL, vpSet[pgnum].pgname, kCFStringEncodingUTF8);
-		CFDictionarySetValue(dict, kSaveKey_ProgName, str);
-		CFRelease(str);
-	}
-	
-	*data = dict;
-	return 0;
-}
-
-//-----------------------------------------------------------------------------
-void C700::RestorePGDataDic(CFPropertyListRef data, int pgnum)
-{
-	int editProg = mEfx->GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
-	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, pgnum);
-
-	CFDictionaryRef dict = static_cast<CFDictionaryRef>(data);
-	CFNumberRef cfnum;
-	
-	int	value;
-	if (CFDictionaryContainsKey(dict, kSaveKey_looppoint)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_looppoint));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LoopPoint, value);
-	}
-	
-	CFDataRef cfdata = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_brrdata));
-	int	size = CFDataGetLength(cfdata);
-	const UInt8	*dataptr = CFDataGetBytePtr(cfdata);
-	mEfx->SetBRRData(dataptr, size);
-	mEfx->SetPropertyValue(kAudioUnitCustomProperty_Loop, 
-						   dataptr[size-9]&2?true:false);
-	
-	double	dvalue;
-	if (CFDictionaryContainsKey(dict, kSaveKey_samplerate)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_samplerate));
-		CFNumberGetValue(cfnum, kCFNumberDoubleType, &dvalue);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Rate, dvalue);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_basekey)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_basekey));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_BaseKey, value);
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_BaseKey, 60);
-	}
-	if (CFDictionaryContainsKey(dict, kSaveKey_lowkey)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_lowkey));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LowKey, value);
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_LowKey, 0);
-	}
-	if (CFDictionaryContainsKey(dict, kSaveKey_highkey)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_highkey));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_HighKey,value );
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_HighKey,127 );
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_ar)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_ar));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_AR, value);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_dr)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_dr));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_DR, value);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_sl)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_sl));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SL, value);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_sr)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_sr));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SR, value);
-	}
-	
-    bool isSustainModeSet = false;
-    if (CFDictionaryContainsKey(dict, kSaveKey_SustainMode)) {
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_SustainMode));
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-        isSustainModeSet = true;
-	}
-	
-    if (CFDictionaryContainsKey(dict, kSaveKey_volL)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volL));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolL, value);
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolL, 100);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_volR)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_volR));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolR, value);
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_VolR, 100);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_echo)) {
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_echo));
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Echo,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Echo, .0f);
-	}
-	
-	if (CFDictionaryContainsKey(dict, kSaveKey_bank)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_bank));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Bank, value );
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_Bank, 0 );
-	}
-	
-    if (CFDictionaryContainsKey(dict, kSaveKey_MonoMode)) {
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_MonoMode));
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_MonoMode,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_MonoMode, .0f);
-	}
-    
-    if (CFDictionaryContainsKey(dict, kSaveKey_PortamentoOn)) {
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_PortamentoOn));
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_PortamentoOn,CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_PortamentoOn, .0f);
-	}
-    
-    if (CFDictionaryContainsKey(dict, kSaveKey_PortamentoRate)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_PortamentoRate));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_PortamentoRate, value );
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_PortamentoRate, 0 );
-	}
-    
-    if (CFDictionaryContainsKey(dict, kSaveKey_NoteOnPriority)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_NoteOnPriority));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority, value );
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority, 64 );
-	}
-    
-    if (CFDictionaryContainsKey(dict, kSaveKey_ReleasePriority)) {
-		cfnum = reinterpret_cast<CFNumberRef>(CFDictionaryGetValue(dict, kSaveKey_ReleasePriority));
-		CFNumberGetValue(cfnum, kCFNumberIntType, &value);
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_ReleasePriority, value );
-	}
-	else {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_ReleasePriority, 0 );
-	}
-    
-	if (CFDictionaryContainsKey(dict, kSaveKey_ProgName)) {
-		char	pgname[PROGRAMNAME_MAX_LEN];
-		CFStringGetCString(reinterpret_cast<CFStringRef>(CFDictionaryGetValue(dict, kSaveKey_ProgName)),
-						   pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
-		mEfx->SetProgramName(pgname);
-	}
-	else {
-		mEfx->SetProgramName("");
-	}
-	
-	//元波形ファイル情報を復元
-	if (CFDictionaryContainsKey(dict, kSaveKey_SourceFile)) {
-		CFDataRef	urlData = reinterpret_cast<CFDataRef>(CFDictionaryGetValue(dict, kSaveKey_SourceFile));
-		CFURLRef	url = CFURLCreateWithBytes( NULL, CFDataGetBytePtr(urlData), 
-											   CFDataGetLength(urlData), kCFStringEncodingUTF8, NULL );
-		CFStringRef pathStr = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
-		char	path[PATH_LEN_MAX];
-		CFStringGetCString(pathStr, path, PATH_LEN_MAX-1, kCFStringEncodingUTF8);
-		mEfx->SetSourceFilePath(path);
-		CFRelease(pathStr);
-		CFRelease(url);
-		
-		CFBooleanRef cfbool = reinterpret_cast<CFBooleanRef>(CFDictionaryGetValue(dict, kSaveKey_IsEmphasized));
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, CFBooleanGetValue(cfbool) ? 1.0f:.0f);
-        
-        // SRをリリース時に使用するけどSustainModeの設定項目は無い過渡的なバージョン
-        if (!isSustainModeSet) {
-            mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
-        }
-	}
-	else {
-		mEfx->SetSourceFilePath("");
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized, .0f);
-        
-        // SRをそのまま使う古いバージョン
-        if (!isSustainModeSet) {
-            mEfx->SetPropertyValue(kAudioUnitCustomProperty_SustainMode, .0f);
-        }
-	}
-	
-	//UIに変更を反映
-	if (pgnum == editProg) {
-		mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
-	}
-	
-	mEfx->GetGenerator()->RefreshKeyMap();
-}
 //-----------------------------------------------------------------------------
 OSStatus C700::StartNote(	MusicDeviceInstrumentID 	inInstrument,
                             MusicDeviceGroupID 			inGroupID,

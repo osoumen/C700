@@ -9,6 +9,7 @@
 #import <CAAUParameter.h>
 #import "C700_CocoaViewFactory.h"
 #import "C700Edit.h"
+#include "C700Properties.h"
 
 @implementation C700_CocoaViewFactory
 
@@ -60,127 +61,42 @@ AudioUnitParameterValue		inParameterValue
 		char		outDataPtr[16];
 		UInt32		outDataSize=16;
 		
-		if ( 
-			propertyId != kAudioUnitCustomProperty_PGDictionary &&
-			propertyId != kAudioUnitCustomProperty_XIData &&
-			propertyId != kAudioUnitCustomProperty_SourceFileRef )
-		{
-			AudioUnitGetProperty((AudioUnit)editor->getEffect(), propertyId,
-								 kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
-		}
+        AudioUnitGetProperty((AudioUnit)editor->getEffect(), propertyId,
+                             kAudioUnitScope_Global, 0, &outDataPtr, &outDataSize);
 		
-		switch (propertyId) {
-			case kAudioUnitCustomProperty_BaseKey:
-			case kAudioUnitCustomProperty_LowKey:
-			case kAudioUnitCustomProperty_HighKey:
-			case kAudioUnitCustomProperty_AR:
-			case kAudioUnitCustomProperty_DR:
-			case kAudioUnitCustomProperty_SL:
-			case kAudioUnitCustomProperty_SR:
-			case kAudioUnitCustomProperty_VolL:
-			case kAudioUnitCustomProperty_VolR:
-			case kAudioUnitCustomProperty_EditingProgram:
-			case kAudioUnitCustomProperty_TotalRAM:
-			case kAudioUnitCustomProperty_EditingChannel:
-			case kAudioUnitCustomProperty_LoopPoint:
-			case kAudioUnitCustomProperty_Bank:
-            case kAudioUnitCustomProperty_PortamentoRate:
-            case kAudioUnitCustomProperty_NoteOnPriority:
-            case kAudioUnitCustomProperty_ReleasePriority:
-				value = *((int*)outDataPtr);
-				break;
-				
-			case kAudioUnitCustomProperty_Rate:
-				value = *((double*)outDataPtr);
-				break;
-				
-			case kAudioUnitCustomProperty_Loop:
-			case kAudioUnitCustomProperty_Echo:
-			case kAudioUnitCustomProperty_IsEmaphasized:
-            case kAudioUnitCustomProperty_SustainMode:
-            case kAudioUnitCustomProperty_MonoMode:
-            case kAudioUnitCustomProperty_PortamentoOn:
-            case kAudioUnitCustomProperty_IsHwConnected:
-				value = *((bool*)outDataPtr);
-				break;
-								
-			case kAudioUnitCustomProperty_Band1:
-			case kAudioUnitCustomProperty_Band2:
-			case kAudioUnitCustomProperty_Band3:
-			case kAudioUnitCustomProperty_Band4:
-			case kAudioUnitCustomProperty_Band5:
-				value = *((Float32*)outDataPtr);
-				break;
-				
-			case kAudioUnitCustomProperty_NoteOnTrack_1:
-			case kAudioUnitCustomProperty_NoteOnTrack_2:
-			case kAudioUnitCustomProperty_NoteOnTrack_3:
-			case kAudioUnitCustomProperty_NoteOnTrack_4:
-			case kAudioUnitCustomProperty_NoteOnTrack_5:	
-			case kAudioUnitCustomProperty_NoteOnTrack_6:
-			case kAudioUnitCustomProperty_NoteOnTrack_7:
-			case kAudioUnitCustomProperty_NoteOnTrack_8:
-			case kAudioUnitCustomProperty_NoteOnTrack_9:
-			case kAudioUnitCustomProperty_NoteOnTrack_10:
-			case kAudioUnitCustomProperty_NoteOnTrack_11:
-			case kAudioUnitCustomProperty_NoteOnTrack_12:
-			case kAudioUnitCustomProperty_NoteOnTrack_13:
-			case kAudioUnitCustomProperty_NoteOnTrack_14:
-			case kAudioUnitCustomProperty_NoteOnTrack_15:
-			case kAudioUnitCustomProperty_NoteOnTrack_16:
-			case kAudioUnitCustomProperty_MaxNoteTrack_1:
-			case kAudioUnitCustomProperty_MaxNoteTrack_2:
-			case kAudioUnitCustomProperty_MaxNoteTrack_3:
-			case kAudioUnitCustomProperty_MaxNoteTrack_4:
-			case kAudioUnitCustomProperty_MaxNoteTrack_5:
-			case kAudioUnitCustomProperty_MaxNoteTrack_6:
-			case kAudioUnitCustomProperty_MaxNoteTrack_7:
-			case kAudioUnitCustomProperty_MaxNoteTrack_8:
-			case kAudioUnitCustomProperty_MaxNoteTrack_9:
-			case kAudioUnitCustomProperty_MaxNoteTrack_10:
-			case kAudioUnitCustomProperty_MaxNoteTrack_11:
-			case kAudioUnitCustomProperty_MaxNoteTrack_12:
-			case kAudioUnitCustomProperty_MaxNoteTrack_13:
-			case kAudioUnitCustomProperty_MaxNoteTrack_14:
-			case kAudioUnitCustomProperty_MaxNoteTrack_15:
-			case kAudioUnitCustomProperty_MaxNoteTrack_16:
-				value = *((UInt32*)outDataPtr);
-				break;
-
-			case kAudioUnitCustomProperty_BRRData:
-			{
-				BRRData		*brrdata = (BRRData*)outDataPtr;
-				editor->SetBRRData( brrdata );
-				outDataSize = 0;
-				break;
-			}
-			case kAudioUnitCustomProperty_ProgramName:
-			{
-				CFStringRef		cfpgname = *((CFStringRef*)outDataPtr);
-				if ( cfpgname == NULL )
-				{
-					editor->SetProgramName( "" );
-				}
-				else {
-					char	pgname[PROGRAMNAME_MAX_LEN];
-					CFStringGetCString(cfpgname, pgname, PROGRAMNAME_MAX_LEN, kCFStringEncodingUTF8);
-					editor->SetProgramName( pgname );
-                    CFRelease(cfpgname);
-				}
-				outDataSize = 0;
-				break;
-			}
-//			case kAudioUnitCustomProperty_PGDictionary:
-//			case kAudioUnitCustomProperty_XIData:
-//			case kAudioUnitCustomProperty_SourceFileRef:
-				
-			default:
-				outDataSize = 0;
-		}
-		
-		if ( outDataSize > 0 ) {
-			editor->setParameter( propertyId, value );
-		}
+        auto it = editor->mPropertyParams.find(propertyId);
+        if (it != editor->mPropertyParams.end()) {
+            switch (it->second.dataType) {
+                case propertyDataTypeFloat32:
+                    value = *((Float32*)outDataPtr);
+                    editor->setParameter( propertyId, value );
+                    break;
+                case propertyDataTypeDouble:
+                    value = *((double*)outDataPtr);
+                    editor->setParameter( propertyId, value );
+                    break;
+                case propertyDataTypeInt32:
+                    value = *((int*)outDataPtr);
+                    editor->setParameter( propertyId, value );
+                    break;
+                case propertyDataTypeBool:
+                    value = *((bool*)outDataPtr);
+                    editor->setParameter( propertyId, value );
+                    break;
+                case propertyDataTypeStruct:
+                    editor->setParameter( propertyId, outDataPtr );
+                    break;
+                case propertyDataTypeString:
+                case propertyDataTypeFilePath:
+                case propertyDataTypeVariableData:
+                case propertyDataTypePointer:
+                {
+                    char **ptr = (char**)outDataPtr;
+                    editor->setParameter( propertyId, *ptr );
+                    break;
+                }
+            }
+        }
 	}
 }
 
