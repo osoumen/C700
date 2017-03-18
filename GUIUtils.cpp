@@ -382,8 +382,8 @@ CControl *makeControlFrom( const ControlInstances *desc, CFrame *frame, CControl
 					}
 					else
 					{
-						textLabel->setFont(&g_LabelFont);
-						//mLabelFont->forget();
+						fontDesc = new CFontDesc(g_LabelFont);
+						textLabel->setFont(fontDesc);
 					}
 					cntl = textLabel;
 					break;
