@@ -105,7 +105,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
 #if MAC
         strncat(fname, "/regdump.dat", 12);
 #else
-        strncat(fname, "¥¥regdump.dat", 12);
+        strncat(fname, "\\regdump.dat", 12);
 #endif
         buffer.WriteToFile(fname);
     }
@@ -117,7 +117,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
 #if MAC
         strncat(fname, "/dirregion.dat", 14);
 #else
-        strncat(fname, "¥¥dirregion.dat", 14);
+        strncat(fname, "\\dirregion.dat", 14);
 #endif
         buffer.WriteToFile(fname);
     }
@@ -129,7 +129,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
 #if MAC
         strncat(fname, "/brrregion.dat", 14);
 #else
-        strncat(fname, "¥¥brrregion.dat", 14);
+        strncat(fname, "\\brrregion.dat", 14);
 #endif
         buffer.WriteToFile(fname);
     }
@@ -142,7 +142,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
 #if MAC
         strncat(fname, "/spclog.dat", 11);
 #else
-        strncat(fname, "¥¥spclog.dat", 11);
+        strncat(fname, "\\spclog.dat", 11);
 #endif
         buffer.WriteToFile(fname);
     }
@@ -154,7 +154,7 @@ bool PlayingFileGenerateBase::WriteToFile( const char *path, const RegisterLogge
 #if MAC
         strncat(fname, "/waittable.dat", 14);
 #else
-        strncat(fname, "¥¥waittable.dat", 14);
+        strncat(fname, "\\waittable.dat", 14);
 #endif
         buffer.WriteToFile(fname);
     }

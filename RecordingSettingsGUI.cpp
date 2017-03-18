@@ -40,7 +40,7 @@ RecordingSettingsGUI::RecordingSettingsGUI(const CRect &inSize, CFrame *frame, C
     CRect csize(0,0,inSize.width(), inSize.height()-32);
     cUrlLinkBox = new CUrlLinkBox(csize, frame, this, -1, firstOpen, "http://picopicose.com/software.html");
     addView(cUrlLinkBox);
-    cUrlLinkBox->setAttribute(kCViewTooltipAttribute,strlen("CUrlLinkBox")+1,"CUrlLinkBox");
+    //cUrlLinkBox->setAttribute(kCViewTooltipAttribute,strlen("CUrlLinkBox")+1,"CUrlLinkBox");
     firstOpen->forget();
     cUrlLinkBox->setVisible(false);
 
