@@ -136,7 +136,7 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Record Start Pos (ppq)",	//title
+		"Record Start Pos [ppq]",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
@@ -187,7 +187,7 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Loop Start Pos (ppq)",	//title
+		"Loop Start Pos [ppq]",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
@@ -238,7 +238,7 @@ ControlInstances	sRecordingViewCntls[] = {
     {
 		'appl',	//sig
 		'stxt',	//kind
-		"Record End Pos (ppq)",	//title
+		"Record End Pos [ppq]",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
