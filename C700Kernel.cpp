@@ -56,6 +56,7 @@ C700Kernel::C700Kernel()
 		mOnNotes[i] = 0;
 		mMaxNote[i] = 0;
 	}
+    mTotalOnNotes = 0;
 	
 	//プログラムの初期化
 	for (int i=0; i<128; i++) {
@@ -75,17 +76,19 @@ C700Kernel::C700Kernel()
 		mVPset[i].sourceFile[0] = 0;
 		mVPset[i].isEmphasized = true;
 		
-		mVPset[i].ar = kDefaultValue_AR;
-		mVPset[i].dr = kDefaultValue_DR;
-		mVPset[i].sl = kDefaultValue_SL;
-		mVPset[i].sr = kDefaultValue_SR;
+		mVPset[i].ar = mPropertyParams[kAudioUnitCustomProperty_AR].defaultValue;
+		mVPset[i].dr = mPropertyParams[kAudioUnitCustomProperty_DR].defaultValue;
+		mVPset[i].sl = mPropertyParams[kAudioUnitCustomProperty_SL].defaultValue;
+		mVPset[i].sr = mPropertyParams[kAudioUnitCustomProperty_SR].defaultValue;
         
-        mVPset[i].sustainMode = kDefaultValue_SustainMode;
-        mVPset[i].monoMode = kDefaultValue_MonoMode;
-        mVPset[i].portamentoOn = kDefaultValue_PortamentoOn;
-        mVPset[i].portamentoRate = kDefaultValue_PortamentoRate;
-        mVPset[i].noteOnPriority = kDefaultValue_NoteOnPriority;
-        mVPset[i].releasePriority = kDefaultValue_ReleasePriority;
+        mVPset[i].sustainMode = mPropertyParams[kAudioUnitCustomProperty_SustainMode].defaultValue!=0?true:false;
+        mVPset[i].monoMode = mPropertyParams[kAudioUnitCustomProperty_MonoMode].defaultValue!=0?true:false;
+        mVPset[i].portamentoOn = mPropertyParams[kAudioUnitCustomProperty_PortamentoOn].defaultValue!=0?true:false;
+        mVPset[i].portamentoRate = mPropertyParams[kAudioUnitCustomProperty_PortamentoRate].defaultValue;
+        mVPset[i].noteOnPriority = mPropertyParams[kAudioUnitCustomProperty_NoteOnPriority].defaultValue;
+        mVPset[i].releasePriority = mPropertyParams[kAudioUnitCustomProperty_ReleasePriority].defaultValue;
+        mVPset[i].pmOn = mPropertyParams[kAudioUnitCustomProperty_PitchModulationOn].defaultValue!=0?true:false;
+        mVPset[i].noiseOn = mPropertyParams[kAudioUnitCustomProperty_NoiseOn].defaultValue!=0?true:false;
 	}
 	
     restoreGlobalProperties();
@@ -129,6 +132,8 @@ void C700Kernel::Reset()
 			propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteTrack_1+i, propNotifyUserData );
 		}
 	}
+    mTotalOnNotes = 0;
+    propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteOnTotal, propNotifyUserData );
     
     if (mGlobalSettingsHasChanged) {
         storeGlobalProperties();
@@ -442,6 +447,12 @@ float C700Kernel::GetPropertyValue( int inID )
         case kAudioUnitCustomProperty_PortamentoOn:
             return mVPset[mEditProg].portamentoOn ? 1.0f:.0f;
             
+        case kAudioUnitCustomProperty_PitchModulationOn:
+			return mVPset[mEditProg].pmOn ? 1.0f:.0f;
+
+        case kAudioUnitCustomProperty_NoiseOn:
+			return mVPset[mEditProg].noiseOn ? 1.0f:.0f;
+
         case kAudioUnitCustomProperty_PortamentoRate:
             return mVPset[mEditProg].portamentoRate;
             
@@ -481,6 +492,9 @@ float C700Kernel::GetPropertyValue( int inID )
             
         case kAudioUnitCustomProperty_HostBeatPos:
             return mCurrentPosInTimeLine;
+            
+        case kAudioUnitCustomProperty_MaxNoteOnTotal:
+            return mTotalOnNotes;
             
 		default:
 			return 0;
@@ -704,12 +718,13 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 			// 表示更新が必要なプロパティの変更を通知する
 			if ( propertyNotifyFunc ) {
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
-					propertyNotifyFunc( i, propNotifyUserData );
-				}
-                for (int i=kAudioUnitCustomProperty_SustainMode; i<=kAudioUnitCustomProperty_ReleasePriority; i++) {
-					propertyNotifyFunc( i, propNotifyUserData );
-				}
+                auto it = mPropertyParams.begin();
+                while (it != mPropertyParams.end()) {
+                    if (it->second.saveToProg) {
+                        propertyNotifyFunc(it->first, propNotifyUserData);
+                    }
+                    it++;
+                }
 			}
 			return true;
 		}
@@ -731,12 +746,13 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 			// 表示更新が必要なプロパティの変更を通知する
 			if ( propertyNotifyFunc ) {
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
-					propertyNotifyFunc( i, propNotifyUserData );
-				}
-                for (int i=kAudioUnitCustomProperty_SustainMode; i<=kAudioUnitCustomProperty_ReleasePriority; i++) {
-					propertyNotifyFunc( i, propNotifyUserData );
-				}
+                auto it = mPropertyParams.begin();
+                while (it != mPropertyParams.end()) {
+                    if (it->second.saveToProg) {
+                        propertyNotifyFunc(it->first, propNotifyUserData);
+                    }
+                    it++;
+                }
 			}
 			return true;
 		}
@@ -813,6 +829,14 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             mVPset[mEditProg].portamentoOn = boolData;
             return true;
             
+        case kAudioUnitCustomProperty_PitchModulationOn:
+            mVPset[mEditProg].pmOn = boolData;
+            return true;
+        
+        case kAudioUnitCustomProperty_NoiseOn:
+            mVPset[mEditProg].noiseOn = boolData;
+            return true;
+
         case kAudioUnitCustomProperty_PortamentoRate:
             mVPset[mEditProg].portamentoRate = value;
             mDriver.UpdatePortamentoTime(mEditProg);
@@ -856,6 +880,10 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             
         case kAudioUnitCustomProperty_FadeMsTimeForSpc:
             mDriver.GetDsp()->SetFadeMsTimeForSpc(value);
+            return true;
+            
+        case kAudioUnitCustomProperty_MaxNoteOnTotal:
+            mTotalOnNotes = value;
             return true;
             
 		default:
@@ -1204,9 +1232,13 @@ bool C700Kernel::SelectPreset( int num )
 			strcpy(mVPset[4].pgname, "6.25% Pulse");
 			
 			if ( propertyNotifyFunc ) {
-				for (int i=kAudioUnitCustomProperty_Begin; i<kAudioUnitCustomProperty_Begin+kNumberOfProperties; i++) {
-					propertyNotifyFunc(i,propNotifyUserData);
-				}
+                auto it = mPropertyParams.begin();
+                while (it != mPropertyParams.end()) {
+                    if (it->second.saveToProg) {
+                        propertyNotifyFunc(it->first, propNotifyUserData);
+                    }
+                    it++;
+                }
 			}
 			break;
         }
@@ -1250,6 +1282,7 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 	mDriver.Process(frames, output);
     
     // MIDIインジケーターへの反映
+    int onNotesTotal = 0;
     for (int i=0; i<16; i++) {
         int onNotes = mDriver.GetNoteOnNotes(i);
         if (onNotes != mOnNotes[i]) {
@@ -1264,8 +1297,16 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
                 }
             }
         }
+        onNotesTotal += onNotes;
     }
-    
+    // 合計発音数表示
+    if (onNotesTotal > mTotalOnNotes) {
+        mTotalOnNotes = onNotesTotal;
+        if ( propertyNotifyFunc ) {
+            propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteOnTotal, propNotifyUserData );
+        }
+    }
+    // ハードウェア接続チェック
     if (mIsHwAvailable != mDriver.GetDsp()->IsHwAvailable()) {
         mIsHwAvailable = mDriver.GetDsp()->IsHwAvailable();
         propertyNotifyFunc( kAudioUnitCustomProperty_IsHwConnected, propNotifyUserData );
@@ -1302,12 +1343,12 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
     switch (controlNum) {
         case 6:
             //データ・エントリー(LSB)
-            setDataEntryLSB(ch, value);
+            setDataEntryLSB(ch, value, inFrame);
             break;
             
         case 38:
             // データ・エントリー(MSB)
-            setDataEntryMSB(ch, value);
+            setDataEntryMSB(ch, value, inFrame);
             break;
             
         case 98:
@@ -1330,51 +1371,6 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             setRPNMSB(ch, value);
             break;
             
-
-        case 1:
-        {
-            //モジュレーションホイール
-#if 0
-            int	paramID = kParam_vibdepth;
-            if ( ch > 0 ) {
-                paramID = kParam_vibdepth_2 - 1 + ch;
-            }
-            if ( parameterSetFunc ) {
-                parameterSetFunc( paramID, value, paramSetUserData );
-            }
-            break;
-#endif
-        }
-            
-        case 5:
-            // ポルタメントタイム
-        case 7:
-            // ボリューム
-        case 10:
-            // パン
-        case 11:
-            // エクスプレッション
-        case 64:
-            // ホールド１（ダンパー）
-        case 65:
-            // ポルタメント・オン・オフ
-        case 72:
-            // SR
-        case 73:
-            // AR
-        case 80:
-            // SL
-        case 75:
-            // DR
-        case 76:
-            // ビブラート・レート
-        case 77:
-            // ビブラート・デプス
-        case 84:
-            // ポルタメント・コントロール
-        case 91:
-            // ECEN ON/OFF
-            
         default:
            mDriver.ControlChange( ch, controlNum, value, inFrame);
            break;
@@ -1386,6 +1382,7 @@ void C700Kernel::setRPNLSB(int ch, int value)
 {
     mRPN[ch] &= 0xff00;
     mRPN[ch] |= value & 0x7f;
+    mIsSettingNRPN[ch] = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1393,6 +1390,7 @@ void C700Kernel::setRPNMSB(int ch, int value)
 {
     mRPN[ch] &= 0x00ff;
     mRPN[ch] |= (value & 0x7f) << 8;
+    mIsSettingNRPN[ch] = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1400,6 +1398,7 @@ void C700Kernel::setNRPNLSB(int ch, int value)
 {
     mNRPN[ch] &= 0xff00;
     mNRPN[ch] |= value & 0x7f;
+    mIsSettingNRPN[ch] = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1407,27 +1406,31 @@ void C700Kernel::setNRPNMSB(int ch, int value)
 {
     mNRPN[ch] &= 0x00ff;
     mNRPN[ch] |= (value & 0x7f) << 8;
+    mIsSettingNRPN[ch] = true;
 }
 
 //-----------------------------------------------------------------------------
-void C700Kernel::setDataEntryLSB(int ch, int value)
+void C700Kernel::setDataEntryLSB(int ch, int value, int inFrame)
 {
     mDataEntryValue[ch] &= 0xff00;
     mDataEntryValue[ch] |= value & 0x7f;
-    sendDataEntryValue(ch);
+    sendDataEntryValue(ch, inFrame);
 }
 
 //-----------------------------------------------------------------------------
-void C700Kernel::setDataEntryMSB(int ch, int value)
+void C700Kernel::setDataEntryMSB(int ch, int value, int inFrame)
 {
     mDataEntryValue[ch] &= 0x00ff;
     mDataEntryValue[ch] |= (value & 0x7f) << 8;
 }
 
 //-----------------------------------------------------------------------------
-void C700Kernel::sendDataEntryValue(int ch)
+void C700Kernel::sendDataEntryValue(int ch, int inFrame)
 {
     if (mIsSettingNRPN) {
+        if ((mNRPN[ch] & 0xff00) == 0x7e00) {   // #98:rr #99:126
+            mDriver.DirectRegisterWrite(ch, mNRPN[ch] & 0x00ff, mDataEntryValue[ch], inFrame);
+        }
     }
     else  {
         switch (mRPN[ch]) {
