@@ -112,6 +112,7 @@ private:
 	// MIDIチャンネルノート別発音数
 	int					mOnNotes[16];
 	int					mMaxNote[16];
+	int					mTotalOnNotes;
 	
 	InstParams			mVPset[128];
 	// エコー

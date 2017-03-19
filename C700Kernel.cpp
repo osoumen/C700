@@ -56,6 +56,7 @@ C700Kernel::C700Kernel()
 		mOnNotes[i] = 0;
 		mMaxNote[i] = 0;
 	}
+    mTotalOnNotes = 0;
 	
 	//プログラムの初期化
 	for (int i=0; i<128; i++) {
@@ -129,6 +130,8 @@ void C700Kernel::Reset()
 			propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteTrack_1+i, propNotifyUserData );
 		}
 	}
+    mTotalOnNotes = 0;
+    propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteOnTotal, propNotifyUserData );
     
     if (mGlobalSettingsHasChanged) {
         storeGlobalProperties();
@@ -481,6 +484,9 @@ float C700Kernel::GetPropertyValue( int inID )
             
         case kAudioUnitCustomProperty_HostBeatPos:
             return mCurrentPosInTimeLine;
+            
+        case kAudioUnitCustomProperty_MaxNoteOnTotal:
+            return mTotalOnNotes;
             
 		default:
 			return 0;
@@ -856,6 +862,10 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             
         case kAudioUnitCustomProperty_FadeMsTimeForSpc:
             mDriver.GetDsp()->SetFadeMsTimeForSpc(value);
+            return true;
+            
+        case kAudioUnitCustomProperty_MaxNoteOnTotal:
+            mTotalOnNotes = value;
             return true;
             
 		default:
@@ -1250,6 +1260,7 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 	mDriver.Process(frames, output);
     
     // MIDIインジケーターへの反映
+    int onNotesTotal = 0;
     for (int i=0; i<16; i++) {
         int onNotes = mDriver.GetNoteOnNotes(i);
         if (onNotes != mOnNotes[i]) {
@@ -1263,6 +1274,13 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
                     propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteTrack_1+i, propNotifyUserData );
                 }
             }
+        }
+        onNotesTotal += onNotes;
+    }
+    if (onNotesTotal > mTotalOnNotes) {
+        mTotalOnNotes = onNotesTotal;
+        if ( propertyNotifyFunc ) {
+            propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteOnTotal, propNotifyUserData );
         }
     }
     
