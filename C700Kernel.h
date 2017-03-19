@@ -145,9 +145,9 @@ private:
     void            setRPNMSB(int ch, int value);
     void            setNRPNLSB(int ch, int value);
     void            setNRPNMSB(int ch, int value);
-    void            setDataEntryLSB(int ch, int value);
-    void            setDataEntryMSB(int ch, int value);
-    void            sendDataEntryValue(int ch);
+    void            setDataEntryLSB(int ch, int value, int inFrame);
+    void            setDataEntryMSB(int ch, int value, int inFrame);
+    void            sendDataEntryValue(int ch, int inFrame);
 
     const char		*GetSourceFilePath();
 	bool			SetSourceFilePath( const char *path );

@@ -97,6 +97,7 @@ public:
 	void		ProgramChange( int ch, int value, int inFrame );
 	void		PitchBend( int ch, int value1, int value2, int inFrame );
     void        ControlChange( int ch, int controlNum, int value, int inFrame );
+    void        DirectRegisterWrite( int ch, int regAddr, int value, int inFrame );
 	void		AllNotesOff();
 	void		AllSoundOff();
 	void		ResetAllControllers();
@@ -197,7 +198,8 @@ private:
         CONTROL_CHANGE,
         START_REGLOG,
         MARKLOOP_REGLOG,
-        END_REGLOG
+        END_REGLOG,
+        REGISTER_WRITE
 	};
 	
 	typedef struct {

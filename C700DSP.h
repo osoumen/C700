@@ -66,6 +66,7 @@ public:
     void SetDir(int value);
     void SetNoiseFreq(int value);
     
+    void WriteReg(int addr, unsigned char data);
     void WriteRam(int addr, const unsigned char *data, int size);
     void WriteRam(int addr, unsigned char data);
     
