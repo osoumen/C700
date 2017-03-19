@@ -488,7 +488,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -499,7 +499,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -510,7 +510,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -521,7 +521,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -532,7 +532,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -543,7 +543,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -554,7 +554,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -565,7 +565,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -576,7 +576,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -587,7 +587,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -598,7 +598,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -609,7 +609,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -620,7 +620,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -631,7 +631,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -642,7 +642,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -653,7 +653,7 @@ PropertyDescription sPropertyDescription[] = {
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
-        true,                                   // readOnly
+        false,                                  // readOnly
         false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
@@ -951,7 +951,18 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToSong
         false,                                  // saveToGlobal
         "",                                     // savekey
-    }
+    },
+    {
+        kAudioUnitCustomProperty_MaxNoteOnTotal,// propId
+        sizeof(int),                            // outDataSize
+        false,                                  // outWritable
+        propertyDataTypeInt32,                  // dataType
+        false,                                  // readOnly
+        false,                                  // saveToProg
+        false,                                  // saveToSong
+        false,                                  // saveToGlobal
+        "",                                     // savekey
+    },
 };
 
 

@@ -2995,4 +2995,38 @@ ControlInstances	sCntl[] = {
 		0,	//style
 		0	//future use
 	},
+    {
+		'airy',	//sig
+		'dtxt',	//kind
+		"Monaco 9 255 255 255 0 2 1 0",	//title
+		0,	//Value
+		0,	//Minimum
+		128,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_MaxNoteOnTotal,	//id
+		0,	//command
+		390, 1, 14, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'appl',	//sig
+		'stxt',	//kind
+		"Total",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		381, 19, 32, 11,	//x,y,w,h
+		"Arial Bold",	//fontname
+		13,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
 };

@@ -66,22 +66,22 @@ enum
     kAudioUnitCustomProperty_NoteOnTrack_15,    // read only
     kAudioUnitCustomProperty_NoteOnTrack_16,    // read only
     
-    kAudioUnitCustomProperty_MaxNoteTrack_1,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_2,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_3,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_4,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_5,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_6,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_7,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_8,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_9,    // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_10,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_11,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_12,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_13,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_14,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_15,   // read only
-    kAudioUnitCustomProperty_MaxNoteTrack_16,   // read only
+    kAudioUnitCustomProperty_MaxNoteTrack_1,
+    kAudioUnitCustomProperty_MaxNoteTrack_2,
+    kAudioUnitCustomProperty_MaxNoteTrack_3,
+    kAudioUnitCustomProperty_MaxNoteTrack_4,
+    kAudioUnitCustomProperty_MaxNoteTrack_5,
+    kAudioUnitCustomProperty_MaxNoteTrack_6,
+    kAudioUnitCustomProperty_MaxNoteTrack_7,
+    kAudioUnitCustomProperty_MaxNoteTrack_8,
+    kAudioUnitCustomProperty_MaxNoteTrack_9,
+    kAudioUnitCustomProperty_MaxNoteTrack_10,
+    kAudioUnitCustomProperty_MaxNoteTrack_11,
+    kAudioUnitCustomProperty_MaxNoteTrack_12,
+    kAudioUnitCustomProperty_MaxNoteTrack_13,
+    kAudioUnitCustomProperty_MaxNoteTrack_14,
+    kAudioUnitCustomProperty_MaxNoteTrack_15,
+    kAudioUnitCustomProperty_MaxNoteTrack_16,
     
     kAudioUnitCustomProperty_SourceFileRef,
     kAudioUnitCustomProperty_IsEmaphasized,
@@ -95,7 +95,6 @@ enum
     
     kAudioUnitCustomProperty_IsHwConnected,     // read only
     
-    // 追加
     // グローバル設定ファイルはau,vst共通にするためsaveToGlobalなものはCStringに
     kAudioUnitCustomProperty_SongRecordPath,    // char[PATH_LEN_MAX] ->dsp
     kAudioUnitCustomProperty_RecSaveAsSpc,      // bool ->dsp
@@ -116,6 +115,10 @@ enum
     kAudioUnitCustomProperty_SongPlayerCodeVer, // int32 read only
     
     kAudioUnitCustomProperty_HostBeatPos,       // double read only
+    
+    kAudioUnitCustomProperty_MaxNoteOnTotal,    // int
+    
+    // 新規追加する場合は必ずこの後に追加すること
     
     kAudioUnitCustomProperty_End,
     kNumberOfProperties = kAudioUnitCustomProperty_End-kAudioUnitCustomProperty_Begin
