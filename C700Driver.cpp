@@ -63,6 +63,7 @@ void C700Driver::VoiceStatus::Reset()
 	vibPhase = 0.0f;
     portaPitch = .0f;
     pan = 64;
+    non = false;
 	
     targetPitch = 0;
 	//loopPoint = 0;
@@ -244,9 +245,13 @@ void C700Driver::AllNotesOff()
         mVoiceStat[i].Reset();
         mKeyOnFlag[i] = false;
         mKeyOffFlag[i] = false;
-        mEchoOnFlag = 0;
         mEchoOnMask[i] = false;
+        mPMOnMask[i] = false;
+        mNoiseOnMask[i] = false;
 	}
+    mEchoOnFlag = 0;
+    mPMOnFlag = 0;
+    mNoiseOnFlag = 0;
     mVoiceManager.Reset();
 }
 
@@ -671,6 +676,9 @@ InstParams C700Driver::getChannelVP(int ch, int note)
         if (mChStat[ch].changeFlg & HAS_PORTAMENTORATE) mergedVP.portamentoRate = mChStat[ch].changedVP.portamentoRate;
         if (mChStat[ch].changeFlg & HAS_NOTEONPRIORITY) mergedVP.noteOnPriority = mChStat[ch].changedVP.noteOnPriority;
         if (mChStat[ch].changeFlg & HAS_RELEASEPRIORITY) mergedVP.releasePriority = mChStat[ch].changedVP.releasePriority;
+        if (mChStat[ch].changeFlg & HAS_PMON) mergedVP.pmOn = mChStat[ch].changedVP.pmOn;
+        if (mChStat[ch].changeFlg & HAS_NOISEON) mergedVP.noiseOn = mChStat[ch].changedVP.noiseOn;
+        
         return mergedVP;
     }
 }
@@ -985,6 +993,7 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         mVoiceStat[v].vibPhase = 0.0f;
         mVoiceStat[v].vol_l=vp.volL;
         mVoiceStat[v].vol_r=vp.volR;
+        mVoiceStat[v].non=vp.noiseOn;
 
         // îgå`î‘çÜÇéwíËÇ∑ÇÈ
         int     srcn;
@@ -1006,6 +1015,20 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
             mEchoOnFlag |= 1 << v;
         }
         mEchoOnMask[v] = true;
+        
+        // PMONÇê›íË
+        mPMOnFlag &= ~(1 << v);
+        if (vp.pmOn) {
+            mPMOnFlag |= 1 << v;
+        }
+        mPMOnMask[v] = true;
+        
+        // NONÇê›íË
+        mNoiseOnFlag &= ~(1 << v);
+        if (vp.noiseOn) {
+            mNoiseOnFlag |= 1 << v;
+        }
+        mNoiseOnMask[v] = true;
         
         mDSP.SetARDR(v, vp.ar, vp.dr);
         if (vp.sustainMode) {
@@ -1345,28 +1368,39 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 		for ( ; mProcessFrac >= 0; mProcessFrac -= CYCLES_PER_SAMPLE ) {
             int kon = 0;
             int ecen = 0;
+            int pmon = 0;
+            int non = 0;
             for ( int v=0; v<kMaximumVoices; v++ ) {
 				//ÉsÉbÉ`ÇÃéZèo
                 if (mPitchCount[v] >= 0) {
-                    int voicePitch = static_cast<int>(mVoiceStat[v].portaPitch + 0.5f);
-                    
-                    int pitch = (voicePitch + mVoiceStat[v].pb) & 0x3fff;
-                    
-                    if (mVoiceStat[v].reg_pmod) {
-                        mVoiceStat[v].vibPhase += mVibfreq;
-                        if (mVoiceStat[v].vibPhase > onepi) {
-                            mVoiceStat[v].vibPhase -= onepi*2;
-                        }
-                        
-                        float vibwave = VibratoWave(mVoiceStat[v].vibPhase);
-                        int pitchRatio = (vibwave*mVibdepth)*VOLUME_CURB[mVoiceStat[v].vibdepth];
-                        
-                        pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
-                        if (pitch <= 0) {
-                            pitch=1;
-                        }
+                    if (mVoiceStat[v].non) {
+                        int midiCh = mVoiceManager.GetVoiceMidiCh(v);
+                        int pb = (int)(mChStat[midiCh].pbRange * mChStat[midiCh].pitchBend + 0.5f);
+                        int noiseFreq = (mChStat[midiCh].lastNote+pb+4) % 32;  // 60=0Ç…
+                        // ÉmÉCÉYé¸îgêîÇê›íËÇ∑ÇÈ
+                        mDSP.SetNoiseFreq(noiseFreq);
                     }
-                    mDSP.SetPitch(v, pitch);
+                    else {
+                        int voicePitch = static_cast<int>(mVoiceStat[v].portaPitch + 0.5f);
+                        
+                        int pitch = (voicePitch + mVoiceStat[v].pb) & 0x3fff;
+                        
+                        if (mVoiceStat[v].reg_pmod) {
+                            mVoiceStat[v].vibPhase += mVibfreq;
+                            if (mVoiceStat[v].vibPhase > onepi) {
+                                mVoiceStat[v].vibPhase -= onepi*2;
+                            }
+                            
+                            float vibwave = VibratoWave(mVoiceStat[v].vibPhase);
+                            int pitchRatio = (vibwave*mVibdepth)*VOLUME_CURB[mVoiceStat[v].vibdepth];
+                            
+                            pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
+                            if (pitch <= 0) {
+                                pitch=1;
+                            }
+                        }
+                        mDSP.SetPitch(v, pitch);
+                    }
                     mPitchCount[v] = -PITCH_CYCLE_SAMPLES;
                 }
                 
@@ -1394,6 +1428,14 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
                     ecen |= 1 << v;
                     mEchoOnMask[v] = false;
                 }
+                if (mPMOnMask[v]) {
+                    pmon |= 1 << v;
+                    mPMOnMask[v] = false;
+                }
+                if (mNoiseOnMask[v]) {
+                    non |= 1 << v;
+                    mNoiseOnMask[v] = false;
+                }
                 if (mKeyOnFlag[v]) {
                     kon |= 1 << v;
                     mKeyOnFlag[v] = false;
@@ -1403,6 +1445,12 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
             }
             if (ecen) {
                 mDSP.SetEchoOnFlg(mEchoOnFlag, ecen);
+            }
+            if (pmon) {
+                mDSP.SetPMOnFlg(mPMOnFlag, pmon);
+            }
+            if (non) {
+                mDSP.SetNoiseOnFlg(mNoiseOnFlag, non);
             }
             if (kon) {
                 mDSP.KeyOnVoiceFlg(kon);
