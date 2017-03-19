@@ -2286,7 +2286,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_NoiseOn,	//id
 		0,	//command
-		414, 102, 33, 14,	//x,y,w,h
+		414, 102, 38, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2303,7 +2303,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_MonoMode,	//id
 		0,	//command
-		414, 113, 35, 14,	//x,y,w,h
+		414, 113, 36, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
