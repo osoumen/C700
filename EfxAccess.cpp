@@ -44,6 +44,7 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 {
 	//エフェクタ側から現在のプログラムの情報を取得してRawBRRFileを作成
 #if AU
+    // TODO: C700Propertiesを利用する
 	InstParams	inst;
     BRRData     brr;
 	GetBRRData(&brr);
@@ -70,6 +71,8 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
     inst.noteOnPriority = GetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority);
     inst.releasePriority = GetPropertyValue(kAudioUnitCustomProperty_ReleasePriority);
 	inst.isEmphasized = GetPropertyValue(kAudioUnitCustomProperty_IsEmaphasized)!=0?true:false;
+    inst.pmOn = GetPropertyValue(kAudioUnitCustomProperty_PitchModulationOn)!=0?true:false;
+    inst.noiseOn = GetPropertyValue(kAudioUnitCustomProperty_NoiseOn)!=0?true:false;
 	GetFilePathProperty(kAudioUnitCustomProperty_SourceFileRef,inst.sourceFile,PATH_LEN_MAX);
 	
 	RawBRRFile	*file = new RawBRRFile(NULL,true);
