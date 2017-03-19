@@ -51,6 +51,10 @@ void C700DSP::DSPState::Reset()
     vol_r = -200;
     ecen = false;
     ecenNotWrited = true;
+    pmon = false;
+    pmonNotWrited = true;
+    non = false;
+    nonNotWrited = true;
     
 	smp1=0;
 	smp2=0;
@@ -476,6 +480,76 @@ void C700DSP::SetEchoOnFlg(int flg, int mask)
     writeDsp(DSP_EON, data);
 }
 
+void C700DSP::SetPMOn(int v, bool isOn)
+{
+    if ((mVoice[v].pmon != isOn) || mVoice[v].pmonNotWrited) {
+        mVoice[v].pmon = isOn;
+        mVoice[v].pmonNotWrited = false;
+    }
+    unsigned char data = 0;
+    for (int i=0; i<8; i++) {
+        if (mVoice[i].pmon) {
+            data |= 1 << i;
+        }
+    }
+    writeDsp(DSP_PMON, data);
+}
+
+void C700DSP::SetPMOnFlg(int flg, int mask)
+{
+    unsigned char data = 0;
+    for (int i=0; i<8; i++) {
+        if (mVoice[i].pmon) {
+            data |= 1 << i;
+        }
+    }
+    data = (data & ~mask) | (flg & mask);
+    
+    for (int v=0; v<8; v++) {
+        bool isOn = (data & (1 << v))?true:false;
+        if ((mVoice[v].pmon != isOn) || mVoice[v].pmonNotWrited) {
+            mVoice[v].pmon = isOn;
+            mVoice[v].pmonNotWrited = false;
+        }
+    }
+    writeDsp(DSP_PMON, data);
+}
+
+void C700DSP::SetNoiseOn(int v, bool isOn)
+{
+    if ((mVoice[v].non != isOn) || mVoice[v].nonNotWrited) {
+        mVoice[v].non = isOn;
+        mVoice[v].nonNotWrited = false;
+    }
+    unsigned char data = 0;
+    for (int i=0; i<8; i++) {
+        if (mVoice[i].non) {
+            data |= 1 << i;
+        }
+    }
+    writeDsp(DSP_NON, data);
+}
+
+void C700DSP::SetNoiseOnFlg(int flg, int mask)
+{
+    unsigned char data = 0;
+    for (int i=0; i<8; i++) {
+        if (mVoice[i].non) {
+            data |= 1 << i;
+        }
+    }
+    data = (data & ~mask) | (flg & mask);
+    
+    for (int v=0; v<8; v++) {
+        bool isOn = (data & (1 << v))?true:false;
+        if ((mVoice[v].non != isOn) || mVoice[v].nonNotWrited) {
+            mVoice[v].non = isOn;
+            mVoice[v].nonNotWrited = false;
+        }
+    }
+    writeDsp(DSP_NON, data);
+}
+
 void C700DSP::SetSrcn(int v, int value)
 {
     // v chのsrcnからbrrdata,loopPointを設定する
@@ -496,10 +570,21 @@ void C700DSP::SetDir(int value)
     writeDsp(DSP_DIR, static_cast<unsigned char>(value&0xff));
 }
 
+void C700DSP::SetNoiseFreq(int value)
+{
+    // TODO: D5-7を考慮
+    writeDsp(DSP_FLG, static_cast<unsigned char>(value&0x1f));
+}
+
 void C700DSP::setBrr(int v, unsigned char *brrdata, unsigned int loopPoint)
 {
     mVoice[v].brrdata = brrdata;
     mVoice[v].loopPoint = loopPoint;
+}
+
+void C700DSP::WriteReg(int addr, unsigned char data)
+{
+    writeDsp(addr & 0x7f, data);
 }
 
 void C700DSP::WriteRam(int addr, const unsigned char *data, int size)

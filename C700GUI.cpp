@@ -649,6 +649,8 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
     if ( hasFlg & HAS_PORTAMENTORATE ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_PortamentoRate,inst.portamentoRate);
     if ( hasFlg & HAS_NOTEONPRIORITY ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_NoteOnPriority,inst.noteOnPriority);
     if ( hasFlg & HAS_RELEASEPRIORITY ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_ReleasePriority,inst.releasePriority);
+    if ( hasFlg & HAS_PMON ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_PitchModulationOn,inst.pmOn ? 1.0f:.0f);
+    if ( hasFlg & HAS_NOISEON ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_NoiseOn,inst.noiseOn ? 1.0f:.0f);
 	
 	return true;
 }

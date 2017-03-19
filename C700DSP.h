@@ -58,9 +58,15 @@ public:
     void SetPitch(int v, int value);
     void SetEchoOn(int v, bool isOn);
     void SetEchoOnFlg(int flg, int mask);
+    void SetPMOn(int v, bool isOn);
+    void SetPMOnFlg(int flg, int mask);
+    void SetNoiseOn(int v, bool isOn);
+    void SetNoiseOnFlg(int flg, int mask);
     void SetSrcn(int v, int value);
     void SetDir(int value);
+    void SetNoiseFreq(int value);
     
+    void WriteReg(int addr, unsigned char data);
     void WriteRam(int addr, const unsigned char *data, int size);
     void WriteRam(int addr, unsigned char data);
     
@@ -124,6 +130,10 @@ private:
         int             vol_l,vol_r;
 		bool			ecen;
         bool            ecenNotWrited;
+        bool			pmon;
+        bool            pmonNotWrited;
+        bool			non;
+        bool            nonNotWrited;
         
 		unsigned char	*brrdata;
 		unsigned int	loopPoint;

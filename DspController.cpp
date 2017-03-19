@@ -163,13 +163,6 @@ void DspController::init()
 #endif
     
     memset(mDspMirror, 0xef, 128 * sizeof(int));
-    // NONをオフ
-    WriteDsp(DSP_NON, 0x00, true);
-    mDspMirror[DSP_NON] = 0;
-    
-    // PMONをオフ
-    WriteDsp(DSP_PMON, 0x00, true);
-    mDspMirror[DSP_PMON] = 0;
     
     mDspMirror[DSP_EDL] = 0x00;
     mDspMirror[DSP_ESA] = 0x06;

@@ -77,6 +77,7 @@ public:
 		//bool			loop;    // ミラー
         
 		//bool			echoOn;    // ミラー
+        bool            non;
         
         int				targetPitch;
         
@@ -96,6 +97,7 @@ public:
 	void		ProgramChange( int ch, int value, int inFrame );
 	void		PitchBend( int ch, int value1, int value2, int inFrame );
     void        ControlChange( int ch, int controlNum, int value, int inFrame );
+    void        DirectRegisterWrite( int ch, int regAddr, int value, int inFrame );
 	void		AllNotesOff();
 	void		AllSoundOff();
 	void		ResetAllControllers();
@@ -121,6 +123,8 @@ public:
     //void        ChangeChVolL(int ch, int voll);
     //void        ChangeChVolR(int ch, int volr);
     void        ChangeChEcho(int ch, int echo);
+    void        ChangeChPMON(int ch, int pmon);
+    void        ChangeChNON(int ch, int non);
     void        ChangeChBank(int ch, int bank);
     void        ChangeChSustainMode(int ch, int sustainMode);
     void        SetPortamentOn( int ch, bool on );
@@ -194,7 +198,8 @@ private:
         CONTROL_CHANGE,
         START_REGLOG,
         MARKLOOP_REGLOG,
-        END_REGLOG
+        END_REGLOG,
+        REGISTER_WRITE
 	};
 	
 	typedef struct {
@@ -221,6 +226,10 @@ private:
     bool                mKeyOffFlag[kMaximumVoices]; // 次のProcessでKeyOffする
     int                 mEchoOnFlag; // 次のProcessでEchoOnする
     bool                mEchoOnMask[kMaximumVoices]; // 次のProcessでEchoを変更する
+    int                 mPMOnFlag; // 次のProcessでPMOnする
+    bool                mPMOnMask[kMaximumVoices]; // 次のProcessでPMONを変更する
+    int                 mNoiseOnFlag; // 次のProcessでNoiseOnする
+    bool                mNoiseOnMask[kMaximumVoices]; // 次のProcessでNONを変更する
 	
     DynamicVoiceManager mVoiceManager;
 	    
