@@ -480,6 +480,21 @@ void C700DSP::SetEchoOnFlg(int flg, int mask)
     writeDsp(DSP_EON, data);
 }
 
+void C700DSP::SetPMOn(int v, bool isOn)
+{
+    if ((mVoice[v].pmon != isOn) || mVoice[v].pmonNotWrited) {
+        mVoice[v].pmon = isOn;
+        mVoice[v].pmonNotWrited = false;
+    }
+    unsigned char data = 0;
+    for (int i=0; i<8; i++) {
+        if (mVoice[i].pmon) {
+            data |= 1 << i;
+        }
+    }
+    writeDsp(DSP_PMON, data);
+}
+
 void C700DSP::SetPMOnFlg(int flg, int mask)
 {
     unsigned char data = 0;
@@ -498,6 +513,21 @@ void C700DSP::SetPMOnFlg(int flg, int mask)
         }
     }
     writeDsp(DSP_PMON, data);
+}
+
+void C700DSP::SetNoiseOn(int v, bool isOn)
+{
+    if ((mVoice[v].non != isOn) || mVoice[v].nonNotWrited) {
+        mVoice[v].non = isOn;
+        mVoice[v].nonNotWrited = false;
+    }
+    unsigned char data = 0;
+    for (int i=0; i<8; i++) {
+        if (mVoice[i].non) {
+            data |= 1 << i;
+        }
+    }
+    writeDsp(DSP_NON, data);
 }
 
 void C700DSP::SetNoiseOnFlg(int flg, int mask)

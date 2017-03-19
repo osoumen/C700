@@ -58,7 +58,9 @@ public:
     void SetPitch(int v, int value);
     void SetEchoOn(int v, bool isOn);
     void SetEchoOnFlg(int flg, int mask);
+    void SetPMOn(int v, bool isOn);
     void SetPMOnFlg(int flg, int mask);
+    void SetNoiseOn(int v, bool isOn);
     void SetNoiseOnFlg(int flg, int mask);
     void SetSrcn(int v, int value);
     void SetDir(int value);

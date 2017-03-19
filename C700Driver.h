@@ -122,6 +122,8 @@ public:
     //void        ChangeChVolL(int ch, int voll);
     //void        ChangeChVolR(int ch, int volr);
     void        ChangeChEcho(int ch, int echo);
+    void        ChangeChPMON(int ch, int pmon);
+    void        ChangeChNON(int ch, int non);
     void        ChangeChBank(int ch, int bank);
     void        ChangeChSustainMode(int ch, int sustainMode);
     void        SetPortamentOn( int ch, bool on );

@@ -840,6 +840,32 @@ void C700Driver::ChangeChEcho(int ch, int echo)
 }
 
 //-----------------------------------------------------------------------------
+void C700Driver::ChangeChPMON(int ch, int pmon)
+{
+    mChStat[ch].changedVP.pmOn = pmon ? true:false;
+    mChStat[ch].changeFlg |= HAS_PMON;
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
+            mDSP.SetPMOn(i, mChStat[ch].changedVP.pmOn);
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::ChangeChNON(int ch, int non)
+{
+    mChStat[ch].changedVP.noiseOn = non ? true:false;
+    mChStat[ch].changeFlg |= HAS_NOISEON;
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
+            mDSP.SetNoiseOnFlg(i, mChStat[ch].changedVP.noiseOn);
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
 void C700Driver::ChangeChBank(int ch, int bank)
 {
     mChStat[ch].changedVP.bank = bank & 0x03;
@@ -916,7 +942,6 @@ bool C700Driver::doNoteOn1( MIDIEvt dEvt )
                 //mDSP.KeyOffVoice(v);
                 mKeyOffFlag[v] = true;
                 
-                //mDSP.SetEchoOn(v, vp.echo);
                 mDSP.SetARDR(v, vp.ar, vp.dr);
                 if (vp.sustainMode) {
                     mDSP.SetSLSR(v, vp.sl, 0);		//ノートオフ時に設定値になる
@@ -1009,7 +1034,6 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
             mDSP.setBrr(v, vp.brrData(), vp.lp);
         }
         
-        //mDSP.SetEchoOn(v, vp.echo);
         mEchoOnFlag &= ~(1 << v);
         if (vp.echo) {
             mEchoOnFlag |= 1 << v;
@@ -1244,6 +1268,16 @@ void C700Driver::doControlChange( int ch, int controlNum, int value )
         case 91:
             // ECEN ON/OFF
             ChangeChEcho(ch, (value < 64)?0:127);
+            break;
+            
+        case 92:
+            // PMON ON/OFF
+            ChangeChPMON(ch, (value < 64)?0:127);
+            break;
+            
+        case 93:
+            // NON ON/OFF
+            ChangeChNON(ch, (value < 64)?0:127);
             break;
             
         case 126:
