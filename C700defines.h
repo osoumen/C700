@@ -153,7 +153,9 @@ enum InstChangeFlag {
     HAS_PORTAMENTOON    = 1 << 17,
     HAS_PORTAMENTORATE  = 1 << 18,
     HAS_NOTEONPRIORITY  = 1 << 19,
-    HAS_RELEASEPRIORITY = 1 << 20
+    HAS_RELEASEPRIORITY = 1 << 20,
+    HAS_PMON            = 1 << 21,
+    HAS_NOISEON         = 1 << 22,
 };
 
 static const int kMaximumVoices = 16;

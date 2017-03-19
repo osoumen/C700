@@ -144,14 +144,15 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	//instデータの初期化
 	getFileNameDeletingPathExt(mPath, mInst.pgname, PROGRAMNAME_MAX_LEN);
 	mHasData = HAS_PGNAME;
+    // TODO: C700Propertiesから初期値を読み込む
 	mInst.rate = 32000.0;
 	mInst.basekey = 60;
 	mInst.lowkey = 0;
 	mInst.highkey = 127;
-	mInst.ar = 15;      // TODO: C700Propertiesから初期値を読み込む
-	mInst.dr = 7;       // TODO: C700Propertiesから初期値を読み込む
-	mInst.sl = 7;       // TODO: C700Propertiesから初期値を読み込む
-	mInst.sr = 31;      // TODO: C700Propertiesから初期値を読み込む
+	mInst.ar = 15;
+	mInst.dr = 7;
+	mInst.sl = 7;
+	mInst.sr = 31;
     mInst.sustainMode = true;
 	mInst.volL = 100;
 	mInst.volR	= 100;
@@ -159,6 +160,8 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	mInst.bank = 0;
     mInst.monoMode = false;
     mInst.portamentoOn = false;
+    mInst.pmOn = false;
+    mInst.noiseOn = false;
     mInst.portamentoRate = 0;
     mInst.noteOnPriority = 64;
     mInst.releasePriority = 0;
@@ -180,6 +183,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	}
 	
 	//inst情報を読み込む
+    // TODO: C700Propertiesのsavekeyを使った方法に変更する
 	while ( fscanf(fp, "%[^=]s", buf) != EOF ) {
 		getc(fp);	//"="の空読み
 		if ( strcmp(buf, "progname")==0 ) {
@@ -278,6 +282,18 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 			strncpy(mInst.sourceFile, buf, PATH_LEN_MAX);
 			mHasData |= HAS_SOURCEFILE;
 		}
+        else if ( strcmp(buf, "pmon")==0 ) {
+			int	val;
+			fscanf(fp, "%d", &val );
+			mInst.pmOn = val?true:false;
+			mHasData |= HAS_PMON;
+		}
+        else if ( strcmp(buf, "noiseon")==0 ) {
+			int	val;
+			fscanf(fp, "%d", &val );
+			mInst.noiseOn = val?true:false;
+			mHasData |= HAS_NOISEON;
+		}
 		fgets(buf, sizeof(buf), fp);	//"\n"の空読み
     }
 	fclose(fp);
@@ -326,6 +342,8 @@ bool RawBRRFile::Write()
 	fprintf(fp, "volL=%d\n",mInst.volL);
 	fprintf(fp, "volR=%d\n",mInst.volR);
 	fprintf(fp, "echo=%d\n",mInst.echo?1:0);
+    fprintf(fp, "pmon=%d\n",mInst.pmOn?1:0);
+    fprintf(fp, "noiseon=%d\n",mInst.noiseOn?1:0);
 	fprintf(fp, "bank=%d\n",mInst.bank);
     fprintf(fp, "monoMode=%d\n",mInst.monoMode?1:0);
     fprintf(fp, "portamentoOn=%d\n",mInst.portamentoOn?1:0);
