@@ -11,7 +11,7 @@
 ![hw_conn_ind](images/hw_conn_ind.png)
 
 ## 動作環境
-### Mac版
+### macOS版
 *  Mac OS X 10.6 以降のIntel Mac
 * Audio Units または VST2.4に対応したホストアプリケーション(32/64bit)
 
@@ -19,11 +19,12 @@
 * Windows Vista 以降のVST2.4に対応したホストアプリケーション(32/64bit)
 
 ## 動作確認済ホスト
-### Mac OSX
+### macOS
 
 * Logic Pro 9 (32/64bit) (10.10.5)
-* Logic Pro X (64bit) (10.8.5)
+* Logic Pro X 10.2.4 (64bit) (10.10.5)
 * Digital Performer 8 (32/64bit) (10.8.5)
+* Digital Performer 9.12 (32/64bit) (10.10.5)
 
 ### Windows
 
@@ -61,6 +62,10 @@
   <dd>Old: 古いバージョンとの互換性のためのモードです。</dd>
   <dd>Relaxed: 波形メモリを容量の制限無く使用できます。16音まで同時発音数を増やす事が出来ます。いくつかの仕様が実機と異なります。</dd>
   <dd>Accurate: Blargg's Audio Engineを使用した、より厳密なエミュレーションを行います。このモードでは"Poly"の設定値が無視され、"8"に固定されます。</dd>
+  
+  <dt>VoiceAlloc</dt>
+  <dd>Oldest: ノートオン時に、古い発音を優先して消音します。自然な演奏になりやすいです。</dd>
+  <dd>SameCh: ノートオン時に、同じチャンネルを優先して確保するようにします。記録した演奏データが小さくなる場合があります。</dd>
   
   <dt>Poly</dt>
   <dd>全体の同時発音数(1-16)を設定します。</dd>
@@ -207,14 +212,83 @@
 	<dd>直接数値で入力(-128〜127)の他、</dd>
 	<dd>EQスライダーを使って視覚的に設定することも出来ます。</dd>
 
-	<dt>Copy</dt>
-	<dd>XMSNES形式でエコーパラメータをクリップボードにコピーします。</dd>
-
 	<dt>RAMシミュレーション</dt>
 	<dd>読み込まれている全波形と、エコーの使用により消費するメモリの合計を表示します。</dd>
 	<dd>スーファミ実機で使用できるメモリは、ドライバ、シーケンスデータを含め、64kBまでです。</dd>
 	<dd>実機で可能な容量を超えた場合、赤字で表示されます。</dd>
 	<dd>赤字表示時に動作がおかしくなった場合は、プラグインを再読み込みしてください。</dd>
+</dl>
+
+## 演奏の録音
+
+区間を設定してその範囲を再生すると、演奏が記録されます。spc形式またはrom形式で保存する事ができます。
+メイン画面下部の"Set Recorder..."ボタンをクリックすると、設定画面が開きます。
+初回の場合は、演奏用のコードの読み込みを促すメッセージが表示されますので、
+配布サイトと同じページ内([http://picopicose.com/software.html](http://picopicose.com/software.html))にある、"playercode.bin"を入手し、
+画面内にドラッグ＆ドロップしてください。正常に読み込まれた場合、以下の画面が表示されます。
+
+![recorder_settings](images/recorder_settings.png)
+
+<dl>
+	<dt>Save Path</dt>
+	<dd>記録が終了したとき、ファイルはここで設定したフォルダに保存されます。</dd>
+		
+	<dt>Save as *.spc</dt>
+	<dd>spcファイルを書き出したい場合はチェックします。</dd>
+	<dd>APU内部の1/16000秒周期に設定されたタイマーを使って演奏されるため、62.5usの分解能で記録されます。</dd>
+	<dd>spcファイルは64KBの制限のため、長い曲や、波形メモリを多く使っている場合、区間の最後まで出力されない場合があります。</dd>
+	
+	<dt>Save as *.smc</dt>
+	<dd>rom形式のファイルを書き出したい場合はチェックします。</dd>
+	<dd>水平同期割り込みを利用して演奏されるため、NTSCでは1/15734秒、PALでは1/15625秒の分解能で記録されます。</dd>
+	<dd>32Mbitのromに格納できるサイズまで録音できます。</dd>
+	
+	<dt>smc Format</dt>
+	<dd>出力romファイルをNTSC仕様にするか、PAL仕様にするかを選択します。</dd>
+	<dd>NTSCとPALでは、記録する分解能が異なります。</dd>
+	
+	<dt>PlayerCode</dt>
+	<dd>playercode.binが正常に読み込まれていれば、"Valid"と表示されます。</dd>
+	<dd>Loadボタンで、playercode.binの更新を行う事ができます。</dd>
+</dl>
+
+以上の設定は、初期設定ファイルに保存され、プラグインを新しく起動したときにも以前の設定が残ります。
+初期設定ファイルは、macOSの場合、"~/Library/Application Support/C700/C700.settings"に、Windowsの場合、"[ホームフォルダ]/AppData/Roaming/C700/C700.settings"に保存されます。
+
+<dl>
+	<dt>Record Start Pos [ppq]</dt>
+	<dd>記録を開始する位置を設定します。</dd>
+	<dd>Setをクリックするとソングポインタの現在位置が設定されます。</dd>
+
+	<dt>Loop Start Pos [ppq]</dt>
+	<dd>ループポイントの位置を設定します。</dd>
+	<dd>Setをクリックするとソングポインタの現在位置が設定されます。</dd>
+
+	<dt>Record End Pos [ppq]</dt>
+	<dd>記録を終了する位置を設定します。</dd>
+	<dd>Setをクリックするとソングポインタの現在位置が設定されます。</dd>
+
+	<dt>Game Title</dt>
+	<dd>spcファイルまたはsmcファイルに設定されるゲーム名を設定します。</dd>
+	<dd>spcファイルでは32文字、smcファイルでは21文字まで設定できます。</dd>
+
+	<dt>Song Title for spc</dt>
+	<dd>spcファイルに埋め込まれる曲名を設定します。最大32文字まで設定できます。</dd>
+
+	<dt>Name of dumper for spc</dt>
+	<dd>spcファイルに埋め込まれるSPC製作者情報を設定します。最大16文字まで設定できます。</dd>
+
+	<dt>Artist of Song for spc</dt>
+	<dd>spcファイルに埋め込まれる作曲者情報を設定します。最大32文字まで設定できます。</dd>
+
+	<dt>Comments for spc</dt>
+	<dd>spcファイルに埋め込まれるコメントを設定します。最大32文字まで設定できます。</dd>
+
+	<dt>Repeat num for spc</dt>
+	<dd>spcファイルの演奏時間を決めるために設定します。ループ開始から終了までの時間を何回ループするかを設定します。</dd>
+
+	<dt>Fade milliseconds for spc</dt>
+	<dd>spcファイルで演奏終了後のフェードアウト時間[ミリ秒]を設定します。</dd>
 </dl>
 
 ## うまく鳴らすコツ
@@ -229,6 +303,9 @@
 * なるべくチューナーなどを使用して正確にピッチを合わせた方が綺麗なループになる。
 
 ## 更新履歴
+* 2017/03/19
+    * spc,smc形式での演奏記録の書き出しに対応
+	* チャンネル確保方法の設定項目の追加
 
 * 2016/01/31
 	* G.I.M.I.C SPCモジュールに対応
