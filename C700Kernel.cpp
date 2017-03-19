@@ -76,17 +76,19 @@ C700Kernel::C700Kernel()
 		mVPset[i].sourceFile[0] = 0;
 		mVPset[i].isEmphasized = true;
 		
-		mVPset[i].ar = kDefaultValue_AR;
-		mVPset[i].dr = kDefaultValue_DR;
-		mVPset[i].sl = kDefaultValue_SL;
-		mVPset[i].sr = kDefaultValue_SR;
+		mVPset[i].ar = mPropertyParams[kAudioUnitCustomProperty_AR].defaultValue;
+		mVPset[i].dr = mPropertyParams[kAudioUnitCustomProperty_DR].defaultValue;
+		mVPset[i].sl = mPropertyParams[kAudioUnitCustomProperty_SL].defaultValue;
+		mVPset[i].sr = mPropertyParams[kAudioUnitCustomProperty_SR].defaultValue;
         
-        mVPset[i].sustainMode = kDefaultValue_SustainMode;
-        mVPset[i].monoMode = kDefaultValue_MonoMode;
-        mVPset[i].portamentoOn = kDefaultValue_PortamentoOn;
-        mVPset[i].portamentoRate = kDefaultValue_PortamentoRate;
-        mVPset[i].noteOnPriority = kDefaultValue_NoteOnPriority;
-        mVPset[i].releasePriority = kDefaultValue_ReleasePriority;
+        mVPset[i].sustainMode = mPropertyParams[kAudioUnitCustomProperty_SustainMode].defaultValue!=0?true:false;
+        mVPset[i].monoMode = mPropertyParams[kAudioUnitCustomProperty_MonoMode].defaultValue!=0?true:false;
+        mVPset[i].portamentoOn = mPropertyParams[kAudioUnitCustomProperty_PortamentoOn].defaultValue!=0?true:false;
+        mVPset[i].portamentoRate = mPropertyParams[kAudioUnitCustomProperty_PortamentoRate].defaultValue;
+        mVPset[i].noteOnPriority = mPropertyParams[kAudioUnitCustomProperty_NoteOnPriority].defaultValue;
+        mVPset[i].releasePriority = mPropertyParams[kAudioUnitCustomProperty_ReleasePriority].defaultValue;
+        mVPset[i].pmOn = mPropertyParams[kAudioUnitCustomProperty_PitchModulationOn].defaultValue!=0?true:false;
+        mVPset[i].noiseOn = mPropertyParams[kAudioUnitCustomProperty_NoiseOn].defaultValue!=0?true:false;
 	}
 	
     restoreGlobalProperties();
@@ -445,6 +447,12 @@ float C700Kernel::GetPropertyValue( int inID )
         case kAudioUnitCustomProperty_PortamentoOn:
             return mVPset[mEditProg].portamentoOn ? 1.0f:.0f;
             
+        case kAudioUnitCustomProperty_PitchModulationOn:
+			return mVPset[mEditProg].pmOn ? 1.0f:.0f;
+
+        case kAudioUnitCustomProperty_NoiseOn:
+			return mVPset[mEditProg].noiseOn ? 1.0f:.0f;
+
         case kAudioUnitCustomProperty_PortamentoRate:
             return mVPset[mEditProg].portamentoRate;
             
@@ -819,6 +827,14 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
             mVPset[mEditProg].portamentoOn = boolData;
             return true;
             
+        case kAudioUnitCustomProperty_PitchModulationOn:
+            mVPset[mEditProg].pmOn = boolData;
+            return true;
+        
+        case kAudioUnitCustomProperty_NoiseOn:
+            mVPset[mEditProg].noiseOn = boolData;
+            return true;
+
         case kAudioUnitCustomProperty_PortamentoRate:
             mVPset[mEditProg].portamentoRate = value;
             mDriver.UpdatePortamentoTime(mEditProg);
@@ -1214,9 +1230,13 @@ bool C700Kernel::SelectPreset( int num )
 			strcpy(mVPset[4].pgname, "6.25% Pulse");
 			
 			if ( propertyNotifyFunc ) {
-				for (int i=kAudioUnitCustomProperty_Begin; i<kAudioUnitCustomProperty_Begin+kNumberOfProperties; i++) {
-					propertyNotifyFunc(i,propNotifyUserData);
-				}
+                auto it = mPropertyParams.begin();
+                while (it != mPropertyParams.end()) {
+                    if (it->second.saveToProg) {
+                        propertyNotifyFunc(it->first, propNotifyUserData);
+                    }
+                    it++;
+                }
 			}
 			break;
         }
@@ -1277,13 +1297,14 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
         }
         onNotesTotal += onNotes;
     }
+    // 合計発音数表示
     if (onNotesTotal > mTotalOnNotes) {
         mTotalOnNotes = onNotesTotal;
         if ( propertyNotifyFunc ) {
             propertyNotifyFunc( kAudioUnitCustomProperty_MaxNoteOnTotal, propNotifyUserData );
         }
     }
-    
+    // ハードウェア接続チェック
     if (mIsHwAvailable != mDriver.GetDsp()->IsHwAvailable()) {
         mIsHwAvailable = mDriver.GetDsp()->IsHwAvailable();
         propertyNotifyFunc( kAudioUnitCustomProperty_IsHwConnected, propNotifyUserData );
