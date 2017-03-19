@@ -2252,7 +2252,41 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64014,	//id
 		0,	//command
+		414, 80, 33, 14,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'cbtn',	//kind
+		"PM",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_PitchModulationOn,	//id
+		0,	//command
 		414, 91, 33, 14,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'cbtn',	//kind
+		"Noise",	//title
+		0,	//Value
+		0,	//Minimum
+		1,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_NoiseOn,	//id
+		0,	//command
+		414, 102, 33, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2269,7 +2303,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_MonoMode,	//id
 		0,	//command
-		414, 107, 35, 14,	//x,y,w,h
+		414, 113, 35, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2286,7 +2320,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		kAudioUnitCustomProperty_PortamentoOn,	//id
 		0,	//command
-		414, 123, 35, 14,	//x,y,w,h
+		414, 124, 35, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
