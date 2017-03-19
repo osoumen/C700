@@ -170,18 +170,6 @@ static const int BRR_ENDADDR = 0x10000;
 static const int CKID_PROGRAM_TOTAL = 0x20000;
 static const int CKID_PROGRAM_DATA  = 0x30000;
 
-static const int kDefaultValue_AR = 15;
-static const int kDefaultValue_DR = 7;
-static const int kDefaultValue_SL = 7;
-static const int kDefaultValue_SR = 31;
-
-static const bool kDefaultValue_SustainMode = true;
-static const bool kDefaultValue_MonoMode = false;
-static const bool kDefaultValue_PortamentoOn = false;
-static const int kDefaultValue_PortamentoRate = 0;
-static const int kDefaultValue_NoteOnPriority = 64;
-static const int kDefaultValue_ReleasePriority = 0;
-
 typedef struct BRRData {
     int             size;
     unsigned char   *data;
@@ -205,6 +193,8 @@ public:
     bool        sustainMode;
     bool        monoMode;
     bool        portamentoOn;
+    bool        pmOn;
+    bool        noiseOn;
     int         portamentoRate;
     int         noteOnPriority;
     int         releasePriority;

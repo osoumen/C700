@@ -110,6 +110,7 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToSong
         false,                                  // saveToGlobal
         "ar",                                   // savekey
+        15,                                     // defalutValue
     },
     {
         kAudioUnitCustomProperty_DR,            // propId
@@ -121,6 +122,7 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToSong
         false,                                  // saveToGlobal
         "dr",                                   // savekey
+        7,                                      // defalutValue
     },
     {
         kAudioUnitCustomProperty_SL,            // propId
@@ -132,6 +134,7 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToSong
         false,                                  // saveToGlobal
         "sl",                                   // savekey
+        7,                                      // defalutValue
     },
     {
         kAudioUnitCustomProperty_SR,            // propId
@@ -143,6 +146,7 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToSong
         false,                                  // saveToGlobal
         "sr",                                   // savekey
+        31,                                     // defalutValue
     },
     {
         kAudioUnitCustomProperty_VolL,          // propId
@@ -691,6 +695,7 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToSong
         false,                                  // saveToGlobal
         "sustainmode",                          // savekey
+        1,                                      // defalutValue
     },
     {
         kAudioUnitCustomProperty_MonoMode,      // propId
@@ -963,6 +968,31 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToGlobal
         "",                                     // savekey
     },
+
+    {
+        kAudioUnitCustomProperty_PitchModulationOn,// propId
+        sizeof(bool),                           // outDataSize
+        false,                                  // outWritable
+        propertyDataTypeBool,                   // dataType
+        false,                                  // readOnly
+        true,                                   // saveToProg
+        false,                                  // saveToSong
+        false,                                  // saveToGlobal
+        "pmon",                                 // savekey
+        0,                                      // defalutValue
+    },
+    {
+        kAudioUnitCustomProperty_NoiseOn,       // propId
+        sizeof(bool),                           // outDataSize
+        false,                                  // outWritable
+        propertyDataTypeBool,                   // dataType
+        false,                                  // readOnly
+        true,                                   // saveToProg
+        false,                                  // saveToSong
+        false,                                  // saveToGlobal
+        "noiseon",                              // savekey
+        0,                                      // defalutValue
+    }
 };
 
 

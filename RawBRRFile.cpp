@@ -148,10 +148,10 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	mInst.basekey = 60;
 	mInst.lowkey = 0;
 	mInst.highkey = 127;
-	mInst.ar = kDefaultValue_AR;
-	mInst.dr = kDefaultValue_DR;
-	mInst.sl = kDefaultValue_SL;
-	mInst.sr = kDefaultValue_SR;
+	mInst.ar = 15;      // TODO: C700Propertiesから初期値を読み込む
+	mInst.dr = 7;       // TODO: C700Propertiesから初期値を読み込む
+	mInst.sl = 7;       // TODO: C700Propertiesから初期値を読み込む
+	mInst.sr = 31;      // TODO: C700Propertiesから初期値を読み込む
     mInst.sustainMode = true;
 	mInst.volL = 100;
 	mInst.volR	= 100;

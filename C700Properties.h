@@ -118,6 +118,9 @@ enum
     
     kAudioUnitCustomProperty_MaxNoteOnTotal,    // int
     
+    kAudioUnitCustomProperty_PitchModulationOn,
+    kAudioUnitCustomProperty_NoiseOn,
+    
     // 新規追加する場合は必ずこの後に追加すること
     
     kAudioUnitCustomProperty_End,
