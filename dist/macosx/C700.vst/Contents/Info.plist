@@ -10,6 +10,8 @@
 	<array/>
 	<key>CFBundleExecutable</key>
 	<string>C700</string>
+	<key>CFBundleGetInfoString</key>
+	<string>C700 version 170318, Copyright 2006-2017 osoumen</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.picopicose.vst.C700</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -18,10 +20,12 @@
 	<string>C700</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>170318</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string></string>
+	<string>170318</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>DTCompiler</key>
