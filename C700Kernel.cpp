@@ -718,12 +718,13 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 			// 表示更新が必要なプロパティの変更を通知する
 			if ( propertyNotifyFunc ) {
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
-					propertyNotifyFunc( i, propNotifyUserData );
-				}
-                for (int i=kAudioUnitCustomProperty_SustainMode; i<=kAudioUnitCustomProperty_ReleasePriority; i++) {
-					propertyNotifyFunc( i, propNotifyUserData );
-				}
+                auto it = mPropertyParams.begin();
+                while (it != mPropertyParams.end()) {
+                    if (it->second.saveToProg) {
+                        propertyNotifyFunc(it->first, propNotifyUserData);
+                    }
+                    it++;
+                }
 			}
 			return true;
 		}
@@ -745,12 +746,13 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			
 			// 表示更新が必要なプロパティの変更を通知する
 			if ( propertyNotifyFunc ) {
-				for (int i=kAudioUnitCustomProperty_ProgramName; i<kAudioUnitCustomProperty_TotalRAM; i++) {
-					propertyNotifyFunc( i, propNotifyUserData );
-				}
-                for (int i=kAudioUnitCustomProperty_SustainMode; i<=kAudioUnitCustomProperty_ReleasePriority; i++) {
-					propertyNotifyFunc( i, propNotifyUserData );
-				}
+                auto it = mPropertyParams.begin();
+                while (it != mPropertyParams.end()) {
+                    if (it->second.saveToProg) {
+                        propertyNotifyFunc(it->first, propNotifyUserData);
+                    }
+                    it++;
+                }
 			}
 			return true;
 		}
