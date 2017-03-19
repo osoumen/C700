@@ -1343,12 +1343,12 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
     switch (controlNum) {
         case 6:
             //データ・エントリー(LSB)
-            setDataEntryLSB(ch, value);
+            setDataEntryLSB(ch, value, inFrame);
             break;
             
         case 38:
             // データ・エントリー(MSB)
-            setDataEntryMSB(ch, value);
+            setDataEntryMSB(ch, value, inFrame);
             break;
             
         case 98:
@@ -1371,51 +1371,6 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
             setRPNMSB(ch, value);
             break;
             
-
-        case 1:
-        {
-            //モジュレーションホイール
-#if 0
-            int	paramID = kParam_vibdepth;
-            if ( ch > 0 ) {
-                paramID = kParam_vibdepth_2 - 1 + ch;
-            }
-            if ( parameterSetFunc ) {
-                parameterSetFunc( paramID, value, paramSetUserData );
-            }
-            break;
-#endif
-        }
-            
-        case 5:
-            // ポルタメントタイム
-        case 7:
-            // ボリューム
-        case 10:
-            // パン
-        case 11:
-            // エクスプレッション
-        case 64:
-            // ホールド１（ダンパー）
-        case 65:
-            // ポルタメント・オン・オフ
-        case 72:
-            // SR
-        case 73:
-            // AR
-        case 80:
-            // SL
-        case 75:
-            // DR
-        case 76:
-            // ビブラート・レート
-        case 77:
-            // ビブラート・デプス
-        case 84:
-            // ポルタメント・コントロール
-        case 91:
-            // ECEN ON/OFF
-            
         default:
            mDriver.ControlChange( ch, controlNum, value, inFrame);
            break;
@@ -1427,6 +1382,7 @@ void C700Kernel::setRPNLSB(int ch, int value)
 {
     mRPN[ch] &= 0xff00;
     mRPN[ch] |= value & 0x7f;
+    mIsSettingNRPN[ch] = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1434,6 +1390,7 @@ void C700Kernel::setRPNMSB(int ch, int value)
 {
     mRPN[ch] &= 0x00ff;
     mRPN[ch] |= (value & 0x7f) << 8;
+    mIsSettingNRPN[ch] = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1441,6 +1398,7 @@ void C700Kernel::setNRPNLSB(int ch, int value)
 {
     mNRPN[ch] &= 0xff00;
     mNRPN[ch] |= value & 0x7f;
+    mIsSettingNRPN[ch] = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -1448,27 +1406,31 @@ void C700Kernel::setNRPNMSB(int ch, int value)
 {
     mNRPN[ch] &= 0x00ff;
     mNRPN[ch] |= (value & 0x7f) << 8;
+    mIsSettingNRPN[ch] = true;
 }
 
 //-----------------------------------------------------------------------------
-void C700Kernel::setDataEntryLSB(int ch, int value)
+void C700Kernel::setDataEntryLSB(int ch, int value, int inFrame)
 {
     mDataEntryValue[ch] &= 0xff00;
     mDataEntryValue[ch] |= value & 0x7f;
-    sendDataEntryValue(ch);
+    sendDataEntryValue(ch, inFrame);
 }
 
 //-----------------------------------------------------------------------------
-void C700Kernel::setDataEntryMSB(int ch, int value)
+void C700Kernel::setDataEntryMSB(int ch, int value, int inFrame)
 {
     mDataEntryValue[ch] &= 0x00ff;
     mDataEntryValue[ch] |= (value & 0x7f) << 8;
 }
 
 //-----------------------------------------------------------------------------
-void C700Kernel::sendDataEntryValue(int ch)
+void C700Kernel::sendDataEntryValue(int ch, int inFrame)
 {
     if (mIsSettingNRPN) {
+        if ((mNRPN[ch] & 0xff00) == 0x7e00) {   // #98:rr #99:126
+            mDriver.DirectRegisterWrite(ch, mNRPN[ch] & 0x00ff, mDataEntryValue[ch], inFrame);
+        }
     }
     else  {
         switch (mRPN[ch]) {

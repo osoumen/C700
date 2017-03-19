@@ -192,6 +192,21 @@ void C700Driver::ControlChange( int ch, int controlNum, int value, int inFrame )
 }
 
 //-----------------------------------------------------------------------------
+void C700Driver::DirectRegisterWrite( int ch, int regAddr, int value, int inFrame )
+{
+    MIDIEvt			evt;
+	evt.type = REGISTER_WRITE;
+	evt.ch = ch;
+	evt.note = regAddr;
+	evt.velo = value;
+	evt.uniqueID = 0;
+	evt.remain_samples = inFrame;
+    MutexLock(mMIDIEvtMtx);
+	mMIDIEvt.push_back( evt );
+    MutexUnlock(mMIDIEvtMtx);
+}
+
+//-----------------------------------------------------------------------------
 void C700Driver::StartRegisterLog( int inFrame )
 {
     MIDIEvt			evt;
@@ -1165,6 +1180,10 @@ bool C700Driver::doEvents2( const MIDIEvt *evt )
             
         case CONTROL_CHANGE:
             doControlChange(evt->ch, evt->note, evt->velo);
+            break;
+            
+        case REGISTER_WRITE:
+            mDSP.WriteReg(evt->note, evt->velo);
             break;
             
         default:
