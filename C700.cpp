@@ -11,7 +11,7 @@ COMPONENT_ENTRY(C700)
 //	C700::C700
 //-----------------------------------------------------------------------------
 C700::C700(AudioUnit component)
-: MusicDeviceBase(component, 0, 1, 32, 0)
+: MusicDeviceBase(component, 2, 1, 32, 0)
 , mEfx(NULL)
 {
     createPropertyParamMap(mPropertyParams);
@@ -162,6 +162,26 @@ OSStatus	C700::Render(   AudioUnitRenderActionFlags &	ioActionFlags,
 	
 	mEfx->Render(inNumberFrames, output);
 	
+    
+    for (int elem=0; elem<2; elem++) {
+        AUInputElement *theInput = GetInput(elem);
+        result = theInput->PullInput(ioActionFlags, inTimeStamp, elem, inNumberFrames);
+        if (result == noErr) {
+            AudioBufferList&	inBufferList = GetInput(elem)->GetBufferList();
+            //UInt32 numInputs = Inputs().GetNumberOfElements();
+            float				*input[2];
+            input[0] = (float*)inBufferList.mBuffers[0].mData;
+            input[1] = inBufferList.mNumberBuffers==2 ? (float*)inBufferList.mBuffers[1].mData : NULL;
+            for (int i=0; i<inNumberFrames; i++) {
+                if (input[0][i] != 0 || input[1][i] != 0) {
+                    output[0][i] += input[0][i];
+                    output[1][i] += input[1][i];
+                }
+            }
+        }
+    }
+    result = 0;
+    
 	return result;
 }
 
