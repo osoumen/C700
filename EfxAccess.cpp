@@ -53,7 +53,8 @@ bool	EfxAccess::CreateBRRFileData( RawBRRFile **outData )
 	inst.ar = GetPropertyValue(kAudioUnitCustomProperty_AR);
 	inst.dr = GetPropertyValue(kAudioUnitCustomProperty_DR);
 	inst.sl = GetPropertyValue(kAudioUnitCustomProperty_SL);
-	inst.sr = GetPropertyValue(kAudioUnitCustomProperty_SR);
+	inst.sr1 = GetPropertyValue(kAudioUnitCustomProperty_SR1);
+	inst.sr2 = GetPropertyValue(kAudioUnitCustomProperty_SR2);
 	inst.volL = GetPropertyValue(kAudioUnitCustomProperty_VolL);
 	inst.volR = GetPropertyValue(kAudioUnitCustomProperty_VolR);
 	inst.rate = GetPropertyValue(kAudioUnitCustomProperty_Rate);

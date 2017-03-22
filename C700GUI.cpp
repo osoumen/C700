@@ -632,7 +632,8 @@ bool C700GUI::loadToCurrentProgramFromBRR( RawBRRFile *file )
 	if ( hasFlg & HAS_AR ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_AR,	inst.ar);
 	if ( hasFlg & HAS_DR ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_DR,	inst.dr);
 	if ( hasFlg & HAS_SL ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SL,	inst.sl);
-	if ( hasFlg & HAS_SR ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SR,	inst.sr);
+	if ( hasFlg & HAS_SR1 ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SR1,	inst.sr1);
+	if ( hasFlg & HAS_SR2 ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_SR2,	inst.sr2);
 	if ( hasFlg & HAS_VOLL ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_VolL,	inst.volL);
 	if ( hasFlg & HAS_VOLR ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_VolR,	inst.volR);
 	if ( hasFlg & HAS_ECHO ) efxAcc->SetPropertyValue(kAudioUnitCustomProperty_Echo,	inst.echo ? 1.0:0.f);
