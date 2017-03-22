@@ -431,7 +431,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		414, 166, 48, 11,	//x,y,w,h
+		404, 166, 48, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -625,17 +625,34 @@ ControlInstances	sCntl[] = {
 		0,	//style
 		0	//future use
 	},
-	{
+    {
 		'appl',	//sig
 		'stxt',	//kind
-		"SR",	//title
+		"SR2",	//title
 		0,	//Value
 		0,	//Minimum
 		0,	//Maximum
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		497, 180, 19, 11,	//x,y,w,h
+		514, 180, 19, 11,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+	{
+		'appl',	//sig
+		'stxt',	//kind
+		"SR1",	//title
+		0,	//Value
+		0,	//Minimum
+		0,	//Maximum
+		'text',	//sig
+		-1,	//id
+		0,	//command
+		487, 180, 19, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -652,7 +669,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		470, 180, 19, 11,	//x,y,w,h
+		460, 180, 19, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -669,7 +686,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		443, 180, 19, 11,	//x,y,w,h
+		433, 180, 19, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -686,7 +703,7 @@ ControlInstances	sCntl[] = {
 		'text',	//sig
 		-1,	//id
 		0,	//command
-		416, 180, 19, 11,	//x,y,w,h
+		406, 180, 19, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2106,6 +2123,23 @@ ControlInstances	sCntl[] = {
 		0,	//style
 		0	//future use
 	},
+    {
+		'airy',	//sig
+		'dtxt',	//kind
+		"Monaco 10 180 248 255 0 2 1 0",	//title
+		0,	//Value
+		0,	//Minimum
+		31,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_SR2+1000,	//id
+		0,	//command
+		512, 248, 24, 12,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
 	{
 		'airy',	//sig
 		'dtxt',	//kind
@@ -2116,7 +2150,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		65011,	//id
 		0,	//command
-		495, 248, 24, 12,	//x,y,w,h
+		485, 248, 24, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2133,7 +2167,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		65010,	//id
 		0,	//command
-		468, 248, 24, 12,	//x,y,w,h
+		458, 248, 24, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2150,7 +2184,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		65009,	//id
 		0,	//command
-		441, 248, 24, 12,	//x,y,w,h
+		431, 248, 24, 12,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2167,7 +2201,24 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		65008,	//id
 		0,	//command
-		414, 248, 24, 12,	//x,y,w,h
+		404, 248, 24, 12,	//x,y,w,h
+		"",	//fontname
+		0,	//fontsize
+		kCenterText,	//fontalign
+		0,	//style
+		0	//future use
+	},
+    {
+		'airy',	//sig
+		'slid',	//kind
+		"slider",	//title
+		0,	//Value
+		0,	//Minimum
+		31,	//Maximum
+		'user',	//sig
+		kAudioUnitCustomProperty_SR2,	//id
+		0,	//command
+		516, 191, 16, 55,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2184,7 +2235,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64011,	//id
 		0,	//command
-		499, 191, 16, 55,	//x,y,w,h
+		489, 191, 16, 55,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2201,7 +2252,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64010,	//id
 		0,	//command
-		472, 191, 16, 55,	//x,y,w,h
+		462, 191, 16, 55,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2218,7 +2269,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64009,	//id
 		0,	//command
-		445, 191, 16, 55,	//x,y,w,h
+		435, 191, 16, 55,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2235,7 +2286,7 @@ ControlInstances	sCntl[] = {
 		'user',	//sig
 		64008,	//id
 		0,	//command
-		418, 191, 16, 55,	//x,y,w,h
+		408, 191, 16, 55,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
@@ -2891,21 +2942,17 @@ ControlInstances	sCntl[] = {
 	{
 		'airy',	//sig
 		'cbtn',	//kind
-		"SustainMode",	//title
+		"Enable Release",	//title
 		0,	//Value
 		0,	//Minimum
 		1,	//Maximum
 		'user',	//sig
 		kAudioUnitCustomProperty_SustainMode,	//id
 		0,	//command
-#ifdef _WIN32
-		466, 164, 70, 11,	//x,y,w,h
-#else
-		470, 164, 64, 11,	//x,y,w,h
-#endif
+		460, 164, 80, 11,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
-		kCenterText,	//fontalign
+		kLeftText,	//fontalign
 		0,	//style
 		0	//future use
 	},

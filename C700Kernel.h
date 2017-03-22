@@ -90,7 +90,7 @@ public:
     void            AddDataToDictionary(CFMutableDictionaryRef dict, CFStringRef key, const void *data, int size);
     void            SetPropertyToDict(CFMutableDictionaryRef dict, const PropertyDescription &prop);
     int             CreatePGDataDic(CFDictionaryRef *data, int pgnum);
-    void            RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDescription &prop);
+    bool            RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDescription &prop);
     void            RestorePGDataDic(CFPropertyListRef data, int pgnum);
 #else
     bool            SetPGDataToChunk(ChunkReader *chunk, int pgnum);

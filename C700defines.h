@@ -141,7 +141,7 @@ enum InstChangeFlag {
     HAS_AR              = 1 << 5,
     HAS_DR              = 1 << 6,
     HAS_SL              = 1 << 7,
-    HAS_SR              = 1 << 8,
+    HAS_SR1             = 1 << 8,
     HAS_VOLL            = 1 << 9,
     HAS_VOLR            = 1 << 10,
     HAS_ECHO            = 1 << 11,
@@ -156,6 +156,7 @@ enum InstChangeFlag {
     HAS_RELEASEPRIORITY = 1 << 20,
     HAS_PMON            = 1 << 21,
     HAS_NOISEON         = 1 << 22,
+    HAS_SR2             = 1 << 23,
 };
 
 static const int kMaximumVoices = 16;
@@ -182,7 +183,7 @@ typedef struct BRRData {
 typedef struct {
 public:
     char        pgname[PROGRAMNAME_MAX_LEN];
-    int         ar,dr,sl,sr;
+    int         ar,dr,sl,sr1,sr2;
     int         volL,volR;
     double      rate;
     int         basekey,lowkey,highkey;

@@ -152,7 +152,8 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	mInst.ar = 15;
 	mInst.dr = 7;
 	mInst.sl = 7;
-	mInst.sr = 31;
+	mInst.sr1 = 0;
+	mInst.sr2 = 31;
     mInst.sustainMode = true;
 	mInst.volL = 100;
 	mInst.volR	= 100;
@@ -220,8 +221,12 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 			mHasData |= HAS_SL;
 		}
 		else if ( strcmp(buf, "sr")==0 ) {
-			fscanf(fp, "%d", &mInst.sr );
-			mHasData |= HAS_SR;
+			fscanf(fp, "%d", &mInst.sr1 );
+			mHasData |= HAS_SR1;
+		}
+		else if ( strcmp(buf, "sr2")==0 ) {
+			fscanf(fp, "%d", &mInst.sr2 );
+			mHasData |= HAS_SR2;
 		}
 		else if ( strcmp(buf, "volL")==0 ) {
 			fscanf(fp, "%d", &mInst.volL );
@@ -297,6 +302,13 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 		fgets(buf, sizeof(buf), fp);	//"\n"ÇÃãÛì«Ç›
     }
 	fclose(fp);
+    
+    if ((mHasData & HAS_SR2) == 0) {
+        if (mInst.sustainMode) {
+            mInst.sr2 = mInst.sr1;
+            mInst.sr1 = 0;
+        }
+    }
 	
 	//ì«Ç›çûÇ›Ç…ê¨å˜
 success:
@@ -337,7 +349,8 @@ bool RawBRRFile::Write()
 	fprintf(fp, "ar=%d\n",mInst.ar);
 	fprintf(fp, "dr=%d\n",mInst.dr);
 	fprintf(fp, "sl=%d\n",mInst.sl);
-	fprintf(fp, "sr=%d\n",mInst.sr);
+	fprintf(fp, "sr=%d\n",mInst.sr1);
+	fprintf(fp, "sr2=%d\n",mInst.sr2);
     fprintf(fp, "sustainMode=%d\n",mInst.sustainMode?1:0);
 	fprintf(fp, "volL=%d\n",mInst.volL);
 	fprintf(fp, "volR=%d\n",mInst.volR);
