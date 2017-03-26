@@ -809,8 +809,10 @@ void C700Driver::ChangeChSR1(int ch, int sr)
     mChStat[ch].changeFlg |= HAS_SR1;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mDSP.SetSR(i, mChStat[ch].changedVP.sr1);
+        if (mVoiceManager.IsKeyOn(i)) {
+            if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
+                mDSP.SetSR(i, mChStat[ch].changedVP.sr1);
+            }
         }
     }
 }
@@ -819,11 +821,13 @@ void C700Driver::ChangeChSR1(int ch, int sr)
 void C700Driver::ChangeChSR2(int ch, int sr)
 {
     mChStat[ch].changedVP.sr2 = sr & 0x1f;
-    mChStat[ch].changeFlg |= HAS_SR1;
+    mChStat[ch].changeFlg |= HAS_SR2;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mDSP.SetSR(i, mChStat[ch].changedVP.sr2);
+        if (!mVoiceManager.IsKeyOn(i)) {
+            if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
+                mDSP.SetSR(i, mChStat[ch].changedVP.sr2);
+            }
         }
     }
 }
