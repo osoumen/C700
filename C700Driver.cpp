@@ -1258,8 +1258,8 @@ void C700Driver::doControlChange( int ch, int controlNum, int value )
             ChangeChSR2(ch, value >> 2);
             break;
             
-        case 81:
-            // SR2
+        case 82:
+            // SR1
             ChangeChSR1(ch, value >> 2);
             break;
 
