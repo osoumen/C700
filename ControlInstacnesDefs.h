@@ -2313,14 +2313,14 @@ ControlInstances	sCntl[] = {
     {
 		'airy',	//sig
 		'cbtn',	//kind
-		"PM",	//title
+		"PMOD",	//title
 		0,	//Value
 		0,	//Minimum
 		1,	//Maximum
 		'user',	//sig
 		kAudioUnitCustomProperty_PitchModulationOn,	//id
 		0,	//command
-		414, 91, 33, 14,	//x,y,w,h
+		414, 91, 38, 14,	//x,y,w,h
 		"",	//fontname
 		0,	//fontsize
 		kCenterText,	//fontalign
