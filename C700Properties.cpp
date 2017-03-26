@@ -137,7 +137,7 @@ PropertyDescription sPropertyDescription[] = {
         7,                                      // defalutValue
     },
     {
-        kAudioUnitCustomProperty_SR,            // propId
+        kAudioUnitCustomProperty_SR1,           // propId
         sizeof(int),                            // outDataSize
         false,                                  // outWritable
         propertyDataTypeInt32,                  // dataType
@@ -146,7 +146,7 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToSong
         false,                                  // saveToGlobal
         "sr",                                   // savekey
-        31,                                     // defalutValue
+        0,                                      // defalutValue
     },
     {
         kAudioUnitCustomProperty_VolL,          // propId
@@ -992,6 +992,18 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // saveToGlobal
         "noiseon",                              // savekey
         0,                                      // defalutValue
+    },
+    {
+        kAudioUnitCustomProperty_SR2,           // propId
+        sizeof(int),                            // outDataSize
+        false,                                  // outWritable
+        propertyDataTypeInt32,                  // dataType
+        false,                                  // readOnly
+        true,                                   // saveToProg
+        false,                                  // saveToSong
+        false,                                  // saveToGlobal
+        "sr2",                                  // savekey
+        31,                                     // defalutValue
     }
 };
 

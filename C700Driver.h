@@ -119,7 +119,8 @@ public:
     void        ChangeChAR(int ch, int ar);
     void        ChangeChDR(int ch, int dr);
     void        ChangeChSL(int ch, int sl);
-    void        ChangeChSR(int ch, int sr);
+    void        ChangeChSR1(int ch, int sr);
+    void        ChangeChSR2(int ch, int sr);
     //void        ChangeChVolL(int ch, int voll);
     //void        ChangeChVolR(int ch, int volr);
     void        ChangeChEcho(int ch, int echo);

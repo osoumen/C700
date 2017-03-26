@@ -126,12 +126,12 @@ bool XIFile::SetDataFromChip( const C700Driver *chip, int targetProgram, double 
 		xih.venv[3] = EndianU16_NtoL( vol );
 		xih.venv[4] = EndianU16_NtoL( xih.venv[2] + GetDRTicks( vp->dr, tempo ) );
 		xih.venv[5] = EndianU16_NtoL( vol * (vp->sl + 1) / 8 );
-		if ((vp->sr == 0) || vp->sustainMode) {
+		if ((vp->sr1 == 0) || vp->sustainMode) {
 			xih.venv[6] = EndianU16_NtoL( xih.venv[4]+1 );
 			xih.venv[7] = EndianU16_NtoL( xih.venv[5] );
 		}
 		else {
-			xih.venv[6] = EndianU16_NtoL( xih.venv[4] + GetSRTicks( vp->sr, tempo ) );
+			xih.venv[6] = EndianU16_NtoL( xih.venv[4] + GetSRTicks( vp->sr1, tempo ) );
 			xih.venv[7] = EndianU16_NtoL( vol / 10 );
 		}
 	}

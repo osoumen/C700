@@ -29,7 +29,7 @@ enum
     kAudioUnitCustomProperty_AR,
     kAudioUnitCustomProperty_DR,
     kAudioUnitCustomProperty_SL,
-    kAudioUnitCustomProperty_SR,
+    kAudioUnitCustomProperty_SR1,
     kAudioUnitCustomProperty_VolL,
     kAudioUnitCustomProperty_VolR,
     kAudioUnitCustomProperty_Echo,
@@ -120,6 +120,7 @@ enum
     
     kAudioUnitCustomProperty_PitchModulationOn,
     kAudioUnitCustomProperty_NoiseOn,
+    kAudioUnitCustomProperty_SR2,
     
     // 新規追加する場合は必ずこの後に追加すること
     
