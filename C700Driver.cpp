@@ -678,7 +678,8 @@ InstParams C700Driver::getChannelVP(int ch, int note)
         if (mChStat[ch].changeFlg & HAS_AR) mergedVP.ar = mChStat[ch].changedVP.ar;
         if (mChStat[ch].changeFlg & HAS_DR) mergedVP.dr = mChStat[ch].changedVP.dr;
         if (mChStat[ch].changeFlg & HAS_SL) mergedVP.sl = mChStat[ch].changedVP.sl;
-        if (mChStat[ch].changeFlg & HAS_SR) mergedVP.sr = mChStat[ch].changedVP.sr;
+        if (mChStat[ch].changeFlg & HAS_SR1) mergedVP.sr1 = mChStat[ch].changedVP.sr1;
+        if (mChStat[ch].changeFlg & HAS_SR2) mergedVP.sr2 = mChStat[ch].changedVP.sr2;
         if (mChStat[ch].changeFlg & HAS_VOLL) mergedVP.volL = mChStat[ch].changedVP.volL;
         if (mChStat[ch].changeFlg & HAS_VOLR) mergedVP.volR = mChStat[ch].changedVP.volR;
         if (mChStat[ch].changeFlg & HAS_ECHO) mergedVP.echo = mChStat[ch].changedVP.echo;
@@ -802,14 +803,31 @@ void C700Driver::ChangeChSL(int ch, int sl)
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChSR(int ch, int sr)
+void C700Driver::ChangeChSR1(int ch, int sr)
 {
-    mChStat[ch].changedVP.sr = sr & 0x1f;
-    mChStat[ch].changeFlg |= HAS_SR;
+    mChStat[ch].changedVP.sr1 = sr & 0x1f;
+    mChStat[ch].changeFlg |= HAS_SR1;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mDSP.SetSR(i, mChStat[ch].changedVP.sr);
+        if (mVoiceManager.IsKeyOn(i)) {
+            if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
+                mDSP.SetSR(i, mChStat[ch].changedVP.sr1);
+            }
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::ChangeChSR2(int ch, int sr)
+{
+    mChStat[ch].changedVP.sr2 = sr & 0x1f;
+    mChStat[ch].changeFlg |= HAS_SR2;
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (!mVoiceManager.IsKeyOn(i)) {
+            if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
+                mDSP.SetSR(i, mChStat[ch].changedVP.sr2);
+            }
         }
     }
 }
@@ -958,12 +976,7 @@ bool C700Driver::doNoteOn1( MIDIEvt dEvt )
                 mKeyOffFlag[v] = true;
                 
                 mDSP.SetARDR(v, vp.ar, vp.dr);
-                if (vp.sustainMode) {
-                    mDSP.SetSLSR(v, vp.sl, 0);		//ノートオフ時に設定値になる
-                }
-                else {
-                    mDSP.SetSLSR(v, vp.sl, vp.sr);
-                }
+                mDSP.SetSLSR(v, vp.sl, vp.sr1);
             }
             // 上位4bitに確保したボイス番号を入れる
             dEvt.ch += v << 4;
@@ -1070,12 +1083,7 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         mNoiseOnMask[v] = true;
         
         mDSP.SetARDR(v, vp.ar, vp.dr);
-        if (vp.sustainMode) {
-            mDSP.SetSLSR(v, vp.sl, 0);		//ノートオフ時に設定値になる
-        }
-        else {
-            mDSP.SetSLSR(v, vp.sl, vp.sr);
-        }
+        mDSP.SetSLSR(v, vp.sl, vp.sr1);
         
         // キーオン
         mKeyOnFlag[v] = true;
@@ -1100,10 +1108,10 @@ int C700Driver::doNoteOff( const MIDIEvt *evt )
     int             vo=-1;
     stops = mVoiceManager.ReleaseVoice(vp.releasePriority, evt->ch, evt->uniqueID, &vo);
     if (stops > 0) {
-        if (vp.sustainMode && (vp.sr != 31 || !mFastReleaseAsKeyOff)) {
+        if (vp.sustainMode && (vp.sr2 != 31 || !mFastReleaseAsKeyOff)) {
             //キーオフさせずにsrを変更する
             mDSP.SetDR(vo, 7);
-            mDSP.SetSR(vo, vp.sr);
+            mDSP.SetSR(vo, vp.sr2);
         }
         else {
             // キーオフ
@@ -1250,10 +1258,15 @@ void C700Driver::doControlChange( int ch, int controlNum, int value )
             break;
             
         case 72:
-            // SR
-            ChangeChSR(ch, value >> 2);
+            // SR2
+            ChangeChSR2(ch, value >> 2);
             break;
             
+        case 82:
+            // SR1
+            ChangeChSR1(ch, value >> 2);
+            break;
+
         case 73:
             // AR
             ChangeChAR(ch, value >> 3);

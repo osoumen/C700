@@ -79,7 +79,8 @@ C700Kernel::C700Kernel()
 		mVPset[i].ar = mPropertyParams[kAudioUnitCustomProperty_AR].defaultValue;
 		mVPset[i].dr = mPropertyParams[kAudioUnitCustomProperty_DR].defaultValue;
 		mVPset[i].sl = mPropertyParams[kAudioUnitCustomProperty_SL].defaultValue;
-		mVPset[i].sr = mPropertyParams[kAudioUnitCustomProperty_SR].defaultValue;
+		mVPset[i].sr1 = mPropertyParams[kAudioUnitCustomProperty_SR1].defaultValue;
+		mVPset[i].sr2 = mPropertyParams[kAudioUnitCustomProperty_SR2].defaultValue;
         
         mVPset[i].sustainMode = mPropertyParams[kAudioUnitCustomProperty_SustainMode].defaultValue!=0?true:false;
         mVPset[i].monoMode = mPropertyParams[kAudioUnitCustomProperty_MonoMode].defaultValue!=0?true:false;
@@ -373,9 +374,12 @@ float C700Kernel::GetPropertyValue( int inID )
 		case kAudioUnitCustomProperty_SL:
 			return mVPset[mEditProg].sl;
 			
-		case kAudioUnitCustomProperty_SR:
-			return mVPset[mEditProg].sr;
+		case kAudioUnitCustomProperty_SR1:
+			return mVPset[mEditProg].sr1;
 			
+		case kAudioUnitCustomProperty_SR2:
+			return mVPset[mEditProg].sr2;
+
 		case kAudioUnitCustomProperty_VolL:
 			return mVPset[mEditProg].volL;
 			
@@ -689,10 +693,14 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			mVPset[mEditProg].sl = value;
 			return true;
 			
-		case kAudioUnitCustomProperty_SR:
-			mVPset[mEditProg].sr = value;
+		case kAudioUnitCustomProperty_SR1:
+			mVPset[mEditProg].sr1 = value;
 			return true;
 			
+		case kAudioUnitCustomProperty_SR2:
+			mVPset[mEditProg].sr2 = value;
+			return true;
+
 		case kAudioUnitCustomProperty_VolL:
 			mVPset[mEditProg].volL = value;
 			return true;
@@ -1857,8 +1865,9 @@ int C700Kernel::CreatePGDataDic(CFDictionaryRef *data, int pgnum)
 }
 
 //-----------------------------------------------------------------------------
-void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDescription &prop)
+bool C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDescription &prop)
 {
+    bool contains = false;
     CFStringRef saveKey = CFStringCreateWithCString(NULL, prop.savekey, kCFStringEncodingASCII);
     if (CFDictionaryContainsKey(dict, saveKey)) {
         
@@ -1924,6 +1933,7 @@ void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDes
             case propertyDataTypePointer:
                 break;
         }
+        contains = true;
     }
     else {
         // デフォルト値を設定
@@ -1933,8 +1943,11 @@ void C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDes
             SetPropertyValue(prop.propId, prop.defaultValue);
             SetPropertyDoubleValue(prop.propId, prop.defaultValue);
         }
+        contains = false;
     }
     CFRelease(saveKey);
+    
+    return contains;
 }
 
 void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
@@ -1946,21 +1959,31 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 	
     SetProgramName(""); // 文字列型は初期値が設定できないのでここで設定する
     
+    bool    isSustainModeSet = false;
+    bool    isSourceFileRefSet = false;
+    bool    isSR2Set = false;
+    
     auto it = mPropertyParams.begin();
     while (it != mPropertyParams.end()) {
         if (it->second.saveToProg) {
-            RestorePropertyFromDict(dict, it->second);
+            if (RestorePropertyFromDict(dict, it->second)) {
+                if (it->first == kAudioUnitCustomProperty_SustainMode) {
+                    isSustainModeSet = true;
+                }
+                if (it->first == kAudioUnitCustomProperty_SourceFileRef) {
+                    isSourceFileRefSet = true;
+                }
+                if (it->first == kAudioUnitCustomProperty_SR2) {
+                    isSR2Set = true;
+                }
+            }
         }
         it++;
     }
 
 	// AU版のSustainModeが無かった期間のバージョンとの互換性のために初期値を適切に設定する
-    CFStringRef saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SustainMode].savekey, kCFStringEncodingASCII);
-    bool    isSustainModeSet = CFDictionaryContainsKey(dict, saveKey)?true:false;
-    CFRelease(saveKey);
     
-    saveKey = CFStringCreateWithCString(NULL, mPropertyParams[kAudioUnitCustomProperty_SourceFileRef].savekey, kCFStringEncodingASCII);
-	if (CFDictionaryContainsKey(dict, saveKey)) {
+	if (isSourceFileRefSet) {
         // SRをリリース時に使用するけどSustainModeの設定項目は無い過渡的なバージョン
         if (!isSustainModeSet) {
             SetPropertyValue(kAudioUnitCustomProperty_SustainMode, 1.0f);
@@ -1975,7 +1998,13 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
             SetPropertyValue(kAudioUnitCustomProperty_SustainMode, .0f);
         }
 	}
-    CFRelease(saveKey);
+    
+    if (!isSR2Set) {
+        if (GetPropertyValue(kAudioUnitCustomProperty_SustainMode) != 0) {
+            SetPropertyValue(kAudioUnitCustomProperty_SR2, GetPropertyValue(kAudioUnitCustomProperty_SR1));
+            SetPropertyValue(kAudioUnitCustomProperty_SR1, 0);
+        }
+    }
 	
 	//UIに変更を反映
 	if (pgnum == editProg) {
@@ -2066,10 +2095,17 @@ bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
         it++;
     }
     
+    bool isSR2Set = false;
+    
 	while ( chunk->GetLeftSize() >= (int)sizeof( ChunkReader::MyChunkHead ) ) {
 		int		ckType;
 		long	ckSize;
 		chunk->readChunkHead(&ckType, &ckSize);
+        
+        if (ckType == kAudioUnitCustomProperty_SR2) {
+            isSR2Set = true;
+        }
+        
         auto it = mPropertyParams.find(ckType);
         if (it == mPropertyParams.end() || it->second.saveToProg == false) {
             //不明チャンクの場合は飛ばす
@@ -2079,6 +2115,13 @@ bool C700Kernel::RestorePGDataFromChunk( ChunkReader *chunk, int pgnum )
             // 特になし
         }
 	}
+    
+    if (!isSR2Set) {
+        if (GetPropertyValue(kAudioUnitCustomProperty_SustainMode) != 0) {
+            SetPropertyValue(kAudioUnitCustomProperty_SR2, GetPropertyValue(kAudioUnitCustomProperty_SR1));
+            SetPropertyValue(kAudioUnitCustomProperty_SR1, 0);
+        }
+    }
     
     mEditProg = editProg;
     
