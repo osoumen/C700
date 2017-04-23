@@ -50,7 +50,7 @@
 		#define MAC 1
 	#endif
 	#define VSTGUI_USES_COREGRAPHICS 1
-	#if !__LP64__
+	#if 0
 		#define MAC_CARBON 1
 		#ifndef TARGET_API_MAC_CARBON
 			#define TARGET_API_MAC_CARBON 1
