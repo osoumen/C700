@@ -108,7 +108,7 @@ AudioUnitParameterValue		inParameterValue
 	
 	mAU = inAU;
 #ifndef __LP64__
-	CFrame::setCocoaMode(true);
+	//CFrame::setCocoaMode(true);
 #endif
 	editor = new C700Edit(inAU);
 	
