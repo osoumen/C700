@@ -9,7 +9,7 @@
 #ifndef FFT_CZT_H
 #define FFT_CZT_H
 
-#include <vecLib/vDSP.h>
+#include <Accelerate/Accelerate.h>
 
 	/* CZT計算用 数表保持構造体 */
 typedef struct {

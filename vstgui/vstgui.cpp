@@ -217,7 +217,8 @@ END_NAMESPACE_VSTGUI
 //-----------------------------------------------------------------------------
 #if MAC
 //-----------------------------------------------------------------------------
-#include <QuickTime/QuickTime.h>
+//#include <QuickTime/QuickTime.h>
+bool NSViewFrame_getCurrentMouseButtons (long& buttons);
 #include <CoreServices/CoreServices.h>
 
 BEGIN_NAMESPACE_VSTGUI
@@ -4941,6 +4942,8 @@ long CFrame::getCurrentMouseButtons () const
 #endif
 
 #if MAC
+    NSViewFrame_getCurrentMouseButtons (buttons);
+#if 0
 	UInt32 state = GetCurrentButtonState ();
 	if (state == kEventMouseButtonPrimary)
 		buttons |= kLButton;
@@ -4968,7 +4971,7 @@ long CFrame::getCurrentMouseButtons () const
 		buttons &= ~(kApple | kLButton);
 		buttons |= kRButton;
 	}
-
+#endif
 #endif
 	
 	return buttons;
