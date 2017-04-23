@@ -461,7 +461,7 @@
 		8AD362300AFE59F900FC48D2 /* brrcodec.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = brrcodec.h; sourceTree = "<group>"; };
 		8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = brrcodec.cpp; sourceTree = "<group>"; };
 		8AEECD2D0B020BC6002C9BB7 /* czt.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = czt.cpp; sourceTree = "<group>"; };
-		8AEECD2E0B020BC6002C9BB7 /* czt.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = czt.h; sourceTree = "<group>"; };
+		8AEECD2E0B020BC6002C9BB7 /* czt.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = czt.h; sourceTree = "<group>"; };
 		8AF717CF0AE3DD5900C79293 /* gauss.h */ = {isa = PBXFileReference; fileEncoding = 0; lastKnownFileType = sourcecode.c.h; path = gauss.h; sourceTree = "<group>"; };
 		8BA05A660720730100365D66 /* C700.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700.cpp; sourceTree = "<group>"; };
 		8BA05A670720730100365D66 /* C700.exp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.exports; path = C700.exp; sourceTree = "<group>"; };
@@ -1826,7 +1826,7 @@
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
 				PRODUCT_NAME = C700;
 				REZ_SEARCH_PATHS = "($PROJECT_DIR)/CoreAudio/AudioUnits/AUPublic/AUBase";
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "";
 				WARNING_CFLAGS = (
@@ -1873,7 +1873,7 @@
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
 				PRODUCT_NAME = C700;
 				REZ_SEARCH_PATHS = "($PROJECT_DIR)/CoreAudio/AudioUnits/AUPublic/AUBase";
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "";
 				WARNING_CFLAGS = (
@@ -1908,7 +1908,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 				ZERO_LINK = YES;
 			};
 			name = Development;
@@ -1931,7 +1931,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
 				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 			};
 			name = Deployment;
 		};
@@ -1973,7 +1973,7 @@
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
 				PRODUCT_NAME = C700;
 				REZ_SEARCH_PATHS = "";
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				VALID_ARCHS = "i386 x86_64";
 				VERSIONING_SYSTEM = "";
@@ -2022,7 +2022,7 @@
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers";
 				PRODUCT_NAME = C700;
 				REZ_SEARCH_PATHS = "";
-				SDKROOT = macosx10.6;
+				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				VALID_ARCHS = "i386 x86_64";
 				VERSIONING_SYSTEM = "";
