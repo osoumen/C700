@@ -1441,6 +1441,79 @@ long CocoaDragContainer::getType (long idx) const
 	return CDragContainer::kUnknown;
 }
 
+//-----------------------------------------------------------------------------
+static void mapModifiers (NSInteger nsEventModifiers, long& buttonState);
+bool NSViewFrame_getCurrentMouseButtons (long& buttons)
+{
+#if MAC_OS_X_VERSION_MIN_REQUIRED > MAC_OS_X_VERSION_10_5
+    NSInteger modifiers = [NSEvent modifierFlags];
+    mapModifiers (modifiers, buttons);
+    
+    NSInteger mouseButtons = [NSEvent pressedMouseButtons];
+    if (mouseButtons & (1 << 0))
+    {
+        if (mouseButtons == (1 << 0) && modifiers & NSControlKeyMask)
+        {
+            buttons = kRButton;
+            return true;
+        }
+        else
+            buttons |= kLButton;
+    }
+    if (mouseButtons & (1 << 1))
+        buttons |= kRButton;
+    if (mouseButtons & (1 << 2))
+        buttons |= kMButton;
+    if (mouseButtons & (1 << 3))
+        buttons |= kButton4;
+    if (mouseButtons & (1 << 4))
+        buttons |= kButton5;
+    
+#else
+    UInt32 state = GetCurrentButtonState ();
+    if (state == kEventMouseButtonPrimary)
+        buttons |= kLButton;
+    if (state == kEventMouseButtonSecondary)
+        buttons |= kRButton;
+    if (state == kEventMouseButtonTertiary)
+        buttons |= kMButton;
+    if (state == 4)
+        buttons |= kButton4;
+    if (state == 5)
+        buttons |= kButton5;
+    
+    state = GetCurrentKeyModifiers ();
+    if (state & cmdKey)
+        buttons |= kControl;
+    if (state & shiftKey)
+        buttons |= kShift;
+    if (state & optionKey)
+        buttons |= kAlt;
+    if (state & controlKey)
+        buttons |= kApple;
+    // for the one buttons
+    if (buttons & kApple && buttons & kLButton)
+    {
+        buttons &= ~(kApple | kLButton);
+        buttons |= kRButton;
+    }
+#endif
+    return true;
+}
+
+//------------------------------------------------------------------------------------
+static void mapModifiers (NSInteger nsEventModifiers, long& buttonState)
+{
+    if (nsEventModifiers & NSShiftKeyMask)
+        buttonState |= kShift;
+    if (nsEventModifiers & NSCommandKeyMask)
+        buttonState |= kControl;
+    if (nsEventModifiers & NSAlternateKeyMask)
+        buttonState |= kAlt;
+    if (nsEventModifiers & NSControlKeyMask)
+        buttonState |= kApple;
+}
+
 #if VSTGUI_NEW_CFILESELECTOR
 //------------------------------------------------------------------------------------
 static id VSTGUI_FileSelector_Delegate_Init (id self, SEL _cmd, void* fileSelector);
