@@ -761,6 +761,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
                     }
                     it++;
                 }
+                propertyNotifyFunc(kAudioUnitCustomProperty_EditingProgram, propNotifyUserData);
 			}
 			return true;
 		}
