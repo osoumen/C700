@@ -225,6 +225,7 @@ bool AudioFile::Load()
     AudioFileClose(mAudioFileID);
 	
     //ループを展開する
+    Float64	adjustment = 1.0;
     outputFormat=fileDescription;
 	if (mInstData.loop) {
 		UInt32	plusalpha=0, framestocopy;
@@ -239,16 +240,15 @@ bool AudioFile::Load()
 		dataSize += plusalpha*fileDescription.mBytesPerFrame;
 		
 		//16サンプル境界にFIXする
-		Float64	adjustment = ( (long long)((end_point-st_point)/16) ) / ((end_point-st_point)/16.0);
-		outputFormat.mSampleRate *= adjustment;
-		st_point *= adjustment;	
+		adjustment = ( (long long)((end_point-st_point)/16) ) / ((end_point-st_point)/16.0);
+		st_point *= adjustment;
 		end_point *= adjustment;
 	}
 	outputFormat.mFormatID = kAudioFormatLinearPCM;
-    outputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagsNativeEndian;
+    outputFormat.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian;
 	outputFormat.mChannelsPerFrame = 1;
-	outputFormat.mBytesPerFrame = sizeof(short);
-	outputFormat.mBitsPerChannel = 16;
+	outputFormat.mBytesPerFrame = sizeof(float);
+	outputFormat.mBitsPerChannel = 32;
 	outputFormat.mBytesPerPacket = outputFormat.mBytesPerFrame;
 	
     // バイトオーダー変換用のコンバータを用意
@@ -261,12 +261,18 @@ bool AudioFile::Load()
     }
 	
 	//サンプリングレート変換の質を最高に設定
-	if (fileDescription.mSampleRate != outputFormat.mSampleRate) {
-		size = sizeof(UInt32);
-		UInt32	setProp = kAudioConverterQuality_Max;
-		AudioConverterSetProperty(converter, kAudioConverterSampleRateConverterQuality, 
-								  size, &setProp);
-	}
+//	if (fileDescription.mSampleRate != outputFormat.mSampleRate) {
+//		size = sizeof(UInt32);
+//		UInt32	setProp = kAudioConverterQuality_Max;
+//		AudioConverterSetProperty(converter, kAudioConverterSampleRateConverterQuality,
+//								  size, &setProp);
+//        
+//        size = sizeof(UInt32);
+//		setProp = kAudioConverterSampleRateConverterComplexity_Mastering;
+//		AudioConverterSetProperty(converter, kAudioConverterSampleRateConverterComplexity,
+//								  size, &setProp);
+//        
+//	}
 	
     //出力に必要十分なバッファサイズを得る
 	UInt32	outputSize = dataSize;
@@ -279,11 +285,12 @@ bool AudioFile::Load()
 		AudioConverterDispose(converter);
         return false;
 	}
-    m_pAudioData = new short[outputSize/sizeof(short)];
+    UInt32 monoSamples = outputSize/sizeof(float);
     
     // バイトオーダー変換
+    float *monoData = new float[monoSamples];
 	AudioConverterConvertBuffer(converter, dataSize, fileBuffer,
-								&outputSize, m_pAudioData);
+								&outputSize, monoData);
     if(outputSize == 0) {
         //NSLog(@"AudioConverterConvertBuffer failed");
         delete [] fileBuffer;
@@ -291,7 +298,25 @@ bool AudioFile::Load()
         return false;
     }
     
+    //ループ長が16の倍数でない場合はサンプリングレート変換
+    Float64 inputSampleRate = fileDescription.mSampleRate;
+    Float64 outputSampleRate = fileDescription.mSampleRate * adjustment;
+    int	outSamples = monoSamples;
+    if ( outputSampleRate == inputSampleRate ) {
+        m_pAudioData = new short[monoSamples];
+        for (int i=0; i<monoSamples; i++) {
+            m_pAudioData[i] = static_cast<short>(monoData[i] * 32768);
+        }
+    }
+    else {
+        outSamples = static_cast<int>(monoSamples / (inputSampleRate / outputSampleRate));
+        m_pAudioData = new short[outSamples];
+        resampling(monoData, monoSamples, inputSampleRate,
+                   m_pAudioData, &outSamples, outputSampleRate);
+    }
+    
     // 後始末
+    delete [] monoData;
     delete [] fileBuffer;
     AudioConverterDispose(converter);
 	
@@ -308,8 +333,8 @@ bool AudioFile::Load()
 	else {
 		mInstData.lp_end		= end_point;
 	}
-	mInstData.srcSamplerate	= outputFormat.mSampleRate;
-    mLoadedSamples			= outputSize/outputFormat.mBytesPerFrame;
+	mInstData.srcSamplerate	= outputSampleRate;
+    mLoadedSamples			= outSamples;
 	
 	mIsLoaded = true;
 	
