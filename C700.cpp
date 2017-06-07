@@ -555,7 +555,10 @@ ComponentResult	C700::SaveState(CFPropertyListRef *outData)
 		CFStringRef pgnum,pgname;
 		
 		
-		for (int i=0; i<128; i++) {
+        mEfx->SetPropertyToDict(dict, mPropertyParams[kAudioUnitCustomProperty_EditingChannel]);
+        mEfx->SetPropertyToDict(dict, mPropertyParams[kAudioUnitCustomProperty_EditingProgram]);
+
+        for (int i=0; i<128; i++) {
 			const BRRData		*brr = mEfx->GetBRRData(i);
 			if (brr->data) {
 				mEfx->CreatePGDataDic(&pgdata, i);
@@ -570,6 +573,11 @@ ComponentResult	C700::SaveState(CFPropertyListRef *outData)
         auto it = mPropertyParams.begin();
         while (it != mPropertyParams.end()) {
             if (it->second.saveToSong) {
+                if (it->first == kAudioUnitCustomProperty_EditingChannel ||
+                    it->first == kAudioUnitCustomProperty_EditingProgram) {
+                    it++;
+                    continue;
+                }
                 mEfx->SetPropertyToDict(dict, it->second);
             }
             it++;
@@ -610,11 +618,17 @@ ComponentResult	C700::RestoreState(CFPropertyListRef plist)
         auto it = mPropertyParams.begin();
         while (it != mPropertyParams.end()) {
             if (it->second.saveToSong) {
+                if (it->first == kAudioUnitCustomProperty_EditingChannel ||
+                    it->first == kAudioUnitCustomProperty_EditingProgram) {
+                    it++;
+                    continue;
+                }
                 mEfx->RestorePropertyFromDict(dict, it->second);
             }
             it++;
         }
-        // TODO: EditChan‚Ì•û‚ªŒã‚ÉÝ’è‚³‚ê‚Ä‚µ‚Ü‚¤‚Æ‚¤‚Ü‚­•œŒ³‚³‚ê‚È‚¢‚Ì‚Å‚È‚ñ‚Æ‚©‚µ‚½‚¢
+        // EditChan‚Ì•û‚ªŒã‚ÉÝ’è‚³‚ê‚Ä‚µ‚Ü‚¤‚Æ‚¤‚Ü‚­•œŒ³‚³‚ê‚È‚¢
+        mEfx->RestorePropertyFromDict(dict, mPropertyParams[kAudioUnitCustomProperty_EditingChannel]);
         mEfx->RestorePropertyFromDict(dict, mPropertyParams[kAudioUnitCustomProperty_EditingProgram]);
 	}
 	return result;
