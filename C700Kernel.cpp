@@ -761,6 +761,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
                     }
                     it++;
                 }
+                propertyNotifyFunc(kAudioUnitCustomProperty_EditingProgram, propNotifyUserData);
 			}
 			return true;
 		}
@@ -1952,8 +1953,8 @@ bool C700Kernel::RestorePropertyFromDict(CFDictionaryRef dict, const PropertyDes
 
 void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
 {
-	int editProg = GetPropertyValue(kAudioUnitCustomProperty_EditingProgram);
-	SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, pgnum);
+    int editProg = mEditProg;
+	mEditProg = pgnum;
     
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(data);
 	
@@ -2006,10 +2007,9 @@ void C700Kernel::RestorePGDataDic(CFPropertyListRef data, int pgnum)
         }
     }
 	
-	//UI‚É•ÏX‚ð”½‰f
-	if (pgnum == editProg) {
-		SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
-	}
+	//UI‚É•ÏX‚ð‚±‚±‚Å‚Í”½‰f‚µ‚È‚¢
+
+    mEditProg = editProg;
 	
 	GetDriver()->RefreshKeyMap();
 }
