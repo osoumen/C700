@@ -118,12 +118,6 @@ private:
 	// ÉGÉRÅ[
 	float				mFilterBand[5];
     
-    // RPN, NRPN
-    int                 mDataEntryValue[16];
-    int                 mIsSettingNRPN[16];
-    int                 mRPN[16];
-    int                 mNRPN[16];
-	
 	C700Driver      mDriver;
     
     bool            mIsHwAvailable;
@@ -141,14 +135,6 @@ private:
     double          mRecordLoopStartBeatPos;
     double          mRecordEndBeatPos;
 	
-    void            setRPNLSB(int ch, int value);
-    void            setRPNMSB(int ch, int value);
-    void            setNRPNLSB(int ch, int value);
-    void            setNRPNMSB(int ch, int value);
-    void            setDataEntryLSB(int ch, int value, int inFrame);
-    void            setDataEntryMSB(int ch, int value, int inFrame);
-    void            sendDataEntryValue(int ch, int inFrame);
-
     const char		*GetSourceFilePath();
 	bool			SetSourceFilePath( const char *path );
 	const char		*GetProgramName();

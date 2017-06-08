@@ -130,6 +130,11 @@ C700Driver::~C700Driver()
 void C700Driver::Reset()
 {
 	for (int i=0; i<16; i++) {
+        mDataEntryValue[i] = 0;
+        mRPN[i] = 0x7f7f;
+        mNRPN[i] = 0x7f7f;
+        mIsSettingNRPN[i] = false;
+        
 		mProcessbuf[0][i]=0;
 		mProcessbuf[1][i]=0;
 	}
@@ -183,21 +188,6 @@ void C700Driver::ControlChange( int ch, int controlNum, int value, int inFrame )
 	evt.type = CONTROL_CHANGE;
 	evt.ch = ch;
 	evt.note = controlNum;
-	evt.velo = value;
-	evt.uniqueID = 0;
-	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::DirectRegisterWrite( int ch, int regAddr, int value, int inFrame )
-{
-    MIDIEvt			evt;
-	evt.type = REGISTER_WRITE;
-	evt.ch = ch;
-	evt.note = regAddr;
 	evt.velo = value;
 	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
@@ -523,18 +513,18 @@ void C700Driver::SetFIRTap( int tap, int value )
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::SetBrrSample( int prog, const unsigned char *data, int size, int loopPoint)
+void C700Driver::SetBrrSample( int srcn, const unsigned char *data, int size, int loopPoint)
 {
     mDSP.SetDir(mMemManager.GetDirAddr() >> 8);
-    mMemManager.WriteData(prog, data, size, loopPoint);
+    mMemManager.WriteData(srcn, data, size, loopPoint);
     mMemManager.UpdateMem(&mDSP);
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::DelBrrSample( int prog )
+void C700Driver::DelBrrSample( int srcn )
 {
     mDSP.SetDir(mMemManager.GetDirAddr() >> 8);
-    mMemManager.DeleteData(prog);
+    mMemManager.DeleteData(srcn);
     mMemManager.UpdateMem(&mDSP);
 }
 
@@ -734,7 +724,7 @@ void C700Driver::Panpot( int ch, int value )
         }
     }
 }
-
+#if 0
 //-----------------------------------------------------------------------------
 void C700Driver::ChangeChRate(int ch, double rate)
 {
@@ -762,7 +752,7 @@ void C700Driver::ChangeChHighkey(int ch, int highkey)
     mChStat[ch].changedVP.highkey = highkey;
     mChStat[ch].changeFlg |= HAS_HIGHKEY;
 }
-
+#endif
 //-----------------------------------------------------------------------------
 void C700Driver::ChangeChAR(int ch, int ar)
 {
@@ -1190,10 +1180,6 @@ bool C700Driver::doEvents2( const MIDIEvt *evt )
             doControlChange(evt->ch, evt->note, evt->velo);
             break;
             
-        case REGISTER_WRITE:
-            mDSP.WriteReg(evt->note, evt->velo);
-            break;
-            
         default:
             //handled = false;
             break;
@@ -1320,6 +1306,36 @@ void C700Driver::doControlChange( int ch, int controlNum, int value )
         case 127:
             // Poly Mode
             SetMonoMode(ch, (value < 64)?true:false);
+            break;
+            
+        case 6:
+            //データ・エントリー(LSB)
+            setDataEntryLSB(ch, value);
+            break;
+            
+        case 38:
+            // データ・エントリー(MSB)
+            setDataEntryMSB(ch, value);
+            break;
+            
+        case 98:
+            // NRPN (LSB)
+            setNRPNLSB(ch, value);
+            break;
+            
+        case 99:
+            // NRPN (MSB)
+            setNRPNMSB(ch, value);
+            break;
+            
+        case 100:
+            // RPN (LSB)
+            setRPNLSB(ch, value);
+            break;
+            
+        case 101:
+            // RPN (MSB)
+            setRPNMSB(ch, value);
             break;
             
         default:
@@ -1633,4 +1649,71 @@ void C700Driver::SetVPSet( InstParams *vp )
 double C700Driver::GetProcessDelayTime()
 {
     return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) + 8) / static_cast<double>(INTERNAL_CLOCK);    // 8ms + resample
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::setRPNLSB(int ch, int value)
+{
+    mRPN[ch] &= 0xff00;
+    mRPN[ch] |= value & 0x7f;
+    mIsSettingNRPN[ch] = false;
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::setRPNMSB(int ch, int value)
+{
+    mRPN[ch] &= 0x00ff;
+    mRPN[ch] |= (value & 0x7f) << 8;
+    mIsSettingNRPN[ch] = false;
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::setNRPNLSB(int ch, int value)
+{
+    mNRPN[ch] &= 0xff00;
+    mNRPN[ch] |= value & 0x7f;
+    mIsSettingNRPN[ch] = true;
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::setNRPNMSB(int ch, int value)
+{
+    mNRPN[ch] &= 0x00ff;
+    mNRPN[ch] |= (value & 0x7f) << 8;
+    mIsSettingNRPN[ch] = true;
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::setDataEntryLSB(int ch, int value)
+{
+    mDataEntryValue[ch] &= 0xff00;
+    mDataEntryValue[ch] |= value & 0x7f;
+    sendDataEntryValue(ch);
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::setDataEntryMSB(int ch, int value)
+{
+    mDataEntryValue[ch] &= 0x00ff;
+    mDataEntryValue[ch] |= (value & 0x7f) << 8;
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::sendDataEntryValue(int ch)
+{
+    if (mIsSettingNRPN) {
+        if ((mNRPN[ch] & 0xff00) == 0x7e00) {   // #98:rr #99:126
+            mDSP.WriteReg(mNRPN[ch] & 0x00ff, mDataEntryValue[ch]);
+        }
+    }
+    else  {
+        switch (mRPN[ch]) {
+            case 0x0000:
+                SetPBRange(ch, mDataEntryValue[ch]);
+                break;
+                
+            default:
+                break;
+        }
+    }
 }

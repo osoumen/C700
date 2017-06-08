@@ -97,7 +97,6 @@ public:
 	void		ProgramChange( int ch, int value, int inFrame );
 	void		PitchBend( int ch, int value1, int value2, int inFrame );
     void        ControlChange( int ch, int controlNum, int value, int inFrame );
-    void        DirectRegisterWrite( int ch, int regAddr, int value, int inFrame );
 	void		AllNotesOff();
 	void		AllSoundOff();
 	void		ResetAllControllers();
@@ -112,10 +111,10 @@ public:
     void        Volume( int ch, int value );
     void        Expression( int ch, int value );
     void        Panpot( int ch, int value );
-    void        ChangeChRate(int ch, double rate);
-    void        ChangeChBasekey(int ch, int basekey);
-    void        ChangeChLowkey(int ch, int lowkey);
-    void        ChangeChHighkey(int ch, int highkey);
+//    void        ChangeChRate(int ch, double rate);
+//    void        ChangeChBasekey(int ch, int basekey);
+//    void        ChangeChLowkey(int ch, int lowkey);
+//    void        ChangeChHighkey(int ch, int highkey);
     void        ChangeChAR(int ch, int ar);
     void        ChangeChDR(int ch, int dr);
     void        ChangeChSL(int ch, int sl);
@@ -158,8 +157,8 @@ public:
 	int			GetDelayTime();
 	void		SetFIRTap( int tap, int value );
     
-    void        SetBrrSample( int prog, const unsigned char *data, int size, int loopPoint);
-    void        DelBrrSample( int prog );
+    void        SetBrrSample( int srcn, const unsigned char *data, int size, int loopPoint);
+    void        DelBrrSample( int srcn );
     void        UpdateLoopPoint( int prog );
     void        UpdateLoopFlag( int prog );
 	
@@ -199,8 +198,7 @@ private:
         CONTROL_CHANGE,
         START_REGLOG,
         MARKLOOP_REGLOG,
-        END_REGLOG,
-        REGISTER_WRITE
+        END_REGLOG
 	};
 	
 	typedef struct {
@@ -257,6 +255,13 @@ private:
     bool            mIsAccurateMode;
     bool            mFastReleaseAsKeyOff;   // sustainmodeでsr=31の場合キーオフで処理する
     
+    // RPN, NRPN
+    int             mDataEntryValue[16];
+    int             mIsSettingNRPN[16];
+    int             mRPN[16];
+    int             mNRPN[16];
+    
+
     InstParams getChannelVP(int ch, int note);
     void processPortament(int vo);
     void calcPanVolume(int value, int *volL, int *volR);
@@ -273,4 +278,12 @@ private:
     bool doEvents2( const MIDIEvt *evt );
     int calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }
     float calcGM2PortamentCurve(int value);
+    
+    void            setRPNLSB(int ch, int value);
+    void            setRPNMSB(int ch, int value);
+    void            setNRPNLSB(int ch, int value);
+    void            setNRPNMSB(int ch, int value);
+    void            setDataEntryLSB(int ch, int value);
+    void            setDataEntryMSB(int ch, int value);
+    void            sendDataEntryValue(int ch);
 };

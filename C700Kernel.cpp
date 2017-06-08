@@ -119,12 +119,6 @@ void C700Kernel::Reset()
 	mDriver.Reset();
 	
 	for ( int i=0; i<16; i++ ) {
-        //プラグイン状態のリセット
-        mDataEntryValue[i] = 0;
-        mRPN[i] = 0x7f7f;
-        mNRPN[i] = 0x7f7f;
-        mIsSettingNRPN[i] = false;
-
         // MIDIインジケータをリセット
 		mOnNotes[i] = 0;
 		mMaxNote[i] = 0;
@@ -1350,108 +1344,13 @@ void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
 void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inFrame )
 {
     switch (controlNum) {
-        case 6:
-            //データ・エントリー(LSB)
-            setDataEntryLSB(ch, value, inFrame);
-            break;
-            
-        case 38:
-            // データ・エントリー(MSB)
-            setDataEntryMSB(ch, value, inFrame);
-            break;
-            
-        case 98:
-            // NRPN (LSB)
-            setNRPNLSB(ch, value);
-            break;
-            
-        case 99:
-            // NRPN (MSB)
-            setNRPNMSB(ch, value);
-            break;
-            
-        case 100:
-            // RPN (LSB)
-            setRPNLSB(ch, value);
-            break;
-            
-        case 101:
-            // RPN (MSB)
-            setRPNMSB(ch, value);
-            break;
-            
         default:
            mDriver.ControlChange( ch, controlNum, value, inFrame);
            break;
     }
 }
 
-//-----------------------------------------------------------------------------
-void C700Kernel::setRPNLSB(int ch, int value)
-{
-    mRPN[ch] &= 0xff00;
-    mRPN[ch] |= value & 0x7f;
-    mIsSettingNRPN[ch] = false;
-}
 
-//-----------------------------------------------------------------------------
-void C700Kernel::setRPNMSB(int ch, int value)
-{
-    mRPN[ch] &= 0x00ff;
-    mRPN[ch] |= (value & 0x7f) << 8;
-    mIsSettingNRPN[ch] = false;
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::setNRPNLSB(int ch, int value)
-{
-    mNRPN[ch] &= 0xff00;
-    mNRPN[ch] |= value & 0x7f;
-    mIsSettingNRPN[ch] = true;
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::setNRPNMSB(int ch, int value)
-{
-    mNRPN[ch] &= 0x00ff;
-    mNRPN[ch] |= (value & 0x7f) << 8;
-    mIsSettingNRPN[ch] = true;
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::setDataEntryLSB(int ch, int value, int inFrame)
-{
-    mDataEntryValue[ch] &= 0xff00;
-    mDataEntryValue[ch] |= value & 0x7f;
-    sendDataEntryValue(ch, inFrame);
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::setDataEntryMSB(int ch, int value, int inFrame)
-{
-    mDataEntryValue[ch] &= 0x00ff;
-    mDataEntryValue[ch] |= (value & 0x7f) << 8;
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::sendDataEntryValue(int ch, int inFrame)
-{
-    if (mIsSettingNRPN) {
-        if ((mNRPN[ch] & 0xff00) == 0x7e00) {   // #98:rr #99:126
-            mDriver.DirectRegisterWrite(ch, mNRPN[ch] & 0x00ff, mDataEntryValue[ch], inFrame);
-        }
-    }
-    else  {
-        switch (mRPN[ch]) {
-            case 0x0000:
-                mDriver.SetPBRange(ch, mDataEntryValue[ch]);
-                break;
-                
-            default:
-                break;
-        }
-    }
-}
 
 //-----------------------------------------------------------------------------
 
