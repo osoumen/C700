@@ -172,7 +172,8 @@ bool C700Kernel::SetParameter( int id, float value )
 			break;
 			
 		case kParam_vibdepth:
-			mDriver.ModWheel(0, value);
+			//mDriver.ModWheel(0, value);
+            HandleControlChange(0, 1, value, 0);
 			break;
 			
 		case kParam_vibrate:
@@ -204,7 +205,7 @@ bool C700Kernel::SetParameter( int id, float value )
 			break;
 			
 		case kParam_program:
-			mDriver.ProgramChange(0, value, 0);
+			HandleProgramChange(0, value, 0);
 			break;
 			
 		case kParam_engine:
@@ -241,7 +242,7 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_program_14:
 		case kParam_program_15:
 		case kParam_program_16:
-			mDriver.ProgramChange( id - kParam_program_2 + 1, value, 0 );
+			HandleProgramChange( id - kParam_program_2 + 1, value, 0 );
 			break;
 			
 		case kParam_vibdepth_2:
@@ -259,7 +260,8 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_vibdepth_14:
 		case kParam_vibdepth_15:
 		case kParam_vibdepth_16:
-			mDriver.ModWheel( id - kParam_vibdepth_2 + 1, value);
+			//mDriver.ModWheel( id - kParam_vibdepth_2 + 1, value);
+            HandleControlChange(id - kParam_vibdepth_2 + 1, 1, value, 0);
 			break;
 			
 		case kParam_echovol_L:
@@ -1320,7 +1322,14 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 
 void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFrame )
 {
-    mDriver.NoteOn(ch, note, vel, uniqueID, inFrame);
+    C700Driver::MIDIEvt evt;
+    evt.type = C700Driver::NOTE_ON;
+    evt.ch = ch;
+    evt.note = note;
+    evt.velo = vel;
+    evt.uniqueID = uniqueID;
+    evt.remain_samples = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
     //printf("NoteOn inFrame:%d\n", inFrame);
 }
 
@@ -1328,7 +1337,14 @@ void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFr
 
 void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 {
-    mDriver.NoteOff(ch, note, 0, uniqueID, inFrame);
+    C700Driver::MIDIEvt			evt;
+    evt.type = C700Driver::NOTE_OFF;
+    evt.ch = ch;
+    evt.note = note;
+    evt.velo = 0;
+    evt.uniqueID = uniqueID;
+    evt.remain_samples = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
     //printf("NoteOff inFrame:%d\n", inFrame);
 }
 
@@ -1336,18 +1352,28 @@ void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 
 void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
 {
-	mDriver.PitchBend(ch, pitch1, pitch2, inFrame);
+    C700Driver::MIDIEvt			evt;
+    evt.type = C700Driver::PITCH_BEND;
+    evt.ch = ch;
+    evt.note = pitch1;
+    evt.velo = pitch2;
+    evt.uniqueID = 0;
+    evt.remain_samples = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inFrame )
 {
-    switch (controlNum) {
-        default:
-           mDriver.ControlChange( ch, controlNum, value, inFrame);
-           break;
-    }
+    C700Driver::MIDIEvt			evt;
+    evt.type = C700Driver::CONTROL_CHANGE;
+    evt.ch = ch;
+    evt.note = controlNum;
+    evt.velo = value;
+    evt.uniqueID = 0;
+    evt.remain_samples = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
 }
 
 
@@ -1368,7 +1394,14 @@ void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
 #ifdef DEBUG_PRINT
     std::cout << "pg:" << pg << " inFrame:" << inFrame << std::endl;
 #endif
-    mDriver.ProgramChange(ch, pg, inFrame);
+    C700Driver::MIDIEvt			evt;
+    evt.type = C700Driver::PROGRAM_CHANGE;
+    evt.ch = ch;
+    evt.note = pg;
+    evt.velo = 0;
+    evt.uniqueID = 0;
+    evt.remain_samples = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
 }
 
 //-----------------------------------------------------------------------------
