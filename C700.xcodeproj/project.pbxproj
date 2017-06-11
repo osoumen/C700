@@ -414,6 +414,10 @@
 		F5D69C411E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */; };
 		F5D69C421E44BD6D00F62CF6 /* RecordingSettingsGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */; };
 		F5D69C431E44BD6D00F62CF6 /* RecordingSettingsGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */; };
+		F5F3D5D41EEBDC6F0002C320 /* MidiDriverBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */; };
+		F5F3D5D51EEBDC6F0002C320 /* MidiDriverBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */; };
+		F5F3D5D61EEBDC6F0002C320 /* MidiDriverBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */; };
+		F5F3D5D71EEBDC6F0002C320 /* MidiDriverBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */; };
 		F5FEFAED1E4F439B00F08114 /* TextKickButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */; };
 		F5FEFAEE1E4F439B00F08114 /* TextKickButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */; };
 		F5FEFAEF1E4F439B00F08114 /* TextKickButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */; };
@@ -540,7 +544,7 @@
 		F54338D81629759600863A0B /* C700VST.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700VST.h; sourceTree = "<group>"; };
 		F54338D91629759600863A0B /* C700VST.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700VST.cpp; sourceTree = "<group>"; };
 		F543D0AA147D285F00DC53A3 /* C700Driver.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = C700Driver.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		F543D0AB147D285F00DC53A3 /* C700Driver.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Driver.h; sourceTree = "<group>"; };
+		F543D0AB147D285F00DC53A3 /* C700Driver.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = C700Driver.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F54D11B81E3788EB000CDDA7 /* ChunkReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChunkReader.cpp; sourceTree = "<group>"; };
 		F54D11B91E3788EB000CDDA7 /* ChunkReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChunkReader.h; sourceTree = "<group>"; };
 		F5552CAC1E6C4DEB0020BB2B /* macOSUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = macOSUtils.mm; sourceTree = "<group>"; };
@@ -677,6 +681,8 @@
 		F5D69C3D1E44BCBC00F62CF6 /* RecordingViewCntls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingViewCntls.h; sourceTree = "<group>"; };
 		F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecordingSettingsGUI.cpp; sourceTree = "<group>"; };
 		F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordingSettingsGUI.h; sourceTree = "<group>"; };
+		F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = MidiDriverBase.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = MidiDriverBase.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextKickButton.cpp; sourceTree = "<group>"; };
 		F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextKickButton.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1006,6 +1012,8 @@
 				F527FF9F1BEE323F0083E355 /* MemManager.h */,
 				F5432C251627AE4200863A0B /* EchoKernel.cpp */,
 				F5432C241627AE4200863A0B /* EchoKernel.h */,
+				F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */,
+				F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */,
 				F556802B1A2AA8550031451C /* DynamicVoiceManager.cpp */,
 				F556802C1A2AA8550031451C /* DynamicVoiceManager.h */,
 				8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */,
@@ -1181,6 +1189,7 @@
 				8BA05ABA072073D300365D66 /* ComponentBase.h in Headers */,
 				8BA05AD3072073D300365D66 /* AUBuffer.h in Headers */,
 				F54D11BC1E3788EB000CDDA7 /* ChunkReader.h in Headers */,
+				F5F3D5D61EEBDC6F0002C320 /* MidiDriverBase.h in Headers */,
 				8BA05AD5072073D300365D66 /* AUDebugDispatcher.h in Headers */,
 				8BA05AD6072073D300365D66 /* AUInputFormatConverter.h in Headers */,
 				8BA05AD7072073D300365D66 /* AUSilentTimeout.h in Headers */,
@@ -1310,6 +1319,7 @@
 				F54331A816296E0200863A0B /* ctooltipsupport.h in Headers */,
 				F59D91A81BF720EA00E5EFC6 /* dsp.h in Headers */,
 				F59D91B61BF720EA00E5EFC6 /* SPC_CPU.h in Headers */,
+				F5F3D5D71EEBDC6F0002C320 /* MidiDriverBase.h in Headers */,
 				F54331A916296E0200863A0B /* MyKnob.h in Headers */,
 				F54331AA16296E0200863A0B /* MySlider.h in Headers */,
 				F54331AB16296E0200863A0B /* LabelOnOffButton.h in Headers */,
@@ -1635,6 +1645,7 @@
 				8BA05B070720754400365D66 /* CAAUParameter.cpp in Sources */,
 				3E0BECFB0898391C00E1F0F7 /* CAVectorUnit.cpp in Sources */,
 				8AA4CF3E0AAE7C4000AA021C /* CAAUMIDIMap.cpp in Sources */,
+				F5F3D5D41EEBDC6F0002C320 /* MidiDriverBase.cpp in Sources */,
 				8AA4CF400AAE7C4000AA021C /* CAAUMIDIMapManager.cpp in Sources */,
 				8AA4CF4F0AAE7CFC00AA021C /* AUMIDIBase.cpp in Sources */,
 				F56018231E3DDC1200400327 /* SmcFileGenerate.cpp in Sources */,
@@ -1713,6 +1724,7 @@
 				F59D91B81BF720EA00E5EFC6 /* SPC_DSP.cpp in Sources */,
 				F560181E1E3B8C4000400327 /* PlayingFileGenerateBase.cpp in Sources */,
 				F56018241E3DDC1200400327 /* SmcFileGenerate.cpp in Sources */,
+				F5F3D5D51EEBDC6F0002C320 /* MidiDriverBase.cpp in Sources */,
 				F54331FF16296E0200863A0B /* cocoasupport.mm in Sources */,
 				F500CA821E78215D00920AB2 /* UrlLinkBox.cpp in Sources */,
 				F543320116296E0200863A0B /* cvstguitimer.cpp in Sources */,

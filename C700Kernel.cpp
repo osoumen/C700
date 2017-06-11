@@ -1408,14 +1408,14 @@ void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
 
 void C700Kernel::HandleResetAllControllers( int ch, int inFrame )
 {
-	mDriver.ResetAllControllers();
+    HandleControlChange( ch, 121, 0, inFrame );
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleAllNotesOff( int ch, int inFrame )
 {
-	mDriver.AllNotesOff();
+    HandleControlChange( ch, 123, 0, inFrame );
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
@@ -1429,7 +1429,7 @@ void C700Kernel::HandleAllNotesOff( int ch, int inFrame )
 
 void C700Kernel::HandleAllSoundOff( int ch, int inFrame )
 {
-	mDriver.AllSoundOff();
+    HandleControlChange( ch, 120, 0, inFrame );
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
