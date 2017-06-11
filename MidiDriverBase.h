@@ -12,6 +12,27 @@
 #include "C700TimeThread.h"
 #include "DynamicVoiceManager.h"
 
+//-----------------------------------------------------------------------------
+class Portament_Linear {
+public:
+    Portament_Linear() : mTargetPitch(0), mTc(1.0f) {}
+    void    Reset()
+    {
+        mTargetPitch = 0;
+        mTc = 1.0f;
+    }
+    float               processPortament(float pitch);
+    void                setTargetPicth(int pitch) { mTargetPitch = pitch; }
+    int                 getTargetPitch() { return mTargetPitch; }
+    void                setTc(float tc) { mTc = tc; }
+    
+private:
+    int                 mTargetPitch;
+    float               mTc;
+    
+};
+
+//-----------------------------------------------------------------------------
 class MidiDriverBase {
 public:
     enum EvtType {

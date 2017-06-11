@@ -13,8 +13,6 @@
 #include "C700defines.h"
 #include "C700DSP.h"
 #include "MidiDriverBase.h"
-#include "DynamicVoiceManager.h"
-#include "C700TimeThread.h"
 
 //-----------------------------------------------------------------------------
 typedef enum
@@ -36,6 +34,7 @@ typedef enum
     kVoiceAllocMode_Oldest = 0,
     kVoiceAllocMode_SameChannel,
 } voicealloc_mode;
+
 //-----------------------------------------------------------------------------
 class C700Driver : public MidiDriverBase
 {
@@ -62,11 +61,10 @@ public:
 		//bool			echoOn;    // ミラー
         bool            non;
         
-        int				targetPitch;
+        Portament_Linear porta;
         
         VoiceStatus() : pb(0), vibdepth(0), reg_pmod(0), vibPhase(0), pitch(0),
-                        vol_l(0), vol_r(0), velo(0), volume(0), expression(0), pan(0), srcn(0),
-                        targetPitch(0) {}
+                        vol_l(0), vol_r(0), velo(0), volume(0), expression(0), pan(0), srcn(0) {}
         void Reset();
 	} VoiceStatus;
     
@@ -158,7 +156,8 @@ private:
     unsigned int        mCCChangeFlg[16];
     InstParams          mChannnelInst[16];
     float               mPortaStartPitch[16];
-    float               mPortaTc[16];
+    float               mChPortaTc[16];
+    
     float               mVibfreq;
 	float               mVibdepth;
 
@@ -178,11 +177,9 @@ private:
     bool                mIsAccurateMode;
     bool                mFastReleaseAsKeyOff;   // sustainmodeでsr=31の場合キーオフで処理する
     
+    
     const InstParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
     InstParams          getChannelVP(int ch, int note);
-    
-    float               processPortament(int vo, float pitch);
-    void                setTargetPicth(int vo, int pitch);
     
     bool                doRegLogEvents( const MIDIEvt *evt );
     

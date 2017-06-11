@@ -20,6 +20,30 @@ static const int PAN_CURB[129]={
 };
 
 //-----------------------------------------------------------------------------
+float Portament_Linear::processPortament(float pitch)
+{
+    float   newPitch;
+
+    if ( mTargetPitch > pitch) {
+        newPitch = pitch * mTc;
+        if (newPitch > mTargetPitch) {
+            newPitch = mTargetPitch;
+        }
+    }
+    else if ( mTargetPitch < pitch) {
+        newPitch = pitch / mTc;
+        if (newPitch < mTargetPitch) {
+            newPitch = mTargetPitch;
+        }
+    }
+    else {
+        newPitch = pitch;
+    }
+    return newPitch;
+}
+
+
+//-----------------------------------------------------------------------------
 MidiDriverBase::MidiDriverBase(int maxVoices)
 {
     MutexInit(mMIDIEvtMtx);
@@ -275,13 +299,8 @@ void MidiDriverBase::handleControlChange( int ch, int controlNum, int value )
         case 5:
         {
             // ポルタメントタイム
-#if ANALOG_PORTAMENTO
-            float secs = value / 100.0f;
-            mChStat[ch].portaTc = expf(-2.0f / ((INTERNAL_CLOCK / PORTAMENT_CYCLE_SAMPLES) * secs));
-#else
             float centPerMilis = calcGM2PortamentCurve(value);
             centPerMilis *= 1000.0f / getPortamentFreq();
-#endif
             handlePortaTimeChange( ch, value, centPerMilis );
             break;
         }

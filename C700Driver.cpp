@@ -13,8 +13,6 @@
 
 const float onepi = 3.14159265358979;
 
-#define ANALOG_PORTAMENTO 0
-
 static const int	VOLUME_CURB[128]
 = {
 	0x000, 0x001, 0x001, 0x001, 0x002, 0x003, 0x005, 0x006, 0x008, 0x00a, 0x00d, 0x00f, 0x012, 0x015, 0x019, 0x01d, 
@@ -43,6 +41,7 @@ static const int sinctable[] = {
 	0,-8,31,0,-462,1911,-4438,7057,32767,7057,-4438,1911,-462,0,31,-8
 };
 
+
 //-----------------------------------------------------------------------------
 void C700Driver::VoiceStatus::Reset()
 {
@@ -54,7 +53,8 @@ void C700Driver::VoiceStatus::Reset()
     pan = 64;
     non = false;
 	
-    targetPitch = 0;
+    porta.Reset();
+    
 	//loopPoint = 0;
 	//loop = false;
 }
@@ -90,7 +90,7 @@ C700Driver::C700Driver()
 	for (int i=0; i<16; i++) {
         mCCChangeFlg[i] = 0;
         mPortaStartPitch[i] = 0;
-        mPortaTc[i] = 1.0f;
+        mChPortaTc[i] = 1.0f;
 	}
 	Reset();
 }
@@ -212,7 +212,7 @@ void C700Driver::handlePitchBend( int ch, int pitchbend )
 {
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		if ( GetVoiceMidiCh(i) == ch ) {
-			mVoiceStat[i].pb = calcPBValue( ch, pitchbend, mVoiceStat[i].targetPitch );
+			mVoiceStat[i].pb = calcPBValue( ch, pitchbend, mVoiceStat[i].porta.getTargetPitch() );
 		}
 	}
 }
@@ -543,7 +543,13 @@ void C700Driver::handlePortaTimeChange( int ch, int ccValue, float centPerMilis 
     mCCChangeFlg[ch] |= HAS_PORTAMENTORATE;
     
     float portaTc = powf(2.0f, centPerMilis / 1200);
-    mPortaTc[ch] = portaTc;
+    mChPortaTc[ch] = portaTc;
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (GetVoiceMidiCh(i) == ch) {
+            mVoiceStat[i].porta.setTc(portaTc);
+        }
+    }
 }
 
 #if 0
@@ -744,41 +750,6 @@ int C700Driver::calcPBValue( int ch, int pitchBend, int basePitch )
     return (int)((pow(2., (pb_value * getChannelStatus(ch)->pbRange) / 12.) - 1.0)*basePitch);
 }
 
-
-//-----------------------------------------------------------------------------
-float C700Driver::processPortament(int vo, float pitch)
-{
-    float   newPitch;
-#if ANALOG_PORTAMENTO
-    float   tc = mChStat[ mVoice[vo].midi_ch ].portaTc;
-    float   tcInv = 1.0f - tc;
-    newPitch = mVoice[vo].pitch * tcInv + pitch * tc;
-#else
-    if ( mVoiceStat[vo].targetPitch > pitch) {
-        newPitch = pitch * mPortaTc[GetVoiceMidiCh(vo)];
-        if (newPitch > mVoiceStat[vo].targetPitch) {
-            newPitch = mVoiceStat[vo].targetPitch;
-        }
-    }
-    else if ( mVoiceStat[vo].targetPitch < pitch) {
-        newPitch = pitch / mPortaTc[GetVoiceMidiCh(vo)];
-        if (newPitch < mVoiceStat[vo].targetPitch) {
-            newPitch = mVoiceStat[vo].targetPitch;
-        }
-    }
-    else {
-        newPitch = pitch;
-    }
-#endif
-    return newPitch;
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::setTargetPicth(int v, int pitch)
-{
-    mVoiceStat[v].targetPitch = pitch;
-}
-
 //-----------------------------------------------------------------------------
 double C700Driver::GetProcessDelayTime()
 {
@@ -838,15 +809,17 @@ bool C700Driver::handleNoteOnDelayed(unsigned char v, unsigned char midiCh, unsi
     InstParams		vp = getChannelVP(midiCh, note);
     
 	// 中心周波数の算出
-    setTargetPicth(v, pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5);
+    int targetPitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+    mVoiceStat[v].porta.setTargetPicth(targetPitch);
     
     if ((getChannelStatus(midiCh)->portaOn == true) &&
         (mPortaStartPitch[midiCh] != 0)) {
         mVoiceStat[v].pitch = mPortaStartPitch[midiCh];
     }
     else {
-        mVoiceStat[v].pitch = mVoiceStat[v].targetPitch;
+        mVoiceStat[v].pitch = targetPitch;
     }
+    mVoiceStat[v].porta.setTc(mChPortaTc[midiCh]);
     
     if (!isLegato) {
         //ベロシティの取得
@@ -863,7 +836,7 @@ bool C700Driver::handleNoteOnDelayed(unsigned char v, unsigned char midiCh, unsi
         mVoiceStat[v].volume = getChannelStatus(midiCh)->volume;
         mVoiceStat[v].expression = getChannelStatus(midiCh)->expression;
         mVoiceStat[v].pan = getChannelStatus(midiCh)->pan;
-        mVoiceStat[v].pb = calcPBValue( midiCh, getChannelStatus(midiCh)->pitchBend, mVoiceStat[v].targetPitch );
+        mVoiceStat[v].pb = calcPBValue( midiCh, getChannelStatus(midiCh)->pitchBend, targetPitch );
         mVoiceStat[v].vibdepth = getChannelStatus(midiCh)->vibDepth;
         mVoiceStat[v].reg_pmod = mVoiceStat[v].vibdepth>0 ? true:false;
         mVoiceStat[v].vibPhase = 0.0f;
@@ -1073,7 +1046,7 @@ void C700Driver::doPostMidiEvents()
         // ポルタメント処理
         for (int v=0; v<GetVoiceLimit(); v++) {
             if (IsKeyOnVoice(v)) {
-                mVoiceStat[v].pitch = mPortaStartPitch[GetVoiceMidiCh(v)] = processPortament(v, mVoiceStat[v].pitch);
+                mVoiceStat[v].pitch = mPortaStartPitch[GetVoiceMidiCh(v)] = mVoiceStat[v].porta.processPortament(mVoiceStat[v].pitch);
             }
         }
         mPortamentCount -= PORTAMENT_CYCLE_SAMPLES;
