@@ -13,6 +13,29 @@
 #include "DynamicVoiceManager.h"
 
 //-----------------------------------------------------------------------------
+class Lfo_Linear {
+public:
+    Lfo_Linear(int updateRate=1000) : mUpdateRate(updateRate), mVibfreq(0.00137445), mVibdepth(0.5) {}
+    ~Lfo_Linear() {}
+    
+    void        SetUpdateRate(int rate);
+    void        Reset();
+    void		SetVibFreq( float value );
+    void		SetVibDepth( float value );
+    void        SetVibSens( int sens );
+    int         Update(int pitch);
+    void        ResetPhase();
+    float       calcVibratoWave(float phase);
+    
+private:
+    int         mUpdateRate;
+    int			mVibsens;
+    float		mVibPhase;
+    float       mVibfreq;
+    float       mVibdepth;
+};
+
+//-----------------------------------------------------------------------------
 class Portament_Linear {
 public:
     Portament_Linear() : mTargetPitch(0), mTc(1.0f) {}

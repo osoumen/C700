@@ -35,15 +35,14 @@ typedef enum
     kVoiceAllocMode_SameChannel,
 } voicealloc_mode;
 
+
 //-----------------------------------------------------------------------------
 class C700Driver : public MidiDriverBase
 {
 public:
     typedef struct VoiceStatus {
 		int				pb;
-		int				vibdepth;
 		bool			reg_pmod;
-		float			vibPhase;
         float           pitch;
 		
 		//int				ar,dr,sl,sr,vol_l,vol_r;    // ミラー
@@ -62,8 +61,9 @@ public:
         bool            non;
         
         Portament_Linear porta;
+        Lfo_Linear      lfo;
         
-        VoiceStatus() : pb(0), vibdepth(0), reg_pmod(0), vibPhase(0), pitch(0),
+        VoiceStatus() : pb(0), reg_pmod(0), pitch(0),
                         vol_l(0), vol_r(0), velo(0), volume(0), expression(0), pan(0), srcn(0) {}
         void Reset();
 	} VoiceStatus;
@@ -158,9 +158,6 @@ private:
     float               mPortaStartPitch[16];
     float               mChPortaTc[16];
     
-    float               mVibfreq;
-	float               mVibdepth;
-
     int                 mPortamentCount;        // DSP処理が1サンプル出力される毎にカウントされ、ポルタメント処理されるとPORTAMENT_CYCLE_SAMPLES 減らす
     int                 mPitchCount[kMaximumVoices];// DSP処理が1サンプル出力される毎にカウントされ、ピッチ変更されるとPITCH_CYCLE_SAMPLES 減らす、ノートオン時にも0にする
 

@@ -8,6 +8,20 @@
 
 #include "MidiDriverBase.h"
 
+const float onepi = 3.14159265358979;
+
+static const int	VOLUME_CURB[128]
+= {
+    0x000, 0x001, 0x001, 0x001, 0x002, 0x003, 0x005, 0x006, 0x008, 0x00a, 0x00d, 0x00f, 0x012, 0x015, 0x019, 0x01d,
+    0x020, 0x025, 0x029, 0x02e, 0x033, 0x038, 0x03d, 0x043, 0x049, 0x04f, 0x056, 0x05d, 0x064, 0x06b, 0x072, 0x07a,
+    0x082, 0x08a, 0x093, 0x09b, 0x0a4, 0x0ae, 0x0b7, 0x0c1, 0x0cb, 0x0d5, 0x0e0, 0x0eb, 0x0f6, 0x101, 0x10d, 0x118,
+    0x124, 0x131, 0x13d, 0x14a, 0x157, 0x165, 0x172, 0x180, 0x18e, 0x19c, 0x1ab, 0x1ba, 0x1c9, 0x1d8, 0x1e8, 0x1f8,
+    0x208, 0x218, 0x229, 0x23a, 0x24b, 0x25c, 0x26e, 0x280, 0x292, 0x2a4, 0x2b7, 0x2ca, 0x2dd, 0x2f0, 0x304, 0x318,
+    0x32c, 0x341, 0x355, 0x36a, 0x380, 0x395, 0x3ab, 0x3c1, 0x3d7, 0x3ed, 0x404, 0x41b, 0x432, 0x44a, 0x461, 0x479,
+    0x492, 0x4aa, 0x4c3, 0x4dc, 0x4f5, 0x50f, 0x528, 0x542, 0x55d, 0x577, 0x592, 0x5ad, 0x5c8, 0x5e4, 0x600, 0x61c,
+    0x638, 0x655, 0x671, 0x68e, 0x6ac, 0x6c9, 0x6e7, 0x705, 0x724, 0x742, 0x761, 0x780, 0x79f, 0x7bf, 0x7df, 0x7ff
+};
+
 static const int PAN_CURB[129]={
     511, 511, 510, 510, 510, 510, 510, 509, 509, 508, 507, 507, 506, 505, 504, 503,
     502, 500, 499, 498, 496, 495, 493, 491, 490, 488, 486, 484, 482, 480, 477, 475,
@@ -18,6 +32,74 @@ static const int PAN_CURB[129]={
     192, 186, 180, 174, 168, 162, 156, 150, 144, 138, 132, 126, 119, 113, 107, 101,
     95, 88, 82, 76, 69, 63, 57, 50, 44, 38, 31, 25, 19, 12, 6, 0, 0
 };
+
+//-----------------------------------------------------------------------------
+void Lfo_Linear::SetUpdateRate(int rate)
+{
+    mUpdateRate = rate;
+}
+
+//-----------------------------------------------------------------------------
+void Lfo_Linear::Reset()
+{
+    mVibsens = 0;
+    mVibPhase = 0;
+}
+
+//-----------------------------------------------------------------------------
+void Lfo_Linear::SetVibFreq( float value )
+{
+    mVibfreq = value * ((onepi*2) / mUpdateRate);
+}
+
+//-----------------------------------------------------------------------------
+void Lfo_Linear::SetVibDepth( float value )
+{
+    mVibdepth = value / 2;
+}
+
+//-----------------------------------------------------------------------------
+void Lfo_Linear::SetVibSens( int sens )
+{
+    mVibsens = sens;
+}
+
+//-----------------------------------------------------------------------------
+int Lfo_Linear::Update(int pitch)
+{
+    mVibPhase += mVibfreq;
+    if (mVibPhase > onepi) {
+        mVibPhase -= onepi*2;
+    }
+    
+    float vibwave = calcVibratoWave(mVibPhase);
+    int pitchRatio = (vibwave*mVibdepth)*VOLUME_CURB[mVibsens];
+    
+    pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
+    if (pitch <= 0) {
+        pitch=1;
+    }
+    return pitch;
+}
+
+//-----------------------------------------------------------------------------
+void Lfo_Linear::ResetPhase()
+{
+    mVibPhase = .0f;
+}
+
+//-----------------------------------------------------------------------------
+float Lfo_Linear::calcVibratoWave(float phase)
+{
+    float x2=phase*phase;
+    float vibwave = 7.61e-03f;
+    vibwave *= x2;
+    vibwave -= 1.6605e-01f;
+    vibwave *= x2;
+    vibwave += 1.0f;
+    vibwave *= phase;
+    return vibwave;
+}
 
 //-----------------------------------------------------------------------------
 float Portament_Linear::processPortament(float pitch)

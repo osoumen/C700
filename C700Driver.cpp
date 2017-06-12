@@ -11,8 +11,6 @@
 #include "C700Driver.h"
 #include <math.h>
 
-const float onepi = 3.14159265358979;
-
 static const int	VOLUME_CURB[128]
 = {
 	0x000, 0x001, 0x001, 0x001, 0x002, 0x003, 0x005, 0x006, 0x008, 0x00a, 0x00d, 0x00f, 0x012, 0x015, 0x019, 0x01d, 
@@ -47,13 +45,12 @@ void C700Driver::VoiceStatus::Reset()
 {
 	pb = 0;
 	reg_pmod = 0;
-	vibdepth = 0;
-	vibPhase = 0.0f;
     pitch = .0f;
     pan = 64;
     non = false;
 	
     porta.Reset();
+    lfo.Reset();
     
 	//loopPoint = 0;
 	//loop = false;
@@ -77,9 +74,6 @@ C700Driver::C700Driver()
 		}
 	}
 	//Initialize
-    mVibfreq = 0.00137445;
-	mVibdepth = 0.5;
-    
     mVoiceLimit = 8;
     mIsAccurateMode = false;
     mFastReleaseAsKeyOff = true;
@@ -92,6 +86,10 @@ C700Driver::C700Driver()
         mPortaStartPitch[i] = 0;
         mChPortaTc[i] = 1.0f;
 	}
+    
+    for (int v=0; v<kMaximumVoices; v++) {
+        mVoiceStat[v].lfo.SetUpdateRate(INTERNAL_CLOCK / PITCH_CYCLE_SAMPLES);
+    }
 	Reset();
 }
 
@@ -222,7 +220,7 @@ void C700Driver::handleModWheelChange( int ch, int value )
 {
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		if ( GetVoiceMidiCh(i) == ch ) {
-			mVoiceStat[i].vibdepth = value;
+			mVoiceStat[i].lfo.SetVibSens(value);
 			mVoiceStat[i].reg_pmod = value > 0 ? true:false;
 		}
 	}
@@ -316,13 +314,17 @@ void C700Driver::SetVelocityMode( velocity_mode value )
 //-----------------------------------------------------------------------------
 void C700Driver::SetVibFreq( int ch, float value )
 {
-	mVibfreq = value*((onepi*2)/(INTERNAL_CLOCK / PITCH_CYCLE_SAMPLES));
+    for (int i=0; i<kMaximumVoices; i++) {
+        mVoiceStat[i].lfo.SetVibFreq(value);
+    }
 }
 
 //-----------------------------------------------------------------------------
 void C700Driver::SetVibDepth( int ch, float value )
 {
-	mVibdepth = value / 2;
+    for (int i=0; i<kMaximumVoices; i++) {
+        mVoiceStat[i].lfo.SetVibDepth(value);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -731,19 +733,6 @@ void C700Driver::changeChSustainMode(int ch, int sustainMode)
 }
 
 //-----------------------------------------------------------------------------
-float C700Driver::calcVibratoWave(float phase)
-{
-	float x2=phase*phase;
-	float vibwave = 7.61e-03f;
-	vibwave *= x2;
-	vibwave -= 1.6605e-01f;
-	vibwave *= x2;
-	vibwave += 1.0f;
-	vibwave *= phase;
-	return vibwave;
-}
-
-//-----------------------------------------------------------------------------
 int C700Driver::calcPBValue( int ch, int pitchBend, int basePitch )
 {
     float pb_value = pitchBend / 8192.0;
@@ -837,9 +826,9 @@ bool C700Driver::handleNoteOnDelayed(unsigned char v, unsigned char midiCh, unsi
         mVoiceStat[v].expression = getChannelStatus(midiCh)->expression;
         mVoiceStat[v].pan = getChannelStatus(midiCh)->pan;
         mVoiceStat[v].pb = calcPBValue( midiCh, getChannelStatus(midiCh)->pitchBend, targetPitch );
-        mVoiceStat[v].vibdepth = getChannelStatus(midiCh)->vibDepth;
-        mVoiceStat[v].reg_pmod = mVoiceStat[v].vibdepth>0 ? true:false;
-        mVoiceStat[v].vibPhase = 0.0f;
+        mVoiceStat[v].lfo.SetVibSens(getChannelStatus(midiCh)->vibDepth);
+        mVoiceStat[v].reg_pmod = getChannelStatus(midiCh)->vibDepth>0 ? true:false;
+        mVoiceStat[v].lfo.ResetPhase();
         mVoiceStat[v].vol_l=vp.volL;
         mVoiceStat[v].vol_r=vp.volR;
         mVoiceStat[v].non=vp.noiseOn;
@@ -1082,18 +1071,7 @@ void C700Driver::doPostMidiEvents()
                 int pitch = (voicePitch + mVoiceStat[v].pb) & 0x3fff;
                 
                 if (mVoiceStat[v].reg_pmod) {
-                    mVoiceStat[v].vibPhase += mVibfreq;
-                    if (mVoiceStat[v].vibPhase > onepi) {
-                        mVoiceStat[v].vibPhase -= onepi*2;
-                    }
-                    
-                    float vibwave = calcVibratoWave(mVoiceStat[v].vibPhase);
-                    int pitchRatio = (vibwave*mVibdepth)*VOLUME_CURB[mVoiceStat[v].vibdepth];
-                    
-                    pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
-                    if (pitch <= 0) {
-                        pitch=1;
-                    }
+                    pitch = mVoiceStat[v].lfo.Update(pitch);
                 }
                 mDSP.SetPitch(v, pitch);
             }
