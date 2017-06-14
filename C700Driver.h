@@ -142,14 +142,11 @@ private:
 	
     MutexObject         mREGLOGEvtMtx;
     std::list<MIDIEvt>	mREGLOGEvt;			//レジスタログのためのキュー
-    bool                mKeyOnFlag[kMaximumVoices]; // 次のProcessでKeyOnする
-    bool                mKeyOffFlag[kMaximumVoices]; // 次のProcessでKeyOffする
+    int                 mKeyOnFlag; // 次のProcessでKeyOnする
+    int                 mKeyOffFlag; // 次のProcessでKeyOffする
     int                 mEchoOnFlag; // 次のProcessでEchoOnする
-    bool                mEchoOnMask[kMaximumVoices]; // 次のProcessでEchoを変更する
     int                 mPMOnFlag; // 次のProcessでPMOnする
-    bool                mPMOnMask[kMaximumVoices]; // 次のProcessでPMONを変更する
     int                 mNoiseOnFlag; // 次のProcessでNoiseOnする
-    bool                mNoiseOnMask[kMaximumVoices]; // 次のProcessでNONを変更する
 	
 	bool                mDrumMode[NUM_BANKS];
 	velocity_mode       mVelocityMode;

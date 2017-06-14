@@ -74,12 +74,7 @@ int Lfo_Linear::Update(int pitch)
     
     float vibwave = calcVibratoWave(mVibPhase);
     int pitchRatio = (vibwave*mVibdepth)*VOLUME_CURB[mVibsens];
-    
-    pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
-    if (pitch <= 0) {
-        pitch=1;
-    }
-    return pitch;
+    return pitchRatio;
 }
 
 //-----------------------------------------------------------------------------
@@ -102,7 +97,7 @@ float Lfo_Linear::calcVibratoWave(float phase)
 }
 
 //-----------------------------------------------------------------------------
-float Portament_Linear::processPortament(float pitch)
+float Portament_Linear::Update(float pitch)
 {
     float   newPitch;
 

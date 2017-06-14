@@ -25,14 +25,14 @@ public:
     void        SetVibSens( int sens );
     int         Update(int pitch);
     void        ResetPhase();
-    float       calcVibratoWave(float phase);
-    
 private:
     int         mUpdateRate;
     int			mVibsens;
     float		mVibPhase;
     float       mVibfreq;
     float       mVibdepth;
+
+    float       calcVibratoWave(float phase);
 };
 
 //-----------------------------------------------------------------------------
@@ -44,10 +44,10 @@ public:
         mTargetPitch = 0;
         mTc = 1.0f;
     }
-    float               processPortament(float pitch);
-    void                setTargetPicth(int pitch) { mTargetPitch = pitch; }
-    int                 getTargetPitch() { return mTargetPitch; }
-    void                setTc(float tc) { mTc = tc; }
+    float               Update(float pitch);
+    void                SetTargetPicth(int pitch) { mTargetPitch = pitch; }
+    int                 GetTargetPitch() { return mTargetPitch; }
+    void                SetTc(float tc) { mTc = tc; }
     
 private:
     int                 mTargetPitch;
@@ -91,7 +91,6 @@ public:
         int         pan;
         float       pbRange;
         bool        portaOn;
-        //float       portaTc;
         int         portaStartNote;
         int         lastNote;
         bool        damper;
