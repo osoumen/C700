@@ -54,7 +54,7 @@ public:
         int             pan;
         int             srcn;
         //unsigned char	*brrdata;    // ミラー
-		//unsigned int	loopPoint;    // ミラー
+		//uint32_t	loopPoint;    // ミラー
 		//bool			loop;    // ミラー
         
 		//bool			echoOn;    // ミラー
@@ -161,7 +161,7 @@ private:
 	
 	bool                mDrumMode[NUM_BANKS];
 	velocity_mode       mVelocityMode;
-    unsigned int        mCCChangeFlg[16];
+    uint32_t            mCCChangeFlg[16];
     InstParams          mChannnelInst[16];
     float               mPortaStartPitch[16];
     float               mChPortaTc[16];

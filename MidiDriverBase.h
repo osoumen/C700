@@ -15,6 +15,7 @@
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef short sint16_t;
+typedef unsigned int uint32_t;
 
 #define    VOLUME_DEFAULT 100
 #define    EXPRESSION_DEFAULT 127
@@ -90,12 +91,12 @@ public:
     };
     
     typedef struct {
-        EvtType         type;
-        uint8_t         ch;
-        uint8_t         data1;
-        uint8_t         data2;
-        unsigned int	uniqueID;
-        int				toWaitCycles;
+        EvtType     type;
+        uint8_t     ch;
+        uint8_t     data1;
+        uint8_t     data2;
+        uint32_t	uniqueID;
+        int			toWaitCycles;
         void setLegato() { data1 |= 0x80; }
         bool isLegato() const { return (data1&0x80)!=0 ? true:false; }
         void setAllocedVo(int vo) { ch = (ch & 0x0f) | ((vo & 0x0f) << 4); }
