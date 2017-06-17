@@ -1431,12 +1431,10 @@ void C700Kernel::HandleAllSoundOff( int ch, int inFrame )
 {
     HandleControlChange( ch, 120, 0, inFrame );
 	// ノートオンインジケータ初期化
-	for ( int i=0; i<16; i++ ) {
-		mOnNotes[i] = 0;
-		if ( propertyNotifyFunc ) {
-			propertyNotifyFunc( kAudioUnitCustomProperty_NoteOnTrack_1+i, propNotifyUserData );
-		}
-	}
+    mOnNotes[ch] = 0;
+    if ( propertyNotifyFunc ) {
+        propertyNotifyFunc( kAudioUnitCustomProperty_NoteOnTrack_1+ch, propNotifyUserData );
+    }
 }
 
 //-----------------------------------------------------------------------------
