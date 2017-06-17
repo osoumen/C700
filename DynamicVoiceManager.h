@@ -27,7 +27,8 @@ public:
     void    ChangeVoiceLimit(int voiceLimit);
     void    SetVoiceAllocMode(VoiceAllocMode mode);
     int     GetVoiceLimit() { return mVoiceLimit; }
-    int     AllocVoice(int prio, int ch, int uniqueID, bool monoMode,
+    // forceVo=-1でないときは固定のボイスを確保する
+    int     AllocVoice(int prio, int ch, int uniqueID, int forceVo,
                        int *releasedCh, bool *isLegato);
     int     ReleaseVoice(int relPrio, int ch, int uniqueID, int *relVo);
     bool    ReleaseAllVoices(int ch);

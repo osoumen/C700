@@ -76,15 +76,15 @@ void DynamicVoiceManager::SetVoiceAllocMode(VoiceAllocMode mode)
 }
 
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, bool monoMode,
+int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, int forceVo,
                                     int *releasedCh, bool *isLegato)
 {
     int v = -1;
     *releasedCh = -1;
     *isLegato = false;
     
-    if (monoMode) {
-        v = ch & 0x07;     // 固定のchを確保
+    if (forceVo != -1) {
+        v = forceVo;     // 固定のchを確保
         if (IsPlayingVoice(v)) {
             if (mVoCh[v] == ch) {
                 // レガートで鳴らした音

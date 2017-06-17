@@ -275,11 +275,11 @@ bool MidiDriverBase::doImmediateEvents( const MIDIEvt *evt )
         if (dEvt.type == NOTE_ON) {
             bool legato = false;
             //ボイスを確保して再生準備状態にする
-            int	v = -1;
+            int	v = isMonoMode(dEvt.ch, dEvt.data1) ? (dEvt.ch & 0x07):-1;
             
             int releasedCh;
             v = mVoiceManager.AllocVoice(getKeyOnPriority(dEvt.ch, dEvt.data1), dEvt.ch, dEvt.uniqueID,
-                                         isMonoMode(dEvt.ch, dEvt.data1), &releasedCh, &legato);
+                                         v, &releasedCh, &legato);
             if (legato) {
                 dEvt.setLegato();  // レガートフラグ
             }
