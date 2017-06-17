@@ -1328,7 +1328,7 @@ void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFr
     evt.data1 = note;
     evt.data2 = vel;
     evt.uniqueID = uniqueID;
-    evt.remain_samples = inFrame;
+    evt.toWaitCycles = inFrame;
     mDriver.EnqueueMidiEvent(&evt);
     //printf("NoteOn inFrame:%d\n", inFrame);
 }
@@ -1343,7 +1343,7 @@ void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
     evt.data1 = note;
     evt.data2 = 0;
     evt.uniqueID = uniqueID;
-    evt.remain_samples = inFrame;
+    evt.toWaitCycles = inFrame;
     mDriver.EnqueueMidiEvent(&evt);
     //printf("NoteOff inFrame:%d\n", inFrame);
 }
@@ -1358,7 +1358,7 @@ void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
     evt.data1 = pitch1;
     evt.data2 = pitch2;
     evt.uniqueID = 0;
-    evt.remain_samples = inFrame;
+    evt.toWaitCycles = inFrame;
     mDriver.EnqueueMidiEvent(&evt);
 }
 
@@ -1372,7 +1372,7 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
     evt.data1 = controlNum;
     evt.data2 = value;
     evt.uniqueID = 0;
-    evt.remain_samples = inFrame;
+    evt.toWaitCycles = inFrame;
     mDriver.EnqueueMidiEvent(&evt);
 }
 
@@ -1400,7 +1400,7 @@ void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
     evt.data1 = pg;
     evt.data2 = 0;
     evt.uniqueID = 0;
-    evt.remain_samples = inFrame;
+    evt.toWaitCycles = inFrame;
     mDriver.EnqueueMidiEvent(&evt);
 }
 

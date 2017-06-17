@@ -118,7 +118,7 @@ void C700Driver::StartRegisterLog( int inFrame )
 {
     RegLogEvt	evt;
 	evt.type = START_REGLOG;
-	evt.remain_samples = inFrame;
+	evt.toWaitCycles = inFrame;
     MutexLock(mREGLOGEvtMtx);
 	mREGLOGEvt.push_back( evt );
     MutexUnlock(mREGLOGEvtMtx);
@@ -129,7 +129,7 @@ void C700Driver::MarkLoopRegisterLog( int inFrame )
 {
     RegLogEvt	evt;
 	evt.type = MARKLOOP_REGLOG;
-	evt.remain_samples = inFrame;
+	evt.toWaitCycles = inFrame;
     MutexLock(mREGLOGEvtMtx);
 	mREGLOGEvt.push_back( evt );
     MutexUnlock(mREGLOGEvtMtx);
@@ -140,7 +140,7 @@ void C700Driver::EndRegisterLog( int inFrame )
 {
     RegLogEvt	evt;
 	evt.type = END_REGLOG;
-	evt.remain_samples = inFrame;
+	evt.toWaitCycles = inFrame;
     MutexLock(mREGLOGEvtMtx);
 	mREGLOGEvt.push_back( evt );
     MutexUnlock(mREGLOGEvtMtx);
@@ -186,7 +186,7 @@ void C700Driver::handleProgramChange( int ch, int value )
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::handlePitchBend( int ch, int pitchbend )
+void C700Driver::handlePitchBend( int ch, sint16_t pitchbend )
 {
 	for ( int i=0; i<kMaximumVoices; i++ ) {
 		if ( GetVoiceMidiCh(i) == ch ) {
@@ -748,7 +748,7 @@ bool C700Driver::isMonoMode(int ch, int note)
 }
 
 //-----------------------------------------------------------------------------
-bool C700Driver::handleNoteOnFirst( unsigned char vo, unsigned char midiCh, unsigned char note, unsigned char velo, bool isLegato, int killedMidiCh )
+bool C700Driver::handleNoteOnFirst( uint8_t vo, uint8_t midiCh, uint8_t note, uint8_t velo, bool isLegato, int killedMidiCh )
 {
     if (!isLegato) {
         if (killedMidiCh >= 0) {
@@ -768,7 +768,7 @@ bool C700Driver::handleNoteOnFirst( unsigned char vo, unsigned char midiCh, unsi
 }
 
 //-----------------------------------------------------------------------------
-bool C700Driver::handleNoteOnDelayed(unsigned char v, unsigned char midiCh, unsigned char note, unsigned char velo, bool isLegato)
+bool C700Driver::handleNoteOnDelayed(uint8_t v, uint8_t midiCh, uint8_t note, uint8_t velo, bool isLegato)
 {
     InstParams		vp = getChannelVP(midiCh, note);
     
@@ -976,10 +976,10 @@ void C700Driver::doPreMidiEvents()
     if ( mREGLOGEvt.size() != 0 ) {
         std::list<RegLogEvt>::iterator	it = mREGLOGEvt.begin();
         while ( it != mREGLOGEvt.end() ) {
-            if ( it->remain_samples >= 0 ) {
-                it->remain_samples--;
+            if ( it->toWaitCycles >= 0 ) {
+                it->toWaitCycles--;
             }
-            if ( it->remain_samples < 0 ) {
+            if ( it->toWaitCycles < 0 ) {
                 if (doRegLogEvents(&(*it))) {
                     it = mREGLOGEvt.erase( it );
                     continue;

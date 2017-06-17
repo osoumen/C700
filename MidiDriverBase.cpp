@@ -214,10 +214,10 @@ void MidiDriverBase::ProcessMidiEvents()
     if ( mMIDIEvt.size() != 0 ) {
         std::list<MIDIEvt>::iterator	it = mMIDIEvt.begin();
         while ( it != mMIDIEvt.end() ) {
-            if ( it->remain_samples >= 0 ) {
-                it->remain_samples--;
+            if ( it->toWaitCycles >= 0 ) {
+                it->toWaitCycles--;
             }
-            if ( it->remain_samples < 0 ) {
+            if ( it->toWaitCycles < 0 ) {
                 if (doImmediateEvents(&(*it))) {
                     it = mMIDIEvt.erase( it );
                     continue;
@@ -230,10 +230,10 @@ void MidiDriverBase::ProcessMidiEvents()
     if ( mDelayedEvt.size() != 0 ) {
         std::list<MIDIEvt>::iterator	it = mDelayedEvt.begin();
         while ( it != mDelayedEvt.end() ) {
-            if ( it->remain_samples >= 0 ) {
-                it->remain_samples--;
+            if ( it->toWaitCycles >= 0 ) {
+                it->toWaitCycles--;
             }
-            if ( it->remain_samples < 0 ) {
+            if ( it->toWaitCycles < 0 ) {
                 if (doDelayedEvents(&(*it))) {
                     it = mDelayedEvt.erase( it );
                     continue;
@@ -270,7 +270,7 @@ bool MidiDriverBase::doImmediateEvents( const MIDIEvt *evt )
     else {
         // ノートオフとレジスタログ以外のイベントは全て遅延実行する
         MIDIEvt dEvt = *evt;
-        dEvt.remain_samples = GetNoteOffIntervalCycles();
+        dEvt.toWaitCycles = GetNoteOffIntervalCycles();
         
         if (dEvt.type == NOTE_ON) {
             bool legato = false;
@@ -303,6 +303,9 @@ bool MidiDriverBase::doDelayedEvents( const MIDIEvt *evt )
     bool    handled = true;
     
     switch (evt->type) {
+        case NOTE_OFF:
+            break;
+            
         case NOTE_ON:
         {
             int     midiCh = evt->ch & 0x0f;
@@ -333,12 +336,22 @@ bool MidiDriverBase::doDelayedEvents( const MIDIEvt *evt )
             break;
         }
             
-        case NOTE_OFF:
+        case AFTER_TOUCH_POLY:
+            handleAfterTouchPoly(evt->ch, evt->data1, evt->data2);
+            break;
+            
+        case CONTROL_CHANGE:
+            handleControlChange(evt->ch, evt->data1, evt->data2);
             break;
             
         case PROGRAM_CHANGE:
             mChStat[evt->ch].prog = evt->data1;
             handleProgramChange(evt->ch, evt->data1);
+            break;
+            
+        case AFTER_TOUCH_CHANNEL:
+            mChStat[evt->ch].afterTouch = evt->data1;
+            handleAfterTouchChannel(evt->ch, evt->data1);
             break;
             
         case PITCH_BEND:
@@ -348,10 +361,6 @@ bool MidiDriverBase::doDelayedEvents( const MIDIEvt *evt )
             handlePitchBend(evt->ch, pitchBend);
             break;
         }
-            
-        case CONTROL_CHANGE:
-            handleControlChange(evt->ch, evt->data1, evt->data2);
-            break;
             
         default:
             break;

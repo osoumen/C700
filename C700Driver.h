@@ -142,7 +142,7 @@ private:
     
     typedef struct {
         RegLogEvtType         type;
-        int				remain_samples;
+        int				toWaitCycles;
     } RegLogEvt;
     
 	double              mSampleRate;
@@ -195,13 +195,15 @@ private:
 
 
     // channel messages
-    virtual void        handleProgramChange( int ch, int value );
-    virtual void        handlePitchBend( int ch, int pitchbend );
-    virtual void        handleControlChange( int ch, int controlNum, int value );
-    virtual bool        handleNoteOnFirst( unsigned char v, unsigned char midiCh, unsigned char note, unsigned char velo, bool isLegato, int killedMidiCh );
-    virtual bool        handleNoteOnDelayed(unsigned char vo, unsigned char midiCh, unsigned char note, unsigned char velo, bool isLegato);
     virtual void        handleNoteOff( const MIDIEvt *evt, int vo );
-    
+    virtual bool        handleNoteOnFirst( uint8_t vo, uint8_t midiCh, uint8_t note, uint8_t velo, bool isLegato, int killedMidiCh );
+    virtual bool        handleNoteOnDelayed(uint8_t vo, uint8_t midiCh, uint8_t note, uint8_t velo, bool isLegato);
+    virtual void        handleAfterTouchPoly( int ch, int note, int value ) {}
+    virtual void        handleControlChange( int ch, int controlNum, int value );
+    virtual void        handleProgramChange( int ch, int value );
+    virtual void        handleAfterTouchChannel( int ch, int value ) {}
+    virtual void        handlePitchBend( int ch, sint16_t pitchbend );
+
     // control changes
     // change=プリセットパラメータの変更
     // set=それ以外の一般的なコントロールチェンジ
