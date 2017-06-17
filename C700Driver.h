@@ -134,6 +134,17 @@ private:
     static const int    PITCH_CYCLE_SAMPLES = 32;  // ピッチ変更を行うサンプル数(32kHz換算)
     static const int    CLOCKS_PER_SAMPLE = 32;
     
+    enum RegLogEvtType {
+        START_REGLOG = 0,
+        MARKLOOP_REGLOG,
+        END_REGLOG
+    };
+    
+    typedef struct {
+        RegLogEvtType         type;
+        int				remain_samples;
+    } RegLogEvt;
+    
 	double              mSampleRate;
 	
 	int                 mProcessFrac;
@@ -141,7 +152,7 @@ private:
 	int                 mProcessbufPtr;			//リサンプリング用バッファ書き込み位置
 	
     MutexObject         mREGLOGEvtMtx;
-    std::list<MIDIEvt>	mREGLOGEvt;			//レジスタログのためのキュー
+    std::list<RegLogEvt> mREGLOGEvt;			//レジスタログのためのキュー
     int                 mKeyOnFlag; // 次のProcessでKeyOnする
     int                 mKeyOffFlag; // 次のProcessでKeyOffする
     int                 mEchoOnFlag; // 次のProcessでEchoOnする
@@ -175,7 +186,7 @@ private:
     const InstParams	*getMappedVP(int bank, int key) const { return &mVPset[mKeyMap[bank][key]]; }
     InstParams          getChannelVP(int ch, int note);
     
-    bool                doRegLogEvents( const MIDIEvt *evt );
+    bool                doRegLogEvents( const RegLogEvt *evt );
     
     int                 calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }
 

@@ -63,10 +63,7 @@ public:
         NOTE_OFF,
         PROGRAM_CHANGE,
         PITCH_BEND,
-        CONTROL_CHANGE,
-        START_REGLOG,
-        MARKLOOP_REGLOG,
-        END_REGLOG
+        CONTROL_CHANGE
     };
     
     typedef struct {

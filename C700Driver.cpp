@@ -116,12 +116,8 @@ void C700Driver::Reset()
 //-----------------------------------------------------------------------------
 void C700Driver::StartRegisterLog( int inFrame )
 {
-    MIDIEvt			evt;
+    RegLogEvt	evt;
 	evt.type = START_REGLOG;
-	evt.ch = 0;
-	evt.data1 = 0;
-	evt.data2 = 0;
-	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
     MutexLock(mREGLOGEvtMtx);
 	mREGLOGEvt.push_back( evt );
@@ -131,12 +127,8 @@ void C700Driver::StartRegisterLog( int inFrame )
 //-----------------------------------------------------------------------------
 void C700Driver::MarkLoopRegisterLog( int inFrame )
 {
-    MIDIEvt			evt;
+    RegLogEvt	evt;
 	evt.type = MARKLOOP_REGLOG;
-	evt.ch = 0;
-	evt.data1 = 0;
-	evt.data2 = 0;
-	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
     MutexLock(mREGLOGEvtMtx);
 	mREGLOGEvt.push_back( evt );
@@ -146,12 +138,8 @@ void C700Driver::MarkLoopRegisterLog( int inFrame )
 //-----------------------------------------------------------------------------
 void C700Driver::EndRegisterLog( int inFrame )
 {
-    MIDIEvt			evt;
+    RegLogEvt	evt;
 	evt.type = END_REGLOG;
-	evt.ch = 0;
-	evt.data1 = 0;
-	evt.data2 = 0;
-	evt.uniqueID = 0;
 	evt.remain_samples = inFrame;
     MutexLock(mREGLOGEvtMtx);
 	mREGLOGEvt.push_back( evt );
@@ -880,7 +868,7 @@ void C700Driver::handleNoteOff( const MIDIEvt *evt, int vo )
 }
 
 //-----------------------------------------------------------------------------
-bool C700Driver::doRegLogEvents( const MIDIEvt *evt )
+bool C700Driver::doRegLogEvents( const RegLogEvt *evt )
 {
     bool    handled = true;
     
@@ -986,7 +974,7 @@ void C700Driver::doPreMidiEvents()
     // REGLOGÉCÉxÉìÉgÇÃèàóù
     MutexLock(mREGLOGEvtMtx);
     if ( mREGLOGEvt.size() != 0 ) {
-        std::list<MIDIEvt>::iterator	it = mREGLOGEvt.begin();
+        std::list<RegLogEvt>::iterator	it = mREGLOGEvt.begin();
         while ( it != mREGLOGEvt.end() ) {
             if ( it->remain_samples >= 0 ) {
                 it->remain_samples--;
