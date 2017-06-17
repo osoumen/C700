@@ -173,6 +173,34 @@ int DynamicVoiceManager::ReleaseVoice(int relPrio, int ch, int uniqueID, int *re
 }
 
 //-----------------------------------------------------------------------------
+bool DynamicVoiceManager::ReleaseAllVoices(int ch)
+{
+    bool stoped = false;
+    std::list<int>::iterator	it = mPlayVo.begin();
+    while (it != mPlayVo.end()) {
+        int	vo = *it;
+        
+        if ( GetVoiceMidiCh(vo) == ch ) {
+            if (mVoKeyOn[vo]) {
+                mVoUniqueID[vo] = 0;
+                mVoPrio[vo] = 0;
+                mVoKeyOn[vo] = false;
+            }
+            if ( vo < mVoiceLimit ) {
+                mWaitVo.push_back(vo);
+            }
+            it = mPlayVo.erase(it);
+            stoped = true;
+            mChNoteOns[ch]--;
+            break;
+        }
+        it++;
+    }
+    
+    return stoped;
+}
+
+//-----------------------------------------------------------------------------
 void DynamicVoiceManager::SetChLimit(int ch, int value)
 {
     mChLimit[ch & 0xf] = value;

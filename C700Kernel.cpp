@@ -1325,8 +1325,8 @@ void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFr
     C700Driver::MIDIEvt evt;
     evt.type = C700Driver::NOTE_ON;
     evt.ch = ch;
-    evt.note = note;
-    evt.velo = vel;
+    evt.data1 = note;
+    evt.data2 = vel;
     evt.uniqueID = uniqueID;
     evt.remain_samples = inFrame;
     mDriver.EnqueueMidiEvent(&evt);
@@ -1340,8 +1340,8 @@ void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
     C700Driver::MIDIEvt			evt;
     evt.type = C700Driver::NOTE_OFF;
     evt.ch = ch;
-    evt.note = note;
-    evt.velo = 0;
+    evt.data1 = note;
+    evt.data2 = 0;
     evt.uniqueID = uniqueID;
     evt.remain_samples = inFrame;
     mDriver.EnqueueMidiEvent(&evt);
@@ -1355,8 +1355,8 @@ void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
     C700Driver::MIDIEvt			evt;
     evt.type = C700Driver::PITCH_BEND;
     evt.ch = ch;
-    evt.note = pitch1;
-    evt.velo = pitch2;
+    evt.data1 = pitch1;
+    evt.data2 = pitch2;
     evt.uniqueID = 0;
     evt.remain_samples = inFrame;
     mDriver.EnqueueMidiEvent(&evt);
@@ -1369,8 +1369,8 @@ void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inF
     C700Driver::MIDIEvt			evt;
     evt.type = C700Driver::CONTROL_CHANGE;
     evt.ch = ch;
-    evt.note = controlNum;
-    evt.velo = value;
+    evt.data1 = controlNum;
+    evt.data2 = value;
     evt.uniqueID = 0;
     evt.remain_samples = inFrame;
     mDriver.EnqueueMidiEvent(&evt);
@@ -1397,8 +1397,8 @@ void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
     C700Driver::MIDIEvt			evt;
     evt.type = C700Driver::PROGRAM_CHANGE;
     evt.ch = ch;
-    evt.note = pg;
-    evt.velo = 0;
+    evt.data1 = pg;
+    evt.data2 = 0;
     evt.uniqueID = 0;
     evt.remain_samples = inFrame;
     mDriver.EnqueueMidiEvent(&evt);

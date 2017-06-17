@@ -178,7 +178,6 @@ private:
     bool                doRegLogEvents( const MIDIEvt *evt );
     
     int                 calcEventDelaySamples() { return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) * mSampleRate) / INTERNAL_CLOCK; }
-    float               calcVibratoWave(float phase);
 
     virtual float       getPortamentFreq() { return (static_cast<float>(INTERNAL_CLOCK) / PORTAMENT_CYCLE_SAMPLES); };
     int                 calcPBValue(int ch, int pitchBend, int basePitch);
@@ -188,7 +187,7 @@ private:
     virtual void        handleProgramChange( int ch, int value );
     virtual void        handlePitchBend( int ch, int pitchbend );
     virtual void        handleControlChange( int ch, int controlNum, int value );
-    virtual bool        handleNoteOnFirst( MIDIEvt *evt, int killedMidiCh );
+    virtual bool        handleNoteOnFirst( unsigned char v, unsigned char midiCh, unsigned char note, unsigned char velo, bool isLegato, int killedMidiCh );
     virtual bool        handleNoteOnDelayed(unsigned char vo, unsigned char midiCh, unsigned char note, unsigned char velo, bool isLegato);
     virtual void        handleNoteOff( const MIDIEvt *evt, int vo );
     
@@ -198,8 +197,8 @@ private:
     // CCでいじれるのはリアルタイムコントロールが必要なものが中心で、全プリセットパラメータではない
     // ノートオン毎に切り替われば良いものはKernelでVoiceParamを直接書き換えるようになっている
     virtual void		handleAllNotesOff();
-    virtual void		handleAllSoundOff();
-    virtual void		handleResetAllControllers();
+    virtual void		handleAllSoundOff(int ch);
+    virtual void		handleResetAllControllers(int ch);
     
     virtual void        handleModWheelChange( int ch, int value );
     virtual void        handleVolumeChange( int ch, int value );
@@ -208,7 +207,9 @@ private:
     virtual void        handlePortamentStartNoteChange( int ch, int note );
     virtual void        handlePortaTimeChange( int ch, int ccValue, float centPerMilis );
     virtual void        handleDataEntryValueChange(int ch, bool isNRPN, int addr, int value);
-    
+    virtual void        handleDamperChange( int ch, bool on ) {}
+    virtual void        handlePortamentOnChange( int ch, bool on ) {}
+
 
     void                changeChPriority( int ch, int value );
     void                changeReleasePriority( int ch, int value );

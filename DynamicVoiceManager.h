@@ -30,6 +30,7 @@ public:
     int     AllocVoice(int prio, int ch, int uniqueID, bool monoMode,
                        int *releasedCh, bool *isLegato);
     int     ReleaseVoice(int relPrio, int ch, int uniqueID, int *relVo);
+    bool    ReleaseAllVoices(int ch);
     bool    IsPlayingVoice(int v);
     void    SetChLimit(int ch, int value);
     int     GetChLimit(int ch);

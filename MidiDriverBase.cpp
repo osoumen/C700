@@ -139,6 +139,11 @@ MidiDriverBase::MidiDriverBase(int maxVoices)
         mChStat[i].damper = false;
         
         mChStat[i].lastNote = 0;
+        
+        mChStat[i].dataEntryValue = 0;
+        mChStat[i].rpn = 0x7f7f;
+        mChStat[i].nrpn = 0x7f7f;
+        mChStat[i].isSettingNRPN = false;
     }
     
     mNoteOffIntervalCycles = 0;
@@ -157,39 +162,32 @@ MidiDriverBase::~MidiDriverBase()
 //-----------------------------------------------------------------------------
 void MidiDriverBase::Reset()
 {
-    for (int i=0; i<16; i++) {
-        mDataEntryValue[i] = 0;
-        mRPN[i] = 0x7f7f;
-        mNRPN[i] = 0x7f7f;
-        mIsSettingNRPN[i] = false;
-    }
     mVoiceManager.Reset();
-    handleAllSoundOff();
+    handleAllNotesOff();    // コンストラクタ内ではサブクラスのは呼ばれない
 }
 
 //-----------------------------------------------------------------------------
-void MidiDriverBase::AllSoundOff()
+void MidiDriverBase::AllSoundOff(int ch)
 {
-    mVoiceManager.Reset();
-    handleAllSoundOff();
+    mVoiceManager.ReleaseAllVoices(ch);
+    handleAllSoundOff(ch);
 }
 
 //-----------------------------------------------------------------------------
-void MidiDriverBase::ResetAllControllers()
+void MidiDriverBase::ResetAllControllers(int ch)
 {
-    for (int i=0; i<16; i++) {
-        mChStat[i].pitchBend = 0;
-        mChStat[i].vibDepth = 0;
-        mChStat[i].pbRange = static_cast<float>(DEFAULT_PBRANGE);
-        mChStat[i].expression = EXPRESSION_DEFAULT;
-        //mChStat[i].pan = 64;
-        mChStat[i].portaOn = false;
-        //mChStat[i].portaTc = 1.0f;
-        mChStat[i].portaStartNote = 0;
-        mChStat[i].damper = false;
-        //mChStat[i].monoMode = false;
-    }
-    handleResetAllControllers();
+    mChStat[ch].pitchBend = 0;
+    mChStat[ch].vibDepth = 0;
+    mChStat[ch].pbRange = static_cast<float>(DEFAULT_PBRANGE);
+    mChStat[ch].expression = EXPRESSION_DEFAULT;
+    //mChStat[ch].pan = 64;
+    mChStat[ch].portaOn = false;
+    //mChStat[ch].portaTc = 1.0f;
+    mChStat[ch].portaStartNote = 0;
+    mChStat[ch].damper = false;
+    //mChStat[i].monoMode = false;
+
+    handleResetAllControllers(ch);
 }
 
 //-----------------------------------------------------------------------------
@@ -220,7 +218,7 @@ void MidiDriverBase::ProcessMidiEvents()
                 it->remain_samples--;
             }
             if ( it->remain_samples < 0 ) {
-                if (doFirstEvents(&(*it))) {
+                if (doImmediateEvents(&(*it))) {
                     it = mMIDIEvt.erase( it );
                     continue;
                 }
@@ -247,7 +245,7 @@ void MidiDriverBase::ProcessMidiEvents()
 }
 
 //-----------------------------------------------------------------------------
-bool MidiDriverBase::doFirstEvents( const MIDIEvt *evt )
+bool MidiDriverBase::doImmediateEvents( const MIDIEvt *evt )
 {
     bool    handled = true;
     
@@ -262,7 +260,7 @@ bool MidiDriverBase::doFirstEvents( const MIDIEvt *evt )
             // 再生中なら停止する
             // 再生中でも未再生でも同じ処理で止められるはず
             int             vo=-1;
-            stops = mVoiceManager.ReleaseVoice(getReleasePriority(evt->ch, evt->note), evt->ch, evt->uniqueID, &vo);
+            stops = mVoiceManager.ReleaseVoice(getReleasePriority(evt->ch, evt->data1), evt->ch, evt->uniqueID, &vo);
             if (stops > 0) {
                 handleNoteOff( evt, vo );
                 //mChStat[evt->ch].noteOns -= stops;
@@ -280,16 +278,16 @@ bool MidiDriverBase::doFirstEvents( const MIDIEvt *evt )
             int	v = -1;
             
             int releasedCh;
-            v = mVoiceManager.AllocVoice(getKeyOnPriority(dEvt.ch, dEvt.note), dEvt.ch, dEvt.uniqueID,
-                                         isMonoMode(dEvt.ch, dEvt.note), &releasedCh, &legato);
+            v = mVoiceManager.AllocVoice(getKeyOnPriority(dEvt.ch, dEvt.data1), dEvt.ch, dEvt.uniqueID,
+                                         isMonoMode(dEvt.ch, dEvt.data1), &releasedCh, &legato);
             if (legato) {
                 dEvt.setLegato();  // レガートフラグ
             }
             
             if (v != -1) {
+                handleNoteOnFirst(v, dEvt.ch, dEvt.data1, dEvt.data2, legato, releasedCh);
                 // 上位4bitに確保したボイス番号を入れる
                 dEvt.setAllocedVo(v);
-                handleNoteOnFirst(&dEvt, releasedCh);
             }
         }
         mDelayedEvt.push_back(dEvt);
@@ -308,7 +306,7 @@ bool MidiDriverBase::doDelayedEvents( const MIDIEvt *evt )
         case NOTE_ON:
         {
             int     midiCh = evt->ch & 0x0f;
-            int     note = evt->note & 0x7f;
+            int     note = evt->data1 & 0x7f;
             
             //ボイスを取得
             int v = (evt->ch >> 4) & 0x0f;
@@ -328,7 +326,7 @@ bool MidiDriverBase::doDelayedEvents( const MIDIEvt *evt )
             
             mVoiceManager.SetKeyOn(v);
 
-            if (handleNoteOnDelayed( v, midiCh, note, evt->velo, evt->isLegato() )) {
+            if (handleNoteOnDelayed( v, midiCh, note, evt->data2, evt->isLegato() )) {
                 // handleNoteOnDelayedはキーオンされた場合はtrueを返す
                 mChStat[midiCh].lastNote = note;
             }
@@ -336,28 +334,26 @@ bool MidiDriverBase::doDelayedEvents( const MIDIEvt *evt )
         }
             
         case NOTE_OFF:
-            //handleNoteOff( evt );
             break;
             
         case PROGRAM_CHANGE:
-            mChStat[evt->ch].prog = evt->note;
-            handleProgramChange(evt->ch, evt->note);
+            mChStat[evt->ch].prog = evt->data1;
+            handleProgramChange(evt->ch, evt->data1);
             break;
             
         case PITCH_BEND:
         {
-            int pitchBend = ((evt->velo << 7) | evt->note) - 8192;
+            int pitchBend = ((evt->data2 << 7) | evt->data1) - 8192;
             mChStat[evt->ch].pitchBend = pitchBend;
             handlePitchBend(evt->ch, pitchBend);
             break;
         }
             
         case CONTROL_CHANGE:
-            handleControlChange(evt->ch, evt->note, evt->velo);
+            handleControlChange(evt->ch, evt->data1, evt->data2);
             break;
             
         default:
-            //handled = false;
             break;
     }
     return handled;
@@ -434,40 +430,40 @@ void MidiDriverBase::handleControlChange( int ch, int controlNum, int value )
             
         case 6:
             //データ・エントリー(LSB)
-            setDataEntryLSB(ch, value);
+            parseDataEntryLSB(ch, value);
             break;
             
         case 38:
             // データ・エントリー(MSB)
-            setDataEntryMSB(ch, value);
+            parseDataEntryMSB(ch, value);
             break;
             
         case 98:
             // NRPN (LSB)
-            setNRPNLSB(ch, value);
+            parseNRPNLSB(ch, value);
             break;
             
         case 99:
             // NRPN (MSB)
-            setNRPNMSB(ch, value);
+            parseNRPNMSB(ch, value);
             break;
             
         case 100:
             // RPN (LSB)
-            setRPNLSB(ch, value);
+            parseRPNLSB(ch, value);
             break;
             
         case 101:
             // RPN (MSB)
-            setRPNMSB(ch, value);
+            parseRPNMSB(ch, value);
             break;
             
         case 120://Force off
-            AllSoundOff();
+            AllSoundOff(ch);
             break;
             
         case 121:
-            ResetAllControllers();
+            ResetAllControllers(ch);
             break;
             
         case 123://All Note Off
@@ -483,12 +479,6 @@ void MidiDriverBase::handleControlChange( int ch, int controlNum, int value )
 void MidiDriverBase::changeChLimit( int ch, int value )
 {
     mVoiceManager.SetChLimit(ch, value);
-}
-
-//-----------------------------------------------------------------------------
-void MidiDriverBase::setPBRange( int ch, float value )
-{
-    mChStat[ch].pbRange = value;
 }
 
 //-----------------------------------------------------------------------------
@@ -508,55 +498,50 @@ float MidiDriverBase::calcGM2PortamentCurve(int value)
 }
 
 //-----------------------------------------------------------------------------
-void MidiDriverBase::handlePortamentStartNoteChange( int ch, int note )
+void MidiDriverBase::parseRPNLSB(int ch, int value)
 {
+    mChStat[ch].rpn &= 0xff00;
+    mChStat[ch].rpn |= value & 0x7f;
+    mChStat[ch].isSettingNRPN = false;
 }
 
 //-----------------------------------------------------------------------------
-void MidiDriverBase::setRPNLSB(int ch, int value)
+void MidiDriverBase::parseRPNMSB(int ch, int value)
 {
-    mRPN[ch] &= 0xff00;
-    mRPN[ch] |= value & 0x7f;
-    mIsSettingNRPN[ch] = false;
+    mChStat[ch].rpn &= 0x00ff;
+    mChStat[ch].rpn |= (value & 0x7f) << 8;
+    mChStat[ch].isSettingNRPN = false;
 }
 
 //-----------------------------------------------------------------------------
-void MidiDriverBase::setRPNMSB(int ch, int value)
+void MidiDriverBase::parseNRPNLSB(int ch, int value)
 {
-    mRPN[ch] &= 0x00ff;
-    mRPN[ch] |= (value & 0x7f) << 8;
-    mIsSettingNRPN[ch] = false;
+    mChStat[ch].nrpn &= 0xff00;
+    mChStat[ch].nrpn |= value & 0x7f;
+    mChStat[ch].isSettingNRPN = true;
 }
 
 //-----------------------------------------------------------------------------
-void MidiDriverBase::setNRPNLSB(int ch, int value)
+void MidiDriverBase::parseNRPNMSB(int ch, int value)
 {
-    mNRPN[ch] &= 0xff00;
-    mNRPN[ch] |= value & 0x7f;
-    mIsSettingNRPN[ch] = true;
+    mChStat[ch].nrpn &= 0x00ff;
+    mChStat[ch].nrpn |= (value & 0x7f) << 8;
+    mChStat[ch].isSettingNRPN = true;
 }
 
 //-----------------------------------------------------------------------------
-void MidiDriverBase::setNRPNMSB(int ch, int value)
+void MidiDriverBase::parseDataEntryLSB(int ch, int value)
 {
-    mNRPN[ch] &= 0x00ff;
-    mNRPN[ch] |= (value & 0x7f) << 8;
-    mIsSettingNRPN[ch] = true;
+    mChStat[ch].dataEntryValue &= 0xff00;
+    mChStat[ch].dataEntryValue |= value & 0x7f;
+    handleDataEntryValueChange(ch, mChStat[ch].isSettingNRPN, mChStat[ch].isSettingNRPN?mChStat[ch].nrpn:mChStat[ch].rpn, mChStat[ch].dataEntryValue);
 }
 
 //-----------------------------------------------------------------------------
-void MidiDriverBase::setDataEntryLSB(int ch, int value)
+void MidiDriverBase::parseDataEntryMSB(int ch, int value)
 {
-    mDataEntryValue[ch] &= 0xff00;
-    mDataEntryValue[ch] |= value & 0x7f;
-    handleDataEntryValueChange(ch, mIsSettingNRPN[ch], mIsSettingNRPN[ch]?mNRPN[ch]:mRPN[ch], mDataEntryValue[ch]);
-}
-
-//-----------------------------------------------------------------------------
-void MidiDriverBase::setDataEntryMSB(int ch, int value)
-{
-    mDataEntryValue[ch] &= 0x00ff;
-    mDataEntryValue[ch] |= (value & 0x7f) << 8;
+    mChStat[ch].dataEntryValue &= 0x00ff;
+    mChStat[ch].dataEntryValue |= (value & 0x7f) << 8;
 }
 
 //-----------------------------------------------------------------------------
@@ -567,7 +552,7 @@ void MidiDriverBase::handleDataEntryValueChange(int ch, bool isNRPN, int addr, i
     else  {
         switch (addr) {
             case 0x0000:
-                setPBRange(ch, value);
+                mChStat[ch].pbRange = value;
                 break;
         }
     }

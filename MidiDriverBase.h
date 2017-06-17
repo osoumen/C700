@@ -72,12 +72,12 @@ public:
     typedef struct {
         EvtType         type;
         unsigned char	ch;
-        unsigned char	note;
-        unsigned char	velo;
+        unsigned char	data1;
+        unsigned char	data2;
         unsigned int	uniqueID;
         int				remain_samples;
-        void setLegato() { note |= 0x80; }
-        bool isLegato() const { return (note&0x80)!=0 ? true:false; }
+        void setLegato() { data1 |= 0x80; }
+        bool isLegato() const { return (data1&0x80)!=0 ? true:false; }
         void setAllocedVo(int vo) { ch = (ch & 0x0f) | ((vo & 0x0f) << 4); }
         int getAllocedVo() const { return (ch & 0xf0) >> 4; }
     } MIDIEvt;
@@ -89,19 +89,24 @@ public:
         int         volume;
         int         expression;
         int         pan;
-        float       pbRange;
+        int         pbRange;
         bool        portaOn;
         int         portaStartNote;
         int         lastNote;
         bool        damper;
+        int         dataEntryValue;
+        int         isSettingNRPN;
+        int         rpn;
+        int         nrpn;
+        
     } ChannelStatus;
     
     MidiDriverBase(int maxVoices=8);
     virtual ~MidiDriverBase();
     
     virtual void		Reset();
-    void                AllSoundOff();
-    void                ResetAllControllers();
+    void                AllSoundOff(int ch);
+    void                ResetAllControllers(int ch);
     void                AllNotesOff();
     
     void                EnqueueMidiEvent(const MIDIEvt *evt);
@@ -128,7 +133,7 @@ protected:
     virtual void        handleProgramChange( int ch, int value ) = 0;
     virtual void        handlePitchBend( int ch, int pitchbend ) = 0;
     virtual void        handleControlChange( int ch, int controlNum, int value );
-    virtual bool        handleNoteOnFirst( MIDIEvt *evt, int killedMidiCh ) = 0;
+    virtual bool        handleNoteOnFirst( unsigned char vo, unsigned char midiCh, unsigned char note, unsigned char velo, bool isLegato, int killedMidiCh ) = 0;
     virtual bool        handleNoteOnDelayed(unsigned char vo, unsigned char midiCh, unsigned char note, unsigned char velo, bool isLegato) = 0;
     virtual void        handleNoteOff( const MIDIEvt *evt, int vo ) = 0;
     
@@ -138,31 +143,31 @@ protected:
     // CCでいじれるのはリアルタイムコントロールが必要なものが中心で、全プリセットパラメータではない
     // ノートオン毎に切り替われば良いものはKernelでVoiceParamを直接書き換えるようになっている
     virtual void		handleAllNotesOff() {}
-    virtual void		handleAllSoundOff() {}
-    virtual void		handleResetAllControllers() {}
+    virtual void		handleAllSoundOff(int ch) {}
+    virtual void		handleResetAllControllers(int ch) {}
 
-    virtual void        handleModWheelChange( int ch, int value ) {}
-    virtual void        handleDamperChange( int ch, bool on ) {}
-    virtual void        handleVolumeChange( int ch, int value ) {}
-    virtual void        handleExpressionChange( int ch, int value ) {}
-    virtual void        handlePanpotChange( int ch, int value ) {}
+    virtual void        handleModWheelChange( int ch, int value ) = 0;
+    virtual void        handleDamperChange( int ch, bool on ) = 0;
+    virtual void        handleVolumeChange( int ch, int value ) = 0;
+    virtual void        handleExpressionChange( int ch, int value ) = 0;
+    virtual void        handlePanpotChange( int ch, int value ) = 0;
     
-    virtual void        handlePortamentOnChange( int ch, bool on ) {}
-    virtual void        handlePortaTimeChange( int ch, int ccValue, float centPerMilis ) {}
-    virtual void        handlePortamentStartNoteChange( int ch, int note );
+    virtual void        handlePortamentOnChange( int ch, bool on ) = 0;
+    virtual void        handlePortaTimeChange( int ch, int ccValue, float centPerMilis ) = 0;
+    virtual void        handlePortamentStartNoteChange( int ch, int note ) = 0;
     
     virtual void        handleDataEntryValueChange(int ch, bool isNRPN, int addr, int value);
-    virtual void        setPBRange( int ch, float value );
 
-    const ChannelStatus *getChannelStatus(int ch) const { return &mChStat[ch]; }
     virtual int         getKeyOnPriority(int ch, int note) = 0;
     virtual int         getReleasePriority(int ch, int note) = 0;
     virtual bool        isMonoMode(int ch, int note) = 0;
     virtual bool        isPatchLoaded(int ch, int note) = 0;
     virtual float       getPortamentFreq() = 0;    // ポルタメント処理の１秒間の解像度
+    
     void                calcPanVolume(int value, int *volL, int *volR);
     float               calcGM2PortamentCurve(int value);
     
+    ChannelStatus       mChStat[16];
     DynamicVoiceManager mVoiceManager;
 
 private:
@@ -170,22 +175,16 @@ private:
     std::list<MIDIEvt>	mMIDIEvt;			//受け取ったイベントのキュー
     std::list<MIDIEvt>	mDelayedEvt;		//遅延実行イベントのキュー
     int                 mNoteOffIntervalCycles;
-    ChannelStatus       mChStat[16];
     
     // RPN, NRPN
-    int                 mDataEntryValue[16];
-    int                 mIsSettingNRPN[16];
-    int                 mRPN[16];
-    int                 mNRPN[16];
+    void                parseRPNLSB(int ch, int value);
+    void                parseRPNMSB(int ch, int value);
+    void                parseNRPNLSB(int ch, int value);
+    void                parseNRPNMSB(int ch, int value);
+    void                parseDataEntryLSB(int ch, int value);
+    void                parseDataEntryMSB(int ch, int value);
 
-    void                setRPNLSB(int ch, int value);
-    void                setRPNMSB(int ch, int value);
-    void                setNRPNLSB(int ch, int value);
-    void                setNRPNMSB(int ch, int value);
-    void                setDataEntryLSB(int ch, int value);
-    void                setDataEntryMSB(int ch, int value);
-
-    bool                doFirstEvents( const MIDIEvt *evt );
+    bool                doImmediateEvents( const MIDIEvt *evt );
     bool                doDelayedEvents( const MIDIEvt *evt );
 };
 
