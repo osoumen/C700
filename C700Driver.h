@@ -141,7 +141,7 @@ private:
     };
     
     typedef struct {
-        RegLogEvtType         type;
+        RegLogEvtType   type;
         int				toWaitCycles;
     } RegLogEvt;
     
@@ -153,6 +153,7 @@ private:
 	
     MutexObject         mREGLOGEvtMtx;
     std::list<RegLogEvt> mREGLOGEvt;			//レジスタログのためのキュー
+    
     int                 mKeyOnFlag; // 次のProcessでKeyOnする
     int                 mKeyOffFlag; // 次のProcessでKeyOffする
     int                 mEchoOnFlag; // 次のProcessでEchoOnする

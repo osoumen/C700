@@ -187,6 +187,7 @@ protected:
     void                calcPanVolume(int value, int *volL, int *volR);
     float               calcGM2PortamentCurve(int value);
     
+    // おそらく使用頻度が高いのでサブクラスにも開放する
     ChannelStatus       mChStat[16];
     DynamicVoiceManager mVoiceManager;
 
