@@ -179,7 +179,7 @@ END_NAMESPACE_VSTGUI
 
 #endif
 
-#if 0
+#if (!__LP64__)
 
 #ifndef __aeffectx__
 struct VstFileSelect;
