@@ -8,8 +8,206 @@
 
 #include "DynamicVoiceAllocator.h"
 
+
+//-----------------------------------------------------------------------------
+DynamicVoiceAllocator::VoiceStatusList::VoiceStatusList(int numSlots)
+{
+	mSlots = new VoiceSlotStatus[numSlots];
+	mNumSlots = mVoiceLimit = numSlots;
+	reset();
+}
+
+//-----------------------------------------------------------------------------
+DynamicVoiceAllocator::VoiceStatusList::~VoiceStatusList()
+{
+	delete [] mSlots;
+}
+
+//-----------------------------------------------------------------------------
+void DynamicVoiceAllocator::VoiceStatusList::reset()
+{
+	for (int i=0; i<mNumSlots; ++i) {
+		mSlots[i].isAlloced = false;
+		mSlots[i].isKeyOn = false;
+		mSlots[i].midiCh = 0;
+		mSlots[i].priority = 0;
+		mSlots[i].uniqueId = 0;
+		mSlots[i].timestamp = 0;
+	}
+	mTimeStamp = 0;
+}
+
+//-----------------------------------------------------------------------------
+void DynamicVoiceAllocator::VoiceStatusList::allocVoice(int slot, int midiCh, int prio, int uniqueId)
+{
+	//assert(slot < mNumSlots);
+	mSlots[slot].isAlloced = true;
+	mSlots[slot].midiCh = midiCh;
+	mSlots[slot].priority = prio;
+	mSlots[slot].isKeyOn = false;
+	mSlots[slot].uniqueId = uniqueId;
+	mSlots[slot].timestamp = mTimeStamp;
+	mTimeStamp++;
+}
+
+//-----------------------------------------------------------------------------
+void DynamicVoiceAllocator::VoiceStatusList::removeVoice(int slot)
+{
+	//assert(slot < mNumSlots);
+	mSlots[slot].isAlloced = false;
+}
+
+//-----------------------------------------------------------------------------
+void DynamicVoiceAllocator::VoiceStatusList::changeVoiceLimit(int voiceLimit)
+{
+	mVoiceLimit = voiceLimit;
+	if (mVoiceLimit > mNumSlots) {
+		mVoiceLimit = mNumSlots;
+	}
+}
+
+//-----------------------------------------------------------------------------
+void DynamicVoiceAllocator::VoiceStatusList::setKeyOn(int slot)
+{
+	//assert(slot < mNumSlots);
+	if (mSlots[slot].isAlloced) {
+		mSlots[slot].isKeyOn = true;
+	}
+}
+
+//-----------------------------------------------------------------------------
+bool DynamicVoiceAllocator::VoiceStatusList::isKeyOn(int slot)
+{
+	//assert(slot < mNumSlots);
+	return mSlots[slot].isKeyOn;
+}
+
+//-----------------------------------------------------------------------------
+bool DynamicVoiceAllocator::VoiceStatusList::isAlloced(int slot)
+{
+	//assert(slot < mNumSlots);
+	return mSlots[slot].isAlloced;
+}
+
+//-----------------------------------------------------------------------------
+void DynamicVoiceAllocator::VoiceStatusList::changeState(int slot, int prio, int uniqueId, bool isKeyOn)
+{
+	mSlots[slot].priority = prio;
+	mSlots[slot].uniqueId = uniqueId;
+	mSlots[slot].isKeyOn = isKeyOn;
+}
+
+//-----------------------------------------------------------------------------
+int DynamicVoiceAllocator::VoiceStatusList::getVoiceMidiCh(int slot)
+{
+	//assert(slot < mNumSlots);
+	return mSlots[slot].midiCh;
+}
+
+//-----------------------------------------------------------------------------
+int DynamicVoiceAllocator::VoiceStatusList::getVoiceUniqueId(int slot)
+{
+	//assert(slot < mNumSlots);
+	return mSlots[slot].uniqueId;
+}
+
+//-----------------------------------------------------------------------------
+int	DynamicVoiceAllocator::VoiceStatusList::findFreeVoice(int priorCh)
+{
+	int time_stamp_max = -1;
+	int v = -1;
+
+	if (priorCh == -1) {
+		for (int i=0; i<mVoiceLimit; ++i) {
+			int time_stamp = mTimeStamp - mSlots[i].timestamp;
+			if ((time_stamp > time_stamp_max) &&
+				(mSlots[i].isAlloced == false)) {
+				time_stamp_max = time_stamp;
+				v = i;
+			}
+		}
+	}
+	else {
+		for (int i=0; i<mVoiceLimit; ++i) {
+			if (mSlots[i].midiCh == priorCh) {
+				int time_stamp = mTimeStamp - mSlots[i].timestamp;
+				if ((time_stamp > time_stamp_max) &&
+					(mSlots[i].isAlloced == false)) {
+					time_stamp_max = time_stamp;
+					v = i;
+				}
+			}
+		}
+	}
+	return v;
+}
+
+//-----------------------------------------------------------------------------
+int	DynamicVoiceAllocator::VoiceStatusList::findWeakestVoiceInMidiCh(int midiCh)
+{
+	// midiChで発音している確保済みのボイスのうち優先度が最小でタイムスタンプが最古のものを探す
+	// 同じmidiChのボイスが見つからなければ-1を返す
+	
+	int time_stamp_max = -1;
+	int v = -1;
+	int prio_min = 0x7fff;
+
+	for (int i=0; i<mVoiceLimit; ++i) {
+		if ((mSlots[i].midiCh == midiCh) &&
+			(mSlots[i].isAlloced == true) &&
+			(mSlots[i].priority <= prio_min)) {
+			int time_stamp = mTimeStamp - mSlots[i].timestamp;
+			if (time_stamp > time_stamp_max) {
+				v = i;
+				time_stamp_max = time_stamp;
+				prio_min = mSlots[i].priority;
+			}
+		}
+	}
+	return v;
+}
+
+//-----------------------------------------------------------------------------
+int	DynamicVoiceAllocator::VoiceStatusList::findWeakestVoicePriorityMidiCh(int priorCh)
+{
+	int v=-1;
+	
+	v = findFreeVoice(priorCh);
+	if ((v == -1) && (priorCh != -1)) {
+		v = findFreeVoice();
+	}
+	if (v != -1) {
+		return v;
+	}
+	
+	if (priorCh != -1) {
+		v = findWeakestVoiceInMidiCh(priorCh);
+		if (v != -1) {
+			return (v + mNumSlots);
+		}
+	}
+	
+	// 確保済みの全ボイスのうち優先度が最小で一番古いものを探す
+	int time_stamp_max = -1;
+	int prio_min = 0x7fff;
+	
+	for (int i=0; i<mVoiceLimit; ++i) {
+		if ((mSlots[i].isAlloced == true) &&
+			(mSlots[i].priority <= prio_min)) {
+			int time_stamp = mTimeStamp - mSlots[i].timestamp;
+			if (time_stamp > time_stamp_max) {
+				v = i + mNumSlots;
+				time_stamp_max = time_stamp;
+				prio_min = mSlots[i].priority;
+			}
+		}
+	}
+	return v;
+}
+
 //-----------------------------------------------------------------------------
 DynamicVoiceAllocator::DynamicVoiceAllocator() :
+mVoiceList(MAX_VOICE),
 mVoiceLimit(8),
 mAllocMode(ALLOC_MODE_OLDEST)
 {
@@ -26,6 +224,7 @@ DynamicVoiceAllocator::~DynamicVoiceAllocator()
 void DynamicVoiceAllocator::Initialize(int voiceLimit)
 {
     mVoiceLimit = voiceLimit;
+	mVoiceList.changeVoiceLimit(voiceLimit);
     for (int i=0; i<16; i++) {
         mChNoteOns[i] = 0;
         mChLimit[i] = 127;
@@ -35,20 +234,10 @@ void DynamicVoiceAllocator::Initialize(int voiceLimit)
 //-----------------------------------------------------------------------------
 void DynamicVoiceAllocator::Reset()
 {
-    mPlayVo.clear();
-	mWaitVo.clear();
-    for(int i=0;i<mVoiceLimit;i++){
-        pushWaitVo(i);
-	}
     for (int i=0; i<16; i++) {
         mChNoteOns[i] = 0;
     }
-    for (int i=0; i<MAX_VOICE; i++) {
-        mVoCh[i] = 0;
-        mVoPrio[i] = 0;
-        mVoUniqueID[i] = 0;
-        mVoKeyOn[i] = false;
-    }
+	mVoiceList.reset();
 }
 
 //-----------------------------------------------------------------------------
@@ -57,16 +246,11 @@ void DynamicVoiceAllocator::ChangeVoiceLimit(int voiceLimit)
     if ( voiceLimit < mVoiceLimit ) {
 		//空きボイスリストから削除する
 		for ( int i=voiceLimit; i<mVoiceLimit; i++ ) {
-			mWaitVo.remove(i);
-		}
-	}
-	if ( voiceLimit > mVoiceLimit ) {
-		//空きボイスを追加する
-		for ( int i=mVoiceLimit; i<voiceLimit; i++ ) {
-			pushWaitVo(i);
+			mVoiceList.removeVoice(i);
 		}
 	}
 	mVoiceLimit = voiceLimit;
+	mVoiceList.changeVoiceLimit(voiceLimit);
 }
 
 //-----------------------------------------------------------------------------
@@ -85,59 +269,49 @@ int DynamicVoiceAllocator::AllocVoice(int prio, int ch, int uniqueID, int forceV
     
     if (forceVo != -1) {
         v = forceVo;     // 固定のchを確保
-        if (IsPlayingVoice(v)) {
-            if (mVoCh[v] == ch) {
+        if (mVoiceList.isAlloced(v)) {
+            if (mVoiceList.getVoiceMidiCh(v) == ch) {
                 // レガートで鳴らした音
                 // キーオン前に２回叩かれた場合は最後のノートオンだけが有効になるように
-                if (mVoKeyOn[v]) {
+                if (mVoiceList.isKeyOn(v)) {
                     *isLegato = true;
                 }
             }
             else {
                 // 別のchの発音がすでにある場合
-                mPlayVo.remove(v);
-                *releasedCh = mVoCh[v];
-                mChNoteOns[mVoCh[v]]--;
+				mVoiceList.removeVoice(v);
+                *releasedCh = mVoiceList.getVoiceMidiCh(v);
+                mChNoteOns[mVoiceList.getVoiceMidiCh(v)]--;
             }
-        }
-        else {
-            mWaitVo.remove(v);
         }
     }
     else {
         if (mChNoteOns[ch] >= mChLimit[ch]) {
             // ch発音数を超えてたら、そのchの音を一つ止めて次の音を鳴らす
-            v = stealVoice(ch);
+            v = mVoiceList.findWeakestVoiceInMidiCh(ch);
             if (v != -1) {
-                mPlayVo.remove(v);
-                *releasedCh = mVoCh[v];
-                mChNoteOns[mVoCh[v]]--;
+                mVoiceList.removeVoice(v);
+                *releasedCh = mVoiceList.getVoiceMidiCh(v);
+                mChNoteOns[mVoiceList.getVoiceMidiCh(v)]--;
             }
         }
         else {
-            // 超えてない場合は、後着優先で優先度の低い音を消す
-            v = findVoice((mAllocMode == ALLOC_MODE_SAMECH)?ch:-1);
+            // チャンネルリミットが未設定または超えてない場合は、全ボイスから後着優先で優先度の低い音を消す
+            v = mVoiceList.findWeakestVoicePriorityMidiCh((mAllocMode == ALLOC_MODE_SAMECH)?ch:-1);
             if (v >= MAX_VOICE) {  //空きがなくてどこかを止めた
                 v -= MAX_VOICE;
-                mPlayVo.remove(v);
-                *releasedCh = mVoCh[v];
-                mChNoteOns[mVoCh[v]]--;
-            }
-            else if (v >= 0) {
-                mWaitVo.remove(v);
+                mVoiceList.removeVoice(v);
+                *releasedCh = mVoiceList.getVoiceMidiCh(v);
+                mChNoteOns[mVoiceList.getVoiceMidiCh(v)]--;
             }
         }
     }
     
     if (v != -1) {
-        mVoCh[v] = ch;
-        mVoPrio[v] = prio;
-        mVoKeyOn[v] = false;
-        mVoUniqueID[v] = uniqueID;
-        if (*isLegato == false && !IsPlayingVoice(v)) { // モノモードの同時ノートオン対策
-            mPlayVo.push_back(v);
+        if (*isLegato == false && !mVoiceList.isAlloced(v)) { // モノモードの同時ノートオン対策
             mChNoteOns[ch]++;
         }
+		mVoiceList.allocVoice(v, ch, prio, uniqueID);
     }
     return v;
 }
@@ -146,29 +320,21 @@ int DynamicVoiceAllocator::AllocVoice(int prio, int ch, int uniqueID, int forceV
 int DynamicVoiceAllocator::ReleaseVoice(int relPrio, int ch, int uniqueID, int *relVo)
 {
     int stops = 0;
-    std::list<int>::iterator	it = mPlayVo.begin();
-    while (it != mPlayVo.end()) {
-        int	vo = *it;
-        
-        if ( mVoUniqueID[vo] == uniqueID ) {
-            if (mVoKeyOn[vo]) {
-                mVoUniqueID[vo] = 0;
-                mVoPrio[vo] = relPrio;
-                mVoKeyOn[vo] = false;
-            }
-            if ( vo < mVoiceLimit ) {
-                mWaitVo.push_back(vo);
-            }
-            it = mPlayVo.erase(it);
-            stops++;
-            mChNoteOns[ch]--;
-            *relVo = vo;
-            break;  // ２重鳴りはホストに任せる
-            //continue;
-        }
-        it++;
-    }
-    
+	
+	// uniqueIDが一致する発音のうちどれかを解放する
+	// TODO: 一番古いものを探す
+	for (int vo=0; vo<MAX_VOICE; ++vo) {
+		if (mVoiceList.getVoiceUniqueId(vo) == uniqueID) {
+			if (mVoiceList.isKeyOn(vo)) {
+				mVoiceList.changeState(vo, relPrio, 0, false);
+			}
+			mVoiceList.removeVoice(vo);
+			stops++;
+			mChNoteOns[ch]--;
+			*relVo = vo;
+			break;  // ２重鳴りはホストに任せる
+		}
+	}
 	return stops;
 }
 
@@ -176,27 +342,17 @@ int DynamicVoiceAllocator::ReleaseVoice(int relPrio, int ch, int uniqueID, int *
 bool DynamicVoiceAllocator::ReleaseAllVoices(int ch)
 {
     bool stoped = false;
-    std::list<int>::iterator	it = mPlayVo.begin();
-    while (it != mPlayVo.end()) {
-        int	vo = *it;
-        
-        if ( GetVoiceMidiCh(vo) == ch ) {
-            if (mVoKeyOn[vo]) {
-                mVoUniqueID[vo] = 0;
-                mVoPrio[vo] = 0;
-                mVoKeyOn[vo] = false;
-            }
-            if ( vo < mVoiceLimit ) {
-                mWaitVo.push_back(vo);
-            }
-            it = mPlayVo.erase(it);
-            stoped = true;
-            mChNoteOns[ch]--;
-            break;
-        }
-        it++;
-    }
-    
+	
+	for (int vo=0; vo<MAX_VOICE; ++vo) {
+		if (mVoiceList.getVoiceMidiCh(vo) == ch) {
+			if (mVoiceList.isKeyOn(vo)) {
+				mVoiceList.changeState(vo, 0, 0, false);
+			}
+			mVoiceList.removeVoice(vo);
+			stoped = true;
+			mChNoteOns[ch]--;
+		}
+	}
     return stoped;
 }
 
@@ -221,110 +377,17 @@ int DynamicVoiceAllocator::GetNoteOns(int ch)
 //-----------------------------------------------------------------------------
 void DynamicVoiceAllocator::SetKeyOn(int vo)
 {
-    // TODO: voがAlloc済みかどうかチェック
-    mVoKeyOn[vo] = true;
+	mVoiceList.setKeyOn(vo);
 }
 
 //-----------------------------------------------------------------------------
 bool DynamicVoiceAllocator::IsKeyOn(int vo)
 {
-    return mVoKeyOn[vo];
-}
-
-//-----------------------------------------------------------------------------
-void DynamicVoiceAllocator::pushWaitVo(int vo)
-{
-    mWaitVo.push_back(vo);
-    mVoCh[vo] = 0;
-    mVoPrio[vo] = 0;
-}
-
-//-----------------------------------------------------------------------------
-int DynamicVoiceAllocator::findFreeVoice()
-{
-	int	v=-1;
-    
-	//空きボイスを探す
-    if ( mWaitVo.size() > 0 ) {
-		v = mWaitVo.front();
-		mWaitVo.pop_front();
-	}
-    return v;
+	return mVoiceList.isKeyOn(vo);
 }
 
 //-----------------------------------------------------------------------------
 bool DynamicVoiceAllocator::IsPlayingVoice(int v)
 {
-    std::list<int>::iterator	it = mPlayVo.begin();
-    while (it != mPlayVo.end()) {
-        int	vo = *it;
-        if (vo == v) {
-            return true;
-        }
-        it++;
-    }
-    return false;
-}
-//-----------------------------------------------------------------------------
-int DynamicVoiceAllocator::stealVoice(int ch)
-{
-    int v=-1;
-    int prio_min = 0x7fff;
-    
-    std::list<int>::reverse_iterator  it = mPlayVo.rbegin();
-    while (it != mPlayVo.rend()) {
-        int vo = *it;
-        if ( (mVoPrio[vo] <= prio_min) && (mVoCh[vo] == ch) ) {
-            prio_min = mVoPrio[vo];
-            v = vo;
-        }
-        it++;
-    }
-    
-    return v;
-}
-
-//-----------------------------------------------------------------------------
-int DynamicVoiceAllocator::findVoice(int ch)
-{
-    int v=-1;
-    int prio_min = 0x7fff;
-    
-    std::list<int>::reverse_iterator  it = mPlayVo.rbegin();
-    while (it != mPlayVo.rend()) {
-        int vo = *it;
-        if ( mVoPrio[vo] <= prio_min ) {
-            prio_min = mVoPrio[vo];
-            v = vo + MAX_VOICE; // どこかを止めて確保した場合は+MAX_VOICEした値を返す
-        }
-        it++;
-    }
-    // chを指定した場合はそのMIDIchを優先する
-    if (ch != -1) {
-        it = mPlayVo.rbegin();
-        while (it != mPlayVo.rend()) {
-            int vo = *it;
-            int prio = 1;   // 通常ありえるノートオンプライオリティの最低値
-            if ( (prio <= prio_min) && mVoCh[vo] == ch ) {
-                prio_min = prio;
-                v = vo + MAX_VOICE;
-            }
-            it++;
-        }
-    }
-    it = mWaitVo.rbegin();
-    while (it != mWaitVo.rend()) {
-        int vo = *it;
-        int prio = mVoPrio[vo];
-        if (ch != -1 && ch == mVoCh[vo]) {
-            prio = -1;  // リリースプライオリティのデフォルト値の0より1小さい
-        }
-        if (prio <= prio_min) {
-            prio_min = prio;
-            v = vo;
-        }
-        it++;
-    }
-    
-    return v;
+	return mVoiceList.isAlloced(v);
 }

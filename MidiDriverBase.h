@@ -11,6 +11,7 @@
 
 #include "C700TimeThread.h"
 #include "DynamicVoiceAllocator.h"
+#include <list>
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;

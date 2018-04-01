@@ -6,11 +6,8 @@
 //
 //
 
-#ifndef __C700__DynamicVoiceAllocator__
-#define __C700__DynamicVoiceAllocator__
-
-#include <iostream>
-#include <list>
+#ifndef __DynamicVoiceAllocator__
+#define __DynamicVoiceAllocator__
 
 class DynamicVoiceAllocator
 {
@@ -36,28 +33,54 @@ public:
     void    SetChLimit(int ch, int value);
     int     GetChLimit(int ch);
     int     GetNoteOns(int ch);
-    int     GetVoiceMidiCh(int vo) { return mVoCh[vo]; }
-    int     GetVoiceUniqueID(int vo) { return mVoUniqueID[vo]; }
+    int     GetVoiceMidiCh(int vo) { return mVoiceList.getVoiceMidiCh(vo); }
+    int     GetVoiceUniqueID(int vo) { return mVoiceList.getVoiceUniqueId(vo); }
     void    SetKeyOn(int vo);
     bool    IsKeyOn(int vo);
     
 private:
-    static const int MAX_VOICE = 16;
-    std::list<int>	mPlayVo;				//ノートオン状態のボイス
-	std::list<int>	mWaitVo;				//ノートオフ状態のボイス
-    int mVoCh[MAX_VOICE];
-    int mVoPrio[MAX_VOICE];
-    int mVoUniqueID[MAX_VOICE];
-    bool mVoKeyOn[MAX_VOICE];
+	static const int MAX_VOICE = 16;
+	
+	typedef struct {
+		int		midiCh;
+		int		priority;
+		int		uniqueId;
+		unsigned int timestamp;
+		bool	isKeyOn;	// 確保された直後の未発音状態を表すため
+		bool	isAlloced;
+	} VoiceSlotStatus;
+	
+	class VoiceStatusList {
+	public:
+		VoiceStatusList(int numSlots);
+		~VoiceStatusList();
+		
+		void reset();
+		void allocVoice(int slot, int midiCh, int prio, int uniqueId);
+		void removeVoice(int slot);
+		void changeVoiceLimit(int voiceLimit);
+		void setKeyOn(int slot);
+		bool isKeyOn(int slot);
+		bool isAlloced(int slot);
+		void changeState(int slot, int prio, int uniqueId, bool isKeyOn);
+		int getVoiceMidiCh(int slot);
+		int getVoiceUniqueId(int slot);
+		int	findFreeVoice(int priorCh=-1);
+		int	findWeakestVoiceInMidiCh(int midiCh);
+		int	findWeakestVoicePriorityMidiCh(int priorCh=-1);
+	private:
+		VoiceStatusList();
+		int				mNumSlots;
+		int				mVoiceLimit;
+		VoiceSlotStatus	*mSlots;
+		unsigned int	mTimeStamp;
+	};
+	
+	VoiceStatusList	mVoiceList;
     int mVoiceLimit;
     int mChNoteOns[16];
     int mChLimit[16];
     VoiceAllocMode mAllocMode;
-    
-    void pushWaitVo(int vo);
-    int	findFreeVoice();
-    int stealVoice(int ch);
-    int findVoice(int ch=-1);
 };
 
 #endif /* defined(__C700__DynamicVoiceAllocator__) */
