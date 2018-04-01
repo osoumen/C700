@@ -1,15 +1,15 @@
 ﻿//
-//  DynamicVoiceManager.cpp
+//  DynamicVoiceAllocator.cpp
 //  C700
 //
 //  Created by osoumen on 2014/11/30.
 //
 //
 
-#include "DynamicVoiceManager.h"
+#include "DynamicVoiceAllocator.h"
 
 //-----------------------------------------------------------------------------
-DynamicVoiceManager::DynamicVoiceManager() :
+DynamicVoiceAllocator::DynamicVoiceAllocator() :
 mVoiceLimit(8),
 mAllocMode(ALLOC_MODE_OLDEST)
 {
@@ -17,13 +17,13 @@ mAllocMode(ALLOC_MODE_OLDEST)
 }
 
 //-----------------------------------------------------------------------------
-DynamicVoiceManager::~DynamicVoiceManager()
+DynamicVoiceAllocator::~DynamicVoiceAllocator()
 {
     
 }
 
 //-----------------------------------------------------------------------------
-void DynamicVoiceManager::Initialize(int voiceLimit)
+void DynamicVoiceAllocator::Initialize(int voiceLimit)
 {
     mVoiceLimit = voiceLimit;
     for (int i=0; i<16; i++) {
@@ -33,7 +33,7 @@ void DynamicVoiceManager::Initialize(int voiceLimit)
 }
 
 //-----------------------------------------------------------------------------
-void DynamicVoiceManager::Reset()
+void DynamicVoiceAllocator::Reset()
 {
     mPlayVo.clear();
 	mWaitVo.clear();
@@ -52,7 +52,7 @@ void DynamicVoiceManager::Reset()
 }
 
 //-----------------------------------------------------------------------------
-void DynamicVoiceManager::ChangeVoiceLimit(int voiceLimit)
+void DynamicVoiceAllocator::ChangeVoiceLimit(int voiceLimit)
 {
     if ( voiceLimit < mVoiceLimit ) {
 		//空きボイスリストから削除する
@@ -70,13 +70,13 @@ void DynamicVoiceManager::ChangeVoiceLimit(int voiceLimit)
 }
 
 //-----------------------------------------------------------------------------
-void DynamicVoiceManager::SetVoiceAllocMode(VoiceAllocMode mode)
+void DynamicVoiceAllocator::SetVoiceAllocMode(VoiceAllocMode mode)
 {
     mAllocMode = mode;
 }
 
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, int forceVo,
+int DynamicVoiceAllocator::AllocVoice(int prio, int ch, int uniqueID, int forceVo,
                                     int *releasedCh, bool *isLegato)
 {
     int v = -1;
@@ -143,7 +143,7 @@ int DynamicVoiceManager::AllocVoice(int prio, int ch, int uniqueID, int forceVo,
 }
 
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::ReleaseVoice(int relPrio, int ch, int uniqueID, int *relVo)
+int DynamicVoiceAllocator::ReleaseVoice(int relPrio, int ch, int uniqueID, int *relVo)
 {
     int stops = 0;
     std::list<int>::iterator	it = mPlayVo.begin();
@@ -173,7 +173,7 @@ int DynamicVoiceManager::ReleaseVoice(int relPrio, int ch, int uniqueID, int *re
 }
 
 //-----------------------------------------------------------------------------
-bool DynamicVoiceManager::ReleaseAllVoices(int ch)
+bool DynamicVoiceAllocator::ReleaseAllVoices(int ch)
 {
     bool stoped = false;
     std::list<int>::iterator	it = mPlayVo.begin();
@@ -201,38 +201,38 @@ bool DynamicVoiceManager::ReleaseAllVoices(int ch)
 }
 
 //-----------------------------------------------------------------------------
-void DynamicVoiceManager::SetChLimit(int ch, int value)
+void DynamicVoiceAllocator::SetChLimit(int ch, int value)
 {
     mChLimit[ch & 0xf] = value;
 }
 
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::GetChLimit(int ch)
+int DynamicVoiceAllocator::GetChLimit(int ch)
 {
     return mChLimit[ch & 0xf];
 }
 
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::GetNoteOns(int ch)
+int DynamicVoiceAllocator::GetNoteOns(int ch)
 {
     return mChNoteOns[ch & 0xf];
 }
 
 //-----------------------------------------------------------------------------
-void DynamicVoiceManager::SetKeyOn(int vo)
+void DynamicVoiceAllocator::SetKeyOn(int vo)
 {
     // TODO: voがAlloc済みかどうかチェック
     mVoKeyOn[vo] = true;
 }
 
 //-----------------------------------------------------------------------------
-bool DynamicVoiceManager::IsKeyOn(int vo)
+bool DynamicVoiceAllocator::IsKeyOn(int vo)
 {
     return mVoKeyOn[vo];
 }
 
 //-----------------------------------------------------------------------------
-void DynamicVoiceManager::pushWaitVo(int vo)
+void DynamicVoiceAllocator::pushWaitVo(int vo)
 {
     mWaitVo.push_back(vo);
     mVoCh[vo] = 0;
@@ -240,7 +240,7 @@ void DynamicVoiceManager::pushWaitVo(int vo)
 }
 
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::findFreeVoice()
+int DynamicVoiceAllocator::findFreeVoice()
 {
 	int	v=-1;
     
@@ -253,7 +253,7 @@ int DynamicVoiceManager::findFreeVoice()
 }
 
 //-----------------------------------------------------------------------------
-bool DynamicVoiceManager::IsPlayingVoice(int v)
+bool DynamicVoiceAllocator::IsPlayingVoice(int v)
 {
     std::list<int>::iterator	it = mPlayVo.begin();
     while (it != mPlayVo.end()) {
@@ -266,7 +266,7 @@ bool DynamicVoiceManager::IsPlayingVoice(int v)
     return false;
 }
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::stealVoice(int ch)
+int DynamicVoiceAllocator::stealVoice(int ch)
 {
     int v=-1;
     int prio_min = 0x7fff;
@@ -285,7 +285,7 @@ int DynamicVoiceManager::stealVoice(int ch)
 }
 
 //-----------------------------------------------------------------------------
-int DynamicVoiceManager::findVoice(int ch)
+int DynamicVoiceAllocator::findVoice(int ch)
 {
     int v=-1;
     int prio_min = 0x7fff;

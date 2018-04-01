@@ -10,7 +10,7 @@
 #define MidiDriverBase_h
 
 #include "C700TimeThread.h"
-#include "DynamicVoiceManager.h"
+#include "DynamicVoiceAllocator.h"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -189,7 +189,7 @@ protected:
     
     // おそらく使用頻度が高いのでサブクラスにも開放する
     ChannelStatus       mChStat[16];
-    DynamicVoiceManager mVoiceManager;
+    DynamicVoiceAllocator mVoiceManager;
 
 private:
     MutexObject         mMIDIEvtMtx;

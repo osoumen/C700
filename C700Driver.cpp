@@ -257,10 +257,10 @@ void C700Driver::SetVoiceAllocMode( voicealloc_mode mode )
 {
     switch (mode) {
         case kVoiceAllocMode_Oldest:
-            mVoiceManager.SetVoiceAllocMode(DynamicVoiceManager::ALLOC_MODE_OLDEST);
+            mVoiceManager.SetVoiceAllocMode(DynamicVoiceAllocator::ALLOC_MODE_OLDEST);
             break;
         case kVoiceAllocMode_SameChannel:
-            mVoiceManager.SetVoiceAllocMode(DynamicVoiceManager::ALLOC_MODE_SAMECH);
+            mVoiceManager.SetVoiceAllocMode(DynamicVoiceAllocator::ALLOC_MODE_SAMECH);
             break;
         default:
             break;

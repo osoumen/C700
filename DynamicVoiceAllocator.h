@@ -1,26 +1,26 @@
 ﻿//
-//  DynamicVoiceManager.h
+//  DynamicVoiceAllocator.h
 //  C700
 //
 //  Created by osoumen on 2014/11/30.
 //
 //
 
-#ifndef __C700__DynamicVoiceManager__
-#define __C700__DynamicVoiceManager__
+#ifndef __C700__DynamicVoiceAllocator__
+#define __C700__DynamicVoiceAllocator__
 
 #include <iostream>
 #include <list>
 
-class DynamicVoiceManager
+class DynamicVoiceAllocator
 {
 public:
     enum VoiceAllocMode {
         ALLOC_MODE_OLDEST = 0,
         ALLOC_MODE_SAMECH
     };
-    DynamicVoiceManager();
-    ~DynamicVoiceManager();
+    DynamicVoiceAllocator();
+    ~DynamicVoiceAllocator();
     
     void    Initialize(int voiceLimit);
     void    Reset();
@@ -60,4 +60,4 @@ private:
     int findVoice(int ch=-1);
 };
 
-#endif /* defined(__C700__DynamicVoiceManager__) */
+#endif /* defined(__C700__DynamicVoiceAllocator__) */
