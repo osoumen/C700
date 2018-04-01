@@ -168,24 +168,9 @@ int	DynamicVoiceAllocator::VoiceStatusList::findWeakestVoiceInMidiCh(int midiCh)
 }
 
 //-----------------------------------------------------------------------------
-int	DynamicVoiceAllocator::VoiceStatusList::findWeakestVoicePriorityMidiCh(int priorCh)
+int	DynamicVoiceAllocator::VoiceStatusList::findWeakestVoice()
 {
 	int v=-1;
-	
-	v = findFreeVoice(priorCh);
-	if ((v == -1) && (priorCh != -1)) {
-		v = findFreeVoice();
-	}
-	if (v != -1) {
-		return v;
-	}
-	
-	if (priorCh != -1) {
-		v = findWeakestVoiceInMidiCh(priorCh);
-		if (v != -1) {
-			return (v + mNumSlots);
-		}
-	}
 	
 	// 確保済みの全ボイスのうち優先度が最小で一番古いものを探す
 	int time_stamp_max = -1;
@@ -196,7 +181,7 @@ int	DynamicVoiceAllocator::VoiceStatusList::findWeakestVoicePriorityMidiCh(int p
 			(mSlots[i].priority <= prio_min)) {
 			int time_stamp = mTimeStamp - mSlots[i].timestamp;
 			if (time_stamp > time_stamp_max) {
-				v = i + mNumSlots;
+				v = i;
 				time_stamp_max = time_stamp;
 				prio_min = mSlots[i].priority;
 			}
@@ -297,13 +282,26 @@ int DynamicVoiceAllocator::AllocVoice(int prio, int ch, int uniqueID, int forceV
         }
         else {
             // チャンネルリミットが未設定または超えてない場合は、全ボイスから後着優先で優先度の低い音を消す
-            v = mVoiceList.findWeakestVoicePriorityMidiCh((mAllocMode == ALLOC_MODE_SAMECH)?ch:-1);
-            if (v >= MAX_VOICE) {  //空きがなくてどこかを止めた
-                v -= MAX_VOICE;
-                mVoiceList.removeVoice(v);
-                *releasedCh = mVoiceList.getVoiceMidiCh(v);
-                mChNoteOns[mVoiceList.getVoiceMidiCh(v)]--;
-            }
+			if (mAllocMode == ALLOC_MODE_SAMECH) {
+				v = mVoiceList.findFreeVoice(ch);
+				if (v == -1) {
+					v = mVoiceList.findFreeVoice();
+				}
+			}
+			else {
+				v = mVoiceList.findFreeVoice();
+			}
+			
+			if (v == -1) {
+				if (mAllocMode == ALLOC_MODE_SAMECH) {
+					v = mVoiceList.findWeakestVoiceInMidiCh(ch);
+				}
+				v = mVoiceList.findWeakestVoice();
+				mVoiceList.removeVoice(v);
+				*releasedCh = mVoiceList.getVoiceMidiCh(v);
+				// 止めたslotの分減らす
+				mChNoteOns[mVoiceList.getVoiceMidiCh(v)]--;
+			}
         }
     }
     

@@ -67,7 +67,7 @@ private:
 		int getVoiceUniqueId(int slot);
 		int	findFreeVoice(int priorCh=-1);
 		int	findWeakestVoiceInMidiCh(int midiCh);
-		int	findWeakestVoicePriorityMidiCh(int priorCh=-1);
+		int	findWeakestVoice();
 	private:
 		VoiceStatusList();
 		int				mNumSlots;
