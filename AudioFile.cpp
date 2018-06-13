@@ -557,7 +557,7 @@ int AudioFile::resampling(const float *src, int srcSamples, double srcRate,
 	static const float	stopband = 0.9999f;
 	int					half_window_len = window_len / 2;
 	float				srcStride = srcRate / dstRate;
-	float				cutoffRate = srcStride > stopband?stopband:srcStride;
+	float				cutoffRate = (1.0/srcStride) < stopband?(1.0/srcStride):stopband;
 	int					dstSize = *dstSamples;
 	int					actualDstSize = static_cast<int>(srcSamples / srcStride);
 	
@@ -576,7 +576,7 @@ int AudioFile::resampling(const float *src, int srcSamples, double srcRate,
 				if (window_x > 2.0f)	window_x = 2.0f;
 				float	window = 0.5f - 0.5f*cosf(mPi*(window_x));
 				float	value = src[src_index] * sinc(x*cutoffRate) * window;
-				dstSum += value * stopband;
+				dstSum += value * cutoffRate;
 			}
 		}
 		if (dstSum > 1.0f) {
