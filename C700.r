@@ -1,4 +1,4 @@
-#include <AudioUnit/AudioUnit.r>
+#include <AudioUnit.r>
 
 #include "C700Version.h"
 

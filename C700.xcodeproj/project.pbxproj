@@ -1808,7 +1808,6 @@
 		3E0BED030898391C00E1F0F7 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
 				DEPLOYMENT_LOCATION = NO;
@@ -1827,17 +1826,20 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/CoreAudio/PublicUtility,
+					$PROJECT_DIR/vstgui,
+					"$PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/**",
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bundle";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
 				PRODUCT_NAME = C700;
-				REZ_SEARCH_PATHS = "($PROJECT_DIR)/CoreAudio/AudioUnits/AUPublic/AUBase";
+				REZ_SEARCH_PATHS = $PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/AUBase;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "";
@@ -1854,7 +1856,6 @@
 		3E0BED040898391C00E1F0F7 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_LOCATION = NO;
@@ -1874,17 +1875,20 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/CoreAudio/PublicUtility,
+					$PROJECT_DIR/vstgui,
+					"$PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/**",
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bundle";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
 				PRODUCT_NAME = C700;
-				REZ_SEARCH_PATHS = "($PROJECT_DIR)/CoreAudio/AudioUnits/AUPublic/AUBase";
+				REZ_SEARCH_PATHS = $PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/AUBase;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "";
@@ -1901,9 +1905,10 @@
 		3E0BED070898391C00E1F0F7 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1916,7 +1921,7 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_PREPROCESS = YES;
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
 				RUN_CLANG_STATIC_ANALYZER = NO;
@@ -1928,9 +1933,10 @@
 		3E0BED080898391C00E1F0F7 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "PATH_LEN_MAX=1024";
 				GCC_VERSION = "";
@@ -1939,7 +1945,7 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_PREPROCESS = YES;
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
 				RUN_CLANG_STATIC_ANALYZER = NO;
@@ -1950,7 +1956,6 @@
 		F543322616296E0200863A0B /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
 				DEPLOYMENT_LOCATION = NO;
@@ -1969,13 +1974,15 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = vstsdk2.4;
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/vstsdk2.4,
+					$PROJECT_DIR/vstgui,
+				);
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-DTESTING",
@@ -2002,7 +2009,6 @@
 		F543322716296E0200863A0B /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_LOCATION = NO;
@@ -2022,13 +2028,15 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = vstsdk2.4;
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/vstsdk2.4,
+					$PROJECT_DIR/vstgui,
+				);
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers";
