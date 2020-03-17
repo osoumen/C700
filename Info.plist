@@ -8,23 +8,23 @@
 	<array/>
 	<key>CFBundleExecutable</key>
 	<string>C700</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string>com.picopicose.audiounit.C700</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>C700</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string></string>
-	<key>CFBundleShortVersionString</key>
-	<string></string>
-	<key>CFBundleGetInfoString</key>
 	<string></string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
