@@ -6,6 +6,7 @@
  */
 
 #include "DynamicVoiceAllocator.h"
+#include <assert.h>
 
 //-----------------------------------------------------------------------------
 DynamicVoiceAllocator::VoiceStatusList::VoiceStatusList(int numSlots)

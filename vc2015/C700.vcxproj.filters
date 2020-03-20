@@ -91,9 +91,6 @@
     <ClInclude Include="..\DspRegFIFO.h">
       <Filter>C700source\Common Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\DynamicVoiceManager.h">
-      <Filter>C700source\Common Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\EchoKernel.h">
       <Filter>C700source\Common Source</Filter>
     </ClInclude>
@@ -292,6 +289,12 @@
     <ClInclude Include="..\ChunkReader.h">
       <Filter>C700source\Common Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\DynamicVoiceAllocator.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MidiDriverBase.h">
+      <Filter>C700source\Common Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp">
@@ -334,9 +337,6 @@
       <Filter>C700source\Common Source</Filter>
     </ClCompile>
     <ClCompile Include="..\DspRegFIFO.cpp">
-      <Filter>C700source\Common Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\DynamicVoiceManager.cpp">
       <Filter>C700source\Common Source</Filter>
     </ClCompile>
     <ClCompile Include="..\EchoKernel.cpp">
@@ -565,6 +565,12 @@
       <Filter>C700source\Common Source</Filter>
     </ClCompile>
     <ClCompile Include="..\ChunkReader.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DynamicVoiceAllocator.cpp">
+      <Filter>C700source\Common Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MidiDriverBase.cpp">
       <Filter>C700source\Common Source</Filter>
     </ClCompile>
   </ItemGroup>

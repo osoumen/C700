@@ -1,4 +1,4 @@
-//
+﻿//
 //  MidiDriverBase.cpp
 //  C700
 //
