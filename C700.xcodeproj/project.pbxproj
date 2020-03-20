@@ -242,10 +242,10 @@
 		F5552CAF1E6C4DEB0020BB2B /* macOSUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5552CAC1E6C4DEB0020BB2B /* macOSUtils.mm */; };
 		F5552CB01E6C4DEB0020BB2B /* macOSUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F5552CAD1E6C4DEB0020BB2B /* macOSUtils.h */; };
 		F5552CB11E6C4DEB0020BB2B /* macOSUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F5552CAD1E6C4DEB0020BB2B /* macOSUtils.h */; };
-		F556802D1A2AA8550031451C /* DynamicVoiceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F556802B1A2AA8550031451C /* DynamicVoiceManager.cpp */; };
-		F556802E1A2AA8550031451C /* DynamicVoiceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F556802B1A2AA8550031451C /* DynamicVoiceManager.cpp */; };
-		F556802F1A2AA8550031451C /* DynamicVoiceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F556802C1A2AA8550031451C /* DynamicVoiceManager.h */; };
-		F55680301A2AA8550031451C /* DynamicVoiceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F556802C1A2AA8550031451C /* DynamicVoiceManager.h */; };
+		F556802D1A2AA8550031451C /* DynamicVoiceAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F556802B1A2AA8550031451C /* DynamicVoiceAllocator.cpp */; };
+		F556802E1A2AA8550031451C /* DynamicVoiceAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F556802B1A2AA8550031451C /* DynamicVoiceAllocator.cpp */; };
+		F556802F1A2AA8550031451C /* DynamicVoiceAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = F556802C1A2AA8550031451C /* DynamicVoiceAllocator.h */; };
+		F55680301A2AA8550031451C /* DynamicVoiceAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = F556802C1A2AA8550031451C /* DynamicVoiceAllocator.h */; };
 		F557ACE719CD159300CF9792 /* MersenneTwister.h in Headers */ = {isa = PBXBuildFile; fileRef = F557ACE619CD159300CF9792 /* MersenneTwister.h */; };
 		F557ACE819CD159300CF9792 /* MersenneTwister.h in Headers */ = {isa = PBXBuildFile; fileRef = F557ACE619CD159300CF9792 /* MersenneTwister.h */; };
 		F55D63DA161D6FFE001CF9AB /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
@@ -414,6 +414,10 @@
 		F5D69C411E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */; };
 		F5D69C421E44BD6D00F62CF6 /* RecordingSettingsGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */; };
 		F5D69C431E44BD6D00F62CF6 /* RecordingSettingsGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */; };
+		F5F3D5D41EEBDC6F0002C320 /* MidiDriverBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */; };
+		F5F3D5D51EEBDC6F0002C320 /* MidiDriverBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */; };
+		F5F3D5D61EEBDC6F0002C320 /* MidiDriverBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */; };
+		F5F3D5D71EEBDC6F0002C320 /* MidiDriverBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */; };
 		F5FEFAED1E4F439B00F08114 /* TextKickButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */; };
 		F5FEFAEE1E4F439B00F08114 /* TextKickButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */; };
 		F5FEFAEF1E4F439B00F08114 /* TextKickButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */; };
@@ -540,13 +544,13 @@
 		F54338D81629759600863A0B /* C700VST.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700VST.h; sourceTree = "<group>"; };
 		F54338D91629759600863A0B /* C700VST.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; path = C700VST.cpp; sourceTree = "<group>"; };
 		F543D0AA147D285F00DC53A3 /* C700Driver.cpp */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = C700Driver.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		F543D0AB147D285F00DC53A3 /* C700Driver.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; path = C700Driver.h; sourceTree = "<group>"; };
+		F543D0AB147D285F00DC53A3 /* C700Driver.h */ = {isa = PBXFileReference; fileEncoding = 2147483649; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = C700Driver.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F54D11B81E3788EB000CDDA7 /* ChunkReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChunkReader.cpp; sourceTree = "<group>"; };
 		F54D11B91E3788EB000CDDA7 /* ChunkReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChunkReader.h; sourceTree = "<group>"; };
 		F5552CAC1E6C4DEB0020BB2B /* macOSUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = macOSUtils.mm; sourceTree = "<group>"; };
 		F5552CAD1E6C4DEB0020BB2B /* macOSUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macOSUtils.h; sourceTree = "<group>"; };
-		F556802B1A2AA8550031451C /* DynamicVoiceManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicVoiceManager.cpp; sourceTree = "<group>"; };
-		F556802C1A2AA8550031451C /* DynamicVoiceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicVoiceManager.h; sourceTree = "<group>"; };
+		F556802B1A2AA8550031451C /* DynamicVoiceAllocator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicVoiceAllocator.cpp; sourceTree = "<group>"; };
+		F556802C1A2AA8550031451C /* DynamicVoiceAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicVoiceAllocator.h; sourceTree = "<group>"; };
 		F557ACE619CD159300CF9792 /* MersenneTwister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MersenneTwister.h; sourceTree = "<group>"; };
 		F55D63D8161D6FFE001CF9AB /* DummyCntl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummyCntl.h; sourceTree = "<group>"; };
 		F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DummyCntl.cpp; sourceTree = "<group>"; };
@@ -677,6 +681,8 @@
 		F5D69C3D1E44BCBC00F62CF6 /* RecordingViewCntls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingViewCntls.h; sourceTree = "<group>"; };
 		F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecordingSettingsGUI.cpp; sourceTree = "<group>"; };
 		F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordingSettingsGUI.h; sourceTree = "<group>"; };
+		F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = MidiDriverBase.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = MidiDriverBase.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextKickButton.cpp; sourceTree = "<group>"; };
 		F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextKickButton.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1006,8 +1012,10 @@
 				F527FF9F1BEE323F0083E355 /* MemManager.h */,
 				F5432C251627AE4200863A0B /* EchoKernel.cpp */,
 				F5432C241627AE4200863A0B /* EchoKernel.h */,
-				F556802B1A2AA8550031451C /* DynamicVoiceManager.cpp */,
-				F556802C1A2AA8550031451C /* DynamicVoiceManager.h */,
+				F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */,
+				F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */,
+				F556802B1A2AA8550031451C /* DynamicVoiceAllocator.cpp */,
+				F556802C1A2AA8550031451C /* DynamicVoiceAllocator.h */,
 				8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */,
 				8AD362300AFE59F900FC48D2 /* brrcodec.h */,
 				8AEECD2D0B020BC6002C9BB7 /* czt.cpp */,
@@ -1181,6 +1189,7 @@
 				8BA05ABA072073D300365D66 /* ComponentBase.h in Headers */,
 				8BA05AD3072073D300365D66 /* AUBuffer.h in Headers */,
 				F54D11BC1E3788EB000CDDA7 /* ChunkReader.h in Headers */,
+				F5F3D5D61EEBDC6F0002C320 /* MidiDriverBase.h in Headers */,
 				8BA05AD5072073D300365D66 /* AUDebugDispatcher.h in Headers */,
 				8BA05AD6072073D300365D66 /* AUInputFormatConverter.h in Headers */,
 				8BA05AD7072073D300365D66 /* AUSilentTimeout.h in Headers */,
@@ -1268,7 +1277,7 @@
 				F58DCD801A2B4586004BD426 /* C700DSP.h in Headers */,
 				F510B706163266CB00A844B4 /* FileAccess.h in Headers */,
 				F5C1B32316F803A10034F320 /* ControlInstacnesDefs.h in Headers */,
-				F556802F1A2AA8550031451C /* DynamicVoiceManager.h in Headers */,
+				F556802F1A2AA8550031451C /* DynamicVoiceAllocator.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1310,10 +1319,11 @@
 				F54331A816296E0200863A0B /* ctooltipsupport.h in Headers */,
 				F59D91A81BF720EA00E5EFC6 /* dsp.h in Headers */,
 				F59D91B61BF720EA00E5EFC6 /* SPC_CPU.h in Headers */,
+				F5F3D5D71EEBDC6F0002C320 /* MidiDriverBase.h in Headers */,
 				F54331A916296E0200863A0B /* MyKnob.h in Headers */,
 				F54331AA16296E0200863A0B /* MySlider.h in Headers */,
 				F54331AB16296E0200863A0B /* LabelOnOffButton.h in Headers */,
-				F55680301A2AA8550031451C /* DynamicVoiceManager.h in Headers */,
+				F55680301A2AA8550031451C /* DynamicVoiceAllocator.h in Headers */,
 				F54331AC16296E0200863A0B /* WaveView.h in Headers */,
 				F5552CB11E6C4DEB0020BB2B /* macOSUtils.h in Headers */,
 				F53602A91984CF600079A9BE /* aeffectx.h in Headers */,
@@ -1592,7 +1602,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ${CONFIGURATION} = \"Development\" ]; then\nln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$HOME/Library/Audio/Plug-Ins/VST/\"\nelse\ncp -a -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$PROJECT_DIR/dist/macosx/\"\nfi";
+			shellScript = "if [ ${CONFIGURATION} = \"Development\" ]; then\nln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$HOME/Library/Audio/Plug-Ins/VST/\"\nelse\ncp -a -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$PROJECT_DIR/dist/macosx/\"\nfi\n";
 		};
 		F55B68CB15863F4600FDA7C2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1605,7 +1615,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ${CONFIGURATION} = \"Development\" ]; then\nln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$HOME/Library/Audio/Plug-Ins/Components/\"\nelse\ncp -a -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$PROJECT_DIR/dist/macosx/\"\nfi";
+			shellScript = "if [ ${CONFIGURATION} = \"Development\" ]; then\nln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$HOME/Library/Audio/Plug-Ins/Components/\"\nelse\ncp -a -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$PROJECT_DIR/dist/macosx/\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1635,6 +1645,7 @@
 				8BA05B070720754400365D66 /* CAAUParameter.cpp in Sources */,
 				3E0BECFB0898391C00E1F0F7 /* CAVectorUnit.cpp in Sources */,
 				8AA4CF3E0AAE7C4000AA021C /* CAAUMIDIMap.cpp in Sources */,
+				F5F3D5D41EEBDC6F0002C320 /* MidiDriverBase.cpp in Sources */,
 				8AA4CF400AAE7C4000AA021C /* CAAUMIDIMapManager.cpp in Sources */,
 				8AA4CF4F0AAE7CFC00AA021C /* AUMIDIBase.cpp in Sources */,
 				F56018231E3DDC1200400327 /* SmcFileGenerate.cpp in Sources */,
@@ -1673,7 +1684,7 @@
 				F569AA27161AD9F4006C91AD /* MySlider.cpp in Sources */,
 				F59D91AD1BF720EA00E5EFC6 /* SNES_SPC_misc.cpp in Sources */,
 				F59D91871BF71FCE00E5EFC6 /* DspController.cpp in Sources */,
-				F556802D1A2AA8550031451C /* DynamicVoiceManager.cpp in Sources */,
+				F556802D1A2AA8550031451C /* DynamicVoiceAllocator.cpp in Sources */,
 				F569AAA5161C0114006C91AD /* LabelOnOffButton.cpp in Sources */,
 				F569AD37161D3490006C91AD /* WaveView.cpp in Sources */,
 				F58DCD7E1A2B4586004BD426 /* C700DSP.cpp in Sources */,
@@ -1713,12 +1724,13 @@
 				F59D91B81BF720EA00E5EFC6 /* SPC_DSP.cpp in Sources */,
 				F560181E1E3B8C4000400327 /* PlayingFileGenerateBase.cpp in Sources */,
 				F56018241E3DDC1200400327 /* SmcFileGenerate.cpp in Sources */,
+				F5F3D5D51EEBDC6F0002C320 /* MidiDriverBase.cpp in Sources */,
 				F54331FF16296E0200863A0B /* cocoasupport.mm in Sources */,
 				F500CA821E78215D00920AB2 /* UrlLinkBox.cpp in Sources */,
 				F543320116296E0200863A0B /* cvstguitimer.cpp in Sources */,
 				F543320216296E0200863A0B /* cfileselector.cpp in Sources */,
 				F543320316296E0200863A0B /* vstcontrols.cpp in Sources */,
-				F556802E1A2AA8550031451C /* DynamicVoiceManager.cpp in Sources */,
+				F556802E1A2AA8550031451C /* DynamicVoiceAllocator.cpp in Sources */,
 				F59D91B01BF720EA00E5EFC6 /* SNES_SPC_state.cpp in Sources */,
 				F543320416296E0200863A0B /* vstgui.cpp in Sources */,
 				F543320616296E0200863A0B /* C700Edit.cpp in Sources */,
@@ -1796,14 +1808,13 @@
 		3E0BED030898391C00E1F0F7 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUGGING_SYMBOLS = YES;
 				DEPLOYMENT_LOCATION = NO;
 				EXPORTED_SYMBOLS_FILE = C700.exp;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_INPUT_FILETYPE = automatic;
@@ -1815,17 +1826,22 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/CoreAudio/PublicUtility,
+					$PROJECT_DIR/vstgui,
+					"$PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/**",
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MARKETING_VERSION = 0.5;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bundle";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
+				PRODUCT_BUNDLE_IDENTIFIER = com.picopicose.audiounit.C700;
 				PRODUCT_NAME = C700;
-				REZ_SEARCH_PATHS = "($PROJECT_DIR)/CoreAudio/AudioUnits/AUPublic/AUBase";
+				REZ_SEARCH_PATHS = $PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/AUBase;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "";
@@ -1842,14 +1858,13 @@
 		3E0BED040898391C00E1F0F7 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
 				COPY_PHASE_STRIP = YES;
+				CURRENT_PROJECT_VERSION = 0;
 				DEPLOYMENT_LOCATION = NO;
 				EXPORTED_SYMBOLS_FILE = C700.exp;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_AUTO_VECTORIZATION = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INPUT_FILETYPE = automatic;
@@ -1862,17 +1877,22 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/CoreAudio/PublicUtility,
+					$PROJECT_DIR/vstgui,
+					"$PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/**",
+				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MARKETING_VERSION = 0.5;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-bundle";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
+				PRODUCT_BUNDLE_IDENTIFIER = com.picopicose.audiounit.C700;
 				PRODUCT_NAME = C700;
-				REZ_SEARCH_PATHS = "($PROJECT_DIR)/CoreAudio/AudioUnits/AUPublic/AUBase";
+				REZ_SEARCH_PATHS = $PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/AUBase;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
 				VERSIONING_SYSTEM = "";
@@ -1889,22 +1909,50 @@
 		3E0BED070898391C00E1F0F7 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG_PRINT=1",
 					"PATH_LEN_MAX=1024",
 				);
 				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_PREPROCESS = YES;
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
 				RUN_CLANG_STATIC_ANALYZER = NO;
@@ -1916,18 +1964,45 @@
 		3E0BED080898391C00E1F0F7 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "PATH_LEN_MAX=1024";
 				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_PREPROCESS = YES;
 				LINKER_DISPLAYS_FILES_FOR_UNDEFINED_SYMBOLS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386";
 				RUN_CLANG_STATIC_ANALYZER = NO;
@@ -1938,14 +2013,13 @@
 		F543322616296E0200863A0B /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
 				DEPLOYMENT_LOCATION = NO;
 				EXPORTED_SYMBOLS_FILE = "";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_INPUT_FILETYPE = automatic;
@@ -1957,13 +2031,15 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = vstsdk2.4;
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/vstsdk2.4,
+					$PROJECT_DIR/vstgui,
+				);
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-DTESTING",
@@ -1971,6 +2047,7 @@
 				);
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
+				PRODUCT_BUNDLE_IDENTIFIER = com.picopicose.vst.C700;
 				PRODUCT_NAME = C700;
 				REZ_SEARCH_PATHS = "";
 				SDKROOT = macosx;
@@ -1990,14 +2067,13 @@
 		F543322716296E0200863A0B /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "i386 ppc";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_LOCATION = NO;
 				EXPORTED_SYMBOLS_FILE = "";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_AUTO_VECTORIZATION = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INPUT_FILETYPE = automatic;
@@ -2010,16 +2086,19 @@
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				GENERATE_PKGINFO_FILE = YES;
-				HEADER_SEARCH_PATHS = vstsdk2.4;
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/vstsdk2.4,
+					$PROJECT_DIR/vstgui,
+				);
 				INFOPLIST_FILE = Info_vst.plist;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "";
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers";
+				PRODUCT_BUNDLE_IDENTIFIER = com.picopicose.vst.C700;
 				PRODUCT_NAME = C700;
 				REZ_SEARCH_PATHS = "";
 				SDKROOT = macosx;
@@ -2040,9 +2119,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INSTALL_PATH = /usr/local/bin;
@@ -2051,7 +2130,6 @@
 					"\"$(SRCROOT)/encodetest\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = "";
-				PREBINDING = NO;
 				PRODUCT_NAME = encodetest;
 				SDKROOT = macosx;
 			};
@@ -2061,9 +2139,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (
@@ -2071,7 +2149,6 @@
 					"\"$(SRCROOT)/encodetest\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = "";
-				PREBINDING = NO;
 				PRODUCT_NAME = encodetest;
 				SDKROOT = macosx;
 				ZERO_LINK = NO;

@@ -11,10 +11,6 @@
 #include "C700Driver.h"
 #include <math.h>
 
-const float onepi = 3.14159265358979;
-
-#define ANALOG_PORTAMENTO 0
-
 static const int	VOLUME_CURB[128]
 = {
 	0x000, 0x001, 0x001, 0x001, 0x002, 0x003, 0x005, 0x006, 0x008, 0x00a, 0x00d, 0x00f, 0x012, 0x015, 0x019, 0x01d, 
@@ -25,17 +21,6 @@ static const int	VOLUME_CURB[128]
 	0x32c, 0x341, 0x355, 0x36a, 0x380, 0x395, 0x3ab, 0x3c1, 0x3d7, 0x3ed, 0x404, 0x41b, 0x432, 0x44a, 0x461, 0x479, 
 	0x492, 0x4aa, 0x4c3, 0x4dc, 0x4f5, 0x50f, 0x528, 0x542, 0x55d, 0x577, 0x592, 0x5ad, 0x5c8, 0x5e4, 0x600, 0x61c, 
 	0x638, 0x655, 0x671, 0x68e, 0x6ac, 0x6c9, 0x6e7, 0x705, 0x724, 0x742, 0x761, 0x780, 0x79f, 0x7bf, 0x7df, 0x7ff
-};
-
-static const int PAN_CURB[129]={
-    511, 511, 510, 510, 510, 510, 510, 509, 509, 508, 507, 507, 506, 505, 504, 503,
-    502, 500, 499, 498, 496, 495, 493, 491, 490, 488, 486, 484, 482, 480, 477, 475,
-    473, 470, 468, 465, 463, 460, 457, 454, 451, 448, 445, 442, 439, 436, 432, 429,
-    425, 422, 418, 414, 411, 407, 403, 399, 395, 391, 387, 383, 378, 374, 370, 365,
-    361, 356, 352, 347, 342, 338, 333, 328, 323, 318, 313, 308, 303, 298, 293, 287,
-    282, 277, 271, 266, 260, 255, 249, 244, 238, 233, 227, 221, 215, 210, 204, 198,
-    192, 186, 180, 174, 168, 162, 156, 150, 144, 138, 132, 126, 119, 113, 107, 101,
-    95, 88, 82, 76, 69, 63, 57, 50, 44, 38, 31, 25, 19, 12, 6, 0, 0
 };
 
 static const int sinctable[] = {
@@ -54,30 +39,28 @@ static const int sinctable[] = {
 	0,-8,31,0,-462,1911,-4438,7057,32767,7057,-4438,1911,-462,0,31,-8
 };
 
+
 //-----------------------------------------------------------------------------
 void C700Driver::VoiceStatus::Reset()
 {
 	pb = 0;
 	reg_pmod = 0;
-	vibdepth = 0;
-	vibPhase = 0.0f;
-    portaPitch = .0f;
+    pitch = .0f;
     pan = 64;
     non = false;
 	
-    targetPitch = 0;
-	//loopPoint = 0;
-	//loop = false;
+    porta.Reset();
+    lfo.Reset();
 }
 
 //-----------------------------------------------------------------------------
 C700Driver::C700Driver()
-: mSampleRate(44100.0),
+: MidiDriverBase(8),
+  mSampleRate(44100.0),
   mVelocityMode( kVelocityMode_Square ),
   mVPset(NULL)
 {
     MutexInit(mREGLOGEvtMtx);
-    MutexInit(mMIDIEvtMtx);
     
 	for ( int i=0; i<NUM_BANKS; i++ ) {
 		mDrumMode[i] = false;
@@ -88,47 +71,36 @@ C700Driver::C700Driver()
 		}
 	}
 	//Initialize
-    mVibfreq = 0.00137445;
-	mVibdepth = 0.5;
-    
     mVoiceLimit = 8;
     mIsAccurateMode = false;
     mFastReleaseAsKeyOff = true;
 
     mEventDelayClocks = 8192;   // 8ms
-    mEventDelaySamples = calcEventDelaySamples();
+    SetNoteOffIntervalCycles(calcEventDelaySamples());
     
 	for (int i=0; i<16; i++) {
-        mChStat[i].changeFlg = 0;
-        mChStat[i].prog = 0;
-        mChStat[i].pitchBend = 0;
-        mChStat[i].vibDepth = 0;
-        mChStat[i].pbRange = static_cast<float>(DEFAULT_PBRANGE);
-        //mChStat[i].portaOn = false;
-        mChStat[i].portaTc = 1.0f;
-        mChStat[i].portaStartPitch = 0;
-        mChStat[i].volume = VOLUME_DEFAULT;
-        mChStat[i].expression = EXPRESSION_DEFAULT;
-        mChStat[i].pan = 64;
-        //mChStat[i].releasePriority = 0;
-        mChStat[i].damper = false;
-        
-        mChStat[i].lastNote = 0;
+        mCCChangeFlg[i] = 0;
+        mPortaStartPitch[i] = 0;
+        mChPortaTc[i] = 1.0f;
 	}
-    mVoiceManager.Initialize(8);
     
+    for (int v=0; v<kMaximumVoices; v++) {
+        mVoiceStat[v].lfo.SetUpdateRate(INTERNAL_CLOCK / PITCH_CYCLE_SAMPLES);
+    }
 	Reset();
 }
 
 //-----------------------------------------------------------------------------
 C700Driver::~C700Driver()
 {
-    MutexDestroy(mMIDIEvtMtx);
     MutexDestroy(mREGLOGEvtMtx);
 }
+
 //-----------------------------------------------------------------------------
 void C700Driver::Reset()
 {
+    MidiDriverBase::Reset();
+    
 	for (int i=0; i<16; i++) {
 		mProcessbuf[0][i]=0;
 		mProcessbuf[1][i]=0;
@@ -139,83 +111,14 @@ void C700Driver::Reset()
     for (int i=0; i<kMaximumVoices; i++) {
         mPitchCount[i] = 0;
     }
-	
-    mVoiceManager.Reset();
-    
-    AllSoundOff();
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::NoteOn( int ch, int note, int velo, unsigned int uniqueID, int inFrame )
-{
-	MIDIEvt			evt;
-	evt.type = NOTE_ON;
-	evt.ch = ch;
-	evt.note = note;
-	evt.velo = velo;
-	evt.uniqueID = uniqueID;
-	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::NoteOff( int ch, int note, int velo, unsigned int uniqueID, int inFrame )
-{
-	MIDIEvt			evt;
-	evt.type = NOTE_OFF;
-	evt.ch = ch;
-	evt.note = note;
-	evt.velo = velo;
-	evt.uniqueID = uniqueID;
-	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
-}
-
-
-//-----------------------------------------------------------------------------
-void C700Driver::ControlChange( int ch, int controlNum, int value, int inFrame )
-{
-    MIDIEvt			evt;
-	evt.type = CONTROL_CHANGE;
-	evt.ch = ch;
-	evt.note = controlNum;
-	evt.velo = value;
-	evt.uniqueID = 0;
-	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::DirectRegisterWrite( int ch, int regAddr, int value, int inFrame )
-{
-    MIDIEvt			evt;
-	evt.type = REGISTER_WRITE;
-	evt.ch = ch;
-	evt.note = regAddr;
-	evt.velo = value;
-	evt.uniqueID = 0;
-	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
 }
 
 //-----------------------------------------------------------------------------
 void C700Driver::StartRegisterLog( int inFrame )
 {
-    MIDIEvt			evt;
+    RegLogEvt	evt;
 	evt.type = START_REGLOG;
-	evt.ch = 0;
-	evt.note = 0;
-	evt.velo = 0;
-	evt.uniqueID = 0;
-	evt.remain_samples = inFrame;
+	evt.toWaitCycles = inFrame;
     MutexLock(mREGLOGEvtMtx);
 	mREGLOGEvt.push_back( evt );
     MutexUnlock(mREGLOGEvtMtx);
@@ -224,13 +127,9 @@ void C700Driver::StartRegisterLog( int inFrame )
 //-----------------------------------------------------------------------------
 void C700Driver::MarkLoopRegisterLog( int inFrame )
 {
-    MIDIEvt			evt;
+    RegLogEvt	evt;
 	evt.type = MARKLOOP_REGLOG;
-	evt.ch = 0;
-	evt.note = 0;
-	evt.velo = 0;
-	evt.uniqueID = 0;
-	evt.remain_samples = inFrame;
+	evt.toWaitCycles = inFrame;
     MutexLock(mREGLOGEvtMtx);
 	mREGLOGEvt.push_back( evt );
     MutexUnlock(mREGLOGEvtMtx);
@@ -239,143 +138,72 @@ void C700Driver::MarkLoopRegisterLog( int inFrame )
 //-----------------------------------------------------------------------------
 void C700Driver::EndRegisterLog( int inFrame )
 {
-    MIDIEvt			evt;
+    RegLogEvt	evt;
 	evt.type = END_REGLOG;
-	evt.ch = 0;
-	evt.note = 0;
-	evt.velo = 0;
-	evt.uniqueID = 0;
-	evt.remain_samples = inFrame;
+	evt.toWaitCycles = inFrame;
     MutexLock(mREGLOGEvtMtx);
 	mREGLOGEvt.push_back( evt );
     MutexUnlock(mREGLOGEvtMtx);
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::AllNotesOff()
+void C700Driver::handleAllNotesOff()
 {
     //mClearEvent = true;
     mDSP.KeyOffAll();
 	for ( int i=0; i<kMaximumVoices; i++ ) {
         mVoiceStat[i].Reset();
-        mKeyOnFlag[i] = false;
-        mKeyOffFlag[i] = false;
-        mEchoOnMask[i] = false;
-        mPMOnMask[i] = false;
-        mNoiseOnMask[i] = false;
 	}
+    mKeyOnFlag = 0;
+    mKeyOffFlag = 0;
     mEchoOnFlag = 0;
     mPMOnFlag = 0;
     mNoiseOnFlag = 0;
-    mVoiceManager.Reset();
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::AllSoundOff()
+void C700Driver::handleAllSoundOff(int ch)
 {
-    AllNotesOff();
 	mDSP.ResetEcho();
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ResetAllControllers()
+void C700Driver::handleResetAllControllers(int ch)
 {
-	for (int i=0; i<16; i++) {
-        mChStat[i].changeFlg = 0;
-        mChStat[i].changedVP = mVPset[mChStat[i].prog];
-        mChStat[i].pitchBend = 0;
-        mChStat[i].vibDepth = 0;
-        mChStat[i].pbRange = static_cast<float>(DEFAULT_PBRANGE);
-        mChStat[i].expression = EXPRESSION_DEFAULT;
-        //mChStat[i].pan = 64;
-        //mChStat[i].portaOn = false;
-        //mChStat[i].portaTc = 1.0f;
-        mChStat[i].portaStartPitch = 0;
-        //mChStat[i].priority = 64;
-        //mChStat[i].limit = 127;
-        //mChStat[i].releasePriority = 0;
-        mChStat[i].damper = false;
-        //mChStat[i].monoMode = false;
-	}
+    mCCChangeFlg[ch] = 0;
+    mChannnelInst[ch] = mVPset[mChStat[ch].prog];
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ProgramChange( int ch, int value, int inFrame )
+void C700Driver::handleProgramChange( int ch, int value )
 {
-    MIDIEvt			evt;
-	evt.type = PROGRAM_CHANGE;
-	evt.ch = ch;
-	evt.note = value;
-	evt.velo = 0;
-	evt.uniqueID = 0;
-	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
-}
-//-----------------------------------------------------------------------------
-void C700Driver::doProgramChange( int ch, int value )
-{
-	mChStat[ch].prog = value;
     if (mVPset) {
-        mChStat[ch].changeFlg = 0;
-        mChStat[ch].changedVP = mVPset[mChStat[ch].prog];
+        mCCChangeFlg[ch] = 0;
+        mChannnelInst[ch] = mVPset[value];
         
-        SetPortamentTime(ch, mVPset[mChStat[ch].prog].portamentoRate);
+        handleControlChange(ch, 5, mVPset[value].portamentoRate);
     }
 }
 
 //-----------------------------------------------------------------------------
-int C700Driver::CalcPBValue( int ch, float pitchBend, int basePitch )
+void C700Driver::handlePitchBend( int ch, sint16_t pitchbend )
 {
-	return (int)((pow(2., (pitchBend * mChStat[ch].pbRange) / 12.) - 1.0)*basePitch);
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::PitchBend( int ch, int value1, int value2, int inFrame )
-{
-    MIDIEvt			evt;
-	evt.type = PITCH_BEND;
-	evt.ch = ch;
-	evt.note = value1;
-	evt.velo = value2;
-	evt.uniqueID = 0;
-	evt.remain_samples = inFrame;
-    MutexLock(mMIDIEvtMtx);
-	mMIDIEvt.push_back( evt );
-    MutexUnlock(mMIDIEvtMtx);
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::doPitchBend( int ch, int value1, int value2 )
-{
-    int pitchBend = ((value2 << 7) | value1) - 8192;
-	float pb_value = pitchBend / 8192.0;
-	
-    mChStat[ch].pitchBend = pb_value;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
-		if ( mVoiceManager.GetVoiceMidiCh(i) == ch ) {
-			mVoiceStat[i].pb = CalcPBValue( ch, pb_value, mVoiceStat[i].targetPitch );
+		if ( GetVoiceMidiCh(i) == ch ) {
+			mVoiceStat[i].pb = calcPBValue( ch, pitchbend, mVoiceStat[i].porta.GetTargetPitch() );
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ModWheel( int ch, int value )
+void C700Driver::handleModWheelChange( int ch, int value )
 {
-    mChStat[ch].vibDepth = value;
 	for ( int i=0; i<kMaximumVoices; i++ ) {
-		if ( mVoiceManager.GetVoiceMidiCh(i) == ch ) {
-			mVoiceStat[i].vibdepth = value;
+		if ( GetVoiceMidiCh(i) == ch ) {
+			mVoiceStat[i].lfo.SetVibSens(value);
 			mVoiceStat[i].reg_pmod = value > 0 ? true:false;
 		}
 	}
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::Damper( int ch, bool on )
-{
-    mChStat[ch].damper = on;
 }
 
 //-----------------------------------------------------------------------------
@@ -392,13 +220,8 @@ void C700Driver::SetVoiceLimit( int value )
 void C700Driver::SetPBRange( float value )
 {
     for (int i=0; i<16; i++) {
-        mChStat[i].pbRange = value;
+        mChStat[i].pbRange = (int)value;
     }
-}
-//-----------------------------------------------------------------------------
-void C700Driver::SetPBRange( int ch, float value )
-{
-	mChStat[ch].pbRange = value;
 }
 
 //-----------------------------------------------------------------------------
@@ -434,10 +257,10 @@ void C700Driver::SetVoiceAllocMode( voicealloc_mode mode )
 {
     switch (mode) {
         case kVoiceAllocMode_Oldest:
-            mVoiceManager.SetVoiceAllocMode(DynamicVoiceManager::ALLOC_MODE_OLDEST);
+            mVoiceManager.SetVoiceAllocMode(DynamicVoiceAllocator::ALLOC_MODE_OLDEST);
             break;
         case kVoiceAllocMode_SameChannel:
-            mVoiceManager.SetVoiceAllocMode(DynamicVoiceManager::ALLOC_MODE_SAMECH);
+            mVoiceManager.SetVoiceAllocMode(DynamicVoiceAllocator::ALLOC_MODE_SAMECH);
             break;
         default:
             break;
@@ -471,13 +294,17 @@ void C700Driver::SetVelocityMode( velocity_mode value )
 //-----------------------------------------------------------------------------
 void C700Driver::SetVibFreq( int ch, float value )
 {
-	mVibfreq = value*((onepi*2)/(INTERNAL_CLOCK / PITCH_CYCLE_SAMPLES));
+    for (int i=0; i<kMaximumVoices; i++) {
+        mVoiceStat[i].lfo.SetVibFreq(value);
+    }
 }
 
 //-----------------------------------------------------------------------------
 void C700Driver::SetVibDepth( int ch, float value )
 {
-	mVibdepth = value / 2;
+    for (int i=0; i<kMaximumVoices; i++) {
+        mVoiceStat[i].lfo.SetVibDepth(value);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -523,18 +350,18 @@ void C700Driver::SetFIRTap( int tap, int value )
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::SetBrrSample( int prog, const unsigned char *data, int size, int loopPoint)
+void C700Driver::SetBrrSample( int srcn, const unsigned char *data, int size, int loopPoint)
 {
     mDSP.SetDir(mMemManager.GetDirAddr() >> 8);
-    mMemManager.WriteData(prog, data, size, loopPoint);
+    mMemManager.WriteData(srcn, data, size, loopPoint);
     mMemManager.UpdateMem(&mDSP);
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::DelBrrSample( int prog )
+void C700Driver::DelBrrSample( int srcn )
 {
     mDSP.SetDir(mMemManager.GetDirAddr() >> 8);
-    mMemManager.DeleteData(prog);
+    mMemManager.DeleteData(srcn);
     mMemManager.UpdateMem(&mDSP);
 }
 
@@ -562,51 +389,7 @@ void C700Driver::UpdateLoopFlag( int prog )
 void C700Driver::SetSampleRate( double samplerate )
 {
     mSampleRate = samplerate;
-    mEventDelaySamples = calcEventDelaySamples();
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::SetEventDelayClocks(int clocks)
-{
-    mEventDelayClocks = clocks;
-    mEventDelaySamples = calcEventDelaySamples();
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::SetPortamentOn( int ch, bool on )
-{
-    //mChStat[ch].portaOn = on;
-    mChStat[ch].changedVP.portamentoOn = on;
-    mChStat[ch].changeFlg |= HAS_PORTAMENTOON;
-}
-
-//-----------------------------------------------------------------------------
-float C700Driver::calcGM2PortamentCurve(int value)
-{
-    float   logCentPerMilis;
-    if (value < 16) {
-        logCentPerMilis = (value * value)/192.0f - (3.0f/16.0f)*value + 3.0f;
-    }
-    else if (value < 112) {
-        logCentPerMilis = -value/48.0f + 5.0f/3.0f;
-    }
-    else {
-        logCentPerMilis = -(value * value)/256.0f + (41.0f/48.0f)*value - 142.0f/3.0f;
-    }
-    return powf(10.0f, logCentPerMilis);
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::SetPortamentTime( int ch, int value )
-{
-#if ANALOG_PORTAMENTO
-    float secs = value / 100.0f;
-    mChStat[ch].portaTc = expf(-2.0f / ((INTERNAL_CLOCK / PORTAMENT_CYCLE_SAMPLES) * secs));
-#else
-    float centPerMilis = calcGM2PortamentCurve(value);
-    centPerMilis *= 1000.0f / (static_cast<float>(INTERNAL_CLOCK) / PORTAMENT_CYCLE_SAMPLES);
-    mChStat[ch].portaTc = powf(2.0f, centPerMilis / 1200);
-#endif
+    SetNoteOffIntervalCycles(calcEventDelaySamples());
 }
 
 //-----------------------------------------------------------------------------
@@ -618,46 +401,42 @@ void C700Driver::UpdatePortamentoTime( int prog )
     
     for (int i=0; i<16; i++) {
         if (mChStat[i].prog == prog) {
-            SetPortamentTime(i, mVPset[prog].portamentoRate);
+            handleControlChange(i, 5, mVPset[prog].portamentoRate);
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::SetPortamentControl( int ch, int note )
+void C700Driver::changeChPriority( int ch, int value )
 {
-    InstParams		vp = getChannelVP(ch, mChStat[ch].lastNote);
-    mChStat[ch].portaStartPitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+    mChannnelInst[ch].noteOnPriority = value;
+    mCCChangeFlg[ch] |= HAS_NOTEONPRIORITY;
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::SetChPriority( int ch, int value )
+void C700Driver::changeReleasePriority( int ch, int value )
 {
-    //mChStat[ch].priority = value;
-    mChStat[ch].changedVP.noteOnPriority = value;
-    mChStat[ch].changeFlg |= HAS_NOTEONPRIORITY;
+    mChannnelInst[ch].releasePriority = value;
+    mCCChangeFlg[ch] |= HAS_RELEASEPRIORITY;
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::SetChLimit( int ch, int value )
+void C700Driver::changeMonoMode( int ch, bool on )
 {
-    mVoiceManager.SetChLimit(ch, value);
+    mChannnelInst[ch].monoMode = on;
+    mCCChangeFlg[ch] |= HAS_MONOMODE;
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::SetReleasePriority( int ch, int value )
+bool C700Driver::isPatchLoaded(int ch, int note)
 {
-    //mChStat[ch].releasePriority = value;
-    mChStat[ch].changedVP.releasePriority = value;
-    mChStat[ch].changeFlg |= HAS_RELEASEPRIORITY;
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::SetMonoMode( int ch, bool on )
-{
-    //mChStat[ch].monoMode = on;
-    mChStat[ch].changedVP.monoMode = on;
-    mChStat[ch].changeFlg |= HAS_MONOMODE;
+    const InstParams  *pgVP = &mVPset[mChStat[ch].prog];
+    if (mDrumMode[pgVP->bank]) {
+        return getMappedVP(pgVP->bank, note)->hasBrrData();
+    }
+    else {
+        return pgVP->hasBrrData();
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -670,71 +449,89 @@ InstParams C700Driver::getChannelVP(int ch, int note)
     else {
         InstParams  mergedVP;
         mergedVP = *pgVP;
-        //if (mChStat[ch].changeFlg & HAS_PGNAME) mergedVP.pgname = mChStat[ch].changedVP.pgname;
-        if (mChStat[ch].changeFlg & HAS_RATE) mergedVP.rate = mChStat[ch].changedVP.rate;
-        if (mChStat[ch].changeFlg & HAS_BASEKEY) mergedVP.basekey = mChStat[ch].changedVP.basekey;
-        if (mChStat[ch].changeFlg & HAS_LOWKEY) mergedVP.lowkey = mChStat[ch].changedVP.lowkey;
-        if (mChStat[ch].changeFlg & HAS_HIGHKEY) mergedVP.highkey = mChStat[ch].changedVP.highkey;
-        if (mChStat[ch].changeFlg & HAS_AR) mergedVP.ar = mChStat[ch].changedVP.ar;
-        if (mChStat[ch].changeFlg & HAS_DR) mergedVP.dr = mChStat[ch].changedVP.dr;
-        if (mChStat[ch].changeFlg & HAS_SL) mergedVP.sl = mChStat[ch].changedVP.sl;
-        if (mChStat[ch].changeFlg & HAS_SR1) mergedVP.sr1 = mChStat[ch].changedVP.sr1;
-        if (mChStat[ch].changeFlg & HAS_SR2) mergedVP.sr2 = mChStat[ch].changedVP.sr2;
-        if (mChStat[ch].changeFlg & HAS_VOLL) mergedVP.volL = mChStat[ch].changedVP.volL;
-        if (mChStat[ch].changeFlg & HAS_VOLR) mergedVP.volR = mChStat[ch].changedVP.volR;
-        if (mChStat[ch].changeFlg & HAS_ECHO) mergedVP.echo = mChStat[ch].changedVP.echo;
-        if (mChStat[ch].changeFlg & HAS_BANK) mergedVP.bank = mChStat[ch].changedVP.bank;
-//        if (mChStat[ch].changeFlg & HAS_ISEMPHASIZED) mergedVP.isEmphasized = mChStat[ch].changedVP.isEmphasized;
-//        if (mChStat[ch].changeFlg & HAS_SOURCEFILE) mergedVP.sourceFile = mChStat[ch].changedVP.sourceFile;
-        if (mChStat[ch].changeFlg & HAS_SUSTAINMODE) mergedVP.sustainMode = mChStat[ch].changedVP.sustainMode;
-        if (mChStat[ch].changeFlg & HAS_MONOMODE) mergedVP.monoMode = mChStat[ch].changedVP.monoMode;
-        if (mChStat[ch].changeFlg & HAS_PORTAMENTOON) mergedVP.portamentoOn = mChStat[ch].changedVP.portamentoOn;
-        if (mChStat[ch].changeFlg & HAS_PORTAMENTORATE) mergedVP.portamentoRate = mChStat[ch].changedVP.portamentoRate;
-        if (mChStat[ch].changeFlg & HAS_NOTEONPRIORITY) mergedVP.noteOnPriority = mChStat[ch].changedVP.noteOnPriority;
-        if (mChStat[ch].changeFlg & HAS_RELEASEPRIORITY) mergedVP.releasePriority = mChStat[ch].changedVP.releasePriority;
-        if (mChStat[ch].changeFlg & HAS_PMON) mergedVP.pmOn = mChStat[ch].changedVP.pmOn;
-        if (mChStat[ch].changeFlg & HAS_NOISEON) mergedVP.noiseOn = mChStat[ch].changedVP.noiseOn;
+        if (mCCChangeFlg[ch] & HAS_RATE) mergedVP.rate = mChannnelInst[ch].rate;
+        if (mCCChangeFlg[ch] & HAS_BASEKEY) mergedVP.basekey = mChannnelInst[ch].basekey;
+        if (mCCChangeFlg[ch] & HAS_LOWKEY) mergedVP.lowkey = mChannnelInst[ch].lowkey;
+        if (mCCChangeFlg[ch] & HAS_HIGHKEY) mergedVP.highkey = mChannnelInst[ch].highkey;
+        if (mCCChangeFlg[ch] & HAS_AR) mergedVP.ar = mChannnelInst[ch].ar;
+        if (mCCChangeFlg[ch] & HAS_DR) mergedVP.dr = mChannnelInst[ch].dr;
+        if (mCCChangeFlg[ch] & HAS_SL) mergedVP.sl = mChannnelInst[ch].sl;
+        if (mCCChangeFlg[ch] & HAS_SR1) mergedVP.sr1 = mChannnelInst[ch].sr1;
+        if (mCCChangeFlg[ch] & HAS_SR2) mergedVP.sr2 = mChannnelInst[ch].sr2;
+        if (mCCChangeFlg[ch] & HAS_VOLL) mergedVP.volL = mChannnelInst[ch].volL;
+        if (mCCChangeFlg[ch] & HAS_VOLR) mergedVP.volR = mChannnelInst[ch].volR;
+        if (mCCChangeFlg[ch] & HAS_ECHO) mergedVP.echo = mChannnelInst[ch].echo;
+        if (mCCChangeFlg[ch] & HAS_BANK) mergedVP.bank = mChannnelInst[ch].bank;
+        if (mCCChangeFlg[ch] & HAS_SUSTAINMODE) mergedVP.sustainMode = mChannnelInst[ch].sustainMode;
+        if (mCCChangeFlg[ch] & HAS_MONOMODE) mergedVP.monoMode = mChannnelInst[ch].monoMode;
+        if (mCCChangeFlg[ch] & HAS_PORTAMENTOON) mergedVP.portamentoOn = mChannnelInst[ch].portamentoOn;
+        if (mCCChangeFlg[ch] & HAS_PORTAMENTORATE) mergedVP.portamentoRate = mChannnelInst[ch].portamentoRate;
+        if (mCCChangeFlg[ch] & HAS_NOTEONPRIORITY) mergedVP.noteOnPriority = mChannnelInst[ch].noteOnPriority;
+        if (mCCChangeFlg[ch] & HAS_RELEASEPRIORITY) mergedVP.releasePriority = mChannnelInst[ch].releasePriority;
+        if (mCCChangeFlg[ch] & HAS_PMON) mergedVP.pmOn = mChannnelInst[ch].pmOn;
+        if (mCCChangeFlg[ch] & HAS_NOISEON) mergedVP.noiseOn = mChannnelInst[ch].noiseOn;
         
         return mergedVP;
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::Volume( int ch, int value )
+void C700Driver::handleVolumeChange( int ch, int value )
 {
-    mChStat[ch].volume = value & 0x7f;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
+        if (GetVoiceMidiCh(i) == ch) {
             mVoiceStat[i].volume = mChStat[ch].volume;
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::Expression( int ch, int value )
+void C700Driver::handleExpressionChange( int ch, int value )
 {
-    mChStat[ch].expression = value & 0x7f;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
+        if (GetVoiceMidiCh(i) == ch) {
             mVoiceStat[i].expression = mChStat[ch].expression;
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::Panpot( int ch, int value )
+void C700Driver::handlePanpotChange( int ch, int value )
 {
-    mChStat[ch].pan = value & 0x7f;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
+        if (GetVoiceMidiCh(i) == ch) {
             mVoiceStat[i].pan = mChStat[ch].pan;
         }
     }
 }
 
+//-----------------------------------------------------------------------------
+void C700Driver::handlePortamentStartNoteChange( int ch, int note )
+{
+    InstParams		vp = getChannelVP(ch, mChStat[ch].lastNote);
+    mPortaStartPitch[ch] = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::handlePortaTimeChange( int ch, int ccValue, float centPerMilis )
+{
+    mChannnelInst[ch].portamentoRate = ccValue;
+    mCCChangeFlg[ch] |= HAS_PORTAMENTORATE;
+    
+    float portaTc = powf(2.0f, centPerMilis / 1200);
+    mChPortaTc[ch] = portaTc;
+    // 発音中のボイスに反映
+    for (int i=0; i<kMaximumVoices; i++) {
+        if (GetVoiceMidiCh(i) == ch) {
+            mVoiceStat[i].porta.SetTc(portaTc);
+        }
+    }
+}
+
+#if 0
 //-----------------------------------------------------------------------------
 void C700Driver::ChangeChRate(int ch, double rate)
 {
@@ -762,71 +559,71 @@ void C700Driver::ChangeChHighkey(int ch, int highkey)
     mChStat[ch].changedVP.highkey = highkey;
     mChStat[ch].changeFlg |= HAS_HIGHKEY;
 }
-
+#endif
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChAR(int ch, int ar)
+void C700Driver::changeChAR(int ch, int ar)
 {
-    mChStat[ch].changedVP.ar = ar & 0x0f;
-    mChStat[ch].changeFlg |= HAS_AR;
+    mChannnelInst[ch].ar = ar & 0x0f;
+    mCCChangeFlg[ch] |= HAS_AR;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mDSP.SetAR(i, mChStat[ch].changedVP.ar);
+        if (GetVoiceMidiCh(i) == ch) {
+            mDSP.SetAR(i, mChannnelInst[ch].ar);
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChDR(int ch, int dr)
+void C700Driver::changeChDR(int ch, int dr)
 {
-    mChStat[ch].changedVP.dr = dr & 0x07;
-    mChStat[ch].changeFlg |= HAS_DR;
+    mChannnelInst[ch].dr = dr & 0x07;
+    mCCChangeFlg[ch] |= HAS_DR;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mDSP.SetDR(i, mChStat[ch].changedVP.dr);
+        if (GetVoiceMidiCh(i) == ch) {
+            mDSP.SetDR(i, mChannnelInst[ch].dr);
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChSL(int ch, int sl)
+void C700Driver::changeChSL(int ch, int sl)
 {
-    mChStat[ch].changedVP.sl = sl & 0x07;
-    mChStat[ch].changeFlg |= HAS_SL;
+    mChannnelInst[ch].sl = sl & 0x07;
+    mCCChangeFlg[ch] |= HAS_SL;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mDSP.SetSL(i, mChStat[ch].changedVP.sl);
+        if (GetVoiceMidiCh(i) == ch) {
+            mDSP.SetSL(i, mChannnelInst[ch].sl);
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChSR1(int ch, int sr)
+void C700Driver::changeChSR1(int ch, int sr)
 {
-    mChStat[ch].changedVP.sr1 = sr & 0x1f;
-    mChStat[ch].changeFlg |= HAS_SR1;
+    mChannnelInst[ch].sr1 = sr & 0x1f;
+    mCCChangeFlg[ch] |= HAS_SR1;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.IsKeyOn(i)) {
-            if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-                mDSP.SetSR(i, mChStat[ch].changedVP.sr1);
+        if (IsKeyOnVoice(i)) {
+            if (GetVoiceMidiCh(i) == ch) {
+                mDSP.SetSR(i, mChannnelInst[ch].sr1);
             }
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChSR2(int ch, int sr)
+void C700Driver::changeChSR2(int ch, int sr)
 {
-    mChStat[ch].changedVP.sr2 = sr & 0x1f;
-    mChStat[ch].changeFlg |= HAS_SR2;
+    mChannnelInst[ch].sr2 = sr & 0x1f;
+    mCCChangeFlg[ch] |= HAS_SR2;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (!mVoiceManager.IsKeyOn(i)) {
-            if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-                mDSP.SetSR(i, mChStat[ch].changedVP.sr2);
+        if (!IsKeyOnVoice(i)) {
+            if (GetVoiceMidiCh(i) == ch) {
+                mDSP.SetSR(i, mChannnelInst[ch].sr2);
             }
         }
     }
@@ -834,204 +631,167 @@ void C700Driver::ChangeChSR2(int ch, int sr)
 
 //-----------------------------------------------------------------------------
 #if 0
-void C700Driver::ChangeChVolL(int ch, int voll)
+void C700Driver::changeChVolL(int ch, int voll)
 {
-    mChStat[ch].changedVP.volL = voll;
-    mChStat[ch].changeFlg |= HAS_VOLL;
+    mChannnelInst[ch].volL = voll;
+    mCCChangeFlg[ch] |= HAS_VOLL;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mVoiceStat[i].vol_l = mChStat[ch].changedVP.volL;
+        if (GetVoiceMidiCh(i) == ch) {
+            mVoiceStat[i].vol_l = mChannnelInst[ch].volL;
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChVolR(int ch, int volr)
+void C700Driver::changeChVolR(int ch, int volr)
 {
-    mChStat[ch].changedVP.volR = volr;
-    mChStat[ch].changeFlg |= HAS_VOLR;
+    mChannnelInst[ch].volR = volr;
+    mCCChangeFlg[ch] |= HAS_VOLR;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mVoiceStat[i].vol_r = mChStat[ch].changedVP.volR;
+        if (GetVoiceMidiCh(i) == ch) {
+            mVoiceStat[i].vol_r = mChannnelInst[ch].volR;
         }
     }
 }
 #endif
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChEcho(int ch, int echo)
+void C700Driver::changeChEcho(int ch, int echo)
 {
-    mChStat[ch].changedVP.echo = echo ? true:false;
-    mChStat[ch].changeFlg |= HAS_ECHO;
+    mChannnelInst[ch].echo = echo ? true:false;
+    mCCChangeFlg[ch] |= HAS_ECHO;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mDSP.SetEchoOn(i, mChStat[ch].changedVP.echo);
+        if (GetVoiceMidiCh(i) == ch) {
+            mDSP.SetEchoOn(i, mChannnelInst[ch].echo);
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChPMON(int ch, int pmon)
+void C700Driver::changeChPMON(int ch, int pmon)
 {
-    mChStat[ch].changedVP.pmOn = pmon ? true:false;
-    mChStat[ch].changeFlg |= HAS_PMON;
+    mChannnelInst[ch].pmOn = pmon ? true:false;
+    mCCChangeFlg[ch] |= HAS_PMON;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mDSP.SetPMOn(i, mChStat[ch].changedVP.pmOn);
+        if (GetVoiceMidiCh(i) == ch) {
+            mDSP.SetPMOn(i, mChannnelInst[ch].pmOn);
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChNON(int ch, int non)
+void C700Driver::changeChNON(int ch, int non)
 {
-    mChStat[ch].changedVP.noiseOn = non ? true:false;
-    mChStat[ch].changeFlg |= HAS_NOISEON;
+    mChannnelInst[ch].noiseOn = non ? true:false;
+    mCCChangeFlg[ch] |= HAS_NOISEON;
     // 発音中のボイスに反映
     for (int i=0; i<kMaximumVoices; i++) {
-        if (mVoiceManager.GetVoiceMidiCh(i) == ch) {
-            mDSP.SetNoiseOnFlg(i, mChStat[ch].changedVP.noiseOn);
+        if (GetVoiceMidiCh(i) == ch) {
+            mDSP.SetNoiseOn(i, mChannnelInst[ch].noiseOn);
         }
     }
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChBank(int ch, int bank)
+void C700Driver::changeChBank(int ch, int bank)
 {
-    mChStat[ch].changedVP.bank = bank & 0x03;
-    mChStat[ch].changeFlg |= HAS_BANK;
+    mChannnelInst[ch].bank = bank & 0x03;
+    mCCChangeFlg[ch] |= HAS_BANK;
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::ChangeChSustainMode(int ch, int sustainMode)
+void C700Driver::changeChSustainMode(int ch, int sustainMode)
 {
-    mChStat[ch].changedVP.sustainMode = sustainMode ? true:false;
-    mChStat[ch].changeFlg |= HAS_SUSTAINMODE;
+    mChannnelInst[ch].sustainMode = sustainMode ? true:false;
+    mCCChangeFlg[ch] |= HAS_SUSTAINMODE;
 }
 
 //-----------------------------------------------------------------------------
-float C700Driver::VibratoWave(float phase)
+int C700Driver::calcPBValue( int ch, int pitchBend, int basePitch )
 {
-	float x2=phase*phase;
-	float vibwave = 7.61e-03f;
-	vibwave *= x2;
-	vibwave -= 1.6605e-01f;
-	vibwave *= x2;
-	vibwave += 1.0f;
-	vibwave *= phase;
-	return vibwave;
-}
-//-----------------------------------------------------------------------------
-void C700Driver::processPortament(int vo)
-{
-    float   newPitch;
-#if ANALOG_PORTAMENTO
-    float   tc = mChStat[ mVoice[vo].midi_ch ].portaTc;
-    float   tcInv = 1.0f - tc;
-    newPitch = mVoice[vo].pitch * tcInv + mVoice[vo].portaPitch * tc;
-    mVoice[vo].portaPitch = newPitch;
-#else
-    if ( mVoiceStat[vo].targetPitch > mVoiceStat[vo].portaPitch) {
-        newPitch = mVoiceStat[vo].portaPitch * mChStat[ mVoiceManager.GetVoiceMidiCh(vo) ].portaTc;
-        if (newPitch > mVoiceStat[vo].targetPitch) {
-            newPitch = mVoiceStat[vo].targetPitch;
-        }
-        mVoiceStat[vo].portaPitch = newPitch;
-    }
-    else if ( mVoiceStat[vo].targetPitch < mVoiceStat[vo].portaPitch) {
-        newPitch = mVoiceStat[vo].portaPitch / mChStat[ mVoiceManager.GetVoiceMidiCh(vo) ].portaTc;
-        if (newPitch < mVoiceStat[vo].targetPitch) {
-            newPitch = mVoiceStat[vo].targetPitch;
-        }
-        mVoiceStat[vo].portaPitch = newPitch;
-    }
-#endif
-    mChStat[ mVoiceManager.GetVoiceMidiCh(vo) ].portaStartPitch = mVoiceStat[vo].portaPitch;
+    float pb_value = pitchBend / 8192.0;
+    return (int)((pow(2., (pb_value * mChStat[ch].pbRange) / 12.) - 1.0)*basePitch);
 }
 
 //-----------------------------------------------------------------------------
-bool C700Driver::doNoteOn1( MIDIEvt dEvt )
+double C700Driver::GetProcessDelayTime()
 {
-    bool legato = false;
-    dEvt.remain_samples = mEventDelaySamples;
-    
-    if (dEvt.type == NOTE_ON) {
-        //ボイスを確保して再生準備状態にする
-        InstParams		vp = getChannelVP(dEvt.ch, dEvt.note);
-        int	v = -1;
+    return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) + 8) / static_cast<double>(INTERNAL_CLOCK);    // 8ms + resample
+}
 
-        int releasedCh;
-        v = mVoiceManager.AllocVoice(vp.noteOnPriority, dEvt.ch, dEvt.uniqueID,
-                               vp.monoMode, &releasedCh, &legato);
-        if (legato) {
-            dEvt.note |= 0x80;  // レガートフラグ
+//-----------------------------------------------------------------------------
+void C700Driver::SetEventDelayClocks(int clocks)
+{
+    mEventDelayClocks = clocks;
+    SetNoteOffIntervalCycles(calcEventDelaySamples());
+}
+
+//-----------------------------------------------------------------------------
+int  C700Driver::getKeyOnPriority(int ch, int note)
+{
+    return getChannelVP(ch, note).noteOnPriority;
+}
+
+//-----------------------------------------------------------------------------
+int  C700Driver::getReleasePriority(int ch, int note)
+{
+    return getChannelVP(ch, note).releasePriority;
+}
+
+//-----------------------------------------------------------------------------
+bool C700Driver::isMonoMode(int ch, int note)
+{
+    return getChannelVP(ch, note).monoMode;
+}
+
+//-----------------------------------------------------------------------------
+bool C700Driver::handleNoteOnFirst( uint8_t vo, uint8_t midiCh, uint8_t note, uint8_t velo, bool isLegato, int killedMidiCh )
+{
+    if (!isLegato) {
+        if (killedMidiCh >= 0) {
+            mKeyOffFlag |= 1 << vo;
         }
         
-        if (v != -1) {
-            if (legato == false) {
-                //mDSP.KeyOffVoice(v);
-                mKeyOffFlag[v] = true;
-                
-                mDSP.SetARDR(v, vp.ar, vp.dr);
-                mDSP.SetSLSR(v, vp.sl, vp.sr1);
-            }
-            // 上位4bitに確保したボイス番号を入れる
-            dEvt.ch += v << 4;
+        InstParams		vp = getChannelVP(midiCh & 0x0f, note);
+        mDSP.SetARDR(vo, vp.ar, vp.dr);
+        mDSP.SetSLSR(vo, vp.sl, vp.sr1);
+        
+        if (vp.portamentoOn) {
+            handleControlChange(midiCh, 65, 127);
         }
     }
-    mDelayedEvt.push_back(dEvt);
+
     return true;
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::doNoteOn2(const MIDIEvt *evt)
+bool C700Driver::handleNoteOnDelayed(uint8_t v, uint8_t midiCh, uint8_t note, uint8_t velo, bool isLegato)
 {
-    int     midiCh = evt->ch & 0x0f;
-    int     note = evt->note & 0x7f;
+    InstParams		vp = getChannelVP(midiCh, note);
     
-	InstParams		vp = getChannelVP(midiCh, note);
-	
-	//波形データが存在しない場合は、ここで中断
-	if (!vp.hasBrrData()) {
-		return;
-	}
-	
-	//ボイスを取得
-    int v = (evt->ch >> 4) & 0x0f;
-    
-    //mPlayVo に v が含まれていなかったら鳴らさない
-    if (
-        (mVoiceManager.IsPlayingVoice(v) == false) ||     // doNoteOn1を経ていない
-        (mVoiceManager.GetVoiceUniqueID(v) != evt->uniqueID) //|| // 発音前にかき消されて上書きされた
-        ) {
-        return;
-    }
-	
 	// 中心周波数の算出
-	mVoiceStat[v].targetPitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+    int targetPitch = pow(2., (note - vp.basekey) / 12.)/INTERNAL_CLOCK*vp.rate*4096 + 0.5;
+    mVoiceStat[v].porta.SetTargetPicth(targetPitch);
     
-    if (vp.portamentoOn) {
-        if (mChStat[midiCh].portaStartPitch == 0) {
-            mChStat[midiCh].portaStartPitch = mVoiceStat[v].targetPitch;
-        }
-        mVoiceStat[v].portaPitch = mChStat[midiCh].portaStartPitch;
+    if ((mChStat[midiCh].portaOn == true) &&
+        (mPortaStartPitch[midiCh] != 0)) {
+        mVoiceStat[v].pitch = mPortaStartPitch[midiCh];
     }
     else {
-        mVoiceStat[v].portaPitch = mVoiceStat[v].targetPitch;
+        mVoiceStat[v].pitch = targetPitch;
     }
+    mVoiceStat[v].porta.SetTc(mChPortaTc[midiCh]);
     
-    mVoiceManager.SetKeyOn(v);
-    
-    if ((evt->note & 0x80) == 0) {
+    if (!isLegato) {
         //ベロシティの取得
         if ( mVelocityMode == kVelocityMode_Square ) {
-            mVoiceStat[v].velo = VOLUME_CURB[evt->velo];
+            mVoiceStat[v].velo = VOLUME_CURB[velo];
         }
         else if ( mVelocityMode == kVelocityMode_Linear ) {
-            mVoiceStat[v].velo = evt->velo << 4;
+            mVoiceStat[v].velo = velo << 4;
         }
         else {
             mVoiceStat[v].velo=VOLUME_CURB[127];
@@ -1040,10 +800,10 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         mVoiceStat[v].volume = mChStat[midiCh].volume;
         mVoiceStat[v].expression = mChStat[midiCh].expression;
         mVoiceStat[v].pan = mChStat[midiCh].pan;
-        mVoiceStat[v].pb = CalcPBValue( midiCh, mChStat[midiCh].pitchBend, mVoiceStat[v].targetPitch );
-        mVoiceStat[v].vibdepth = mChStat[midiCh].vibDepth;
-        mVoiceStat[v].reg_pmod = mVoiceStat[v].vibdepth>0 ? true:false;
-        mVoiceStat[v].vibPhase = 0.0f;
+        mVoiceStat[v].pb = calcPBValue( midiCh, mChStat[midiCh].pitchBend, targetPitch );
+        mVoiceStat[v].lfo.SetVibSens(mChStat[midiCh].vibDepth);
+        mVoiceStat[v].reg_pmod = mChStat[midiCh].vibDepth>0 ? true:false;
+        mVoiceStat[v].lfo.ResetPhase();
         mVoiceStat[v].vol_l=vp.volL;
         mVoiceStat[v].vol_r=vp.volR;
         mVoiceStat[v].non=vp.noiseOn;
@@ -1051,7 +811,7 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
         // 波形番号を指定する
         int     srcn;
         if (mDrumMode[vp.bank]) {
-            srcn = GetKeyMap(vp.bank, evt->note);
+            srcn = GetKeyMap(vp.bank, note);
         }
         else {
             srcn = mChStat[midiCh].prog;
@@ -1062,68 +822,53 @@ void C700Driver::doNoteOn2(const MIDIEvt *evt)
             mDSP.setBrr(v, vp.brrData(), vp.lp);
         }
         
-        mEchoOnFlag &= ~(1 << v);
         if (vp.echo) {
             mEchoOnFlag |= 1 << v;
         }
-        mEchoOnMask[v] = true;
         
         // PMONを設定
-        mPMOnFlag &= ~(1 << v);
         if (vp.pmOn) {
             mPMOnFlag |= 1 << v;
         }
-        mPMOnMask[v] = true;
         
         // NONを設定
-        mNoiseOnFlag &= ~(1 << v);
         if (vp.noiseOn) {
             mNoiseOnFlag |= 1 << v;
         }
-        mNoiseOnMask[v] = true;
         
         mDSP.SetARDR(v, vp.ar, vp.dr);
         mDSP.SetSLSR(v, vp.sl, vp.sr1);
         
         // キーオン
-        mKeyOnFlag[v] = true;
+        mKeyOnFlag |= 1 << v;
         
         // 強制ピッチが再計算
         mPitchCount[v] = 0;
         
-        // 最後に発音したノート番号を保存
-        mChStat[midiCh].lastNote = note;
+        // キーオンされた場合はtrueを返す
+        return true;
     }
+    return false;
 }
 
 
 //-----------------------------------------------------------------------------
-int C700Driver::doNoteOff( const MIDIEvt *evt )
+void C700Driver::handleNoteOff( const MIDIEvt *evt, int vo )
 {
-	int	stops=0;
-    
-    // 再生中なら停止する
-    // 再生中でも未再生でも同じ処理で止められるはず
-    InstParams		vp = getChannelVP(evt->ch, evt->note);
-    int             vo=-1;
-    stops = mVoiceManager.ReleaseVoice(vp.releasePriority, evt->ch, evt->uniqueID, &vo);
-    if (stops > 0) {
-        if (vp.sustainMode && (vp.sr2 != 31 || !mFastReleaseAsKeyOff)) {
-            //キーオフさせずにsrを変更する
-            mDSP.SetDR(vo, 7);
-            mDSP.SetSR(vo, vp.sr2);
-        }
-        else {
-            // キーオフ
-            //mDSP.KeyOffVoice(vo);
-            mKeyOffFlag[vo] = true;
-        }
+    InstParams		vp = getChannelVP(evt->ch, evt->data1);
+    if (vp.sustainMode && (vp.sr2 != 31 || !mFastReleaseAsKeyOff)) {
+        //キーオフさせずにsrを変更する
+        mDSP.SetDR(vo, 7);
+        mDSP.SetSR(vo, vp.sr2);
     }
-	return stops;
+    else {
+        // キーオフ
+        mKeyOffFlag |= 1 << vo;
+    }
 }
 
 //-----------------------------------------------------------------------------
-bool C700Driver::doRegLogEvents( const MIDIEvt *evt )
+bool C700Driver::doRegLogEvents( const RegLogEvt *evt )
 {
     bool    handled = true;
     
@@ -1143,143 +888,42 @@ bool C700Driver::doRegLogEvents( const MIDIEvt *evt )
 }
 
 //-----------------------------------------------------------------------------
-bool C700Driver::doEvents1( const MIDIEvt *evt )
-{
-    bool    handled = true;
-    
-    if (evt->type == NOTE_OFF) {
-        if (mChStat[evt->ch].damper) {
-            handled = false;
-        }
-        else {
-            doNoteOff( evt );
-            //mChStat[evt->ch].noteOns -= stops;
-        }
-    }
-    else {
-        // ノートオフとレジスタログ以外のイベントは全て遅延実行する
-        doNoteOn1(*evt);
-    }
-    
-    return handled;
-}
-
-//-----------------------------------------------------------------------------
-bool C700Driver::doEvents2( const MIDIEvt *evt )
-{
-    bool    handled = true;
-    
-    switch (evt->type) {
-        case NOTE_ON:
-            doNoteOn2( evt );
-            break;
-            
-        case NOTE_OFF:
-            //doNoteOff( evt );
-            break;
-            
-        case PROGRAM_CHANGE:
-            doProgramChange(evt->ch, evt->note);
-            break;
-            
-        case PITCH_BEND:
-            doPitchBend(evt->ch, evt->note, evt->velo);
-            break;
-            
-        case CONTROL_CHANGE:
-            doControlChange(evt->ch, evt->note, evt->velo);
-            break;
-            
-        case REGISTER_WRITE:
-            mDSP.WriteReg(evt->note, evt->velo);
-            break;
-            
-        default:
-            //handled = false;
-            break;
-    }
-    return handled;
-}
-
-//-----------------------------------------------------------------------------
-void C700Driver::doControlChange( int ch, int controlNum, int value )
+void C700Driver::handleControlChange( int ch, int controlNum, int value )
 {
     switch (controlNum) {
-        case 1:
-            // モジュレーションホイール
-            ModWheel(ch, value);
-            break;
-            
-        case 5:
-            // ポルタメントタイム
-            SetPortamentTime(ch, value);
-            mChStat[ch].changedVP.portamentoRate = value;
-            mChStat[ch].changeFlg |= HAS_PORTAMENTORATE;
-            break;
-            
-        case 7:
-            // ボリューム
-            Volume(ch, value);
-            break;
-            
-        case 10:
-            // パン
-            Panpot(ch, value);
-            break;
-            
-        case 11:
-            // エクスプレッション
-            Expression(ch, value);
-            break;
-            
-        case 55:
-            // チャンネル リミット
-            SetChLimit(ch, value);
-            break;
-            
         case 56:
             // チャンネル プライオリティ
-            SetChPriority(ch, value);
+            changeChPriority(ch, value);
             break;
             
         case 57:
             // リリース プライオリティ
-            SetReleasePriority(ch, value);
-            break;
-            
-        case 64:
-            // ホールド１（ダンパー）
-            Damper(ch, (value < 64)?false:true);
-            break;
-            
-        case 65:
-            // ポルタメント・オン・オフ
-            SetPortamentOn(ch, (value < 64)?false:true);
+            changeReleasePriority(ch, value);
             break;
             
         case 72:
             // SR2
-            ChangeChSR2(ch, value >> 2);
+            changeChSR2(ch, value >> 2);
             break;
             
         case 82:
             // SR1
-            ChangeChSR1(ch, value >> 2);
+            changeChSR1(ch, value >> 2);
             break;
 
         case 73:
             // AR
-            ChangeChAR(ch, value >> 3);
+            changeChAR(ch, value >> 3);
             break;
             
         case 80:
             // SL
-            ChangeChSL(ch, value >> 4);
+            changeChSL(ch, value >> 4);
             break;
             
         case 75:
             // DR
-            ChangeChDR(ch, value >> 4);
+            changeChDR(ch, value >> 4);
             break;
             
         case 76:
@@ -1292,39 +936,153 @@ void C700Driver::doControlChange( int ch, int controlNum, int value )
             SetVibDepth(ch, (15.0f * value) / 127);
             break;
             
-        case 84:
-            // ポルタメント・コントロール
-            SetPortamentControl(ch, value);
-            break;
-            
         case 91:
             // ECEN ON/OFF
-            ChangeChEcho(ch, (value < 64)?0:127);
+            changeChEcho(ch, (value < 64)?0:127);
             break;
             
         case 92:
             // PMON ON/OFF
-            ChangeChPMON(ch, (value < 64)?0:127);
+            changeChPMON(ch, (value < 64)?0:127);
             break;
             
         case 93:
             // NON ON/OFF
-            ChangeChNON(ch, (value < 64)?0:127);
+            changeChNON(ch, (value < 64)?0:127);
             break;
             
         case 126:
             // Mono Mode
-			SetMonoMode(ch, (value < 64)?false:true);
+			changeMonoMode(ch, (value < 64)?false:true);
             break;
             
         case 127:
             // Poly Mode
-            SetMonoMode(ch, (value < 64)?true:false);
+            changeMonoMode(ch, (value < 64)?true:false);
             break;
             
         default:
+            // サブクラスの処理を優先する
+            MidiDriverBase::handleControlChange(ch, controlNum, value);
             break;
     }
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::doPreMidiEvents()
+{
+    // REGLOGイベントの処理
+    MutexLock(mREGLOGEvtMtx);
+    if ( mREGLOGEvt.size() != 0 ) {
+        std::list<RegLogEvt>::iterator	it = mREGLOGEvt.begin();
+        while ( it != mREGLOGEvt.end() ) {
+            if ( it->toWaitCycles >= 0 ) {
+                it->toWaitCycles--;
+            }
+            if ( it->toWaitCycles < 0 ) {
+                if (doRegLogEvents(&(*it))) {
+                    it = mREGLOGEvt.erase( it );
+                    continue;
+                }
+            }
+            it++;
+        }
+    }
+    MutexUnlock(mREGLOGEvtMtx);
+}
+
+//-----------------------------------------------------------------------------
+void C700Driver::doPostMidiEvents()
+{
+    while (mPortamentCount >= 0) {
+        // ポルタメント処理
+        for (int v=0; v<GetVoiceLimit(); v++) {
+            if (IsKeyOnVoice(v)) {
+                mVoiceStat[v].pitch = mPortaStartPitch[GetVoiceMidiCh(v)] = mVoiceStat[v].porta.Update(mVoiceStat[v].pitch);
+            }
+        }
+        mPortamentCount -= PORTAMENT_CYCLE_SAMPLES;
+    }
+    mPortamentCount++;
+    
+    if (mKeyOffFlag) {
+        mDSP.KeyOffVoiceFlg(mKeyOffFlag);
+        mKeyOffFlag = 0;
+    }
+    
+    for ( int v=0; v<kMaximumVoices; v++ ) {
+        //ピッチの算出
+        if (mPitchCount[v] >= 0) {
+            if (mVoiceStat[v].non) {
+                int midiCh = GetVoiceMidiCh(v);
+                int pb = (int)(mChStat[midiCh].pbRange * (mChStat[midiCh].pitchBend / 8192.0) + 0.5f);
+                int noiseFreq = (mChStat[midiCh].lastNote+pb+4) % 32;  // 60=0に
+                // ノイズ周波数を設定する
+                mDSP.SetNoiseFreq(noiseFreq);
+            }
+            else {
+                int voicePitch = static_cast<int>(mVoiceStat[v].pitch + 0.5f);
+                
+                int pitch = (voicePitch + mVoiceStat[v].pb) & 0x3fff;
+                
+                if (mVoiceStat[v].reg_pmod) {
+                    int pitchRatio = mVoiceStat[v].lfo.Update(pitch);
+                    pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
+                    if (pitch <= 0) {
+                        pitch=1;
+                    }
+                }
+                mDSP.SetPitch(v, pitch);
+            }
+            mPitchCount[v] = -PITCH_CYCLE_SAMPLES;
+        }
+        
+        // パンのボリューム値への反映
+        int volL = mVoiceStat[v].vol_l;
+        int volR = mVoiceStat[v].vol_r;
+        calcPanVolume(mVoiceStat[v].pan, &volL, &volR);
+        
+        // ベロシティの反映
+        volL = ( volL * mVoiceStat[v].velo ) >> 11;
+        volR = ( volR * mVoiceStat[v].velo ) >> 11;
+        
+        // ボリューム値の反映
+        volL = ( volL * VOLUME_CURB[ mVoiceStat[v].volume ] ) / 0x7ff;
+        volR = ( volR * VOLUME_CURB[ mVoiceStat[v].volume ] ) / 0x7ff;
+        
+        // エクスプレッションの反映
+        volL = ( volL * VOLUME_CURB[ mVoiceStat[v].expression ] ) / 0x7ff;
+        volR = ( volR * VOLUME_CURB[ mVoiceStat[v].expression ] ) / 0x7ff;
+        
+        mDSP.SetVol_L(v, volL);
+        mDSP.SetVol_R(v, volR);
+        
+        mPitchCount[v]++;
+    }
+    if (mKeyOnFlag) {
+        mDSP.SetEchoOnFlg(mEchoOnFlag, mKeyOnFlag);
+    }
+    mEchoOnFlag = 0;
+    if (mKeyOnFlag) {
+        mDSP.SetPMOnFlg(mPMOnFlag, mKeyOnFlag);
+    }
+    mPMOnFlag = 0;
+    if (mKeyOnFlag) {
+        mDSP.SetNoiseOnFlg(mNoiseOnFlag, mKeyOnFlag);
+    }
+    mNoiseOnFlag = 0;
+    if (mKeyOnFlag) {
+        mDSP.KeyOnVoiceFlg(mKeyOnFlag);
+    }
+    mKeyOnFlag = 0;
+    
+    
+    int outl=0,outr=0;
+    mDSP.Process1Sample(outl, outr);
+    
+    mProcessbuf[0][mProcessbufPtr] = outl;
+    mProcessbuf[1][mProcessbufPtr] = outr;
+    mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -1332,204 +1090,15 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 {
 	int		procstep = (INTERNAL_CLOCK*CYCLES_PER_SAMPLE) / mSampleRate;    // CYCLES_PER_SAMPLE=1.0 とした固定小数
 	
-	//メイン処理
-    /*
-    if (mClearEvent) {
-        mMIDIEvt.clear();
-        mDelayedEvt.clear();
-        mClearEvent = false;
-    }
-    */
-    
     mDSP.BeginFrameProcess((double)frames / mSampleRate);
     
 	for (unsigned int frame=0; frame<frames; ++frame) {
-        // REGLOGイベントの処理
-        MutexLock(mREGLOGEvtMtx);
-		if ( mREGLOGEvt.size() != 0 ) {
-			std::list<MIDIEvt>::iterator	it = mREGLOGEvt.begin();
-			while ( it != mREGLOGEvt.end() ) {
-				if ( it->remain_samples >= 0 ) {
-					it->remain_samples--;
-                }
-                if ( it->remain_samples < 0 ) {
-                    if (doRegLogEvents(&(*it))) {
-                        it = mREGLOGEvt.erase( it );
-                        continue;
-                    }
-                }
-				it++;
-			}
-		}
-        MutexUnlock(mREGLOGEvtMtx);
+        doPreMidiEvents();
         
-		//イベント処理
-        MutexLock(mMIDIEvtMtx);
-		if ( mMIDIEvt.size() != 0 ) {
-			std::list<MIDIEvt>::iterator	it = mMIDIEvt.begin();
-			while ( it != mMIDIEvt.end() ) {
-				if ( it->remain_samples >= 0 ) {
-					it->remain_samples--;
-                }
-                if ( it->remain_samples < 0 ) {
-                    if (doEvents1(&(*it))) {
-                        it = mMIDIEvt.erase( it );
-                        continue;
-                    }
-                }
-				it++;
-			}
-		}
-        MutexUnlock(mMIDIEvtMtx);
-        if ( mDelayedEvt.size() != 0 ) {
-			std::list<MIDIEvt>::iterator	it = mDelayedEvt.begin();
-			while ( it != mDelayedEvt.end() ) {
-				if ( it->remain_samples >= 0 ) {
-					it->remain_samples--;
-                }
-                if ( it->remain_samples < 0 ) {
-                    if (doEvents2(&(*it))) {
-                        it = mDelayedEvt.erase( it );
-                        continue;
-                    }
-                }
-				it++;
-			}
-		}
+        ProcessMidiEvents();
         
-        {
-            int koff = 0;
-            for ( int v=0; v<kMaximumVoices; v++ ) {
-                if (mKeyOffFlag[v]) {
-                    koff |= 1 << v;
-                    mKeyOffFlag[v] = false;
-                }
-            }
-            if (koff) {
-                mDSP.KeyOffVoiceFlg(koff);
-            }
-        }
-        
-        while (mPortamentCount >= 0) {
-            // ポルタメント処理
-#if 0
-            std::list<int>::iterator	it = mPlayVo.begin();
-            while (it != mPlayVo.end()) {
-                int	vo = *it;
-                if (mVoiceManager.IsKeyOn(vo)) {
-                    processPortament(vo);
-                }
-                it++;
-            }
-#else
-            for (int i=0; i<mVoiceManager.GetVoiceLimit(); i++) {
-                if (mVoiceManager.IsKeyOn(i)) {
-                    processPortament(i);
-                }
-            }
-#endif
-            mPortamentCount -= PORTAMENT_CYCLE_SAMPLES;
-        }
-		
 		for ( ; mProcessFrac >= 0; mProcessFrac -= CYCLES_PER_SAMPLE ) {
-            int kon = 0;
-            int ecen = 0;
-            int pmon = 0;
-            int non = 0;
-            for ( int v=0; v<kMaximumVoices; v++ ) {
-				//ピッチの算出
-                if (mPitchCount[v] >= 0) {
-                    if (mVoiceStat[v].non) {
-                        int midiCh = mVoiceManager.GetVoiceMidiCh(v);
-                        int pb = (int)(mChStat[midiCh].pbRange * mChStat[midiCh].pitchBend + 0.5f);
-                        int noiseFreq = (mChStat[midiCh].lastNote+pb+4) % 32;  // 60=0に
-                        // ノイズ周波数を設定する
-                        mDSP.SetNoiseFreq(noiseFreq);
-                    }
-                    else {
-                        int voicePitch = static_cast<int>(mVoiceStat[v].portaPitch + 0.5f);
-                        
-                        int pitch = (voicePitch + mVoiceStat[v].pb) & 0x3fff;
-                        
-                        if (mVoiceStat[v].reg_pmod) {
-                            mVoiceStat[v].vibPhase += mVibfreq;
-                            if (mVoiceStat[v].vibPhase > onepi) {
-                                mVoiceStat[v].vibPhase -= onepi*2;
-                            }
-                            
-                            float vibwave = VibratoWave(mVoiceStat[v].vibPhase);
-                            int pitchRatio = (vibwave*mVibdepth)*VOLUME_CURB[mVoiceStat[v].vibdepth];
-                            
-                            pitch = ( pitch * ( pitchRatio + 32768 ) ) >> 15;
-                            if (pitch <= 0) {
-                                pitch=1;
-                            }
-                        }
-                        mDSP.SetPitch(v, pitch);
-                    }
-                    mPitchCount[v] = -PITCH_CYCLE_SAMPLES;
-                }
-                
-                // パンのボリューム値への反映
-                int volL = mVoiceStat[v].vol_l;
-                int volR = mVoiceStat[v].vol_r;
-                calcPanVolume(mVoiceStat[v].pan, &volL, &volR);
-                
-                // ベロシティの反映
-                volL = ( volL * mVoiceStat[v].velo ) >> 11;
-                volR = ( volR * mVoiceStat[v].velo ) >> 11;
-                
-                // ボリューム値の反映
-                volL = ( volL * VOLUME_CURB[ mVoiceStat[v].volume ] ) / 0x7ff;
-                volR = ( volR * VOLUME_CURB[ mVoiceStat[v].volume ] ) / 0x7ff;
-                
-                // エクスプレッションの反映
-                volL = ( volL * VOLUME_CURB[ mVoiceStat[v].expression ] ) / 0x7ff;
-                volR = ( volR * VOLUME_CURB[ mVoiceStat[v].expression ] ) / 0x7ff;
-                
-                mDSP.SetVol_L(v, volL);
-                mDSP.SetVol_R(v, volR);
-                
-                if (mEchoOnMask[v]) {
-                    ecen |= 1 << v;
-                    mEchoOnMask[v] = false;
-                }
-                if (mPMOnMask[v]) {
-                    pmon |= 1 << v;
-                    mPMOnMask[v] = false;
-                }
-                if (mNoiseOnMask[v]) {
-                    non |= 1 << v;
-                    mNoiseOnMask[v] = false;
-                }
-                if (mKeyOnFlag[v]) {
-                    kon |= 1 << v;
-                    mKeyOnFlag[v] = false;
-                }
-                
-                mPitchCount[v]++;
-            }
-            if (ecen) {
-                mDSP.SetEchoOnFlg(mEchoOnFlag, ecen);
-            }
-            if (pmon) {
-                mDSP.SetPMOnFlg(mPMOnFlag, pmon);
-            }
-            if (non) {
-                mDSP.SetNoiseOnFlg(mNoiseOnFlag, non);
-            }
-            if (kon) {
-                mDSP.KeyOnVoiceFlg(kon);
-            }
-            
-			int outl=0,outr=0;
-            mDSP.Process1Sample(outl, outr);
-			
-            mProcessbuf[0][mProcessbufPtr] = outl;
-			mProcessbuf[1][mProcessbufPtr] = outr;
-			mProcessbufPtr=(mProcessbufPtr+1)&0x0f;
-            
-            mPortamentCount++;
+            doPostMidiEvents();
 		}
 		//--
 		//16pointSinc補間
@@ -1563,37 +1132,6 @@ void C700Driver::Process( unsigned int frames, float *output[2] )
 }
 
 //-----------------------------------------------------------------------------
-void C700Driver::calcPanVolume(int value, int *volL, int *volR)
-{
-#if 0
-    int     absL = (*volL > 0)?(*volL):-(*volL);
-    int     absR = (*volR > 0)?(*volR):-(*volR);
-    int     center =(absR + absL) / 2;
-    int     diffRL = absR - absL;
-    diffRL += value * 2 - 128;
-    absL = center - diffRL;
-    absR = center + diffRL;
-    if (absL > 127) {
-        absL = 127;
-    }
-    if (absL < 0) {
-        absL = 0;
-    }
-    if (absR > 127) {
-        absR = 127;
-    }
-    if (absR < 0) {
-        absR = 0;
-    }
-    *volL = (*volL)>0 ? absL:-absL;
-    *volR = (*volR)>0 ? absR:-absR;
-#else
-    *volL = (*volL * PAN_CURB[value]) / 511;
-    *volR = (*volR * PAN_CURB[128-value]) / 511;
-#endif
-}
-
-//-----------------------------------------------------------------------------
 void C700Driver::RefreshKeyMap(void)
 {
 	if ( mVPset ) {
@@ -1624,13 +1162,24 @@ void C700Driver::SetVPSet( InstParams *vp )
 {
     mVPset = vp;
     for (int i=0; i<16; i++) {
-        mChStat[i].changeFlg = 0;
-        mChStat[i].changedVP = vp[0];
+        mCCChangeFlg[i] = 0;
+        mChannnelInst[i] = vp[0];
     }
 }
 
 //-----------------------------------------------------------------------------
-double C700Driver::GetProcessDelayTime()
+void C700Driver::handleDataEntryValueChange(int ch, bool isNRPN, int addr, int value)
 {
-    return ((mEventDelayClocks / CLOCKS_PER_SAMPLE) + 8) / static_cast<double>(INTERNAL_CLOCK);    // 8ms + resample
+    if (isNRPN) {
+        if ((addr & 0xff00) == 0x7e00) {   // #98:rr #99:126
+            mDSP.WriteReg(addr & 0x00ff, value);
+        }
+    }
+    else  {
+        switch (addr) {
+            default:
+                MidiDriverBase::handleDataEntryValueChange(ch, isNRPN, addr, value);
+                break;
+        }
+    }
 }

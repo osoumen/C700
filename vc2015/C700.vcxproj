@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -26,24 +26,24 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -201,7 +201,7 @@
     <ClInclude Include="..\DspController.h" />
     <ClInclude Include="..\DspRegFIFO.h" />
     <ClInclude Include="..\DummyCntl.h" />
-    <ClInclude Include="..\DynamicVoiceManager.h" />
+    <ClInclude Include="..\DynamicVoiceAllocator.h" />
     <ClInclude Include="..\EchoKernel.h" />
     <ClInclude Include="..\EfxAccess.h" />
     <ClInclude Include="..\FileAccess.h" />
@@ -212,6 +212,7 @@
     <ClInclude Include="..\libpng\pngconf.h" />
     <ClInclude Include="..\libpng\pngpriv.h" />
     <ClInclude Include="..\MemManager.h" />
+    <ClInclude Include="..\MidiDriverBase.h" />
     <ClInclude Include="..\MyKnob.h" />
     <ClInclude Include="..\MyParamDisplay.h" />
     <ClInclude Include="..\MySlider.h" />
@@ -284,7 +285,7 @@
     <ClCompile Include="..\DspController.cpp" />
     <ClCompile Include="..\DspRegFIFO.cpp" />
     <ClCompile Include="..\DummyCntl.cpp" />
-    <ClCompile Include="..\DynamicVoiceManager.cpp" />
+    <ClCompile Include="..\DynamicVoiceAllocator.cpp" />
     <ClCompile Include="..\EchoKernel.cpp" />
     <ClCompile Include="..\EfxAccess.cpp" />
     <ClCompile Include="..\FileAccess.cpp" />
@@ -306,6 +307,7 @@
     <ClCompile Include="..\libpng\pngwtran.c" />
     <ClCompile Include="..\libpng\pngwutil.c" />
     <ClCompile Include="..\MemManager.cpp" />
+    <ClCompile Include="..\MidiDriverBase.cpp" />
     <ClCompile Include="..\MyKnob.cpp" />
     <ClCompile Include="..\MyParamDisplay.cpp" />
     <ClCompile Include="..\MySlider.cpp" />

@@ -1,4 +1,4 @@
-/*	Copyright © 2007 Apple Inc. All Rights Reserved.
+/*	Copyright ï¿½ 2007 Apple Inc. All Rights Reserved.
 	
 	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
 			Apple Inc. ("Apple") in consideration of your agreement to the
@@ -39,6 +39,8 @@
 			POSSIBILITY OF SUCH DAMAGE.
 */
 #include "CarbonEventHandler.h"
+
+#define verify_noerr __Verify_noErr
 
 static pascal OSStatus TheEventHandler(EventHandlerCallRef inHandlerRef, EventRef inEvent, void *inUserData)
 {

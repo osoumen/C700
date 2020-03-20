@@ -14,4 +14,7 @@
 
 //#define	DEBUG_PRINT	1
 
+#undef OBJC_OLD_DISPATCH_PROTOTYPES
+#define OBJC_OLD_DISPATCH_PROTOTYPES 1
+
 #include "vstgui.h"

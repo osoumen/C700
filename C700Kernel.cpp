@@ -119,12 +119,6 @@ void C700Kernel::Reset()
 	mDriver.Reset();
 	
 	for ( int i=0; i<16; i++ ) {
-        //プラグイン状態のリセット
-        mDataEntryValue[i] = 0;
-        mRPN[i] = 0x7f7f;
-        mNRPN[i] = 0x7f7f;
-        mIsSettingNRPN[i] = false;
-
         // MIDIインジケータをリセット
 		mOnNotes[i] = 0;
 		mMaxNote[i] = 0;
@@ -178,7 +172,8 @@ bool C700Kernel::SetParameter( int id, float value )
 			break;
 			
 		case kParam_vibdepth:
-			mDriver.ModWheel(0, value);
+			//mDriver.ModWheel(0, value);
+            HandleControlChange(0, 1, value, 0);
 			break;
 			
 		case kParam_vibrate:
@@ -210,7 +205,7 @@ bool C700Kernel::SetParameter( int id, float value )
 			break;
 			
 		case kParam_program:
-			mDriver.ProgramChange(0, value, 0);
+			HandleProgramChange(0, value, 0);
 			break;
 			
 		case kParam_engine:
@@ -247,7 +242,7 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_program_14:
 		case kParam_program_15:
 		case kParam_program_16:
-			mDriver.ProgramChange( id - kParam_program_2 + 1, value, 0 );
+			HandleProgramChange( id - kParam_program_2 + 1, value, 0 );
 			break;
 			
 		case kParam_vibdepth_2:
@@ -265,7 +260,8 @@ bool C700Kernel::SetParameter( int id, float value )
 		case kParam_vibdepth_14:
 		case kParam_vibdepth_15:
 		case kParam_vibdepth_16:
-			mDriver.ModWheel( id - kParam_vibdepth_2 + 1, value);
+			//mDriver.ModWheel( id - kParam_vibdepth_2 + 1, value);
+            HandleControlChange(id - kParam_vibdepth_2 + 1, 1, value, 0);
 			break;
 			
 		case kParam_echovol_L:
@@ -1326,7 +1322,14 @@ void C700Kernel::Render( unsigned int frames, float *output[2] )
 
 void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFrame )
 {
-    mDriver.NoteOn(ch, note, vel, uniqueID, inFrame);
+    C700Driver::MIDIEvt evt;
+    evt.type = C700Driver::NOTE_ON;
+    evt.ch = ch;
+    evt.data1 = note;
+    evt.data2 = vel;
+    evt.uniqueID = uniqueID;
+    evt.toWaitCycles = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
     //printf("NoteOn inFrame:%d\n", inFrame);
 }
 
@@ -1334,7 +1337,14 @@ void C700Kernel::HandleNoteOn( int ch, int note, int vel, int uniqueID, int inFr
 
 void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 {
-    mDriver.NoteOff(ch, note, 0, uniqueID, inFrame);
+    C700Driver::MIDIEvt			evt;
+    evt.type = C700Driver::NOTE_OFF;
+    evt.ch = ch;
+    evt.data1 = note;
+    evt.data2 = 0;
+    evt.uniqueID = uniqueID;
+    evt.toWaitCycles = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
     //printf("NoteOff inFrame:%d\n", inFrame);
 }
 
@@ -1342,116 +1352,31 @@ void C700Kernel::HandleNoteOff( int ch, int note, int uniqueID, int inFrame )
 
 void C700Kernel::HandlePitchBend( int ch, int pitch1, int pitch2, int inFrame )
 {
-	mDriver.PitchBend(ch, pitch1, pitch2, inFrame);
+    C700Driver::MIDIEvt			evt;
+    evt.type = C700Driver::PITCH_BEND;
+    evt.ch = ch;
+    evt.data1 = pitch1;
+    evt.data2 = pitch2;
+    evt.uniqueID = 0;
+    evt.toWaitCycles = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleControlChange( int ch, int controlNum, int value, int inFrame )
 {
-    switch (controlNum) {
-        case 6:
-            //データ・エントリー(LSB)
-            setDataEntryLSB(ch, value, inFrame);
-            break;
-            
-        case 38:
-            // データ・エントリー(MSB)
-            setDataEntryMSB(ch, value, inFrame);
-            break;
-            
-        case 98:
-            // NRPN (LSB)
-            setNRPNLSB(ch, value);
-            break;
-            
-        case 99:
-            // NRPN (MSB)
-            setNRPNMSB(ch, value);
-            break;
-            
-        case 100:
-            // RPN (LSB)
-            setRPNLSB(ch, value);
-            break;
-            
-        case 101:
-            // RPN (MSB)
-            setRPNMSB(ch, value);
-            break;
-            
-        default:
-           mDriver.ControlChange( ch, controlNum, value, inFrame);
-           break;
-    }
+    C700Driver::MIDIEvt			evt;
+    evt.type = C700Driver::CONTROL_CHANGE;
+    evt.ch = ch;
+    evt.data1 = controlNum;
+    evt.data2 = value;
+    evt.uniqueID = 0;
+    evt.toWaitCycles = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
 }
 
-//-----------------------------------------------------------------------------
-void C700Kernel::setRPNLSB(int ch, int value)
-{
-    mRPN[ch] &= 0xff00;
-    mRPN[ch] |= value & 0x7f;
-    mIsSettingNRPN[ch] = false;
-}
 
-//-----------------------------------------------------------------------------
-void C700Kernel::setRPNMSB(int ch, int value)
-{
-    mRPN[ch] &= 0x00ff;
-    mRPN[ch] |= (value & 0x7f) << 8;
-    mIsSettingNRPN[ch] = false;
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::setNRPNLSB(int ch, int value)
-{
-    mNRPN[ch] &= 0xff00;
-    mNRPN[ch] |= value & 0x7f;
-    mIsSettingNRPN[ch] = true;
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::setNRPNMSB(int ch, int value)
-{
-    mNRPN[ch] &= 0x00ff;
-    mNRPN[ch] |= (value & 0x7f) << 8;
-    mIsSettingNRPN[ch] = true;
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::setDataEntryLSB(int ch, int value, int inFrame)
-{
-    mDataEntryValue[ch] &= 0xff00;
-    mDataEntryValue[ch] |= value & 0x7f;
-    sendDataEntryValue(ch, inFrame);
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::setDataEntryMSB(int ch, int value, int inFrame)
-{
-    mDataEntryValue[ch] &= 0x00ff;
-    mDataEntryValue[ch] |= (value & 0x7f) << 8;
-}
-
-//-----------------------------------------------------------------------------
-void C700Kernel::sendDataEntryValue(int ch, int inFrame)
-{
-    if (mIsSettingNRPN) {
-        if ((mNRPN[ch] & 0xff00) == 0x7e00) {   // #98:rr #99:126
-            mDriver.DirectRegisterWrite(ch, mNRPN[ch] & 0x00ff, mDataEntryValue[ch], inFrame);
-        }
-    }
-    else  {
-        switch (mRPN[ch]) {
-            case 0x0000:
-                mDriver.SetPBRange(ch, mDataEntryValue[ch]);
-                break;
-                
-            default:
-                break;
-        }
-    }
-}
 
 //-----------------------------------------------------------------------------
 
@@ -1469,21 +1394,28 @@ void C700Kernel::HandleProgramChange( int ch, int pg, int inFrame )
 #ifdef DEBUG_PRINT
     std::cout << "pg:" << pg << " inFrame:" << inFrame << std::endl;
 #endif
-    mDriver.ProgramChange(ch, pg, inFrame);
+    C700Driver::MIDIEvt			evt;
+    evt.type = C700Driver::PROGRAM_CHANGE;
+    evt.ch = ch;
+    evt.data1 = pg;
+    evt.data2 = 0;
+    evt.uniqueID = 0;
+    evt.toWaitCycles = inFrame;
+    mDriver.EnqueueMidiEvent(&evt);
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleResetAllControllers( int ch, int inFrame )
 {
-	mDriver.ResetAllControllers();
+    HandleControlChange( ch, 121, 0, inFrame );
 }
 
 //-----------------------------------------------------------------------------
 
 void C700Kernel::HandleAllNotesOff( int ch, int inFrame )
 {
-	mDriver.AllNotesOff();
+    HandleControlChange( ch, 123, 0, inFrame );
 	// ノートオンインジケータ初期化
 	for ( int i=0; i<16; i++ ) {
 		mOnNotes[i] = 0;
@@ -1497,14 +1429,12 @@ void C700Kernel::HandleAllNotesOff( int ch, int inFrame )
 
 void C700Kernel::HandleAllSoundOff( int ch, int inFrame )
 {
-	mDriver.AllSoundOff();
+    HandleControlChange( ch, 120, 0, inFrame );
 	// ノートオンインジケータ初期化
-	for ( int i=0; i<16; i++ ) {
-		mOnNotes[i] = 0;
-		if ( propertyNotifyFunc ) {
-			propertyNotifyFunc( kAudioUnitCustomProperty_NoteOnTrack_1+i, propNotifyUserData );
-		}
-	}
+    mOnNotes[ch] = 0;
+    if ( propertyNotifyFunc ) {
+        propertyNotifyFunc( kAudioUnitCustomProperty_NoteOnTrack_1+ch, propNotifyUserData );
+    }
 }
 
 //-----------------------------------------------------------------------------
