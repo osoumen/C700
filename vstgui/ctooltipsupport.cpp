@@ -409,7 +409,7 @@ void* InitTooltip (CFrame* frame)
     ti.hwnd   = (HWND)frame->getSystemWindow ();
     ti.uId    = (UINT)0;
     ti.hinst  = GetInstance ();
-    ti.lpszText  = TEXT("This is a tooltip");
+    ti.lpszText  = const_cast<LPSTR>(TEXT("This is a tooltip"));
 	ti.rect.left = ti.rect.top = ti.rect.bottom = ti.rect.right = 0;
 
 	// Add the tool to the control

@@ -180,7 +180,7 @@ typedef struct BRRData {
     int samples() const { return (size/9)*16; }
 } BRRData;
 
-typedef struct {
+struct InstParams {
 public:
     char        pgname[PROGRAMNAME_MAX_LEN];
     int         ar,dr,sl,sr1,sr2;
@@ -240,7 +240,7 @@ public:
     }
 private:
     BRRData     brr;    
-} InstParams;
+};
 
 float ConvertToVSTValue( float value, float min, float max );
 float ConvertFromVSTValue( float value, float min, float max );
