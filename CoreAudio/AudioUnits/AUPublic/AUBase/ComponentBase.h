@@ -1,62 +1,32 @@
-/*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
-			Apple Inc. ("Apple") in consideration of your agreement to the
-			following terms, and your use, installation, modification or
-			redistribution of this Apple software constitutes acceptance of these
-			terms.  If you do not agree with these terms, please do not use,
-			install, modify or redistribute this Apple software.
-			
-			In consideration of your agreement to abide by the following terms, and
-			subject to these terms, Apple grants you a personal, non-exclusive
-			license, under Apple's copyrights in this original Apple software (the
-			"Apple Software"), to use, reproduce, modify and redistribute the Apple
-			Software, with or without modifications, in source and/or binary forms;
-			provided that if you redistribute the Apple Software in its entirety and
-			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
-			may be used to endorse or promote products derived from the Apple
-			Software without specific prior written permission from Apple.  Except
-			as expressly stated in this notice, no other rights or licenses, express
-			or implied, are granted by Apple herein, including but not limited to
-			any patent rights that may be infringed by your derivative works or by
-			other works in which the Apple Software may be incorporated.
-			
-			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
-			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
-			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
-			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
-			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
-			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
-			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-			INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
-			MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
-			AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
-			STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
-			POSSIBILITY OF SUCH DAMAGE.
+/*
+Copyright (C) 2016 Apple Inc. All Rights Reserved.
+See LICENSE.txt for this sampleâ€™s licensing information
+
+Abstract:
+Part of Core Audio AUBase Classes
 */
+
 #ifndef __ComponentBase_h__
 #define __ComponentBase_h__
 
 #include <new>
 #include "CADebugMacros.h"
+#include "CAXException.h"
 
 #if !defined(__COREAUDIO_USE_FLAT_INCLUDES__)
 	#include <CoreAudio/CoreAudioTypes.h>
 	#include <AudioUnit/AudioUnit.h>
 
-	#if !TARGET_OS_IPHONE
+	#if !CA_USE_AUDIO_PLUGIN_ONLY
 		#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/Components.h>
 	
 		#if	(MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_5)
 			#define AudioComponentInstance			ComponentInstance
 			#define AudioComponentDescription		ComponentDescription
 			#define	AudioComponent					Component
-			#define CA_DO_NOT_USE_AUDIO_COMPONENT	1
 		#endif
+		Handle CMgr_GetComponentInstanceStorage(ComponentInstance aComponentInstance);
+		void CMgr_SetComponentInstanceStorage(ComponentInstance aComponentInstance, Handle theStorage);
 	#endif
 
 	#if MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4
@@ -66,10 +36,18 @@
 		typedef Float32 AudioUnitSampleType;
 	#endif
 
-	#include <pthread.h>
+	#if !TARGET_OS_WIN32
+		#include <pthread.h>
+	#endif
+
+	#if TARGET_OS_WIN32
+		#include "CAGuard.h"
+	#endif
 #else
 	#include "CoreAudioTypes.h"
-	#include "Components.h"
+	#if !CA_USE_AUDIO_PLUGIN_ONLY
+		#include "ComponentManagerDependenciesWin.h"
+	#endif
 	#include "AudioUnit.h"
 	#include "CAGuard.h"
 #endif
@@ -85,19 +63,104 @@
 #endif
 
 #define COMPONENT_CATCH \
-	catch (std::bad_alloc &) { result = -108/*memFullErr*/; } \
+	catch (const CAXException &ex) { result = ex.mError; } \
+	catch (std::bad_alloc &) { result = kAudio_MemFullError; } \
 	catch (OSStatus catch_err) { result = catch_err; } \
 	catch (OSErr catch_err) { result = catch_err; } \
 	catch (...) { result = -1; }
+
+/*! @class ComponentBase */
+class ComponentBase {
+public:
+	// classic MacErrors
+	enum { noErr = 0};
+
+	/*! @ctor ComponentBase */
+				ComponentBase(AudioComponentInstance inInstance);
+				
+	/*! @dtor ~ComponentBase */
+	virtual 	~ComponentBase();
+	
+	/*! @method PostConstructor */
+	virtual void			PostConstructor();
+	
+	/*! @method PreDestructor */
+	virtual void			PreDestructor();
+
+#if !CA_USE_AUDIO_PLUGIN_ONLY
+	/*! @method Version */
+	virtual OSStatus		Version();
+
+	/*! @method ComponentEntryDispatch */
+	static OSStatus		ComponentEntryDispatch(ComponentParameters *p, ComponentBase *This);
+
+	/*! GetSelectorForCanDo */
+	static SInt16		GetSelectorForCanDo(ComponentParameters *params);
+#endif
+	
+	/*! @method GetComponentInstance */
+	AudioComponentInstance		GetComponentInstance() const { return mComponentInstance; }
+
+	/*! @method GetComponentDescription */
+	AudioComponentDescription	GetComponentDescription() const;
+
+	// This global variable is so that new instances know how they were instantiated: via the Component Manager, 
+	// or as AudioComponents. It's ugly, but preferable to altering the constructor of every class in the hierarchy.
+	// It's safe because construction is protected by ComponentInitLocker.
+	enum EInstanceType { kComponentMgrInstance, kAudioComponentInstance };
+	static EInstanceType sNewInstanceType;
+
+	/*! @method IsPluginObject */
+	bool			IsPluginObject () const { return mInstanceType == kAudioComponentInstance; }
+	/*! @method IsCMgrObject */
+	bool			IsCMgrObject () const { return mInstanceType == kComponentMgrInstance; }
+
+	/*! @method AP_Open */
+	static OSStatus AP_Open(void *self, AudioUnit compInstance);
+
+	/*! @method AP_Close */
+	static OSStatus AP_Close(void *self);
+	
+protected:
+	/*! @var mComponentInstance */
+	AudioComponentInstance		mComponentInstance;
+	EInstanceType				mInstanceType;
+};
 
 class ComponentInitLocker 
 {
 #if TARGET_OS_MAC
 public:
-	ComponentInitLocker() { pthread_mutex_lock(&sComponentOpenMutex); }
-	~ComponentInitLocker() { pthread_mutex_unlock(&sComponentOpenMutex); }
+	ComponentInitLocker() 
+	{ 
+		pthread_once(&sOnce, InitComponentInitLocker);
+		pthread_mutex_lock(&sComponentOpenMutex); 
+		mPreviousNewInstanceType = ComponentBase::sNewInstanceType;
+	}
+	~ComponentInitLocker() 
+	{ 
+		ComponentBase::sNewInstanceType = mPreviousNewInstanceType;
+		pthread_mutex_unlock(&sComponentOpenMutex); 
+	}
+
+	// There are situations (11844772) where we need to be able to release the lock early.
+	class Unlocker {
+	public:
+		Unlocker()
+		{
+			pthread_mutex_unlock(&sComponentOpenMutex);
+		}
+		~Unlocker()
+		{
+			pthread_mutex_lock(&sComponentOpenMutex); 
+		}
+	};
+
 private:
 	static pthread_mutex_t sComponentOpenMutex;
+	static pthread_once_t sOnce;
+	static void InitComponentInitLocker();
+	
 #elif TARGET_OS_WIN32
 public:
 	bool sNeedsUnlocking;
@@ -106,10 +169,64 @@ public:
 private:
 	static CAGuard	sComponentOpenGuard;
 #endif
+	
+private:
+	ComponentBase::EInstanceType	mPreviousNewInstanceType;
 };
 
-#if !TARGET_OS_IPHONE
-	/*! @class ComponentEntryPoint */
+/*! @class AudioComponentPlugInInstance */ 
+struct AudioComponentPlugInInstance {
+	AudioComponentPlugInInterface		mPlugInInterface;
+	void *								(*mConstruct)(void *memory, AudioComponentInstance ci);
+	void								(*mDestruct)(void *memory);
+	void *								mPad[2];				// pad to a 16-byte boundary (in either 32 or 64 bit mode)
+	UInt32								mInstanceStorage;		// the ACI implementation object is constructed into this memory
+																// this member is just a placeholder. it is aligned to a 16byte boundary
+};
+
+/*! @class APFactory */ 
+template <class APMethodLookup, class Implementor>
+class APFactory {
+public:
+	static void *Construct(void *memory, AudioComponentInstance compInstance)
+	{
+		return new(memory) Implementor(compInstance);
+	}
+	
+	static void Destruct(void *memory)
+	{
+		((Implementor *)memory)->~Implementor();
+	}
+
+	// This is the AudioComponentFactoryFunction. It returns an AudioComponentPlugInInstance.
+	// The actual implementation object is not created until Open().
+	static AudioComponentPlugInInterface *Factory(const AudioComponentDescription * /* inDesc */)
+	{
+		AudioComponentPlugInInstance *acpi = 
+				(AudioComponentPlugInInstance *)malloc( offsetof(AudioComponentPlugInInstance, mInstanceStorage) + sizeof(Implementor) );
+		acpi->mPlugInInterface.Open = ComponentBase::AP_Open;
+		acpi->mPlugInInterface.Close = ComponentBase::AP_Close;
+		acpi->mPlugInInterface.Lookup = APMethodLookup::Lookup;
+		acpi->mPlugInInterface.reserved = NULL;
+		acpi->mConstruct = Construct;
+		acpi->mDestruct = Destruct;
+		acpi->mPad[0] = NULL;
+		acpi->mPad[1] = NULL;
+		return (AudioComponentPlugInInterface*)acpi;
+	}
+	
+	// This is for runtime registration (not for plug-ins loaded from bundles).
+	static AudioComponent Register(UInt32 type, UInt32 subtype, UInt32 manuf, CFStringRef name, UInt32 vers, UInt32 flags=0)
+	{
+		AudioComponentDescription desc = { type, subtype, manuf, flags, 0 };
+		return AudioComponentRegister(&desc, name, vers, Factory); 
+	}
+};
+
+#if !CA_USE_AUDIO_PLUGIN_ONLY
+/*! @class ComponentEntryPoint 
+ *	@discussion This is only used for a component manager version
+*/
 template <class Class>
 class ComponentEntryPoint {
 public:
@@ -123,14 +240,13 @@ public:
 				// solve a host of initialization thread safety issues.
 				ComponentInitLocker lock;
 
+				ComponentBase::sNewInstanceType = ComponentBase::kComponentMgrInstance;
 				ComponentInstance ci = (ComponentInstance)(params->params[0]);
 				Class *This = new Class((AudioComponentInstance)ci);
 				This->PostConstructor();	// allows base class to do additional initialization
 											// once the derived class is fully constructed
 				
-				#if !CA_AU_IS_ONLY_PLUGIN
-					SetComponentInstanceStorage(ci, (Handle)This);
-				#endif
+				CMgr_SetComponentInstanceStorage(ci, (Handle)This);
 			} else
 				result = Class::ComponentEntryDispatch(params, obj);
 		}
@@ -151,25 +267,26 @@ public:
 	}
 };
 
-#if TARGET_OS_MAC && TARGET_CPU_PPC && !TARGET_RT_MAC_MACHO
-	// for OS 9, a PPC native component's entry point must be a routine descriptor
-	#define COMPONENT_ENTRY(Class) \
-		extern "C" OSStatus Class##Entry(ComponentParameters *params, Class *obj); \
-		extern "C" OSStatus Class##Entry(ComponentParameters *params, Class *obj) { \
-			return ComponentEntryPoint<Class>::Dispatch(params, obj); \
-		} \
-	\
-	struct RoutineDescriptor Class##EntryRD = \
-		BUILD_ROUTINE_DESCRIPTOR((kPascalStackBased | RESULT_SIZE (kFourByteCode) | \
-								STACK_ROUTINE_PARAMETER (1, kFourByteCode) | \
-								STACK_ROUTINE_PARAMETER (2, kFourByteCode)), Class##Entry);
-#else
-	#define COMPONENT_ENTRY(Class) \
-		extern "C" OSStatus Class##Entry(ComponentParameters *params, Class *obj); \
-		extern "C" OSStatus Class##Entry(ComponentParameters *params, Class *obj) { \
-			return ComponentEntryPoint<Class>::Dispatch(params, obj); \
-		}
-#endif
+// NOTE: The Carbon Component Manager is deprecated in Mountain Lion (10.8).
+// This macro should not be used with new audio components.
+// It is only for backwards compatibility with Lion and Snow Leopard.
+// This macro registers both an Audio Component plugin and a Carbon Component Manager version.
+#define AUDIOCOMPONENT_ENTRY(FactoryType, Class) \
+    extern "C" OSStatus Class##Entry(ComponentParameters *params, Class *obj); \
+    extern "C" OSStatus Class##Entry(ComponentParameters *params, Class *obj) { \
+        return ComponentEntryPoint<Class>::Dispatch(params, obj); \
+    } \
+    extern "C" void * Class##Factory(const AudioComponentDescription *inDesc); \
+    extern "C" void * Class##Factory(const AudioComponentDescription *inDesc) { \
+        return FactoryType<Class>::Factory(inDesc); \
+    }
+    // the only component we still support are the carbon based view components
+    // you should be using this macro now to exclusively register those types
+#define VIEW_COMPONENT_ENTRY(Class) \
+    extern "C" OSStatus Class##Entry(ComponentParameters *params, Class *obj); \
+    extern "C" OSStatus Class##Entry(ComponentParameters *params, Class *obj) { \
+        return ComponentEntryPoint<Class>::Dispatch(params, obj); \
+    }
 
 	/*! @class ComponentRegistrar */
 template <class Class, OSType Type, OSType Subtype, OSType Manufacturer>
@@ -184,43 +301,15 @@ public:
 #else
 #define COMPONENT_ENTRY(Class)
 #define COMPONENT_REGISTER(Class)
-#endif // !TARGET_OS_IPHONE
+// This macro is used to generate the Entry Point for a given Audio Component.
+// You should be using this macro now.
+#define AUDIOCOMPONENT_ENTRY(FactoryType, Class) \
+    extern "C" void * Class##Factory(const AudioComponentDescription *inDesc); \
+    extern "C" void * Class##Factory(const AudioComponentDescription *inDesc) { \
+        return FactoryType<Class>::Factory(inDesc); \
+    }
 
+#endif // !CA_USE_AUDIO_PLUGIN_ONLY
 
-	/*! @class ComponentBase */
-class ComponentBase {
-public:
-	// classic MacErrors
-	enum { noErr = 0, paramErr = -50, memFullErr = -108 };
-
-	/*! @ctor ComponentBase */
-				ComponentBase(AudioComponentInstance inInstance) : mComponentInstance(inInstance) { }
-	/*! @dtor ~ComponentBase */
-	virtual 	~ComponentBase();
-	
-	/*! @method PostConstructor */
-	virtual void			PostConstructor();
-	
-	/*! @method PreDestructor */
-	virtual void			PreDestructor();
-
-#if !TARGET_OS_IPHONE
-	/*! @method Version */
-	virtual OSStatus		Version();
-
-	/*! @method ComponentEntryDispatch */
-	static OSStatus		ComponentEntryDispatch(ComponentParameters *p, ComponentBase *This);
-#endif
-	
-	/*! @method GetComponentInstance */
-	AudioComponentInstance		GetComponentInstance() const { return mComponentInstance; }
-
-	/*! @method GetComponentDescription */
-	AudioComponentDescription	GetComponentDescription() const;
-
-protected:
-	/*! @var mComponentInstance */
-	AudioComponentInstance		mComponentInstance;
-};
 
 #endif // __ComponentBase_h__

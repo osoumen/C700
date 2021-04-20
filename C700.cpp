@@ -5,13 +5,14 @@
 
 //-----------------------------------------------------------------------------
 
-COMPONENT_ENTRY(C700)
+//COMPONENT_ENTRY(C700)
+AUDIOCOMPONENT_ENTRY(AUMusicDeviceFactory, C700)
 
 //-----------------------------------------------------------------------------
 //	C700::C700
 //-----------------------------------------------------------------------------
 C700::C700(AudioUnit component)
-: MusicDeviceBase(component, 0, 1, 32, 0)
+: MusicDeviceBase(component, 0, 1/*, 32, 0*/)
 , mEfx(NULL)
 {
     createPropertyParamMap(mPropertyParams);
@@ -686,11 +687,10 @@ OSStatus C700::HandleControlChange(	UInt8 	inChannel,
 //	C700::HandleProgramChange
 //-----------------------------------------------------------------------------
 OSStatus C700::HandleProgramChange(	UInt8	inChannel,
-                                    UInt8	inValue,
-                                    UInt32  inStartFrame)
+                                    UInt8	inValue)
 {
-	mEfx->HandleProgramChange(inChannel, inValue, inStartFrame);
-	return MusicDeviceBase::HandleProgramChange(inChannel, inValue, inStartFrame);
+	mEfx->HandleProgramChange(inChannel, inValue, 0/*, inStartFrame*/);
+	return MusicDeviceBase::HandleProgramChange(inChannel, inValue);
 }
 
 //-----------------------------------------------------------------------------

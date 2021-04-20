@@ -87,10 +87,16 @@ inline HIDDEN void set_Objc_Value (id obj, const char* name, id value)
 }
 
 #define __OBJC_SUPER(x) objc_super __os; __os.receiver = x; __os.super_class = class_getSuperclass ([x class]);
-#define SUPER	&__os
+#define SUPER    static_cast<id> (&__os)
 #define OBJC_GET_VALUE(x,y) get_Objc_Value (x, #y)
 #define OBJC_SET_VALUE(x,y,z) set_Objc_Value (x, #y, (id)z)
 
+//------------------------------------------------------------------------------------
+static id (*SuperInit) (id, SEL) = (id (*) (id, SEL))objc_msgSendSuper;
+static id (*SuperInitWithFrame) (id, SEL, NSRect) = (id (*) (id, SEL, NSRect))objc_msgSendSuper;
+static void (*SuperDealloc) (id, SEL) = (void (*) (id, SEL))objc_msgSendSuper;
+static void (*SuperRemoveFromSuperview) (id, SEL) = SuperDealloc;
+static void (*SuperEventMsg) (id, SEL, NSEvent*) = (void (*) (id, SEL, NSEvent*))objc_msgSendSuper;
 
 //------------------------------------------------------------------------------------
 @interface NSObject (VSTGUI_NSView)
@@ -529,7 +535,7 @@ static id VSTGUI_NSView_Init (id self, SEL _cmd, void* _frame, const void* _size
 	NSRect nsSize = nsRectFromCRect (*size);
 
 	__OBJC_SUPER(self)
-	self = objc_msgSendSuper (SUPER, @selector(initWithFrame:), nsSize); // self = [super initWithFrame: nsSize];
+	self = SuperInitWithFrame (SUPER, @selector(initWithFrame:), nsSize); // self = [super initWithFrame: nsSize];
 	if (self)
 	{
 		OBJC_SET_VALUE(self, _vstguiframe, frame); //		_vstguiframe = frame;
@@ -668,7 +674,7 @@ static void VSTGUI_NSView_mouseDown (id self, SEL _cmd, NSEvent* theEvent)
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseDown: theEvent])
-		objc_msgSendSuper (SUPER, @selector(mouseDown:), theEvent);
+        SuperEventMsg (SUPER, @selector(mouseDown:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -676,7 +682,7 @@ static void VSTGUI_NSView_rightMouseDown (id self, SEL _cmd, NSEvent* theEvent)
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseDown: theEvent])
-		objc_msgSendSuper (SUPER, @selector(rightMouseDown:), theEvent);
+        SuperEventMsg (SUPER, @selector(rightMouseDown:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -684,7 +690,7 @@ static void VSTGUI_NSView_otherMouseDown (id self, SEL _cmd, NSEvent* theEvent)
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseDown: theEvent])
-		objc_msgSendSuper (SUPER, @selector(otherMouseDown:), theEvent);
+        SuperEventMsg (SUPER, @selector(otherMouseDown:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -692,7 +698,7 @@ static void VSTGUI_NSView_mouseUp (id self, SEL _cmd, NSEvent* theEvent)
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseUp: theEvent])
-		objc_msgSendSuper (SUPER, @selector(mouseUp:), theEvent);
+        SuperEventMsg (SUPER, @selector(mouseUp:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -700,7 +706,7 @@ static void VSTGUI_NSView_rightMouseUp (id self, SEL _cmd, NSEvent* theEvent)
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseUp: theEvent])
-		objc_msgSendSuper (SUPER, @selector(rightMouseUp:), theEvent);
+        SuperEventMsg (SUPER, @selector(rightMouseUp:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -708,7 +714,7 @@ static void VSTGUI_NSView_otherMouseUp (id self, SEL _cmd, NSEvent* theEvent)
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseUp: theEvent])
-		objc_msgSendSuper (SUPER, @selector(otherMouseUp:), theEvent);
+        SuperEventMsg (SUPER, @selector(otherMouseUp:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -716,7 +722,7 @@ static void VSTGUI_NSView_mouseMoved (id self, SEL _cmd, NSEvent* theEvent)
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseMoved: theEvent])
-		objc_msgSendSuper (SUPER, @selector(mouseMoved:), theEvent);
+        SuperEventMsg (SUPER, @selector(mouseMoved:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -724,7 +730,7 @@ static void VSTGUI_NSView_mouseDragged (id self, SEL _cmd, NSEvent* theEvent)
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseMoved: theEvent])
-		objc_msgSendSuper (SUPER, @selector(mouseDragged:), theEvent);
+        SuperEventMsg (SUPER, @selector(mouseDragged:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -732,7 +738,7 @@ static void VSTGUI_NSView_rightMouseDragged (id self, SEL _cmd, NSEvent* theEven
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseMoved: theEvent])
-		objc_msgSendSuper (SUPER, @selector(rightMouseDragged:), theEvent);
+        SuperEventMsg (SUPER, @selector(rightMouseDragged:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -740,7 +746,7 @@ static void VSTGUI_NSView_otherMouseDragged (id self, SEL _cmd, NSEvent* theEven
 {
 	__OBJC_SUPER(self)
 	if (![self onMouseMoved: theEvent])
-		objc_msgSendSuper (SUPER, @selector(otherMouseDragged:), theEvent);
+        SuperEventMsg (SUPER, @selector(otherMouseDragged:), theEvent);
 }
 
 //------------------------------------------------------------------------------------
@@ -929,7 +935,7 @@ struct VSTGUI_NSMenu_Var
 static id VSTGUI_NSMenu_Init (id self, SEL _cmd, void* _menu)
 {
 	__OBJC_SUPER(self)
-	self = objc_msgSendSuper (SUPER, @selector(init)); // self = [super init];
+	self = SuperInit (SUPER, @selector(init)); // self = [super init];
 	if (self)
 	{
 		NSMenu* nsMenu = (NSMenu*)self;
@@ -1019,7 +1025,7 @@ static void VSTGUI_NSMenu_Dealloc (id self, SEL _cmd)
 	if (var)
 		delete var;
 	__OBJC_SUPER(self)
-	objc_msgSendSuper (SUPER, @selector(dealloc)); // [super dealloc];
+    SuperDealloc (SUPER, @selector(dealloc)); // [super dealloc];
 }
 
 //------------------------------------------------------------------------------------
@@ -1106,7 +1112,7 @@ static id VSTGUI_NSTextField_Init (id self, SEL _cmd, void* textEdit)
 
 		editFrameRect.origin.x = 0;
 		editFrameRect.origin.y = 0;
-		self = objc_msgSendSuper (SUPER, @selector(initWithFrame:), editFrameRect);
+		self = SuperInitWithFrame (SUPER, @selector(initWithFrame:), editFrameRect);
 		if (!self)
 		{
 			[containerView release];
@@ -1182,7 +1188,7 @@ static void VSTGUI_NSTextField_RemoveFromSuperview (id self, SEL _cmd)
 	{
 		[containerView removeFromSuperview];
 		__OBJC_SUPER(self)
-		objc_msgSendSuper (SUPER, @selector(removeFromSuperview)); // [super removeFromSuperview];
+        SuperRemoveFromSuperview (SUPER, @selector(removeFromSuperview)); // [super removeFromSuperview];
 		[containerView release];
 	}
 }
@@ -1852,7 +1858,7 @@ bool CocoaFileSelector::runModalInternal ()
 id VSTGUI_FileSelector_Delegate_Init (id self, SEL _cmd, void* fileSelector)
 {
 	__OBJC_SUPER(self)
-	self = objc_msgSendSuper (SUPER, @selector(init)); // self = [super init];
+	self = SuperInit (SUPER, @selector(init)); // self = [super init];
 	if (self)
 	{
 		((CocoaFileSelector*)fileSelector)->remember ();
@@ -1868,7 +1874,7 @@ void VSTGUI_FileSelector_Delegate_Dealloc (id self, SEL _cmd)
 	if (fileSelector)
 		((CocoaFileSelector*)fileSelector)->forget ();
 	__OBJC_SUPER(self)
-	objc_msgSendSuper (SUPER, @selector(dealloc)); // [super dealloc];
+    SuperDealloc (SUPER, @selector(dealloc)); // [super dealloc];
 }
 
 //-----------------------------------------------------------------------------

@@ -1,43 +1,11 @@
-/*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
-			Apple Inc. ("Apple") in consideration of your agreement to the
-			following terms, and your use, installation, modification or
-			redistribution of this Apple software constitutes acceptance of these
-			terms.  If you do not agree with these terms, please do not use,
-			install, modify or redistribute this Apple software.
-			
-			In consideration of your agreement to abide by the following terms, and
-			subject to these terms, Apple grants you a personal, non-exclusive
-			license, under Apple's copyrights in this original Apple software (the
-			"Apple Software"), to use, reproduce, modify and redistribute the Apple
-			Software, with or without modifications, in source and/or binary forms;
-			provided that if you redistribute the Apple Software in its entirety and
-			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
-			may be used to endorse or promote products derived from the Apple
-			Software without specific prior written permission from Apple.  Except
-			as expressly stated in this notice, no other rights or licenses, express
-			or implied, are granted by Apple herein, including but not limited to
-			any patent rights that may be infringed by your derivative works or by
-			other works in which the Apple Software may be incorporated.
-			
-			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
-			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
-			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
-			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
-			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
-			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
-			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-			INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
-			MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
-			AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
-			STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
-			POSSIBILITY OF SUCH DAMAGE.
+/*
+Copyright (C) 2016 Apple Inc. All Rights Reserved.
+See LICENSE.txt for this sampleâ€™s licensing information
+
+Abstract:
+Part of Core Audio AUBase Classes
 */
+
 #ifndef __AUBase_h__
 #define __AUBase_h__
 
@@ -53,7 +21,6 @@
 
 #include <vector>
 
-#include "ComponentBase.h"
 #include "AUScopeElement.h"
 #include "AUInputElement.h"
 #include "AUOutputElement.h"
@@ -61,20 +28,28 @@
 #include "CAMath.h"
 #include "CAThreadSafeList.h"
 #include "CAVectorUnit.h"
-
-#if 0 && DEBUG
-	#include "CATrace.h"
+#include "CAMutex.h"
+#if !defined(__COREAUDIO_USE_FLAT_INCLUDES__)
+	#include <AudioUnit/AudioUnit.h>
+	#if !CA_BASIC_AU_FEATURES
+		#include <AudioUnit/MusicDevice.h>
+	#endif
 #else
-	#define CATRACE(code, a, b, c, d)
-#endif	
-
-typedef AUElement AUGlobalElement;
-#if !TARGET_OS_IPHONE
-	typedef AUElement AUGroupElement;
-	typedef AUElement AUPartElement;
+	#include "AudioUnit.h"
+	#if !CA_BASIC_AU_FEATURES
+		#include "MusicDevice.h"
+	#endif
 #endif
 
+#ifndef AUTRACE
+	#define AUTRACE(code, obj, a, b, c, d)
+#endif	
 
+#include "AUPlugInDispatch.h"
+
+#ifndef CA_CANONICAL_DEPRECATED
+	#define CA_CANONICAL_DEPRECATED
+#endif
 
 // ________________________________________________________________________
 // These are to be moved to the public AudioUnit headers
@@ -88,20 +63,17 @@ typedef AUElement AUGlobalElement;
 #define kAUDefaultMaxFramesPerSlice	2048 
 #endif
 
-class AUDebugDispatcher;
-
 // ________________________________________________________________________
 
 /*! @class AUBase */
-class AUBase : public ComponentBase, public AUElementCreator {
+class AUBase : public ComponentBase {
 public:
 
 	/*! @ctor AUBase */
 								AUBase(					AudioComponentInstance			inInstance, 
 														UInt32							numInputElements,
 														UInt32							numOutputElements,
-														UInt32							numGroupElements = 0,
-														UInt32							numPartElements = 0);
+														UInt32							numGroupElements = 0);
 	/*! @dtor AUBase */
 	virtual						~AUBase();
 	
@@ -117,6 +89,11 @@ public:
 									// Or, a subclass may call this in order to have access to elements
 									// in its constructor.
 
+	/*! @method CreateExtendedElements */
+	virtual void CreateExtendedElements() {}
+
+#pragma mark -
+#pragma mark AU dispatch
 	// ________________________________________________________________________
 	// Virtual methods (mostly) directly corresponding to the entry points.  Many of these
 	// have useful implementations here and will not need overriding.
@@ -233,18 +210,8 @@ public:
 														AudioUnitParameterValue			inValue,
 														UInt32							inBufferOffsetInFrames);
 
-#if !TARGET_OS_IPHONE
-	/*! @method SetGroupParameter */
-	virtual OSStatus 	SetGroupParameter(		AudioUnitParameterID			inID,
-														AudioUnitElement 				inElement,
-														AudioUnitParameterValue			inValue,
-														UInt32							inBufferOffsetInFrames);
-
-	/*! @method GetGroupParameter */
-	virtual OSStatus 	GetGroupParameter(		AudioUnitParameterID			inID,
-														AudioUnitElement 				inElement,
-														AudioUnitParameterValue &		outValue);
-#endif
+	/*! @method CanScheduleParams */
+	virtual bool CanScheduleParameters() const = 0;
 
 	/*! @method ScheduleParameter */
 	virtual OSStatus 	ScheduleParameter (		const AudioUnitParameterEvent 	*inParameterEvent,
@@ -252,12 +219,61 @@ public:
 	
 
 	/*! @method DoRender */
-			OSStatus 	DoRender(				AudioUnitRenderActionFlags &	ioActionFlags,
+	OSStatus 	DoRender(								AudioUnitRenderActionFlags &	ioActionFlags,
 														const AudioTimeStamp &			inTimeStamp,
 														UInt32							inBusNumber,
 														UInt32							inNumberFrames,
 														AudioBufferList &				ioData);
 	
+
+	/*! @method Process */
+	OSStatus	DoProcess (							AudioUnitRenderActionFlags  &		ioActionFlags,
+													const AudioTimeStamp &				inTimeStamp,
+													UInt32								inFramesToProcess,
+													AudioBufferList &					ioData);
+	
+	/*! @method ProcessMultiple */
+	OSStatus	DoProcessMultiple (					AudioUnitRenderActionFlags  &		ioActionFlags,
+													const AudioTimeStamp &				inTimeStamp,
+													UInt32								inFramesToProcess,
+													UInt32								inNumberInputBufferLists,
+													const AudioBufferList **			inInputBufferLists,
+													UInt32 								inNumberOutputBufferLists,
+													AudioBufferList **					ioOutputBufferLists);
+		
+	/*! @method ProcessBufferLists */
+	virtual OSStatus	ProcessBufferLists(			AudioUnitRenderActionFlags &		ioActionFlags,
+													const AudioBufferList &				inBuffer,
+													AudioBufferList &					outBuffer,
+													UInt32								inFramesToProcess )
+						{
+							return kAudio_UnimplementedError;
+						}
+
+	/*! @method ProcessMultipleBufferLists */
+	virtual OSStatus	ProcessMultipleBufferLists(	AudioUnitRenderActionFlags &		ioActionFlags,
+													UInt32								inFramesToProcess, 
+												    UInt32								inNumberInputBufferLists,
+												    const AudioBufferList **			inInputBufferLists,
+												    UInt32							 	inNumberOutputBufferLists,
+												    AudioBufferList **					ioOutputBufferLists)
+						{
+							return kAudio_UnimplementedError;
+						}
+	
+	/*! @method ComplexRender */
+	virtual OSStatus	ComplexRender(				AudioUnitRenderActionFlags &		ioActionFlags, 
+													const AudioTimeStamp &				inTimeStamp, 
+													UInt32								inOutputBusNumber, 
+													UInt32								inNumberOfPackets, 
+													UInt32 *							outNumberOfPackets, 
+													AudioStreamPacketDescription *		outPacketDescriptions, 
+													AudioBufferList &					ioData, 
+													void *								outMetadata, 
+													UInt32 *							outMetadataByteSize) 
+						{	
+							return kAudio_UnimplementedError;
+						}
 
 	// Override this method if your AU processes multiple output busses completely independently --
 	// you'll want to just call Render without the NeedsToRender check.
@@ -273,7 +289,7 @@ public:
 														UInt32							inBusNumber,
 														UInt32							inNumberFrames)
 								{
-									if (NeedsToRender(inTimeStamp.mSampleTime))
+									if (NeedsToRender(inTimeStamp))
 										return Render(ioActionFlags, inTimeStamp, inNumberFrames);
 									return noErr;	// was presumably already rendered via another bus
 								}
@@ -291,6 +307,9 @@ public:
 								}
 
 								
+#pragma mark -
+#pragma mark Property Dispatch
+
 	static const Float64 kNoLastRenderedSampleTime;
 
 	// ________________________________________________________________________
@@ -324,8 +343,16 @@ public:
 														AudioUnitParameterID			inParameterID,
 														AudioUnitParameterInfo &		outParameterInfo);
 
+	virtual OSStatus			GetParameterHistoryInfo(AudioUnitScope					inScope,
+														AudioUnitParameterID			inParameterID,
+														Float32 &						outUpdatesPerSecond,
+														Float32 &						outHistoryDurationInSeconds);
+
 	/*! @method SaveState */
 	virtual OSStatus			SaveState(				CFPropertyListRef *				outData);
+    
+    /*! @method SaveExtendedScopes */
+	virtual void                SaveExtendedScopes(		CFMutableDataRef				outData) {};
 
 	/*! @method RestoreState */
 	virtual OSStatus			RestoreState(			CFPropertyListRef				inData);
@@ -355,10 +382,14 @@ public:
 		// If not a valid preset, return an error, and the pre-existing preset is restored
 	/*! @method NewFactoryPresetSet */
 	virtual OSStatus			NewFactoryPresetSet (const AUPreset & inNewFactoryPreset);
+	
+	/*! @method NewCustomPresetSet */
+	virtual OSStatus            NewCustomPresetSet (const AUPreset & inNewCustomPreset);
 
+#if !CA_USE_AUDIO_PLUGIN_ONLY
 	/*! @method GetNumCustomUIComponents */
 	virtual int					GetNumCustomUIComponents ();
-#if !TARGET_OS_IPHONE
+
 	/*! @method GetUIComponentDescs */
 	virtual void				GetUIComponentDescs (ComponentDescription* inDescArray);
 #endif
@@ -404,9 +435,11 @@ public:
 
 
 	/*! @method FormatIsCanonical */
+			CA_CANONICAL_DEPRECATED
 			bool				FormatIsCanonical(		const CAStreamBasicDescription &format);
 
 	/*! @method MakeCanonicalFormat */
+			CA_CANONICAL_DEPRECATED
 			void				MakeCanonicalFormat(	CAStreamBasicDescription &	outDesc,
 														int							numChannels = 2);
 
@@ -425,7 +458,7 @@ public:
 															
 	// ________________________________________________________________________
 
-#if !TARGET_OS_IPHONE
+#if !CA_USE_AUDIO_PLUGIN_ONLY
 	/*! @method ComponentEntryDispatch */
 	static OSStatus			ComponentEntryDispatch(	ComponentParameters *			params,
 														AUBase *						This);
@@ -437,9 +470,16 @@ public:
 	/*! @method GetScope */
 	AUScope &					GetScope(				AudioUnitScope					inScope)
 	{
-		if (inScope >= kNumScopes) COMPONENT_THROW(kAudioUnitErr_InvalidScope);
+		if (inScope >= kNumScopes) {
+			AUScope * scope = GetScopeExtended(inScope);
+			if (!scope) COMPONENT_THROW(kAudioUnitErr_InvalidScope);
+			return *scope;
+		}
 		return mScopes[inScope];
 	}
+	
+	/*! @method GetScopeExtended */
+	virtual AUScope *			GetScopeExtended (AudioUnitScope inScope) { return NULL; }
 	
 	/*! @method GlobalScope */
 	AUScope &					GlobalScope() { return mScopes[kAudioUnitScope_Global]; }
@@ -447,11 +487,9 @@ public:
 	AUScope &					Inputs()	{ return mScopes[kAudioUnitScope_Input]; }
 	/*! @method Outputs */
 	AUScope &					Outputs()	{ return mScopes[kAudioUnitScope_Output]; }
+#if !CA_BASIC_AU_FEATURES
 	/*! @method Groups */
-#if !TARGET_OS_IPHONE
 	AUScope &					Groups()	{ return mScopes[kAudioUnitScope_Group]; }
-	/*! @method Parts */
-	AUScope &					Parts()	{ return mScopes[kAudioUnitScope_Part]; }
 #endif
 	/*! @method Globals */
 	AUElement *					Globals()	{ return mScopes[kAudioUnitScope_Global].GetElement(0); }
@@ -493,11 +531,11 @@ public:
 		return static_cast<AUOutputElement *>(Outputs().SafeGetElement(inElement));
 	}
 	
-#if !TARGET_OS_IPHONE
+#if !CA_BASIC_AU_FEATURES
 	/*! @method GetGroup */
-	AUGroupElement *			GetGroup(				AudioUnitElement				inElement)
+	AUElement *					GetGroup(				AudioUnitElement				inElement)
 	{
-		return static_cast<AUGroupElement *>(Groups().SafeGetElement(inElement));
+		return Groups().SafeGetElement(inElement);
 	}
 #endif
 	
@@ -513,6 +551,10 @@ public:
 
 	/*! @method GetMaxFramesPerSlice */
 	UInt32						GetMaxFramesPerSlice() const { return mMaxFramesPerSlice; }
+	/*! @method UsesFixedBlockSize */
+	bool						UsesFixedBlockSize() const { return mUsesFixedBlockSize; }
+	/*! @method SetUsesFixedBlockSize */
+	void						SetUsesFixedBlockSize(bool inUsesFixedBlockSize) { mUsesFixedBlockSize = inUsesFixedBlockSize; }
 	
 	/*! @method GetVectorUnitType */
 	static SInt32				GetVectorUnitType() { return sVectorUnitType; }
@@ -523,7 +565,7 @@ public:
 	/*! @method HasSSE2 */
 	static bool					HasSSE2() { return sVectorUnitType >= kVecSSE2; }
 	/*! @method HasSSE3 */
-	static bool					HasSSE3() { return sVectorUnitType == kVecSSE3; }
+	static bool					HasSSE3() { return sVectorUnitType >= kVecSSE3; }
 	
 	/*! @method AudioUnitAPIVersion */
 	UInt8						AudioUnitAPIVersion() const { return mAudioUnitAPIVersion; }
@@ -546,11 +588,11 @@ public:
 									// says whether an input is connected or has a callback
 
 	/*! @method PropertyChanged */
-	void						PropertyChanged(		AudioUnitPropertyID				inID,
+	virtual void				PropertyChanged(		AudioUnitPropertyID				inID,
 														AudioUnitScope					inScope, 
 														AudioUnitElement				inElement);
 
-#if !TARGET_OS_IPHONE
+#if !CA_NO_AU_UI_FEATURES
 	// These calls can be used to call a Host's Callbacks. The method returns -1 if the host
 	// hasn't supplied the callback. Any other result is returned by the host.
 	// As in the API contract, for a parameter's value, you specify a pointer
@@ -605,16 +647,76 @@ public:
 
 	char*						GetLoggingString () const;
 	
-protected:
+	CAMutex*					GetMutex() { return mAUMutex; }
+
 	// ________________________________________________________________________
-	// AUElementCreator override, may be further overridden by subclasses
 	/*! @method CreateElement */
 	virtual AUElement *			CreateElement(			AudioUnitScope					scope,
 														AudioUnitElement				element);
-		
+
+#pragma mark -
+#pragma mark AU Output Base Dispatch
+	// ________________________________________________________________________
+	// ________________________________________________________________________
+	// ________________________________________________________________________
+	// output unit methods
+	/*! @method Start */
+	virtual OSStatus	Start() { return kAudio_UnimplementedError; }
+	/*! @method Stop */
+	virtual OSStatus	Stop() { return kAudio_UnimplementedError; }
+	
+#if !CA_BASIC_AU_FEATURES
+#pragma mark -
+#pragma mark AU Music Base Dispatch
+
+#if !TARGET_OS_IPHONE
+// these methods are deprecated, so we don't include them except for compatability
+	/*! @method PrepareInstrument */
+	virtual OSStatus			PrepareInstrument(MusicDeviceInstrumentID inInstrument) { return kAudio_UnimplementedError; }
+
+	/*! @method PrepareInstrument */
+	virtual OSStatus			ReleaseInstrument(MusicDeviceInstrumentID inInstrument) { return kAudio_UnimplementedError; }
+#endif
+	
+	// ________________________________________________________________________
+	// ________________________________________________________________________
+	// ________________________________________________________________________
+	// music device/music effect methods -- incomplete
+	/*! @method MIDIEvent */
+	virtual OSStatus	MIDIEvent(		UInt32 						inStatus, 
+										UInt32 						inData1, 
+										UInt32 						inData2, 
+										UInt32 						inOffsetSampleFrame) { return kAudio_UnimplementedError; }
+
+	/*! @method SysEx */
+	virtual OSStatus	SysEx(			const UInt8 *				inData, 
+										UInt32 						inLength) { return kAudio_UnimplementedError;}
+										
+	/*! @method StartNote */
+	virtual OSStatus	StartNote(		MusicDeviceInstrumentID 	inInstrument, 
+										MusicDeviceGroupID 			inGroupID, 
+										NoteInstanceID *			outNoteInstanceID, 
+										UInt32 						inOffsetSampleFrame, 
+										const MusicDeviceNoteParams &inParams) { return kAudio_UnimplementedError; }
+
+	/*! @method StopNote */
+	virtual OSStatus	StopNote(		MusicDeviceGroupID 			inGroupID, 
+										NoteInstanceID 				inNoteInstanceID, 
+										UInt32 						inOffsetSampleFrame) { return kAudio_UnimplementedError; }
+#endif
+
+	// ________________________________________________________________________
+	// ________________________________________________________________________
+	// ________________________________________________________________________
+	
+protected:
+#pragma mark -
+#pragma mark Implementation methods
+
 	/*! @method ReallocateBuffers */
 	virtual void				ReallocateBuffers();
 									// needs to be called when mMaxFramesPerSlice changes
+	virtual void				DeallocateIOBuffers();
 		
 	/*! @method FillInParameterName */
 	static void					FillInParameterName (AudioUnitParameterInfo& ioInfo, CFStringRef inName, bool inShouldRelease)
@@ -674,10 +776,10 @@ private:
 		if (result == noErr) {
 			if (ioData.mBuffers[0].mData == NULL) {
 				theOutput->CopyBufferListTo(ioData);
-				CATRACE(kCATrace_AUBaseDoRenderBus, inNumberFrames, (int)theOutput->GetBufferList().mBuffers[0].mData, 0, *(UInt32 *)ioData.mBuffers[0].mData);
+				AUTRACE(kCATrace_AUBaseDoRenderBus, mComponentInstance, inNumberFrames, (intptr_t)theOutput->GetBufferList().mBuffers[0].mData, 0, *(UInt32 *)ioData.mBuffers[0].mData);
 			} else {
 				theOutput->CopyBufferContentsTo(ioData);
-				CATRACE(kCATrace_AUBaseDoRenderBus, inNumberFrames, (int)theOutput->GetBufferList().mBuffers[0].mData, (int)ioData.mBuffers[0].mData, *(UInt32 *)ioData.mBuffers[0].mData);
+				AUTRACE(kCATrace_AUBaseDoRenderBus, mComponentInstance, inNumberFrames, (intptr_t)theOutput->GetBufferList().mBuffers[0].mData, (intptr_t)ioData.mBuffers[0].mData, *(UInt32 *)ioData.mBuffers[0].mData);
 				theOutput->InvalidateBufferList();
 			}
 		}
@@ -687,6 +789,13 @@ private:
 	/*! @method HasIcon */
 	bool						HasIcon ();
 
+	/*! @method ResetRenderTime */
+	void						ResetRenderTime ()
+								{
+									memset (&mCurrentRenderTime, 0, sizeof(mCurrentRenderTime));
+									mCurrentRenderTime.mSampleTime = kNoLastRenderedSampleTime;
+								}
+				
 protected:
 	/*! @method GetAudioChannelLayout */
 	virtual UInt32				GetChannelLayoutTags(	AudioUnitScope				scope,
@@ -708,10 +817,11 @@ protected:
 	virtual OSStatus			RemoveAudioChannelLayout(AudioUnitScope scope, AudioUnitElement element);
 	
 	/*! @method NeedsToRender */
-	bool						NeedsToRender(			Float64							inSampleTime)
+	bool						NeedsToRender(			const AudioTimeStamp &		inTimeStamp)
 								{
-									bool needsToRender = fnotequal(inSampleTime, mLastRenderedSampleTime);
-									mLastRenderedSampleTime = inSampleTime;
+									bool needsToRender = fnotequal(inTimeStamp.mSampleTime, mCurrentRenderTime.mSampleTime);
+									if (needsToRender)	// only copy this if we need to render
+										mCurrentRenderTime = inTimeStamp;
 									return needsToRender;
 								}
 	
@@ -745,7 +855,11 @@ protected:
 														UInt32				inStartFrameInBuffer,
 														UInt32				inSliceFramesToProcess,
 														UInt32				inTotalBufferFrames ) {return noErr;};	// default impl does nothing...
-
+	
+	
+	/*! @method CurrentRenderTime */
+	const AudioTimeStamp &		CurrentRenderTime () const { return mCurrentRenderTime; }
+	
 	// ________________________________________________________________________
 	//	Private data members to discourage hacking in subclasses
 private:
@@ -765,12 +879,14 @@ private:
 	};
 	typedef TThreadSafeList<RenderCallback>	RenderCallbackList;
 	
-#if TARGET_OS_IPHONE
-	enum { kNumScopes = 3 };
+protected:
+#if !CA_BASIC_AU_FEATURES
+	enum { kNumScopes = 4 };
 #else
-	enum { kNumScopes = 5 };
+	enum { kNumScopes = 3 };
 #endif
-	
+
+private:
 	/*! @var mElementsCreated */
 	bool						mElementsCreated;
 protected:
@@ -783,14 +899,12 @@ private:
 	UInt8						mAudioUnitAPIVersion;
 	
 	/*! @var mInitNumInputEls */
-	UInt32						mInitNumInputEls;
+	const UInt32				mInitNumInputEls;
 	/*! @var mInitNumOutputEls */
-	UInt32						mInitNumOutputEls;
-#if !TARGET_OS_IPHONE
+	const UInt32				mInitNumOutputEls;
+#if !CA_BASIC_AU_FEATURES
 	/*! @var mInitNumGroupEls */
-	UInt32						mInitNumGroupEls;
-	/*! @var mInitNumPartEls */
-	UInt32						mInitNumPartEls;
+	const UInt32				mInitNumGroupEls;
 #endif
 	/*! @var mScopes */
 	AUScope						mScopes[kNumScopes];
@@ -808,9 +922,9 @@ private:
 	
 	/*! @var mWantsRenderThreadID */
 	bool						mWantsRenderThreadID;
-	
-	/*! @var mLastRenderedSampleTime */
-	Float64						mLastRenderedSampleTime;
+		
+	/*! @var mCurrentRenderTime */
+	AudioTimeStamp				mCurrentRenderTime;
 	
 	/*! @var mMaxFramesPerSlice */
 	UInt32						mMaxFramesPerSlice;
@@ -821,6 +935,9 @@ private:
 	AUPreset					mCurrentPreset;
 	
 protected:
+	/*! @var mUsesFixedBlockSize */
+	bool						mUsesFixedBlockSize;
+	
 	struct PropertyListener {
 		AudioUnitPropertyID				propertyID;
 		AudioUnitPropertyListenerProc	listenerProc;
@@ -840,20 +957,26 @@ protected:
 	// if this is NOT null, it will contain identifying info about this AU.
 	char*						mLogString;
 
+	/*! @var mNickName */
+	CFStringRef					mNickName;
+
+	/*! @var mAUMutex */
+	CAMutex *					mAUMutex;
+
 private:
 	/*! @var sVectorUnitType */
 	static SInt32	sVectorUnitType;
 
-#if !TARGET_OS_IPHONE	
+#if !CA_NO_AU_HOST_CALLBACKS
 protected:
 	/*! @var mHostCallbackInfo */
 	HostCallbackInfo 			mHostCallbackInfo;
 
+#endif
+#if !CA_NO_AU_UI_FEATURES
+protected:
 	/*! @var mContextInfo */
 	CFStringRef					mContextName;
-
-public:
-	AUDebugDispatcher*			mDebugDispatcher;
 #endif
 };
 
@@ -868,7 +991,7 @@ inline 	OSStatus	AUInputElement::PullInputWithBufferList(
 	
 	if (HasConnection()) {
 			// only support connections for V2 audio units
-#if !TARGET_OS_IPHONE
+#if !CA_USE_AUDIO_PLUGIN_ONLY
 		if (mConnRenderProc != NULL)
 			theResult = reinterpret_cast<AudioUnitRenderProc>(mConnRenderProc)(
 							mConnInstanceStorage, &ioActionFlags, &inTimeStamp, mConnection.sourceOutputNumber, nFrames, inBufferList);

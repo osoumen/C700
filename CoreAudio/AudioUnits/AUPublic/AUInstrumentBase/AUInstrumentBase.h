@@ -1,43 +1,11 @@
-/*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
-			Apple Inc. ("Apple") in consideration of your agreement to the
-			following terms, and your use, installation, modification or
-			redistribution of this Apple software constitutes acceptance of these
-			terms.  If you do not agree with these terms, please do not use,
-			install, modify or redistribute this Apple software.
-			
-			In consideration of your agreement to abide by the following terms, and
-			subject to these terms, Apple grants you a personal, non-exclusive
-			license, under Apple's copyrights in this original Apple software (the
-			"Apple Software"), to use, reproduce, modify and redistribute the Apple
-			Software, with or without modifications, in source and/or binary forms;
-			provided that if you redistribute the Apple Software in its entirety and
-			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
-			may be used to endorse or promote products derived from the Apple
-			Software without specific prior written permission from Apple.  Except
-			as expressly stated in this notice, no other rights or licenses, express
-			or implied, are granted by Apple herein, including but not limited to
-			any patent rights that may be infringed by your derivative works or by
-			other works in which the Apple Software may be incorporated.
-			
-			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
-			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
-			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
-			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
-			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
-			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
-			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-			INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
-			MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
-			AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
-			STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
-			POSSIBILITY OF SUCH DAMAGE.
+/*
+Copyright (C) 2016 Apple Inc. All Rights Reserved.
+See LICENSE.txt for this sampleâ€™s licensing information
+
+Abstract:
+Part of Core Audio AUInstrument Base Classes
 */
+
 #ifndef __AUInstrumentBase__
 #define __AUInstrumentBase__
 
@@ -45,6 +13,7 @@
 #include <stdexcept>
 #include <AudioUnit/AudioUnit.h>
 #include <CoreAudio/CoreAudio.h>
+#include <libkern/OSAtomic.h>
 #include "MusicDeviceBase.h"
 #include "LockFreeFIFO.h"
 #include "SynthEvent.h"
@@ -59,20 +28,33 @@ class AUInstrumentBase : public MusicDeviceBase
 {
 public:
 			AUInstrumentBase(
-							ComponentInstance				inInstance, 
+							AudioComponentInstance			inInstance, 
 							UInt32							numInputs,
 							UInt32							numOutputs,
-							UInt32							numGroups = 32,
-							UInt32							numParts = 0);
+							UInt32							numGroups = 16,
+							UInt32							numParts = 1);
 	virtual ~AUInstrumentBase();
 
 	virtual OSStatus			Initialize();
 	
+	/*! @method Parts */
+	AUScope &					Parts()	{ return mPartScope; }
+
+	/*! @method GetPart */
+	AUElement *					GetPart( AudioUnitElement inElement)
+	{
+		return mPartScope.SafeGetElement(inElement);
+	}
+
+	virtual AUScope *			GetScopeExtended (AudioUnitScope inScope);
+
+	virtual AUElement *			CreateElement(			AudioUnitScope					inScope,
+														AudioUnitElement				inElement);
+
+	virtual void				CreateExtendedElements();
+
 	virtual void				Cleanup();
 	
-	virtual AUElement*			CreateElement(			AudioUnitScope					scope,
-														AudioUnitElement				element);
-
 	virtual OSStatus			Reset(					AudioUnitScope 					inScope,
 														AudioUnitElement 				inElement);
 														
@@ -82,6 +64,8 @@ public:
 
 	virtual bool				StreamFormatWritable(	AudioUnitScope					scope,
 														AudioUnitElement				element);
+
+	virtual bool				CanScheduleParameters() const { return false; }
 
 	virtual OSStatus			Render(					AudioUnitRenderActionFlags &	ioActionFlags,
 														const AudioTimeStamp &			inTimeStamp,
@@ -121,8 +105,7 @@ public:
 												UInt32	inStartFrame);
 
 	virtual OSStatus	HandleProgramChange(	UInt8	inChannel,
-												UInt8 	inValue,
-                                                UInt32 	inStartFrame);
+												UInt8 	inValue);
 
 	virtual OSStatus	HandlePolyPressure(		UInt8 	inChannel,
 												UInt8 	inKey,
@@ -137,23 +120,18 @@ public:
 
 	SynthNote*			GetNote(UInt32 inIndex) 
 						{ 
-							if (!mNotes) throw std::runtime_error("no notes");
+							if (!mNotes)
+								throw std::runtime_error("no notes");
 							return (SynthNote*)((char*)mNotes + inIndex * mNoteSize); 
 						}
 	
 	SynthNote*			GetAFreeNote(UInt32 inFrame);
 	void				AddFreeNote(SynthNote* inNote);
 	
-	MidiControls*		GetControls( MusicDeviceGroupID inChannel)
-						{
-							SynthGroupElement *group = GetElForGroupID(inChannel);
-							return &(group->mMidiControls);
-						}
-
-
+	friend class SynthGroupElement;
 protected:
 
-	UInt32				NextNoteID() { return IncrementAtomic(&mNoteIDCounter); }
+	UInt32				NextNoteID() { return OSAtomicIncrement32((int32_t *)&mNoteIDCounter); }
 	
 	
 	// call SetNotes in your Initialize() method to give the base class your note structures and to set the maximum 
@@ -165,12 +143,15 @@ protected:
 	virtual SynthNote*  VoiceStealing(UInt32 inFrame, bool inKillIt);
 	UInt32				MaxActiveNotes() const { return mMaxActiveNotes; }
 	UInt32				NumActiveNotes() const { return mNumActiveNotes; }
-	void				IncNumActiveNotes() { mNumActiveNotes ++; }
-	void				DecNumActiveNotes() { mNumActiveNotes --; }
+	void				IncNumActiveNotes() { ++mNumActiveNotes; }
+	void				DecNumActiveNotes() { --mNumActiveNotes; }
 	UInt32				CountActiveNotes();
-		// this call throws if there's no assigned element for the group ID
-	SynthGroupElement *	GetElForGroupID (MusicDeviceGroupID	inGroupID);
-	SynthGroupElement *	GetElForNoteID (NoteInstanceID inNoteID);
+	
+	SynthPartElement *	GetPartElement (AudioUnitElement inPartElement);
+	
+			// this call throws if there's no assigned element for the group ID
+	virtual SynthGroupElement *	GetElForGroupID (MusicDeviceGroupID	inGroupID);
+	virtual SynthGroupElement *	GetElForNoteID (NoteInstanceID inNoteID);
 
 	SInt64 mAbsoluteSampleFrame;
 
@@ -187,6 +168,9 @@ private:
 	SynthNote* mNotes;	
 	SynthNoteList mFreeNotes;
 	UInt32 mNoteSize;
+	
+	AUScope			mPartScope;
+	const UInt32	mInitNumPartEls;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,11 +179,11 @@ class AUMonotimbralInstrumentBase : public AUInstrumentBase
 {
 public:
 	AUMonotimbralInstrumentBase(
-							ComponentInstance				inInstance, 
+							AudioComponentInstance			inInstance, 
 							UInt32							numInputs,
 							UInt32							numOutputs,
-							UInt32							numGroups = 32,
-							UInt32							numParts = 0);
+							UInt32							numGroups = 16,
+							UInt32							numParts = 1);
 										
 	virtual OSStatus			RealTimeStartNote(			SynthGroupElement 			*inGroup, 
 															NoteInstanceID 				inNoteInstanceID, 
@@ -214,7 +198,7 @@ class AUMultitimbralInstrumentBase : public AUInstrumentBase
 {
 public:
 	AUMultitimbralInstrumentBase(
-							ComponentInstance				inInstance, 
+							AudioComponentInstance			inInstance, 
 							UInt32							numInputs,
 							UInt32							numOutputs,
 							UInt32							numGroups,
