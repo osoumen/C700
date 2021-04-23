@@ -360,7 +360,7 @@ OSStatus	AUMIDIBase::HandleNonNoteEvent (UInt8 status, UInt8 channel, UInt8 data
 			break;
 			
 		case kMidiMessage_ProgramChange:
-			result = HandleProgramChange(channel, data1);
+            result = HandleProgramChange(channel, data1, inStartFrame);
 			break;
 			
 		case kMidiMessage_ChannelPressure:

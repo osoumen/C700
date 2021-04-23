@@ -124,7 +124,8 @@ protected:
 
 	/*! @method HandleProgramChange */
 	virtual OSStatus	HandleProgramChange(	UInt8 	inChannel,
-												UInt8 	inValue) { return noErr; }
+                                                UInt8   inValue,
+                                                UInt32  inStartFrame) { return noErr; }
 
 	/*! @method HandlePolyPressure */
 	virtual OSStatus	HandlePolyPressure(		UInt8 	inChannel,

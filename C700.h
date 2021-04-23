@@ -90,8 +90,9 @@ public:
 											UInt32	inStartFrame);
 	
 	virtual OSStatus			HandleProgramChange(UInt8 	inChannel,
-													UInt8 	inValue);
-	
+                                                    UInt8   inValue,
+                                                    UInt32  inStartFrame);
+
 	virtual OSStatus			HandleResetAllControllers(	UInt8 	inChannel);
 	
 	virtual OSStatus			HandleAllNotesOff( UInt8 	inChannel);
