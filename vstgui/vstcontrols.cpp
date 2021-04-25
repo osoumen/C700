@@ -304,7 +304,7 @@ void COnOffButton::draw (CDrawContext *pContext)
 		else
 			pBackground->draw (pContext, size, CPoint (0, off));
 	}
-	setDirty (false);
+//	setDirty (false);
 }
 
 #if VSTGUI_ENABLE_DEPRECATED_METHODS

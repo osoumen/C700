@@ -177,8 +177,8 @@ void C700Edit::setParameter(int index, float value)
 	cntl = m_pUIView->FindControlByTag(tag);
 	while (cntl)
 	{
-		//cntl->invalid();
-        cntl->setDirty();
+		cntl->invalid();
+//        cntl->setDirty();
 		cntl->setValue(value);
 		//printf("tag=%d, value=%f\n",tag,value);
         
