@@ -339,6 +339,7 @@ void C700Edit::SetProgramName( const char *pgname )
 			//textbox->invalid();		//Windows‚Å‚Í‚±‚ê‚ª–³‚¢‚Æ‚È‚º‚©XV‚³‚ê‚È‚¢
             textbox->setDirty();
 			textbox->setText(pgname);
+			textbox->invalid();
 		}
 	}
 }

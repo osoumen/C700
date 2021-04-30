@@ -128,6 +128,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
                     if (value < 0) value = 0;
                     CMyTextEdit *textedit = reinterpret_cast<CMyTextEdit*> (mCntl[kAudioUnitCustomProperty_FadeMsTimeForSpc]);
                     textedit->setValue(value);
+					textedit->invalid();
                 }
             default:
                 efxAcc->SetPropertyValue( propertyId, value );
@@ -157,6 +158,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
 						efxAcc->SetFilePathProperty(kAudioUnitCustomProperty_SongRecordPath, path);
                         CTextLabel *textlabel = reinterpret_cast<CTextLabel*> (mCntl[kAudioUnitCustomProperty_SongRecordPath]);
                         textlabel->setText(path);
+						textlabel->invalid();
 					}
 				}
                 break;
@@ -167,6 +169,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
                     double pos = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_HostBeatPos);
                     efxAcc->SetPropertyValue(kAudioUnitCustomProperty_RecordStartBeatPos, pos);
                     mCntl[kAudioUnitCustomProperty_RecordStartBeatPos]->setValue(pos);
+					mCntl[kAudioUnitCustomProperty_RecordStartBeatPos]->invalid();
                 }
                 break;
             }
@@ -176,6 +179,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
                     double pos = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_HostBeatPos);
                     efxAcc->SetPropertyValue(kAudioUnitCustomProperty_RecordLoopStartBeatPos, pos);
                     mCntl[kAudioUnitCustomProperty_RecordLoopStartBeatPos]->setValue(pos);
+					mCntl[kAudioUnitCustomProperty_RecordLoopStartBeatPos]->invalid();
                 }
                 break;
             }
@@ -185,6 +189,7 @@ void RecordingSettingsGUI::valueChanged(CControl* control)
                     double pos = efxAcc->GetPropertyValue(kAudioUnitCustomProperty_HostBeatPos);
                     efxAcc->SetPropertyValue(kAudioUnitCustomProperty_RecordEndBeatPos, pos);
                     mCntl[kAudioUnitCustomProperty_RecordEndBeatPos]->setValue(pos);
+					mCntl[kAudioUnitCustomProperty_RecordEndBeatPos]->invalid();
                 }
                 break;
             }
@@ -356,11 +361,13 @@ bool RecordingSettingsGUI::loadCode(const char *path)
         char str[20];
         sprintf(str, "Valid [%08x]", codeVer);
         textedit->setText(str);
+		textedit->invalid();
         cUrlLinkBox->setVisible(false);
         setDirty();
     }
     else {
         textedit->setText("not Loaded");
+		textedit->invalid();
         isLoaded = false;
     }
     return isLoaded;
