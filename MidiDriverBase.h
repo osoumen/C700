@@ -91,7 +91,7 @@ public:
         INVALID_TYPE        = 0x00,
     };
     
-    typedef struct {
+    struct MIDIEvt {
         EvtType     type;
         uint8_t     ch;
         uint8_t     data1;
@@ -102,9 +102,9 @@ public:
         bool isLegato() const { return (data1&0x80)!=0 ? true:false; }
         void setAllocedVo(int vo) { ch = (ch & 0x0f) | ((vo & 0x0f) << 4); }
         int getAllocedVo() const { return (ch & 0xf0) >> 4; }
-    } MIDIEvt;
+    };
     
-    typedef struct {
+    struct ChannelStatus {
         int     prog;
         int     pitchBend;
         int     afterTouch;
@@ -121,7 +121,7 @@ public:
         bool    isSettingNRPN;
         int     rpn;
         int     nrpn;
-    } ChannelStatus;
+    };
     
     MidiDriverBase(int maxVoices=8);
     virtual ~MidiDriverBase();
