@@ -8,15 +8,6 @@
 		<data>
 		5enXM6AlT+/TntLiMQyhNhzUW8o=
 		</data>
-		<key>Resources/English.lproj/InfoPlist.strings</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			2pQVpDTE76IzCvpu3iRTwHOo7B4=
-			</data>
-			<key>optional</key>
-			<true/>
-		</dict>
 		<key>Resources/bank_a.png</key>
 		<data>
 		/5kuacnYfayLH2cP1/tEdUOT6w8=
@@ -69,6 +60,15 @@
 		<data>
 		ReCO/CzWs5PP+n0GMrMa6u7UDHM=
 		</data>
+		<key>Resources/en.lproj/InfoPlist.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			2pQVpDTE76IzCvpu3iRTwHOo7B4=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>Resources/firstopen.png</key>
 		<data>
 		WulxogfEshkFQnroUhyeXADbzjc=
@@ -171,15 +171,6 @@
 			hnhMln90qcWNAofJiQmmfBHrpIaV0MzRouZtVWKFTnM=
 			</data>
 		</dict>
-		<key>Resources/English.lproj/InfoPlist.strings</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			AISOiIqeTQm0cWvZ2x0zdBQW784nISIllHVPGGLRiXc=
-			</data>
-			<key>optional</key>
-			<true/>
-		</dict>
 		<key>Resources/bank_a.png</key>
 		<dict>
 			<key>hash2</key>
@@ -270,6 +261,15 @@
 			<data>
 			AfdBf82lFz79zP2aVxT7VL7wPA4ikUpO61FqaxtmvnU=
 			</data>
+		</dict>
+		<key>Resources/en.lproj/InfoPlist.strings</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			AISOiIqeTQm0cWvZ2x0zdBQW784nISIllHVPGGLRiXc=
+			</data>
+			<key>optional</key>
+			<true/>
 		</dict>
 		<key>Resources/firstopen.png</key>
 		<dict>

@@ -180,7 +180,7 @@ typedef struct BRRData {
     int samples() const { return (size/9)*16; }
 } BRRData;
 
-typedef struct {
+typedef struct InstParams {
 public:
     char        pgname[PROGRAMNAME_MAX_LEN];
     int         ar,dr,sl,sr1,sr2;

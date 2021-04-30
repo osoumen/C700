@@ -1131,6 +1131,7 @@ public:
 	virtual CRect &getViewSize (CRect &rect) const { rect = size; return rect; }				///< returns the current view size
 	virtual const CRect& getViewSize () const { return size; }									///< read only access to view size
 	virtual CRect getVisibleSize () const;														///< returns the visible size of the view
+	virtual CRect getVisibleSize (const CRect rect) const { return getVisibleSize(); }
 	virtual void parentSizeChanged () {}														///< notification that one of the views parent has changed its size
 	virtual CPoint& frameToLocal (CPoint& point) const;											///< conversion from frame coordinates to local view coordinates
 	virtual CPoint& localToFrame (CPoint& point) const;											///< conversion from local view coordinates to frame coordinates

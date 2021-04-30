@@ -375,7 +375,7 @@ IOReturn	ControlUSB::findInterfaces(IOUSBDeviceInterface300 **dev)
 											 &maxPacketSize, &interval);
 			
 #ifdef DEBUG_PRINT
-            char            *message;
+            const char            *message;
             if (kr2 != kIOReturnSuccess)
                 printf("Unable to get properties of pipe %d (%08x)\n",
 					   pipeRef, kr2);
@@ -384,42 +384,75 @@ IOReturn	ControlUSB::findInterfaces(IOUSBDeviceInterface300 **dev)
                 printf("PipeRef %d: ", pipeRef);
                 switch (direction)
                 {
-                    case kUSBOut:
-                        message = "out";
-                        break;
-                    case kUSBIn:
-                        message = "in";
-                        break;
-                    case kUSBNone:
-                        message = "none";
-                        break;
-                    case kUSBAnyDirn:
-                        message = "any";
-                        break;
-                    default:
-                        message = "???";
-                }
-                printf("direction %s, ", message);
+					case kUSBOut:
+					{
+						const char msg_str[] = "out";
+						message = msg_str;
+						break;
+					}
+					case kUSBIn:
+					{
+						const char msg_str[] = "in";
+						message = msg_str;
+						break;
+					}
+					case kUSBNone:
+					{
+						const char msg_str[] = "none";
+						message = msg_str;
+						break;
+					}
+					case kUSBAnyDirn:
+					{
+						const char msg_str[] = "any";
+						message = msg_str;
+						break;
+					}
+					default:
+					{
+						const char msg_str[] = "???";
+						message = msg_str;
+					}
+				}
+				printf("direction %s, ", message);
 				
-                switch (transferType)
-                {
-                    case kUSBControl:
-                        message = "control";
-                        break;
-                    case kUSBIsoc:
-                        message = "isoc";
-                        break;
-                    case kUSBBulk:
-                        message = "bulk";
-                        break;
-                    case kUSBInterrupt:
-                        message = "interrupt";
-                        break;
-                    case kUSBAnyType:
-                        message = "any";
-                        break;
-                    default:
-                        message = "???";
+				switch (transferType)
+				{
+					case kUSBControl:
+					{
+						const char msg_str[] = "control";
+						message = msg_str;
+						break;
+					}
+					case kUSBIsoc:
+					{
+						const char msg_str[] = "isoc";
+						message = msg_str;
+						break;
+					}
+					case kUSBBulk:
+					{
+						const char msg_str[] = "bulk";
+						message = msg_str;
+						break;
+					}
+					case kUSBInterrupt:
+					{
+						const char msg_str[] = "interrupt";
+						message = msg_str;
+						break;
+					}
+					case kUSBAnyType:
+					{
+						const char msg_str[] = "any";
+						message = msg_str;
+						break;
+					}
+					default:
+					{
+						const char msg_str[] = "???";
+						message = msg_str;
+					}
                 }
                 printf("transfer type %s, maxPacketSize %d\n", message,
 					   maxPacketSize);

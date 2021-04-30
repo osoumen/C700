@@ -46,7 +46,7 @@ struct SynthNoteList
 	void AddNote(SynthNote *inNote)
 	{
 #if DEBUG_PRINT
-		printf("AddNote(inNote=%p) to state: %lu\n", inNote, mState);
+		printf("AddNote(inNote=%p) to state: %u\n", inNote, mState);
 #endif
 #if USE_SANITY_CHECK
 		SanityCheck();
@@ -65,7 +65,7 @@ struct SynthNoteList
 	void RemoveNote(SynthNote *inNote)
 	{
 #if DEBUG_PRINT
-		printf("RemoveNote(inNote=%p) from state: %lu\n", inNote, mState);
+		printf("RemoveNote(inNote=%p) from state: %u\n", inNote, mState);
 #endif
 #if USE_SANITY_CHECK
 		SanityCheck();
@@ -86,7 +86,7 @@ struct SynthNoteList
 	void TransferAllFrom(SynthNoteList *inNoteList, UInt32 inFrame)
 	{
 #if DEBUG_PRINT
-		printf("TransferAllFrom: from state %lu into state %lu\n", inNoteList->mState, mState);
+		printf("TransferAllFrom: from state %u into state %u\n", inNoteList->mState, mState);
 #endif
 #if USE_SANITY_CHECK
 		SanityCheck();

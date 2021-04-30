@@ -25,16 +25,10 @@
 		8AA4CF500AAE7CFC00AA021C /* AUMIDIBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF4C0AAE7CFC00AA021C /* AUMIDIBase.h */; };
 		8AA4CF510AAE7CFC00AA021C /* MusicDeviceBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF4D0AAE7CFC00AA021C /* MusicDeviceBase.cpp */; };
 		8AA4CF520AAE7CFC00AA021C /* MusicDeviceBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF4E0AAE7CFC00AA021C /* MusicDeviceBase.h */; };
-		8AA4CF600AAE7D7A00AA021C /* AUInstrumentBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF560AAE7D7A00AA021C /* AUInstrumentBase.cpp */; };
-		8AA4CF610AAE7D7A00AA021C /* AUInstrumentBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF570AAE7D7A00AA021C /* AUInstrumentBase.h */; };
 		8AA4CF620AAE7D7A00AA021C /* LockFreeFIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF580AAE7D7A00AA021C /* LockFreeFIFO.h */; };
 		8AA4CF630AAE7D7A00AA021C /* SynthElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF590AAE7D7A00AA021C /* SynthElement.cpp */; };
 		8AA4CF640AAE7D7A00AA021C /* SynthElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5A0AAE7D7A00AA021C /* SynthElement.h */; };
 		8AA4CF650AAE7D7A00AA021C /* SynthEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5B0AAE7D7A00AA021C /* SynthEvent.h */; };
-		8AA4CF660AAE7D7A00AA021C /* SynthNote.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF5C0AAE7D7A00AA021C /* SynthNote.cpp */; };
-		8AA4CF670AAE7D7A00AA021C /* SynthNote.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5D0AAE7D7A00AA021C /* SynthNote.h */; };
-		8AA4CF680AAE7D7A00AA021C /* SynthNoteList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF5E0AAE7D7A00AA021C /* SynthNoteList.cpp */; };
-		8AA4CF690AAE7D7A00AA021C /* SynthNoteList.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5F0AAE7D7A00AA021C /* SynthNoteList.h */; };
 		8ACF4C420B2144FD00EC1825 /* AUBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C260B2144FD00EC1825 /* AUBackground.png */; };
 		8ACF4C4B0B2144FD00EC1825 /* knobBack.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C2F0B2144FD00EC1825 /* knobBack.png */; };
 		8ACF4C5A0B2144FD00EC1825 /* sliderThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */; };
@@ -396,6 +390,7 @@
 		F5D1B06F1E55E67E00C0C795 /* C700Properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */; };
 		F5D1B0701E55E67E00C0C795 /* C700Properties.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D1B06D1E55E67E00C0C795 /* C700Properties.h */; };
 		F5D1B0711E55E67E00C0C795 /* C700Properties.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D1B06D1E55E67E00C0C795 /* C700Properties.h */; };
+		F5D31EB9263C2EC2005CA2BC /* AUInstrumentBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF560AAE7D7A00AA021C /* AUInstrumentBase.cpp */; };
 		F5D69C3A1E44A7E800F62CF6 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
 		F5D69C3B1E44A7E800F62CF6 /* GUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C391E44A7E800F62CF6 /* GUIUtils.h */; };
 		F5D69C3C1E44A85C00F62CF6 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
@@ -414,7 +409,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		32BAE0B30371A71500C91783 /* C700_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700_Prefix.pch; sourceTree = "<group>"; };
 		3E0BECF80898391C00E1F0F7 /* CAVectorUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CAVectorUnit.cpp; sourceTree = "<group>"; };
 		3E0BECF90898391C00E1F0F7 /* CAVectorUnit.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CAVectorUnit.h; sourceTree = "<group>"; };
@@ -655,6 +649,7 @@
 		F5C8566E1E61DC2A0083EC15 /* PlayerCodeReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerCodeReader.h; sourceTree = "<group>"; };
 		F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C700Properties.cpp; sourceTree = "<group>"; };
 		F5D1B06D1E55E67E00C0C795 /* C700Properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C700Properties.h; sourceTree = "<group>"; };
+		F5D31EB8263C2DFD005CA2BC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIUtils.cpp; sourceTree = "<group>"; };
 		F5D69C391E44A7E800F62CF6 /* GUIUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIUtils.h; sourceTree = "<group>"; };
 		F5D69C3D1E44BCBC00F62CF6 /* RecordingViewCntls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordingViewCntls.h; sourceTree = "<group>"; };
@@ -1158,14 +1153,11 @@
 				8AA4CF500AAE7CFC00AA021C /* AUMIDIBase.h in Headers */,
 				8AA4CF520AAE7CFC00AA021C /* MusicDeviceBase.h in Headers */,
 				F557ACE719CD159300CF9792 /* MersenneTwister.h in Headers */,
-				8AA4CF610AAE7D7A00AA021C /* AUInstrumentBase.h in Headers */,
 				F59D91A11BF720EA00E5EFC6 /* blargg_endian.h in Headers */,
 				8AA4CF620AAE7D7A00AA021C /* LockFreeFIFO.h in Headers */,
 				F5C856711E61DC2A0083EC15 /* PlayerCodeReader.h in Headers */,
 				8AA4CF640AAE7D7A00AA021C /* SynthElement.h in Headers */,
 				8AA4CF650AAE7D7A00AA021C /* SynthEvent.h in Headers */,
-				8AA4CF670AAE7D7A00AA021C /* SynthNote.h in Headers */,
-				8AA4CF690AAE7D7A00AA021C /* SynthNoteList.h in Headers */,
 				8A77F1040ADE785100F2B2BE /* C700defines.h in Headers */,
 				F59D91B51BF720EA00E5EFC6 /* SPC_CPU.h in Headers */,
 				8A10AB560AE2855600271511 /* samplebrr.h in Headers */,
@@ -1380,10 +1372,11 @@
 			};
 			buildConfigurationList = 3E0BED060898391C00E1F0F7 /* Build configuration list for PBXProject "C700" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				English,
+				Base,
+				en,
 			);
 			mainGroup = 089C166AFE841209C02AAC07 /* Chip700 */;
 			projectDirPath = "";
@@ -1575,10 +1568,7 @@
 				F56018231E3DDC1200400327 /* SmcFileGenerate.cpp in Sources */,
 				8AA4CF510AAE7CFC00AA021C /* MusicDeviceBase.cpp in Sources */,
 				F5D69C3A1E44A7E800F62CF6 /* GUIUtils.cpp in Sources */,
-				8AA4CF600AAE7D7A00AA021C /* AUInstrumentBase.cpp in Sources */,
 				8AA4CF630AAE7D7A00AA021C /* SynthElement.cpp in Sources */,
-				8AA4CF660AAE7D7A00AA021C /* SynthNote.cpp in Sources */,
-				8AA4CF680AAE7D7A00AA021C /* SynthNoteList.cpp in Sources */,
 				F59D91B71BF720EA00E5EFC6 /* SPC_DSP.cpp in Sources */,
 				F59D91C11BF721CE00E5EFC6 /* DspRegFIFO.cpp in Sources */,
 				8A3E64080B2302D80091886F /* czt.cpp in Sources */,
@@ -1586,6 +1576,7 @@
 				F543D0AC147D285F00DC53A3 /* C700Driver.cpp in Sources */,
 				F597AD36160B67860003E710 /* cocoasupport.mm in Sources */,
 				F59D91A91BF720EA00E5EFC6 /* SNES_SPC.cpp in Sources */,
+				F5D31EB9263C2EC2005CA2BC /* AUInstrumentBase.cpp in Sources */,
 				F597AD38160B67860003E710 /* plugguieditor.cpp in Sources */,
 				F597AD3B160B67860003E710 /* cvstguitimer.cpp in Sources */,
 				F52674311C01E8A2006B0276 /* SpcControlDevice.cpp in Sources */,
@@ -1717,7 +1708,7 @@
 		089C167DFE841241C02AAC07 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				089C167EFE841241C02AAC07 /* English */,
+				F5D31EB8263C2DFD005CA2BC /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -1811,23 +1802,6 @@
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -1838,14 +1812,6 @@
 					"CA_USE_AUDIO_PLUGIN_ONLY=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VALUE = NO;
-				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_PREPROCESS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				RUN_CLANG_STATIC_ANALYZER = NO;
@@ -1859,23 +1825,6 @@
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
@@ -1884,14 +1833,6 @@
 					"CA_USE_AUDIO_PLUGIN_ONLY=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VALUE = NO;
-				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_PREPROCESS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				RUN_CLANG_STATIC_ANALYZER = NO;

@@ -142,7 +142,7 @@ void C700Edit::close()
 }
 
 //-----------------------------------------------------------------------------
-void C700Edit::setParameter(int index, float value)
+void C700Edit::setParameter(long index, float value)
 {
 	//エフェクタのパラメータが変化したときに呼ばれる
 	//GUI側に変化したパラメータを反映させる処理を行う
@@ -173,7 +173,7 @@ void C700Edit::setParameter(int index, float value)
 	}
 	
 	CControl	*cntl;
-	int			tag = index;
+	int			tag = static_cast<int>(index);
 	cntl = m_pUIView->FindControlByTag(tag);
 	while (cntl)
 	{
@@ -229,7 +229,7 @@ void C700Edit::setParameter(int index, float value)
 }
 
 //-----------------------------------------------------------------------------
-void C700Edit::setParameter(int index, const void *inPtr)
+void C700Edit::setParameter(long index, const void *inPtr)
 {
 #if AU
     switch ( index ) {
@@ -320,7 +320,7 @@ void C700Edit::SetLoopPoint( int lp )
 	brrdecode(brr.data, wavedata,0,0);
 	numSamples = brr.samples();
 	start = looppoint;
-	length = ((start+headView->getWidth())<numSamples?headView->getWidth():(numSamples-start));
+	length = static_cast<int>(((start+headView->getWidth())<numSamples?headView->getWidth():(numSamples-start)));
 	headView->setWave(wavedata+start, length);
 	delete[] wavedata;
 }

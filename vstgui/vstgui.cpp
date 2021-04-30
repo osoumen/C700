@@ -3085,9 +3085,9 @@ CView::CView (const CRect& size)
 , bWantsFocus (false)
 , bIsAttached (false)
 , bVisible (true)
+, autosizeFlags (kAutosizeNone)
 , pBackground (0)
 , pAttributeList (0)
-, autosizeFlags (kAutosizeNone)
 {
 	#if DEBUG
 	gNbCView++;
@@ -3107,9 +3107,9 @@ CView::CView (const CView& v)
 , bWantsFocus (v.bWantsFocus)
 , bIsAttached (false)
 , bVisible (true)
+, autosizeFlags (v.autosizeFlags)
 , pBackground (v.pBackground)
 , pAttributeList (0)
-, autosizeFlags (v.autosizeFlags)
 {
 	if (pBackground)
 		pBackground->remember ();

@@ -359,7 +359,7 @@ HIDDEN long showNSContextMenu (COptionMenu* menu, COptionMenu** usedMenu)
 	NSMenu* nsMenu = [[menuClass alloc] performSelector:@selector(initWithOptionMenu:) withObject:(id)menu];
 	CPoint p (menu->getViewSize ().left, menu->getViewSize ().top);
 	menu->localToFrame (p);
-	NSRect cellFrameRect = {0};
+    NSRect cellFrameRect = {{0}};
 	cellFrameRect.origin = nsPointFromCPoint (p);
 	cellFrameRect.size.width = menu->getViewSize ().getWidth ();
 	cellFrameRect.size.height = menu->getViewSize ().getHeight ();
@@ -789,10 +789,10 @@ static void VSTGUI_NSView_mouseExited (id self, SEL _cmd, NSEvent* theEvent)
 	long buttons = eventButton (theEvent);
 	unsigned int modifiers = [theEvent modifierFlags];
 	NSPoint nsPoint;
-	nsPoint = [NSEvent mouseLocation];
-	nsPoint = [[self window] convertScreenToBase:nsPoint];
-
-	nsPoint = [self convertPoint:nsPoint fromView:nil];
+	NSRect r = {};
+	r.origin = [NSEvent mouseLocation];
+	r = [[self window] convertRectToScreen:r];
+	nsPoint = [self convertPoint:r.origin fromView:nil];
 	if (modifiers & NSShiftKeyMask)
 		buttons |= kShift;
 	if (modifiers & NSCommandKeyMask)
@@ -957,9 +957,9 @@ static id VSTGUI_NSMenu_Init (id self, SEL _cmd, void* _menu)
 				NSString* prefixString = 0;
 				switch (menu->getPrefixNumbers ())
 				{
-					case 2:	prefixString = [NSString stringWithFormat:@"%1d ", i+1]; break;
-					case 3: prefixString = [NSString stringWithFormat:@"%02d ", i+1]; break;
-					case 4: prefixString = [NSString stringWithFormat:@"%03d ", i+1]; break;
+					case 2:	prefixString = [NSString stringWithFormat:@"%1ld ", i+1]; break;
+					case 3: prefixString = [NSString stringWithFormat:@"%02ld ", i+1]; break;
+					case 4: prefixString = [NSString stringWithFormat:@"%03ld ", i+1]; break;
 				}
 				[itemTitle insertString:prefixString atIndex:0];
 			}
@@ -1103,7 +1103,7 @@ static id VSTGUI_NSTextField_Init (id self, SEL _cmd, void* textEdit)
 		NSView* frameView = (NSView*)te->getFrame ()->getNSView ();
 		CPoint p (te->getViewSize ().left, te->getViewSize ().top);
 		te->localToFrame (p);
-		NSRect editFrameRect = {0};
+		NSRect editFrameRect = {{0}};
 		editFrameRect.origin = nsPointFromCPoint (p);
 		editFrameRect.size.width = te->getViewSize ().getWidth ();
 		editFrameRect.size.height = te->getViewSize ().getHeight ();
@@ -1293,8 +1293,10 @@ void CocoaTooltipWindow::set (CView* view, const char* tooltip)
 	p.y = view->getViewSize ().bottom;
 	view->localToFrame (p);
 	NSPoint nsp = nsPointFromCPoint (p);
-	nsp = [nsView convertPoint:nsp toView:nil];
-	nsp = [[nsView window] convertBaseToScreen:nsp];
+	NSRect r = {};
+	r.origin = nsp;
+	r = [[nsView window] convertRectToScreen:r];
+	nsp = [nsView convertPoint:r.origin fromView:nil];
 	nsp.y -= (textSize.height + 4);
 	nsp.x += (view->getViewSize ().getWidth () - textSize.width) / 2;
 	
@@ -1541,7 +1543,7 @@ static Class generateUniqueClass (NSMutableString* className, Class baseClass)
 	while ((cl = objc_lookUpClass ([className UTF8String])) != nil)
 	{
 		iteration++;
-		[className setString:[NSString stringWithFormat:@"%@_%d", _className, iteration]];
+		[className setString:[NSString stringWithFormat:@"%@_%ld", _className, iteration]];
 	}
 	Class resClass = objc_allocateClassPair (baseClass, [className UTF8String], 0);
 	return resClass;
