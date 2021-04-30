@@ -273,24 +273,30 @@ bool MidiDriverBase::doImmediateEvents( const MIDIEvt *evt )
         dEvt.toWaitCycles = GetNoteOffIntervalCycles();
         
         if (dEvt.type == NOTE_ON) {
-            bool legato = false;
-            //ボイスを確保して再生準備状態にする
-            int	v = isMonoMode(dEvt.ch, dEvt.data1) ? (dEvt.ch & 0x07):-1;
-            
-            int releasedCh;
-            v = mVoiceManager.AllocVoice(getKeyOnPriority(dEvt.ch, dEvt.data1), dEvt.ch, dEvt.uniqueID,
-                                         v, &releasedCh, &legato);
-            if (legato) {
-                dEvt.setLegato();  // レガートフラグ
-            }
-            
-            if (v != -1) {
-                handleNoteOnFirst(v, dEvt.ch, dEvt.data1, dEvt.data2, legato, releasedCh);
-                // 上位4bitに確保したボイス番号を入れる
-                dEvt.setAllocedVo(v);
-            }
+			//波形データが存在しない場合は、ここでキャンセル
+			if (isPatchLoaded(dEvt.ch, dEvt.data1)) {
+				bool legato = false;
+				//ボイスを確保して再生準備状態にする
+				int	v = isMonoMode(dEvt.ch, dEvt.data1) ? (dEvt.ch & 0x07):-1;
+				
+				int releasedCh;
+				v = mVoiceManager.AllocVoice(getKeyOnPriority(dEvt.ch, dEvt.data1), dEvt.ch, dEvt.uniqueID,
+											 v, &releasedCh, &legato);
+				if (legato) {
+					dEvt.setLegato();  // レガートフラグ
+				}
+				
+				if (v != -1) {
+					handleNoteOnFirst(v, dEvt.ch, dEvt.data1, dEvt.data2, legato, releasedCh);
+					// 上位4bitに確保したボイス番号を入れる
+					dEvt.setAllocedVo(v);
+				}
+				mDelayedEvt.push_back(dEvt);
+			}
         }
-        mDelayedEvt.push_back(dEvt);
+		else {
+			mDelayedEvt.push_back(dEvt);
+		}
         
     }
     
@@ -319,11 +325,6 @@ bool MidiDriverBase::doDelayedEvents( const MIDIEvt *evt )
                 (mVoiceManager.IsPlayingVoice(v) == false) ||     // doNoteOn1を経ていない
                 (mVoiceManager.GetVoiceUniqueID(v) != evt->uniqueID) //|| // 発音前にかき消されて上書きされた
                 ) {
-                break;
-            }
-            
-            //波形データが存在しない場合は、ここで中断
-            if (!isPatchLoaded(midiCh, note)) {
                 break;
             }
             
