@@ -347,10 +347,18 @@ VstInt32 C700VST::getChunk(void** data, bool isPreset)
 			saveChunk->addChunk(i, &param, sizeof(float));
 		}
         
+		mEfx->SetPropertyToChunk(saveChunk, mPropertyParams[kAudioUnitCustomProperty_EditingChannel]);
+		mEfx->SetPropertyToChunk(saveChunk, mPropertyParams[kAudioUnitCustomProperty_EditingProgram]);
+
         // saveToSong‚ÌÝ’è‚ð•Û‘¶
         auto it = mPropertyParams.begin();
         while (it != mPropertyParams.end()) {
             if (it->second.saveToSong) {
+				if (it->first == kAudioUnitCustomProperty_EditingChannel ||
+					it->first == kAudioUnitCustomProperty_EditingProgram) {
+					it++;
+					continue;
+				}
                 mEfx->SetPropertyToChunk(saveChunk, it->second);
             }
             it++;
@@ -392,6 +400,8 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 	ChunkReader		*saveChunk;
 	saveChunk = new ChunkReader( data, byteSize );
 	int			totalProgs;
+	int	editProg = 0;
+	int editChannel = 0;
 	
 	while ( byteSize - saveChunk->GetDataPos() > (int)sizeof( ChunkReader::MyChunkHead ) ) {
 		int		ckType;
@@ -429,12 +439,20 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
                 // •s–¾ƒ`ƒƒƒ“ƒN‚Ìê‡‚Í”ò‚Î‚·
                 saveChunk->AdvDataPos(ckSize);
             }
+			else if (it->first == kAudioUnitCustomProperty_EditingChannel) {
+				saveChunk->readData(&editChannel, ckSize);
+			}
+			else if (it->first == kAudioUnitCustomProperty_EditingProgram) {
+				saveChunk->readData(&editProg, ckSize);
+			}
             else if (mEfx->RestorePropertyFromData(saveChunk, ckSize, it->second) == false) {
                 // RestorePropertyFromData‚Å“Ç‚Ýž‚Ü‚ê‚È‚©‚Á‚½‚ç“Ç‚Ý”ò‚Î‚·
                 saveChunk->AdvDataPos(ckSize);
             }
 		}
 	}
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingChannel, editChannel);
+	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
 #if TESTING
 	printf("setChunk saveChunk->GetDataPos()=%d\n",saveChunk->GetDataPos());
 #endif	
