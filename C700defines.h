@@ -56,7 +56,7 @@ enum {
     kParam_vibdepth_15,
     kParam_vibdepth_16,
     
-    //«ƒGƒR[•”
+    //ÂÂ«Æ’GÆ’RÂ[â€¢â€
     kParam_echovol_L,
     kParam_echovol_R,
     kParam_echoFB,
@@ -240,7 +240,7 @@ public:
     }
 private:
     BRRData     brr;    
-} InstParams;
+};
 
 float ConvertToVSTValue( float value, float min, float max );
 float ConvertFromVSTValue( float value, float min, float max );
