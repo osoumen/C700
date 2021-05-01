@@ -12,8 +12,8 @@
 
 ## 動作環境
 ### macOS版
-*  Mac OS X 10.6 以降のIntel Mac
-* Audio Units または VST2.4に対応したホストアプリケーション(32/64bit)
+* macOS 10.11 以降のIntel, Apple M1 Mac
+* Audio Units または VST2.4に対応したホストアプリケーション
 
 ### Windows版
 * Windows Vista 以降のVST2.4に対応したホストアプリケーション(32/64bit)
@@ -21,14 +21,13 @@
 ## 動作確認済ホスト
 ### macOS
 
-* Logic Pro 9 (32/64bit) (10.10.5)
-* Logic Pro X 10.2.4 (64bit) (10.10.5)
+* Logic Pro 10.6.2 (Intel,Apple Silicon) (macOS 11.2.3)
 * Digital Performer 8 (32/64bit) (10.8.5)
 * Digital Performer 9.12 (32/64bit) (10.10.5)
 
 ### Windows
 
-* Cubase 8 (32/64bit) (Windows 8.1)
+* Cubase 10 (32/64bit) (Windows 10)
 
 ## Mac版とWindows版の違い
 * Mac版では、AIFF,WAV,SD2の波形データが読み込めますが、Windows版ではWAVのみです(不具合あり)
