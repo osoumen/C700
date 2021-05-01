@@ -95,7 +95,7 @@ PropertyDescription sPropertyDescription[] = {
         false,                                  // outWritable
         propertyDataTypeBool,                   // dataType
         false,                                  // readOnly
-        true,                                  // saveToProg
+        false,                                  // saveToProg
         false,                                  // saveToSong
         false,                                  // saveToGlobal
         "",                                     // savekey

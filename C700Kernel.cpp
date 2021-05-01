@@ -724,7 +724,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			if ( propertyNotifyFunc ) {
                 auto it = mPropertyParams.begin();
                 while (it != mPropertyParams.end()) {
-                    if (it->second.saveToProg) {
+                    if (it->second.saveToProg || it->first == kAudioUnitCustomProperty_Loop) {
                         propertyNotifyFunc(it->first, propNotifyUserData);
                     }
                     it++;
@@ -752,7 +752,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			if ( propertyNotifyFunc ) {
                 auto it = mPropertyParams.begin();
                 while (it != mPropertyParams.end()) {
-                    if (it->second.saveToProg) {
+                    if (it->second.saveToProg || it->first == kAudioUnitCustomProperty_Loop) {
                         propertyNotifyFunc(it->first, propNotifyUserData);
                     }
                     it++;
@@ -1239,7 +1239,7 @@ bool C700Kernel::SelectPreset( int num )
 			if ( propertyNotifyFunc ) {
                 auto it = mPropertyParams.begin();
                 while (it != mPropertyParams.end()) {
-                    if (it->second.saveToProg) {
+                    if (it->second.saveToProg || it->first == kAudioUnitCustomProperty_Loop) {
                         propertyNotifyFunc(it->first, propNotifyUserData);
                     }
                     it++;
