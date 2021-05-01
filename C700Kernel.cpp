@@ -724,7 +724,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			if ( propertyNotifyFunc ) {
                 auto it = mPropertyParams.begin();
                 while (it != mPropertyParams.end()) {
-                    if (it->second.saveToProg) {
+                    if (it->second.saveToProg || it->first == kAudioUnitCustomProperty_Loop) {
                         propertyNotifyFunc(it->first, propNotifyUserData);
                     }
                     it++;
@@ -752,7 +752,7 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 			if ( propertyNotifyFunc ) {
                 auto it = mPropertyParams.begin();
                 while (it != mPropertyParams.end()) {
-                    if (it->second.saveToProg) {
+                    if (it->second.saveToProg || it->first == kAudioUnitCustomProperty_Loop) {
                         propertyNotifyFunc(it->first, propNotifyUserData);
                     }
                     it++;
@@ -1014,14 +1014,14 @@ bool C700Kernel::SetPropertyPtrValue( int inID, const void *inPtr, int size )
 void CalcFIRParam( const float band[5], int filter[8] )
 {
 	float bandfactor[8][5] = {
-		{0.0625,0.125,		0.12500,	0.25,		0.4375},
-		{0.0625,0.11548,	0.08839,	0.04784,	-0.314209},
-		{0.0625,0.08839,	0.00000,	-0.21339,	0.0625},
-		{0.0625,0.04784,	-0.08839,	-0.11548,	0.093538},	
-		{0.0625,0.00000,	-0.12500,	0.125,		-0.0625},
-		{0.0625,-0.04784,	-0.08839,	0.11548,	-0.041761},
-		{0.0625,-0.08839,	0.00000,	-0.03661,	0.0625},
-		{0.0625,-0.11548,	0.08839,	-0.04784,	0.012432}
+		{0.0625f,0.125f,		0.12500f,	0.25f,		0.4375f},
+		{0.0625f,0.11548f,	0.08839f,	0.04784f,	-0.314209f},
+		{0.0625f,0.08839f,	0.00000f,	-0.21339f,	0.0625f},
+		{0.0625f,0.04784f,	-0.08839f,	-0.11548f,	0.093538f},	
+		{0.0625f,0.00000f,	-0.12500f,	0.125f,		-0.0625f},
+		{0.0625f,-0.04784f,	-0.08839f,	0.11548f,	-0.041761f},
+		{0.0625f,-0.08839f,	0.00000f,	-0.03661f,	0.0625f},
+		{0.0625f,-0.11548f,	0.08839f,	-0.04784f,	0.012432f}
 	};
 	
 	for (int j=0; j<8; j++) {
@@ -1239,7 +1239,7 @@ bool C700Kernel::SelectPreset( int num )
 			if ( propertyNotifyFunc ) {
                 auto it = mPropertyParams.begin();
                 while (it != mPropertyParams.end()) {
-                    if (it->second.saveToProg) {
+                    if (it->second.saveToProg || it->first == kAudioUnitCustomProperty_Loop) {
                         propertyNotifyFunc(it->first, propNotifyUserData);
                     }
                     it++;

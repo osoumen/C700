@@ -79,7 +79,7 @@ void C700Edit::SetParameterInfo(long index, float minValue, float maxValue, floa
 //-----------------------------------------------------------------------------
 bool C700Edit::getRect(ERect **erect)
 {
-	static struct ERect r={0,0,m_pBackground->getHeight(),m_pBackground->getWidth()};
+	static struct ERect r={0,0,static_cast<short>(m_pBackground->getHeight()),static_cast<short>(m_pBackground->getWidth())};
 	*erect = &r;
 	return true;
 }
@@ -142,7 +142,7 @@ void C700Edit::close()
 }
 
 //-----------------------------------------------------------------------------
-void C700Edit::setParameter(int index, float value)
+void C700Edit::setParameter(long index, float value)
 {
 	//エフェクタのパラメータが変化したときに呼ばれる
 	//GUI側に変化したパラメータを反映させる処理を行う
@@ -173,15 +173,15 @@ void C700Edit::setParameter(int index, float value)
 	}
 	
 	CControl	*cntl;
-	int			tag = index;
+	int			tag = static_cast<int>(index);
 	cntl = m_pUIView->FindControlByTag(tag);
 	while (cntl)
 	{
-		//cntl->invalid();
-        cntl->setDirty();
+//        cntl->setDirty();
 		cntl->setValue(value);
 		//printf("tag=%d, value=%f\n",tag,value);
-        
+		cntl->invalid();
+
         // 使用RAMが実機の容量を超えたら赤字に変える
         if (tag == kAudioUnitCustomProperty_TotalRAM) {
             int ramMax = BRR_ENDADDR - BRR_STARTADDR;
@@ -229,7 +229,7 @@ void C700Edit::setParameter(int index, float value)
 }
 
 //-----------------------------------------------------------------------------
-void C700Edit::setParameter(int index, const void *inPtr)
+void C700Edit::setParameter(long index, const void *inPtr)
 {
 #if AU
     switch ( index ) {
@@ -320,7 +320,7 @@ void C700Edit::SetLoopPoint( int lp )
 	brrdecode(brr.data, wavedata,0,0);
 	numSamples = brr.samples();
 	start = looppoint;
-	length = ((start+headView->getWidth())<numSamples?headView->getWidth():(numSamples-start));
+	length = static_cast<int>(((start+headView->getWidth())<numSamples?headView->getWidth():(numSamples-start)));
 	headView->setWave(wavedata+start, length);
 	delete[] wavedata;
 }
@@ -339,6 +339,7 @@ void C700Edit::SetProgramName( const char *pgname )
 			//textbox->invalid();		//Windowsではこれが無いとなぜか更新されない
             textbox->setDirty();
 			textbox->setText(pgname);
+			textbox->invalid();
 		}
 	}
 }

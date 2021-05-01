@@ -2,10 +2,29 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AudioComponents</key>
+	<array>
+		<dict>
+			<key>description</key>
+			<string>C700 AU</string>
+			<key>factoryFunction</key>
+			<string>C700Factory</string>
+			<key>manufacturer</key>
+			<string>VeMa</string>
+			<key>name</key>
+			<string>osoumen: C700</string>
+			<key>sandboxSafe</key>
+			<true/>
+			<key>subtype</key>
+			<string>C700</string>
+			<key>type</key>
+			<string>aumu</string>
+			<key>version</key>
+			<real>1025</real>
+		</dict>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
-	<key>CFBundleDocumentTypes</key>
-	<array/>
 	<key>CFBundleExecutable</key>
 	<string>C700</string>
 	<key>CFBundleGetInfoString</key>

@@ -16,7 +16,7 @@
 #include <mach/mach.h>
 
 #ifdef DEBUG_PRINT
-static int sNumInstances = 0;	//ƒfƒoƒbƒO—p
+static int sNumInstances = 0;	//ãƒ‡ãƒãƒƒã‚°ç”¨
 #endif
 
 ControlUSB::ControlUSB()
@@ -83,20 +83,20 @@ void	ControlUSB::BeginPortWait(int vendor, int product, int wpipe, int rpipe)
 	mNewDeviceAddedIter   = 0;
 	mNewDeviceRemovedIter = 0;
 	
-	// IOMasterPort‚ğæ“¾‚·‚éB
+	// IOMasterPortã‚’å–å¾—ã™ã‚‹ã€‚
 	result = IOMasterPort(MACH_PORT_NULL, &masterPort);
 	if (result || !masterPort) goto bail;
 	
-	// ƒfƒoƒCƒX‚Ìƒ}ƒbƒ`ƒ“ƒO—p‚Ì«‘‚ğì¬‚·‚éB
+	// ãƒ‡ãƒã‚¤ã‚¹ã®ãƒãƒƒãƒãƒ³ã‚°ç”¨ã®è¾æ›¸ã‚’ä½œæˆã™ã‚‹ã€‚
 	matchingDict = IOServiceMatching(kIOUSBDeviceClassName);
 	if (!matchingDict) goto bail;
 	
-	// Notification Port‚ğ¶¬‚µA‚»‚ê‚ğRun Loop Source‚Ö“o˜^‚·‚éB
+	// Notification Portã‚’ç”Ÿæˆã—ã€ãã‚Œã‚’Run Loop Sourceã¸ç™»éŒ²ã™ã‚‹ã€‚
 	mNotifyPort   = IONotificationPortCreate(masterPort);
 	runLoopSource = IONotificationPortGetRunLoopSource(mNotifyPort);
 	CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopDefaultMode);
 	
-	// «‘‚Éƒtƒ@[ƒ€ƒEƒFƒA‚Ìƒ_ƒEƒ“ƒ[ƒhŒã‚Ìƒxƒ“ƒ_[ID‚Æƒvƒƒ_ƒNƒgID‚ğ“o˜^‚·‚éB
+	// è¾æ›¸ã«ãƒ•ã‚¡ãƒ¼ãƒ ã‚¦ã‚§ã‚¢ã®ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰å¾Œã®ãƒ™ãƒ³ãƒ€ãƒ¼IDã¨ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆIDã‚’ç™»éŒ²ã™ã‚‹ã€‚
 	CFDictionarySetValue(matchingDict, 
 						 CFSTR(kUSBVendorID), 
 						 CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &vendor)); 
@@ -107,7 +107,7 @@ void	ControlUSB::BeginPortWait(int vendor, int product, int wpipe, int rpipe)
 	matchingDict = (CFMutableDictionaryRef)CFRetain(matchingDict); 
 	matchingDict = (CFMutableDictionaryRef)CFRetain(matchingDict); 
 	
-	// ƒm[ƒeƒBƒtƒBƒP[ƒVƒ‡ƒ“‚ğİ’è‚·‚éB
+	// ãƒãƒ¼ãƒ†ã‚£ãƒ•ã‚£ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¨­å®šã™ã‚‹ã€‚
 	result = IOServiceAddMatchingNotification(mNotifyPort,
 											  kIOFirstMatchNotification,
 											  matchingDict,
@@ -123,7 +123,7 @@ void	ControlUSB::BeginPortWait(int vendor, int product, int wpipe, int rpipe)
 	NewDeviceRemoved((void*)this, mNewDeviceRemovedIter);
 	NewDeviceAdded((void*)this, mNewDeviceAddedIter);
 	
-	// IOMasterPort‚ğ”jŠü‚·‚éB
+	// IOMasterPortã‚’ç ´æ£„ã™ã‚‹ã€‚
 	mach_port_deallocate(mach_task_self(), masterPort);
 	masterPort = 0;
 	
@@ -289,7 +289,7 @@ IOReturn	ControlUSB::configureDevice(IOUSBDeviceInterface300 **dev)
 	}
 	//printf("Device has %d configurations\n", numConf);
     
-    // ƒRƒ“ƒtƒBƒOƒŒ[ƒVƒ‡ƒ“EƒfƒBƒXƒNƒŠƒvƒ^‚ğæ“¾‚·‚éB
+    // ã‚³ãƒ³ãƒ•ã‚£ã‚°ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãƒ»ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã‚’å–å¾—ã™ã‚‹ã€‚
     kr = (*dev)->GetConfigurationDescriptorPtr(dev, 0, &confDesc);
     if(kr) {
         return kr;
@@ -327,7 +327,7 @@ IOReturn	ControlUSB::findInterfaces(IOUSBDeviceInterface300 **dev)
             break;
         }
 		
-        // ƒfƒoƒCƒXEƒCƒ“ƒ^[ƒtƒF[ƒX‚©‚çA‚³‚ç‚ÉƒCƒ“ƒ^[ƒtƒF[ƒX‚ğæ“¾‚·‚é
+        // ãƒ‡ãƒã‚¤ã‚¹ãƒ»ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‹ã‚‰ã€ã•ã‚‰ã«ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’å–å¾—ã™ã‚‹
         res = (*plugInInterface)->QueryInterface(plugInInterface, CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID300), (LPVOID*) &intf);
         (*plugInInterface)->Release(plugInInterface);
         if(res || !intf) {
@@ -335,7 +335,7 @@ IOReturn	ControlUSB::findInterfaces(IOUSBDeviceInterface300 **dev)
         }
 		mIntf = intf;
 		
-		// ƒCƒ“ƒ^[ƒtƒF[ƒX‚ğƒI[ƒvƒ“‚·‚é
+		// ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹
         kr = (*intf)->USBInterfaceOpen(intf);
         if(kIOReturnSuccess != kr) {
 			
@@ -346,7 +346,7 @@ IOReturn	ControlUSB::findInterfaces(IOUSBDeviceInterface300 **dev)
             continue;
         }
 		
-		// ƒCƒ“ƒ^[ƒtƒF[ƒX‚É‘¶İ‚·‚éƒGƒ“ƒhƒ|ƒCƒ“ƒg”‚ğ“¾‚é
+		// ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã«å­˜åœ¨ã™ã‚‹ã‚¨ãƒ³ãƒ‰ãƒã‚¤ãƒ³ãƒˆæ•°ã‚’å¾—ã‚‹
 		UInt8                       interfaceNumEndpoints;
         kr = (*intf)->GetNumEndpoints(intf, &interfaceNumEndpoints);
         if (kr != kIOReturnSuccess) {
@@ -375,7 +375,7 @@ IOReturn	ControlUSB::findInterfaces(IOUSBDeviceInterface300 **dev)
 											 &maxPacketSize, &interval);
 			
 #ifdef DEBUG_PRINT
-            char            *message;
+            const char            *message;
             if (kr2 != kIOReturnSuccess)
                 printf("Unable to get properties of pipe %d (%08x)\n",
 					   pipeRef, kr2);
@@ -384,42 +384,75 @@ IOReturn	ControlUSB::findInterfaces(IOUSBDeviceInterface300 **dev)
                 printf("PipeRef %d: ", pipeRef);
                 switch (direction)
                 {
-                    case kUSBOut:
-                        message = "out";
-                        break;
-                    case kUSBIn:
-                        message = "in";
-                        break;
-                    case kUSBNone:
-                        message = "none";
-                        break;
-                    case kUSBAnyDirn:
-                        message = "any";
-                        break;
-                    default:
-                        message = "???";
-                }
-                printf("direction %s, ", message);
+					case kUSBOut:
+					{
+						const char msg_str[] = "out";
+						message = msg_str;
+						break;
+					}
+					case kUSBIn:
+					{
+						const char msg_str[] = "in";
+						message = msg_str;
+						break;
+					}
+					case kUSBNone:
+					{
+						const char msg_str[] = "none";
+						message = msg_str;
+						break;
+					}
+					case kUSBAnyDirn:
+					{
+						const char msg_str[] = "any";
+						message = msg_str;
+						break;
+					}
+					default:
+					{
+						const char msg_str[] = "???";
+						message = msg_str;
+					}
+				}
+				printf("direction %s, ", message);
 				
-                switch (transferType)
-                {
-                    case kUSBControl:
-                        message = "control";
-                        break;
-                    case kUSBIsoc:
-                        message = "isoc";
-                        break;
-                    case kUSBBulk:
-                        message = "bulk";
-                        break;
-                    case kUSBInterrupt:
-                        message = "interrupt";
-                        break;
-                    case kUSBAnyType:
-                        message = "any";
-                        break;
-                    default:
-                        message = "???";
+				switch (transferType)
+				{
+					case kUSBControl:
+					{
+						const char msg_str[] = "control";
+						message = msg_str;
+						break;
+					}
+					case kUSBIsoc:
+					{
+						const char msg_str[] = "isoc";
+						message = msg_str;
+						break;
+					}
+					case kUSBBulk:
+					{
+						const char msg_str[] = "bulk";
+						message = msg_str;
+						break;
+					}
+					case kUSBInterrupt:
+					{
+						const char msg_str[] = "interrupt";
+						message = msg_str;
+						break;
+					}
+					case kUSBAnyType:
+					{
+						const char msg_str[] = "any";
+						message = msg_str;
+						break;
+					}
+					default:
+					{
+						const char msg_str[] = "???";
+						message = msg_str;
+					}
                 }
                 printf("transfer type %s, maxPacketSize %d\n", message,
 					   maxPacketSize);
@@ -427,7 +460,7 @@ IOReturn	ControlUSB::findInterfaces(IOUSBDeviceInterface300 **dev)
 #endif
 		}
 		
-		//”ñ“¯Šú“®ì—p‚Ìƒ‰ƒ“ƒ‹[ƒvƒ\[ƒX‚ğ“o˜^‚·‚é
+		//éåŒæœŸå‹•ä½œç”¨ã®ãƒ©ãƒ³ãƒ«ãƒ¼ãƒ—ã‚½ãƒ¼ã‚¹ã‚’ç™»éŒ²ã™ã‚‹
 		kr = (*intf)->CreateInterfaceAsyncEventSource(intf, &mAsyncRunLoopSource);
 		if (kr != kIOReturnSuccess)
         {
@@ -486,7 +519,7 @@ void		ControlUSB::printErr(IOReturn kr)
         }
         kr = IOObjectRelease(usbDevice);
 		
-        // ƒfƒoƒCƒXEƒvƒ‰ƒOƒCƒ“‚©‚çƒfƒoƒCƒXEƒCƒ“ƒ^[ƒtƒF[ƒX‚ğæ“¾‚·‚éB
+        // ãƒ‡ãƒã‚¤ã‚¹ãƒ»ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ã‹ã‚‰ãƒ‡ãƒã‚¤ã‚¹ãƒ»ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
         res = (*plugInInterface)->QueryInterface(plugInInterface, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID300), (LPVOID*)&dev);
         (*plugInInterface)->Release(plugInInterface);
         if (res || !dev) {
@@ -494,7 +527,7 @@ void		ControlUSB::printErr(IOReturn kr)
             continue;
         }
 		
-        // ƒfƒoƒCƒX‚ğƒI[ƒvƒ“‚·‚éB
+        // ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹ã€‚
         do {
             kr = (*dev)->USBDeviceOpen(dev);
             if(kIOReturnExclusiveAccess == kr) {
@@ -502,7 +535,7 @@ void		ControlUSB::printErr(IOReturn kr)
                 exclusiveErr++;
                 usleep(1000);
             }
-        } while((kIOReturnExclusiveAccess == kr) && (exclusiveErr < 5));	// 5‰ñ‚Ü‚ÅÄs‚·‚éB
+        } while((kIOReturnExclusiveAccess == kr) && (exclusiveErr < 5));	// 5å›ã¾ã§å†è©¦è¡Œã™ã‚‹ã€‚
         if(kIOReturnSuccess != kr) {
 			//printf("NewDeviceAdded : USBDeviceOpen error.\n");
             (*dev)->Release(dev);
@@ -544,7 +577,7 @@ void		ControlUSB::printErr(IOReturn kr)
     
     while((usbDevice = IOIteratorNext(iterator))) {
 		if (usbDevice == cusb->mUsbDevice) {
-            // ReadƒXƒŒƒbƒh‚ğ’â~
+            // Readã‚¹ãƒ¬ãƒƒãƒ‰ã‚’åœæ­¢
 			cusb->mIsPlugged = false;
             pthread_join(cusb->mReadThread, NULL);
             if (cusb->mDeviceRemovedFunc) {
@@ -642,12 +675,12 @@ void ControlUSB::BeginPortWait(LPGUID guid)
 			unsigned long sz;
 			std::basic_string<TCHAR> devpath;
 
-			// •K—v‚Èƒoƒbƒtƒ@ƒTƒCƒYæ“¾
+			// å¿…è¦ãªãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºå–å¾—
 			bResult = SetupDiGetDeviceInterfaceDetail(devinf, &spid, NULL, 0, &sz, NULL);
 			PSP_INTERFACE_DEVICE_DETAIL_DATA dev_det = (PSP_INTERFACE_DEVICE_DETAIL_DATA)(malloc(sz));
 			dev_det->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
 
-			// ƒfƒoƒCƒXƒm[ƒhæ“¾
+			// ãƒ‡ãƒã‚¤ã‚¹ãƒãƒ¼ãƒ‰å–å¾—
 			if (!SetupDiGetDeviceInterfaceDetail(devinf, &spid, dev_det, sz, &sz, NULL)) {
 				free(dev_det);
 				break;
@@ -680,22 +713,22 @@ bool ControlUSB::openDevice(std::basic_string<TCHAR> devpath)
 		NULL);
 
 	if (hNewDev == INVALID_HANDLE_VALUE) {
-		return false;
+		goto bail;
 	}
 
 	HANDLE hNewWinUsb = NULL;
 	if (!WinUsb_Initialize(hNewDev, &hNewWinUsb)) {
 		//DWORD err = GetLastError();
 		CloseHandle(hNewDev);
-		return false;
+		goto bail;
 	}
 
-	// ƒGƒ“ƒhƒ|ƒCƒ“ƒgî•ñæ“¾
+	// ã‚¨ãƒ³ãƒ‰ãƒã‚¤ãƒ³ãƒˆæƒ…å ±å–å¾—
 	USB_INTERFACE_DESCRIPTOR desc;
 	if (!WinUsb_QueryInterfaceSettings(hNewWinUsb, 0, &desc)) {
 		WinUsb_Free(hNewWinUsb);
 		CloseHandle(hNewDev);
-		return false;
+		goto bail;
 	}
 
 	for (int i = 0; i<desc.bNumEndpoints; i++) {
@@ -714,12 +747,12 @@ bool ControlUSB::openDevice(std::basic_string<TCHAR> devpath)
 		}
 	}
 
-	// ƒ^ƒCƒ€ƒAƒEƒgİ’è
+	// ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆè¨­å®š
 	ULONG timeout = 500; //ms
 	::WinUsb_SetPipePolicy(hNewWinUsb, mOutPipeId, PIPE_TRANSFER_TIMEOUT, sizeof(ULONG), &timeout);
 	::WinUsb_SetPipePolicy(hNewWinUsb, mInPipeId, PIPE_TRANSFER_TIMEOUT, sizeof(ULONG), &timeout);
 
-	// ‚±‚±‚Åƒnƒ“ƒhƒ‹XV
+	// ã“ã“ã§ãƒãƒ³ãƒ‰ãƒ«æ›´æ–°
 	m_hDev = hNewDev;
 	m_hWinUsb = hNewWinUsb;
 	mDevPath = devpath;

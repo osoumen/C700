@@ -40,7 +40,7 @@ bool PlistBRRFile::Load()
 	CFReadStreamRef	filestream = CFReadStreamCreateWithFile(NULL, path);
 	if (CFReadStreamOpen(filestream)) {
 		CFPropertyListFormat	format = kCFPropertyListBinaryFormat_v1_0;
-		mPropertydata = CFPropertyListCreateFromStream(NULL,filestream,0,
+		mPropertydata = CFPropertyListCreateWithStream(NULL,filestream,0,
 													   kCFPropertyListImmutable,
 													   &format,NULL);
 		if ( mPropertydata ) {
@@ -69,7 +69,7 @@ bool PlistBRRFile::Write()
 	//バイナリ形式に変換
 	CFWriteStreamRef	filestream = CFWriteStreamCreateWithFile(NULL,savefile);
 	if (CFWriteStreamOpen(filestream)) {
-		CFPropertyListWriteToStream(mPropertydata,filestream,kCFPropertyListBinaryFormat_v1_0,NULL);
+		CFPropertyListWrite(mPropertydata,filestream,kCFPropertyListBinaryFormat_v1_0,0,NULL);
 		CFWriteStreamClose(filestream);
 	}
 	CFRelease(filestream);

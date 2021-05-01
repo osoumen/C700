@@ -101,7 +101,7 @@ public:
 	}
 	// generates a random number on [0,0xffffffff]-interval
 	unsigned int genrand_uint32() {
-		unsigned int aulMag01[2] = { 0x0UL, m_ulMATRIX_A };
+		unsigned int aulMag01[2] = { 0x0UL, static_cast<unsigned int>(m_ulMATRIX_A) };
 		// mag01[x] = x * MATRIX_A  for x=0,1
 		if (m_iMTI >= m_iN) {
 			// generate N words at one time

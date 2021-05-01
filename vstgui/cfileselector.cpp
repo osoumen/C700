@@ -125,10 +125,10 @@ const char* CNewFileSelector::kSelectEndMessage = "CNewFileSelector Select End M
 //-----------------------------------------------------------------------------
 CNewFileSelector::CNewFileSelector (CFrame* frame)
 : frame (frame)
-, defaultExtension (0)
 , title (0)
 , initialPath (0)
 , defaultSaveName (0)
+, defaultExtension (0)
 , allowMultiFileSelection (false)
 {
 }

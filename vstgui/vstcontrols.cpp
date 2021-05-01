@@ -304,7 +304,7 @@ void COnOffButton::draw (CDrawContext *pContext)
 		else
 			pBackground->draw (pContext, size, CPoint (0, off));
 	}
-	setDirty (false);
+//	setDirty (false);
 }
 
 #if VSTGUI_ENABLE_DEPRECATED_METHODS
@@ -1191,7 +1191,7 @@ void CTextLabel::freeText ()
 //------------------------------------------------------------------------
 void CTextLabel::setText (const char* txt)
 {
-	if (!text && !txt || (text && txt && strcmp (text, txt) == 0))
+	if ((!text && !txt) || (text && txt && strcmp (text, txt) == 0))
 		return;
 	freeText ();
 	if (txt)
@@ -1913,11 +1913,11 @@ Defines an item of a VSTGUI::COptionMenu
 //------------------------------------------------------------------------
 CMenuItem::CMenuItem (const char* inTitle, long inFlags, const char* inKeycode, long inKeyModifiers, CBitmap* inIcon)
 : title (0)
-, flags (inFlags)
 , keycode (0)
-, keyModifiers (0)
 , submenu (0)
 , icon (0)
+, flags (inFlags)
+, keyModifiers (0)
 {
 	setTitle (inTitle);
 	setKey (inKeycode, inKeyModifiers);
@@ -1934,11 +1934,11 @@ CMenuItem::CMenuItem (const char* inTitle, long inFlags, const char* inKeycode, 
 //------------------------------------------------------------------------
 CMenuItem::CMenuItem (const char* inTitle, COptionMenu* inSubmenu, CBitmap* inIcon)
 : title (0)
-, flags (0)
 , keycode (0)
-, keyModifiers (0)
 , submenu (0)
 , icon (0)
+, flags (0)
+, keyModifiers (0)
 {
 	setTitle (inTitle);
 	setSubmenu (inSubmenu);
@@ -1953,11 +1953,11 @@ CMenuItem::CMenuItem (const char* inTitle, COptionMenu* inSubmenu, CBitmap* inIc
 //------------------------------------------------------------------------
 CMenuItem::CMenuItem (const CMenuItem& item)
 : title (0)
-, flags (item.flags)
 , keycode (0)
-, keyModifiers (0)
 , submenu (0)
 , icon (0)
+, flags (item.flags)
+, keyModifiers (0)
 {
 	setTitle (item.getTitle ());
 	setIcon (item.getIcon ());
@@ -2677,6 +2677,10 @@ COptionMenu::COptionMenu (const CRect& size, CControlListener* listener, long ta
 COptionMenu::COptionMenu (const COptionMenu& v)
 : CParamDisplay (v)
 , platformControl (0)
+#if VSTGUI_ENABLE_DEPRECATED_METHODS
+, scheme (v.scheme)
+#endif
+, menuItems (v.menuItems)
 , currentIndex (-1)
 , bgWhenClick (v.bgWhenClick)
 , lastButton (0)
@@ -2684,10 +2688,6 @@ COptionMenu::COptionMenu (const COptionMenu& v)
 , lastResult (-1)
 , prefixNumbers (0)
 , lastMenu (0)
-#if VSTGUI_ENABLE_DEPRECATED_METHODS
-, scheme (v.scheme)
-#endif
-, menuItems (v.menuItems)
 {
 	if (bgWhenClick)
 		bgWhenClick->remember ();
@@ -4233,7 +4233,7 @@ bool CRockerSwitch::onWheel (const CPoint& where, const float &distance, const l
 CMovieBitmap::CMovieBitmap (const CRect& size, CControlListener* listener, long tag, CBitmap* background, const CPoint &offset)
 : CControl (size, listener, tag, background)
 , offset (offset)
-, subPixmaps (subPixmaps)
+, subPixmaps (0)
 {
 	setHeightOfOneImage (size.getHeight ());
 	subPixmaps = (long)(background->getHeight () / heightOfOneImage);

@@ -56,7 +56,7 @@ enum {
     kParam_vibdepth_15,
     kParam_vibdepth_16,
     
-    //«ƒGƒR[•”
+    //ÂÂ«Æ’GÆ’RÂ[â€¢â€
     kParam_echovol_L,
     kParam_echovol_R,
     kParam_echoFB,
@@ -180,7 +180,7 @@ typedef struct BRRData {
     int samples() const { return (size/9)*16; }
 } BRRData;
 
-struct InstParams {
+typedef struct InstParams {
 public:
     char        pgname[PROGRAMNAME_MAX_LEN];
     int         ar,dr,sl,sr1,sr2;

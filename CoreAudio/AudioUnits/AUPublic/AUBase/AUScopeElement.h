@@ -1,43 +1,11 @@
-/*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
-			Apple Inc. ("Apple") in consideration of your agreement to the
-			following terms, and your use, installation, modification or
-			redistribution of this Apple software constitutes acceptance of these
-			terms.  If you do not agree with these terms, please do not use,
-			install, modify or redistribute this Apple software.
-			
-			In consideration of your agreement to abide by the following terms, and
-			subject to these terms, Apple grants you a personal, non-exclusive
-			license, under Apple's copyrights in this original Apple software (the
-			"Apple Software"), to use, reproduce, modify and redistribute the Apple
-			Software, with or without modifications, in source and/or binary forms;
-			provided that if you redistribute the Apple Software in its entirety and
-			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
-			may be used to endorse or promote products derived from the Apple
-			Software without specific prior written permission from Apple.  Except
-			as expressly stated in this notice, no other rights or licenses, express
-			or implied, are granted by Apple herein, including but not limited to
-			any patent rights that may be infringed by your derivative works or by
-			other works in which the Apple Software may be incorporated.
-			
-			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
-			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
-			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
-			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
-			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
-			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
-			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-			INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
-			MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
-			AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
-			STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
-			POSSIBILITY OF SUCH DAMAGE.
+/*
+Copyright (C) 2016 Apple Inc. All Rights Reserved.
+See LICENSE.txt for this sampleâ€™s licensing information
+
+Abstract:
+Part of Core Audio AUBase Classes
 */
+
 #ifndef __AUScopeElement_h__
 #define __AUScopeElement_h__
 
@@ -52,8 +20,11 @@
 #include "ComponentBase.h"
 #include "AUBuffer.h"
 
-
 class AUBase;
+
+#ifndef CA_CANONICAL_DEPRECATED
+	#define CA_CANONICAL_DEPRECATED
+#endif
 
 // ____________________________________________________________________________
 //
@@ -64,7 +35,7 @@ class ParameterMapEvent
 public:
 /*! @ctor ParameterMapEvent */
 	ParameterMapEvent() 
-		: mEventType(kParameterEvent_Immediate), mBufferOffset(0), mDurationInFrames(0), mValue1(0.0), mValue2(0.0), mSliceDurationFrames(0) 
+		: mEventType(kParameterEvent_Immediate), mBufferOffset(0), mDurationInFrames(0), mValue1(0.0f), mValue2(0.0f), mSliceDurationFrames(0) 
 		{}
 
 /*! @ctor ParameterMapEvent */
@@ -187,6 +158,7 @@ private:
 
 // ____________________________________________________________________________
 //
+class AUIOElement;
 
 /*! @class AUElement */
 class AUElement {
@@ -199,13 +171,15 @@ public:
 	virtual						~AUElement() { if (mElementName) CFRelease (mElementName); }
 	
 /*! @method GetNumberOfParameters */
-	UInt32						GetNumberOfParameters()
+	virtual UInt32				GetNumberOfParameters()
 	{
-		if(mUseIndexedParameters) return mIndexedParameters.size(); else return mParameters.size();
+		if(mUseIndexedParameters) return static_cast<UInt32>(mIndexedParameters.size()); else return static_cast<UInt32>(mParameters.size());
 	}
 /*! @method GetParameterList */
-	void						GetParameterList(AudioUnitParameterID *outList);
-		
+	virtual void				GetParameterList(AudioUnitParameterID *outList);
+/*! @method HasParameterID */
+	bool						HasParameterID (AudioUnitParameterID paramID) const;
+	
 /*! @method GetParameter */
 	AudioUnitParameterValue		GetParameter(AudioUnitParameterID paramID);
 /*! @method SetParameter */
@@ -236,7 +210,7 @@ public:
 	AUBase *					GetAudioUnit() const { return mAudioUnit; };
 
 /*! @method SaveState */
-	void						SaveState(CFMutableDataRef data);
+	void						SaveState(AudioUnitScope scope, CFMutableDataRef data);
 /*! @method RestoreState */
 	const UInt8 *				RestoreState(const UInt8 *state);
 /*! @method GetName */
@@ -248,12 +222,15 @@ public:
 /*! @method UseIndexedParameters */
 	virtual void				UseIndexedParameters(int inNumberOfParameters);
 
+/*! @method AsIOElement*/
+	virtual AUIOElement*		AsIOElement () { return NULL; }
+	
 protected:
 	inline ParameterMapEvent&	GetParamEvent(AudioUnitParameterID paramID);
 	
 private:
 	typedef std::map<AudioUnitParameterID, ParameterMapEvent, std::less<AudioUnitParameterID> > ParameterMap;
-	
+
 /*! @var mAudioUnit */
 	AUBase *						mAudioUnit;
 /*! @var mParameters */
@@ -291,11 +268,11 @@ public:
 /*! @method NeedsBufferSpace */
 	virtual bool				NeedsBufferSpace() const = 0;
 
-/*! @method DeallocateBuffer */
+/*! @method SetWillAllocateBuffer */
 	void						SetWillAllocateBuffer(bool inFlag) { 
 									mWillAllocate = inFlag; 
 								}
-/*! @method DeallocateBuffer */
+/*! @method WillAllocateBuffer */
 	bool						WillAllocateBuffer() const { 
 									return mWillAllocate; 
 								}
@@ -325,11 +302,24 @@ public:
 	AudioBufferList &			GetBufferList() const { return mIOBuffer.GetBufferList(); }
 
 /*! @method GetChannelData */
+	CA_CANONICAL_DEPRECATED
 	AudioUnitSampleType *		GetChannelData(int ch) const {
 									if (mStreamFormat.IsInterleaved())
 										return static_cast<AudioUnitSampleType *>(mIOBuffer.GetBufferList().mBuffers[0].mData) + ch;
 									else
 										return static_cast<AudioUnitSampleType *>(mIOBuffer.GetBufferList().mBuffers[ch].mData);
+								}
+	Float32 *					GetFloat32ChannelData(int ch) const {
+									if (mStreamFormat.IsInterleaved())
+										return static_cast<Float32 *>(mIOBuffer.GetBufferList().mBuffers[0].mData) + ch;
+									else
+										return static_cast<Float32 *>(mIOBuffer.GetBufferList().mBuffers[ch].mData);
+								}
+	SInt32 *					GetSInt32ChannelData(int ch) const {
+									if (mStreamFormat.IsInterleaved())
+										return static_cast<SInt32 *>(mIOBuffer.GetBufferList().mBuffers[0].mData) + ch;
+									else
+										return static_cast<SInt32 *>(mIOBuffer.GetBufferList().mBuffers[ch].mData);
 								}
 	SInt16 *					GetInt16ChannelData(int ch) const {
 									if (mStreamFormat.IsInterleaved())
@@ -372,6 +362,9 @@ public:
 /*! @method RemoveAudioChannelLayout */
 	virtual OSStatus			RemoveAudioChannelLayout ();
 
+/*! @method AsIOElement*/
+	virtual AUIOElement*		AsIOElement () { return this; }
+
 protected:
 /*! @var mStreamFormat */
 	CAStreamBasicDescription	mStreamFormat;
@@ -380,16 +373,6 @@ protected:
 											// for output: output cache, usually allocated early on
 /*! @var mWillAllocate */
 	bool						mWillAllocate;
-};
-
-// ____________________________________________________________________________
-//
-/*! @class AUElementCreator */
-class AUElementCreator {
-public:
-/*! @method CreateElement */
-	virtual AUElement *	CreateElement(AudioUnitScope scope, AudioUnitElement element) = 0;
-	virtual ~AUElementCreator() { }
 };
 
 // ____________________________________________________________________________
@@ -404,7 +387,7 @@ public:
 					virtual ~AUScopeDelegate() {}
 	
 /*! @method Initialize */
-	virtual void			Initialize(	AUElementCreator *creator, 
+	void					Initialize(	AUBase *creator, 
 										AudioUnitScope scope, 
 										UInt32 numElements)
 	{
@@ -422,13 +405,13 @@ public:
 /*! @method GetElement */
 	virtual AUElement *		GetElement(UInt32 elementIndex) = 0;
 	
-	AUElementCreator *	GetCreator() const { return mCreator; }
+	AUBase *			GetCreator() const { return mCreator; }
 	AudioUnitScope		GetScope() const { return mScope; }
 	
 
 private:
 /*! @var mCreator */
-	AUElementCreator *			mCreator;
+	AUBase *					mCreator;
 /*! @var mScope */
 	AudioUnitScope				mScope;
 };
@@ -446,15 +429,16 @@ public:
 					~AUScope();
 	
 /*! @method Initialize */
-	void			Initialize(AUElementCreator *creator, 
+	void			Initialize(AUBase *creator, 
 								AudioUnitScope scope, 
 								UInt32 numElements)
 	{
+		mCreator = creator;
+		mScope = scope;
+
 		if (mDelegate)
 			return mDelegate->Initialize(creator, scope, numElements);
 			
-		mCreator = creator;
-		mScope = scope;
 		SetNumberOfElements(numElements);
 	}
 	
@@ -467,7 +451,7 @@ public:
 		if (mDelegate)
 			return mDelegate->GetNumberOfElements();
 			
-		return mElements.size(); 
+		return static_cast<UInt32>(mElements.size());
 	}
 	
 /*! @method GetElement */
@@ -494,14 +478,9 @@ public:
 	AUIOElement *	GetIOElement(UInt32 elementIndex) const
 	{
 		AUElement *element = GetElement(elementIndex);
-		AUIOElement *ioel;
-	#if !CA_NO_RTTI
-		if (element == NULL || (ioel = dynamic_cast<AUIOElement *>(element)) == NULL)
+		AUIOElement *ioel = element ? element->AsIOElement () : NULL;
+		if (!ioel)
 			COMPONENT_THROW (kAudioUnitErr_InvalidElement);
-	#else
-		if (element == NULL || (ioel = static_cast<AUIOElement *>(element)) == NULL)
-			COMPONENT_THROW (kAudioUnitErr_InvalidElement);
-	#endif
 		return ioel;
 	}
 	
@@ -513,15 +492,20 @@ public:
 	
 	bool			RestoreElementNames (CFDictionaryRef& inNameDict);
 	
-	AUElementCreator *	GetCreator() const { return mCreator; }
 	AudioUnitScope		GetScope() const { return mScope; }
 
 	void SetDelegate(AUScopeDelegate* inDelegate) { mDelegate = inDelegate; }
+
+/*! @method SaveState */
+    void            SaveState(CFMutableDataRef data);
+
+/*! @method RestoreState */
+    const UInt8 *	RestoreState(const UInt8 *state);
 	
 private:
 	typedef std::vector<AUElement *> ElementVector;
 /*! @var mCreator */
-	AUElementCreator *			mCreator;
+	AUBase *					mCreator;
 /*! @var mScope */
 	AudioUnitScope				mScope;
 /*! @var mElements */

@@ -1,43 +1,11 @@
-/*	Copyright © 2007 Apple Inc. All Rights Reserved.
-	
-	Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
-			Apple Inc. ("Apple") in consideration of your agreement to the
-			following terms, and your use, installation, modification or
-			redistribution of this Apple software constitutes acceptance of these
-			terms.  If you do not agree with these terms, please do not use,
-			install, modify or redistribute this Apple software.
-			
-			In consideration of your agreement to abide by the following terms, and
-			subject to these terms, Apple grants you a personal, non-exclusive
-			license, under Apple's copyrights in this original Apple software (the
-			"Apple Software"), to use, reproduce, modify and redistribute the Apple
-			Software, with or without modifications, in source and/or binary forms;
-			provided that if you redistribute the Apple Software in its entirety and
-			without modifications, you must retain this notice and the following
-			text and disclaimers in all such redistributions of the Apple Software. 
-			Neither the name, trademarks, service marks or logos of Apple Inc. 
-			may be used to endorse or promote products derived from the Apple
-			Software without specific prior written permission from Apple.  Except
-			as expressly stated in this notice, no other rights or licenses, express
-			or implied, are granted by Apple herein, including but not limited to
-			any patent rights that may be infringed by your derivative works or by
-			other works in which the Apple Software may be incorporated.
-			
-			The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
-			MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
-			THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
-			FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
-			OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
-			
-			IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
-			OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-			SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-			INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
-			MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
-			AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
-			STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
-			POSSIBILITY OF SUCH DAMAGE.
+/*
+Copyright (C) 2016 Apple Inc. All Rights Reserved.
+See LICENSE.txt for this sampleâ€™s licensing information
+
+Abstract:
+Part of Core Audio Public Utility Classes
 */
+
 #ifndef __CAStreamBasicDescription_h__
 #define __CAStreamBasicDescription_h__
 
@@ -55,7 +23,22 @@
 
 #pragma mark	This file needs to compile on more earlier versions of the OS, so please keep that in mind when editing it
 
-extern char *CAStringForOSType (OSType t, char *writeLocation);
+#ifndef ASBD_STRICT_EQUALITY
+	#define ASBD_STRICT_EQUALITY 0
+#endif
+
+#if __GNUC__ && ASBD_STRICT_EQUALITY
+	// not turning on the deprecation just yet
+	#define ASBD_EQUALITY_DEPRECATED __attribute__((deprecated("This method uses a possibly surprising wildcard comparison (i.e. 0 channels == 1 channel)")))
+#else
+	#define ASBD_EQUALITY_DEPRECATED
+#endif
+
+#ifndef CA_CANONICAL_DEPRECATED
+	#define CA_CANONICAL_DEPRECATED
+#endif
+
+extern char *CAStringForOSType (OSType t, char *writeLocation, size_t bufsize);
 
 // define Leopard specific symbols for backward compatibility if applicable
 #if COREAUDIOTYPES_VERSION < 1050
@@ -91,20 +74,81 @@ class CAStreamBasicDescription :
 //	Constants
 public:
 	static const AudioStreamBasicDescription	sEmpty;
-
+	
+	enum CommonPCMFormat {
+		kPCMFormatOther		= 0,
+		kPCMFormatFloat32	= 1,
+		kPCMFormatInt16		= 2,
+		kPCMFormatFixed824	= 3,
+		kPCMFormatFloat64	= 4,
+		kPCMFormatInt32		= 5
+	};
+	
+	// options for IsEquivalent
+	enum {
+		kCompareDefault			= 0,
+		kCompareUsingWildcards	= 1 << 0,	// treats fields with values of 0 as wildcards.
+											// too liberal if you need to represent 0 channels.
+		kCompareForHardware		= 1 << 1,	// formats are hardware formats (IsNonMixable flag is significant).
+		
+		kCompareForHardwareUsingWildcards	= kCompareForHardware + kCompareUsingWildcards	//	for convenience
+	};
+	typedef UInt32 ComparisonOptions;
+	
 //	Construction/Destruction
 public:
-	CAStreamBasicDescription() { memset (this, 0, sizeof(AudioStreamBasicDescription)); }
+	CAStreamBasicDescription();
 	
-	CAStreamBasicDescription(const AudioStreamBasicDescription &desc)
-	{
-		SetFrom(desc);
-	}
+	CAStreamBasicDescription(const AudioStreamBasicDescription &desc);
 	
 	CAStreamBasicDescription(		double inSampleRate,		UInt32 inFormatID,
 									UInt32 inBytesPerPacket,	UInt32 inFramesPerPacket,
 									UInt32 inBytesPerFrame,		UInt32 inChannelsPerFrame,
 									UInt32 inBitsPerChannel,	UInt32 inFormatFlags);
+
+	CAStreamBasicDescription(	double inSampleRate, UInt32 inNumChannels, CommonPCMFormat pcmf, bool inIsInterleaved) {
+		unsigned wordsize;
+
+		mSampleRate = inSampleRate;
+		mFormatID = kAudioFormatLinearPCM;
+		mFormatFlags = kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked;
+		mFramesPerPacket = 1;
+		mChannelsPerFrame = inNumChannels;
+		mBytesPerFrame = mBytesPerPacket = 0;
+		mReserved = 0;
+
+		switch (pcmf) {
+		default:
+			return;
+		case kPCMFormatFloat32:
+			wordsize = 4;
+			mFormatFlags |= kAudioFormatFlagIsFloat;
+			break;
+		case kPCMFormatFloat64:
+			wordsize = 8;
+			mFormatFlags |= kAudioFormatFlagIsFloat;
+			break;
+		case kPCMFormatInt16:
+			wordsize = 2;
+			mFormatFlags |= kAudioFormatFlagIsSignedInteger;
+			break;
+		case kPCMFormatInt32:
+			wordsize = 4;
+			mFormatFlags |= kAudioFormatFlagIsSignedInteger;
+			break;
+		case kPCMFormatFixed824:
+			wordsize = 4;
+			mFormatFlags |= kAudioFormatFlagIsSignedInteger | (24 << kLinearPCMFormatFlagsSampleFractionShift);
+			break;
+		}
+		mBitsPerChannel = wordsize * 8;
+		if (inIsInterleaved)
+			mBytesPerFrame = mBytesPerPacket = wordsize * inNumChannels;
+		else {
+			mFormatFlags |= kAudioFormatFlagIsNonInterleaved;
+			mBytesPerFrame = mBytesPerPacket = wordsize;
+		}
+	}
 
 //	Assignment
 	CAStreamBasicDescription&	operator=(const AudioStreamBasicDescription& v) { SetFrom(v); return *this; }
@@ -113,6 +157,12 @@ public:
 	{
 		memcpy(this, &desc, sizeof(AudioStreamBasicDescription));
 	}
+	
+	bool		FromText(const char *inTextDesc) { return FromText(inTextDesc, *this); }
+	static bool	FromText(const char *inTextDesc, AudioStreamBasicDescription &outDesc);
+					// return true if parsing was successful
+	
+	static const char *sTextParsingUsageString;
 	
 	// _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	//
@@ -133,7 +183,17 @@ public:
 	
 	bool	IsInterleaved() const
 	{
-		return !IsPCM() || !(mFormatFlags & kAudioFormatFlagIsNonInterleaved);
+		return !(mFormatFlags & kAudioFormatFlagIsNonInterleaved);
+	}
+	
+	bool	IsSignedInteger() const
+	{
+		return IsPCM() && (mFormatFlags & kAudioFormatFlagIsSignedInteger);
+	}
+	
+	bool	IsFloat() const
+	{
+		return IsPCM() && (mFormatFlags & kAudioFormatFlagIsFloat);
 	}
 	
 	bool	IsNativeEndian() const
@@ -160,15 +220,73 @@ public:
 		return this->NumberChannels() == a.NumberChannels() && this->IsInterleaved() == a.IsInterleaved();
 	}
 	
+	bool	IdentifyCommonPCMFormat(CommonPCMFormat &outFormat, bool *outIsInterleaved=NULL) const
+	{	// return true if it's a valid PCM format.
+	
+		outFormat = kPCMFormatOther;
+		// trap out patently invalid formats.
+		if (mFormatID != kAudioFormatLinearPCM || mFramesPerPacket != 1 || mBytesPerFrame != mBytesPerPacket || mBitsPerChannel/8 > mBytesPerFrame || mChannelsPerFrame == 0)
+			return false;
+		bool interleaved = (mFormatFlags & kAudioFormatFlagIsNonInterleaved) == 0;
+		if (outIsInterleaved != NULL) *outIsInterleaved = interleaved;
+		unsigned wordsize = mBytesPerFrame;
+		if (interleaved) {
+			if (wordsize % mChannelsPerFrame != 0) return false;
+			wordsize /= mChannelsPerFrame;
+		}
+		
+		if ((mFormatFlags & kAudioFormatFlagIsBigEndian) == kAudioFormatFlagsNativeEndian
+		&& wordsize * 8 == mBitsPerChannel) {
+			// packed and native endian, good
+			if (mFormatFlags & kLinearPCMFormatFlagIsFloat) {
+				// float: reject nonsense bits
+				if (mFormatFlags & (kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagsSampleFractionMask))
+					return false;
+				if (wordsize == 4)
+					outFormat = kPCMFormatFloat32;
+				if (wordsize == 8)
+					outFormat = kPCMFormatFloat64;
+			} else if (mFormatFlags & kLinearPCMFormatFlagIsSignedInteger) {
+				// signed int
+				unsigned fracbits = (mFormatFlags & kLinearPCMFormatFlagsSampleFractionMask) >> kLinearPCMFormatFlagsSampleFractionShift;
+				if (wordsize == 4 && fracbits == 24)
+					outFormat = kPCMFormatFixed824;
+				else if (wordsize == 4 && fracbits == 0)
+					outFormat = kPCMFormatInt32;
+				else if (wordsize == 2 && fracbits == 0)
+					outFormat = kPCMFormatInt16;
+			}
+		}
+		return true;
+	}
+
+	bool IsCommonFloat32(bool *outIsInterleaved=NULL) const {
+		CommonPCMFormat fmt;
+		return IdentifyCommonPCMFormat(fmt, outIsInterleaved) && fmt == kPCMFormatFloat32;
+	}
+	bool IsCommonFloat64(bool *outIsInterleaved=NULL) const {
+		CommonPCMFormat fmt;
+		return IdentifyCommonPCMFormat(fmt, outIsInterleaved) && fmt == kPCMFormatFloat64;
+	}
+	bool IsCommonFixed824(bool *outIsInterleaved=NULL) const {
+		CommonPCMFormat fmt;
+		return IdentifyCommonPCMFormat(fmt, outIsInterleaved) && fmt == kPCMFormatFixed824;
+	}
+	bool IsCommonInt16(bool *outIsInterleaved=NULL) const {
+		CommonPCMFormat fmt;
+		return IdentifyCommonPCMFormat(fmt, outIsInterleaved) && fmt == kPCMFormatInt16;
+	}
+	
 	// _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 	//
 	//	manipulation
 	
+	CA_CANONICAL_DEPRECATED
 	void	SetCanonical(UInt32 nChannels, bool interleaved)
 				// note: leaves sample rate untouched
 	{
 		mFormatID = kAudioFormatLinearPCM;
-		int sampleSize = SizeOf32(AudioSampleType);
+		UInt32 sampleSize = SizeOf32(AudioSampleType);
 		mFormatFlags = kAudioFormatFlagsCanonical;
 		mBitsPerChannel = 8 * sampleSize;
 		mChannelsPerFrame = nChannels;
@@ -181,11 +299,12 @@ public:
 		}
 	}
 	
+	CA_CANONICAL_DEPRECATED
 	bool	IsCanonical() const
 	{
 		if (mFormatID != kAudioFormatLinearPCM) return false;
 		UInt32 reqFormatFlags;
-		UInt32 flagsMask = (kLinearPCMFormatFlagIsFloat | kLinearPCMFormatFlagIsBigEndian | kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked | kLinearPCMFormatFlagIsAlignedHigh | kLinearPCMFormatFlagsSampleFractionMask);
+		UInt32 flagsMask = (kLinearPCMFormatFlagIsFloat | kLinearPCMFormatFlagIsBigEndian | kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked | kLinearPCMFormatFlagsSampleFractionMask);
 		bool interleaved = (mFormatFlags & kAudioFormatFlagIsNonInterleaved) == 0;
 		unsigned sampleSize = SizeOf32(AudioSampleType);
 		reqFormatFlags = kAudioFormatFlagsCanonical;
@@ -198,6 +317,7 @@ public:
 			&& mBytesPerPacket == reqFrameSize);
 	}
 	
+	CA_CANONICAL_DEPRECATED
 	void	SetAUCanonical(UInt32 nChannels, bool interleaved)
 	{
 		mFormatID = kAudioFormatLinearPCM;
@@ -228,7 +348,7 @@ public:
 		mFramesPerPacket = 1;
 		if (interleaved) {
 			mBytesPerPacket = mBytesPerFrame = nChannels * wordSize;
-			mFormatFlags &= ~kAudioFormatFlagIsNonInterleaved;
+			mFormatFlags &= ~static_cast<UInt32>(kAudioFormatFlagIsNonInterleaved);
 		} else {
 			mBytesPerPacket = mBytesPerFrame = wordSize;
 			mFormatFlags |= kAudioFormatFlagIsNonInterleaved;
@@ -239,7 +359,23 @@ public:
 	//
 	//	other
 	
-	bool	IsEqual(const AudioStreamBasicDescription &other, bool interpretingWildcards=true) const;
+	// IsEqual: Deprecated because of widespread errors due to the default wildcarding behavior.
+	ASBD_EQUALITY_DEPRECATED
+	bool IsEqual(const AudioStreamBasicDescription &other) const;
+	bool IsEqual(const AudioStreamBasicDescription &other, bool interpretingWildcards) const;
+   
+	// IsExactlyEqual: bit-for-bit. usually unnecessarily strict.
+	static bool IsExactlyEqual(const AudioStreamBasicDescription &x, const AudioStreamBasicDescription &y);
+	
+	// IsEquivalent: Returns whether the two formats are functionally the same, i.e. if one could
+	// be correctly passed as the other without an AudioConverter.
+	static bool IsEquivalent(const AudioStreamBasicDescription &x, const AudioStreamBasicDescription &y) { return IsEquivalent(x, y, kCompareDefault); }
+	static bool IsEquivalent(const AudioStreamBasicDescription &x, const AudioStreamBasicDescription &y, ComparisonOptions comparisonOptions);
+	
+	// Member versions of IsExactlyEqual and IsEquivalent.
+	bool IsExactlyEqual(const AudioStreamBasicDescription &other) const { return IsExactlyEqual(*this, other); }
+	bool IsEquivalent(const AudioStreamBasicDescription &other) const { return IsEquivalent(*this, other); }
+	bool IsEquivalent(const AudioStreamBasicDescription &other, ComparisonOptions comparisonOptions) const { return IsEquivalent(*this, other, comparisonOptions); }
 	
 	void	Print() const {
 		Print (stdout);
@@ -259,7 +395,7 @@ public:
 		fprintf(f, "%s%s %s", indent, name, AsString(buf, sizeof(buf)));
 	}
 
-	char *	AsString(char *buf, size_t bufsize) const;
+	char *	AsString(char *buf, size_t bufsize, bool brief=false) const;
 
 	static void Print (const AudioStreamBasicDescription &inDesc) 
 	{ 
@@ -273,22 +409,37 @@ public:
 
 //	Operations
 	static bool			IsMixable(const AudioStreamBasicDescription& inDescription) { return (inDescription.mFormatID == kAudioFormatLinearPCM) && ((inDescription.mFormatFlags & kIsNonMixableFlag) == 0); }
+	CA_CANONICAL_DEPRECATED
 	static void			NormalizeLinearPCMFormat(AudioStreamBasicDescription& ioDescription);
+	CA_CANONICAL_DEPRECATED
+	static void			NormalizeLinearPCMFormat(bool inNativeEndian, AudioStreamBasicDescription& ioDescription);
+	static void			VirtualizeLinearPCMFormat(AudioStreamBasicDescription& ioDescription);
+	static void			VirtualizeLinearPCMFormat(bool inNativeEndian, AudioStreamBasicDescription& ioDescription);
 	static void			ResetFormat(AudioStreamBasicDescription& ioDescription);
 	static void			FillOutFormat(AudioStreamBasicDescription& ioDescription, const AudioStreamBasicDescription& inTemplateDescription);
-	static void			GetSimpleName(const AudioStreamBasicDescription& inDescription, char* outName, UInt32 inMaxNameLength, bool inAbbreviate);
+	static void			GetSimpleName(const AudioStreamBasicDescription& inDescription, char* outName, UInt32 inMaxNameLength, bool inAbbreviate, bool inIncludeSampleRate = false);
+
 #if CoreAudio_Debug
 	static void			PrintToLog(const AudioStreamBasicDescription& inDesc);
 #endif
+
+	UInt32				GetRegularizedFormatFlags(bool forHardware) const;
+
+private:
+	static bool EquivalentFormatFlags(const AudioStreamBasicDescription &x, const AudioStreamBasicDescription &y, bool forHardware, bool usingWildcards);
 };
 
+#define CAStreamBasicDescription_EmptyInit	0.0, 0, 0, 0, 0, 0, 0, 0, 0
+#define CAStreamBasicDescription_Empty		{ CAStreamBasicDescription_EmptyInit }
+
+// operator== is deprecated because it uses the deprecated IsEqual(other, true).
 bool		operator<(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y);
-bool		operator==(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y);
+ASBD_EQUALITY_DEPRECATED bool		operator==(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y);
 #if TARGET_OS_MAC || (TARGET_OS_WIN32 && (_MSC_VER > 600))
-inline bool	operator!=(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y) { return !(x == y); }
-inline bool	operator<=(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y) { return (x < y) || (x == y); }
-inline bool	operator>=(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y) { return !(x < y); }
-inline bool	operator>(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y) { return !((x < y) || (x == y)); }
+ASBD_EQUALITY_DEPRECATED inline bool	operator!=(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y) { return !(x == y); }
+ASBD_EQUALITY_DEPRECATED inline bool	operator<=(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y) { return (x < y) || (x == y); }
+ASBD_EQUALITY_DEPRECATED inline bool	operator>=(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y) { return !(x < y); }
+ASBD_EQUALITY_DEPRECATED inline bool	operator>(const AudioStreamBasicDescription& x, const AudioStreamBasicDescription& y) { return !((x < y) || (x == y)); }
 #endif
 
 bool SanityCheck(const AudioStreamBasicDescription& x);

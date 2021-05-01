@@ -91,7 +91,7 @@ public:
         INVALID_TYPE        = 0x00,
     };
     
-    struct MIDIEvt {
+    typedef struct MIDIEvt {
         EvtType     type;
         uint8_t     ch;
         uint8_t     data1;

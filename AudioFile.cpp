@@ -41,10 +41,9 @@ bool AudioFile::IsVarid()
 {
 #if MAC
 	AudioFileID mAudioFileID;
-	FSRef	ref;
-	Boolean	isDirectory=false;
-	FSPathMakeRef((const UInt8*)GetFilePath(), &ref, &isDirectory);
-	OSStatus err = AudioFileOpen(&ref, fsRdPerm, 0, &mAudioFileID);
+	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8*)GetFilePath(), strlen(GetFilePath()), false);
+	OSStatus err = AudioFileOpenURL(url, kAudioFileReadPermission, 0, &mAudioFileID);
+	CFRelease(url);
 	if (err == noErr) {
 		AudioFileClose(mAudioFileID);
 		return true;
@@ -66,11 +65,9 @@ bool AudioFile::Load()
 	UInt32 size;
 	
     // ファイルを開く
-	FSRef	ref;
-	Boolean	isDirectory=false;
-	FSPathMakeRef((const UInt8*)GetFilePath(), &ref, &isDirectory);
-	
-	err = AudioFileOpen(&ref, fsRdPerm, 0, &mAudioFileID);
+	CFURLRef	url = CFURLCreateFromFileSystemRepresentation(NULL, (const UInt8*)GetFilePath(), strlen(GetFilePath()), false);
+	err = AudioFileOpenURL(url, kAudioFileReadPermission, 0, &mAudioFileID);
+	CFRelease(url);
     if (err) {
         //NSLog(@"AudioFileOpen failed");
         return false;
