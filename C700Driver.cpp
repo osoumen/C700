@@ -1176,10 +1176,10 @@ void C700Driver::handleDataEntryValueChange(int ch, bool isNRPN, int addr, int v
         }
     }
     else  {
-        switch (addr) {
-            default:
+//        switch (addr) {
+//            default:
                 MidiDriverBase::handleDataEntryValueChange(ch, isNRPN, addr, value);
-                break;
-        }
+//                break;
+//        }
     }
 }
