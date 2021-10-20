@@ -111,7 +111,7 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	
 	mInst.lp = (mFileData[1] << 8) | mFileData[0];
 	//先頭2バイト(リトルエンディアン)の数値+2よりファイルサイズが大きい
-	if ( mInst.lp+2 >= mFileSize ) {
+	if ( mInst.lp+2 > mFileSize ) {
 		return false;
 	}
 	
@@ -137,8 +137,8 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	}
 	
 	//エンドフラグの位置がループポイントより前だとエラー
-	if ( endflag_pos < mInst.lp ) {
-		return false;
+	if ( endflag_pos <= mInst.lp ) {
+		mInst.lp = fileBrr.size;
 	}
 	
 	//instデータの初期化
