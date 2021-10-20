@@ -120,7 +120,13 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     // DSP領域の書き出し
     spcFile.setPos(0x10100);
     writeDspRegion(spcFile, reglog);
-    
+	
+	// KON,KOFフラグをクリアする
+	spcFile.setPos(0x1014c);
+	spcFile.writeByte(0x00);
+	spcFile.setPos(0x1015c);
+	spcFile.writeByte(0x00);
+
     spcFile.WriteToFile(path);
     
     delete [] reglogData;
