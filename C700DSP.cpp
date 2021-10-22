@@ -963,7 +963,7 @@ int C700DSP::saveRegisterLog(const char *path)
         strncpy(targetFilePath, saveFilePath, PATH_LEN_MAX);
         strncat(targetFilePath, ".spc", 4);
         SpcFileGenerate exporter;
-        exporter.SetSpcPlayCode(mSpcPlayerCode, mSpcPlayerCodeSize);
+        exporter.SetSpcPlayCode(mSpcPlayerCode, mSpcPlayerCodeSize, mSmcPlayerCode, mSmcPlayerCodeSize);
         exporter.SetGameTitle(mGameTitle);
         exporter.SetSongTitle(mSongTitle);
         exporter.SetNameOfDumper(mNameOfDumper);

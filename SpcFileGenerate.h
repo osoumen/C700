@@ -17,7 +17,7 @@ public:
     virtual ~SpcFileGenerate();
     
     virtual bool        WriteToFile( const char *path, const RegisterLogger &reglog, double tickPerSec=16000 );
-    void                SetSpcPlayCode( const void *code, int size );
+    void                SetSpcPlayCode( const void *code, int size, const void *smccode, int smcsize );
     void                SetGameTitle(const char *title);
     void                SetSongTitle(const char *title);
     void                SetNameOfDumper(const char *dumper);
@@ -34,6 +34,8 @@ protected:
 private:
     const unsigned char   *m_pSpcPlayCode;
     int                   mSpcPlayCodeSize;
+	const unsigned char   *m_pSpcPlayCode2;
+	int                   mSpcPlayCodeSize2;
     char                  mGameTitle[32];
     char                  mSongTitle[32];
     char                  mNameOfDumper[16];
@@ -43,6 +45,8 @@ private:
     int                   mFadeMs;
     
     void setHeaderString(char *dst, const char *src, int len);
+	void get700FileName( const char *path, char *out, int maxLen );
+	int findDspregAccCode( const void *code, int size, const unsigned char **outCode );
 };
 
 #endif /* defined(__C700__SpcFileGenerate__) */

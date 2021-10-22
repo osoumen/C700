@@ -26,7 +26,8 @@ protected:
     void                writeRegLogWithLoopPoint( DataBuffer &buffer, const RegisterLogger &reglog, double tickPerSec );
     void                writeWaitTable( DataBuffer &buffer, const RegisterLogger &reglog );
     int                 convertLogData( const RegisterLogger &reglog, double tickPerSec, unsigned char *outData, int outDataSize, int *outLoopPoint, bool skipInitialize );
-    
+	bool				exportScript700(const char *path, const RegisterLogger &reglog);
+
 private:
     static const int    WAIT_VAL_NUM = 32;
     static const int    WAIT_TABLE_LEN = WAIT_VAL_NUM * 2;

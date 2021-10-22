@@ -202,6 +202,81 @@ int PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, doubl
 }
 
 //-----------------------------------------------------------------------------
+bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLogger &reglog)
+{
+	FILE	*fp;
+	fp = fopen(path, "w");
+	if (fp == NULL) {
+		return false;
+	}
+	
+	int waitTime = 0;
+	int prevTime = reglog.m_pLogCommands[reglog.mEndInitializationPoint+1].time;
+	const int normal_wait = 96;
+	const int keyon_wait = 160;
+	const int keyoff_wait = 288;
+
+	fprintf(fp, "m\t#1\tw0\n");
+	
+	for (int i=0; i<reglog.mLogCommandsPos; i++) {
+		if ((i >= reglog.mBeginInitializationPoint) && (i < reglog.mEndInitializationPoint)) {
+			continue;
+		}
+		waitTime += (reglog.m_pLogCommands[i].time - prevTime) * 64;
+		prevTime = reglog.m_pLogCommands[i].time;
+		if (waitTime > 0) {
+			fprintf(fp, "w\t%d\n", waitTime);
+			waitTime = 0;
+		}
+		if (i == reglog.mLogCommandsLoopPoint) {
+			fprintf(fp, ":0\n");
+		}
+		unsigned char cmd = reglog.m_pLogCommands[i].data[0];
+		int cmdLen = getCommandLength(cmd);
+		if (cmd < 0x80) {
+			if (cmdLen == 2) {
+				fprintf(fp, "m\t#$%02x\t1\n", reglog.m_pLogCommands[i].data[1]);
+				fprintf(fp, "m\t#$%02x\t2\n", cmd);
+				fprintf(fp, "m\tw0\t0\n");
+				fprintf(fp, "n\t#1 ^ w0\n");
+				
+				int wait = normal_wait;
+				if (cmd == 0x4c) {
+					wait = keyon_wait;
+				}
+				else if (cmd == 0x5c) {
+					wait = keyoff_wait;
+				}
+				fprintf(fp, "w\t%d\n", wait);
+				waitTime -= wait;
+			}
+			else if (cmdLen == 3) {
+				fprintf(fp, "m\t#$%02x\t1\n", reglog.m_pLogCommands[i].data[2]);
+				fprintf(fp, "m\t#$%02x\t2\n", cmd-1);
+				fprintf(fp, "m\tw0\t0\n");
+				fprintf(fp, "n\t#1 ^ w0\n");
+				fprintf(fp, "w\t%d\n", normal_wait);
+				waitTime -= normal_wait;
+				
+				fprintf(fp, "m\t#$%02x\t1\n", reglog.m_pLogCommands[i].data[1]);
+				fprintf(fp, "m\t#$%02x\t2\n", cmd);
+				fprintf(fp, "m\tw0\t0\n");
+				fprintf(fp, "n\t#1 ^ w0\n");
+				fprintf(fp, "w\t%d\n", normal_wait);
+				waitTime -= normal_wait;
+			}
+		}
+		else if (cmd == 0x9e) {
+			fprintf(fp, "bra\t0\n");
+			fprintf(fp, "e\n::\n");
+		}
+	}
+	
+	fclose(fp);
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 void PlayingFileGenerateBase::beginConvert( int time )
 {
     int tick = convertTime2Tick(time);
