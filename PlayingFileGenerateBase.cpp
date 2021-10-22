@@ -211,6 +211,7 @@ bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLo
 	}
 	
 	int waitTime = 0;
+	int requiedWait = 0;
 	int prevTime = reglog.m_pLogCommands[reglog.mEndInitializationPoint+1].time;
 	const int normal_wait = 96;
 	const int keyon_wait = 160;
@@ -224,6 +225,11 @@ bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLo
 		}
 		waitTime += (reglog.m_pLogCommands[i].time - prevTime) * 64;
 		prevTime = reglog.m_pLogCommands[i].time;
+		if (waitTime < requiedWait) {
+			fprintf(fp, "w\t%d\n", requiedWait);
+			waitTime -= requiedWait;
+		}
+		requiedWait = 0;
 		if (waitTime > 0) {
 			fprintf(fp, "w\t%d\n", waitTime);
 			waitTime = 0;
@@ -240,15 +246,13 @@ bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLo
 				fprintf(fp, "m\tw0\t0\n");
 				fprintf(fp, "n\t#1 ^ w0\n");
 				
-				int wait = normal_wait;
+				requiedWait = normal_wait;
 				if (cmd == 0x4c) {
-					wait = keyon_wait;
+					requiedWait = keyon_wait;
 				}
 				else if (cmd == 0x5c) {
-					wait = keyoff_wait;
+					requiedWait = keyoff_wait;
 				}
-				fprintf(fp, "w\t%d\n", wait);
-				waitTime -= wait;
 			}
 			else if (cmdLen == 3) {
 				fprintf(fp, "m\t#$%02x\t1\n", reglog.m_pLogCommands[i].data[2]);
@@ -262,8 +266,7 @@ bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLo
 				fprintf(fp, "m\t#$%02x\t2\n", cmd);
 				fprintf(fp, "m\tw0\t0\n");
 				fprintf(fp, "n\t#1 ^ w0\n");
-				fprintf(fp, "w\t%d\n", normal_wait);
-				waitTime -= normal_wait;
+				requiedWait = normal_wait;
 			}
 		}
 		else if (cmd == 0x9e) {
