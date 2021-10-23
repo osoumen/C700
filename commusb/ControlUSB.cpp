@@ -713,14 +713,14 @@ bool ControlUSB::openDevice(std::basic_string<TCHAR> devpath)
 		NULL);
 
 	if (hNewDev == INVALID_HANDLE_VALUE) {
-		goto bail;
+		return false;
 	}
 
 	HANDLE hNewWinUsb = NULL;
 	if (!WinUsb_Initialize(hNewDev, &hNewWinUsb)) {
 		//DWORD err = GetLastError();
 		CloseHandle(hNewDev);
-		goto bail;
+		return false;
 	}
 
 	// エンドポイント情報取得
@@ -728,7 +728,7 @@ bool ControlUSB::openDevice(std::basic_string<TCHAR> devpath)
 	if (!WinUsb_QueryInterfaceSettings(hNewWinUsb, 0, &desc)) {
 		WinUsb_Free(hNewWinUsb);
 		CloseHandle(hNewDev);
-		goto bail;
+		return false;
 	}
 
 	for (int i = 0; i<desc.bNumEndpoints; i++) {
