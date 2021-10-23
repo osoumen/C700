@@ -229,20 +229,13 @@ bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLo
 	fprintf(fp, "m\tdb?\tw2\n");
 	fprintf(fp, "a\t#1\tw1\n");
 	
-	fprintf(fp, "c\t#$f0\tw2\n");
-	fprintf(fp, "beq\t1\n");
 	fprintf(fp, "c\t#$ff\tw2\n");
-	fprintf(fp, "bne\t2\n");
-	fprintf(fp, "m\tw5\tw1\n");
+	fprintf(fp, "bne\t1\n");
+	fprintf(fp, "c\tw1\t#?\n");
+	fprintf(fp, "m\tdd?\tw1\n");
 	fprintf(fp, "bra\t0\n");
 	
 	fprintf(fp, ":1\n");
-	fprintf(fp, "c\tw1\t#?\n");
-	fprintf(fp, "m\tdd?\tw5\n");
-	fprintf(fp, "a\t#4\tw1\n");
-	fprintf(fp, "bra\t0\n");
-	
-	fprintf(fp, ":2\n");
 	fprintf(fp, "c\tw1\t#?\n");
 	fprintf(fp, "m\tdb?\tw3\n");
 	fprintf(fp, "a\t#1\tw1\n");
@@ -311,8 +304,7 @@ bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLo
 				// ループ長が0の場合に処理が止まるのでwaitを入れる
 				fprintf(fp, "4c00a0000000");
 			}
-			fprintf(fp, "f0%02x%02x%02x%02x", loopPointPos & 0xff, (loopPointPos >> 8) & 0xff, (loopPointPos >> 16) & 0xff, (loopPointPos >> 24) & 0xff);
-			fprintf(fp, "ff");
+			fprintf(fp, "ff%02x%02x%02x%02x", loopPointPos & 0xff, (loopPointPos >> 8) & 0xff, (loopPointPos >> 16) & 0xff, (loopPointPos >> 24) & 0xff);
 		}
 	}
 	
