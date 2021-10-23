@@ -372,6 +372,402 @@
 		F59D91C21BF721CE00E5EFC6 /* DspRegFIFO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91BF1BF721CE00E5EFC6 /* DspRegFIFO.cpp */; };
 		F59D91C31BF721CE00E5EFC6 /* DspRegFIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */; };
 		F59D91C41BF721CE00E5EFC6 /* DspRegFIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */; };
+		F5A32B682723E0AD00A7C391 /* C700Version.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A690720730100365D66 /* C700Version.h */; };
+		F5A32B692723E0AD00A7C391 /* AUBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A80072073D200365D66 /* AUBase.h */; };
+		F5A32B6A2723E0AD00A7C391 /* AUPlugInDispatch.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A38D40262F15FA00725BF8 /* AUPlugInDispatch.h */; };
+		F5A32B6B2723E0AD00A7C391 /* AUDispatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A82072073D200365D66 /* AUDispatch.h */; };
+		F5A32B6C2723E0AD00A7C391 /* AUInputElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A84072073D200365D66 /* AUInputElement.h */; };
+		F5A32B6D2723E0AD00A7C391 /* MemManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F527FF9F1BEE323F0083E355 /* MemManager.h */; };
+		F5A32B6E2723E0AD00A7C391 /* AUOutputElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A86072073D200365D66 /* AUOutputElement.h */; };
+		F5A32B6F2723E0AD00A7C391 /* AUScopeElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A89072073D200365D66 /* AUScopeElement.h */; };
+		F5A32B702723E0AD00A7C391 /* ComponentBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05A8B072073D200365D66 /* ComponentBase.h */; };
+		F5A32B712723E0AD00A7C391 /* AUBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AA8072073D200365D66 /* AUBuffer.h */; };
+		F5A32B722723E0AD00A7C391 /* ChunkReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F54D11B91E3788EB000CDDA7 /* ChunkReader.h */; };
+		F5A32B732723E0AD00A7C391 /* MidiDriverBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */; };
+		F5A32B742723E0AD00A7C391 /* AUSilentTimeout.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AAC072073D200365D66 /* AUSilentTimeout.h */; };
+		F5A32B752723E0AD00A7C391 /* UrlLinkBox.h in Headers */ = {isa = PBXBuildFile; fileRef = F500CA801E78215D00920AB2 /* UrlLinkBox.h */; };
+		F5A32B762723E0AD00A7C391 /* CAAudioChannelLayout.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AE00720742100365D66 /* CAAudioChannelLayout.h */; };
+		F5A32B772723E0AD00A7C391 /* CAMutex.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AE20720742100365D66 /* CAMutex.h */; };
+		F5A32B782723E0AD00A7C391 /* CAStreamBasicDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA05AE40720742100365D66 /* CAStreamBasicDescription.h */; };
+		F5A32B792723E0AD00A7C391 /* C700.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC6025B073B072D006C4272 /* C700.h */; };
+		F5A32B7A2723E0AD00A7C391 /* CAHostTimeBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A38D47262F165200725BF8 /* CAHostTimeBase.h */; };
+		F5A32B7B2723E0AD00A7C391 /* PlayingFileGenerateBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F560181C1E3B8C4000400327 /* PlayingFileGenerateBase.h */; };
+		F5A32B7C2723E0AD00A7C391 /* CAVectorUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E0BECF90898391C00E1F0F7 /* CAVectorUnit.h */; };
+		F5A32B7D2723E0AD00A7C391 /* CAVectorUnitTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 3E0BECFA0898391C00E1F0F7 /* CAVectorUnitTypes.h */; };
+		F5A32B7E2723E0AD00A7C391 /* CAAUMIDIMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF3B0AAE7C4000AA021C /* CAAUMIDIMap.h */; };
+		F5A32B7F2723E0AD00A7C391 /* CAAUMIDIMapManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF3D0AAE7C4000AA021C /* CAAUMIDIMapManager.h */; };
+		F5A32B802723E0AD00A7C391 /* GUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C391E44A7E800F62CF6 /* GUIUtils.h */; };
+		F5A32B812723E0AD00A7C391 /* AUMIDIBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF4C0AAE7CFC00AA021C /* AUMIDIBase.h */; };
+		F5A32B822723E0AD00A7C391 /* MusicDeviceBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF4E0AAE7CFC00AA021C /* MusicDeviceBase.h */; };
+		F5A32B832723E0AD00A7C391 /* MersenneTwister.h in Headers */ = {isa = PBXBuildFile; fileRef = F557ACE619CD159300CF9792 /* MersenneTwister.h */; };
+		F5A32B842723E0AD00A7C391 /* blargg_endian.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D918E1BF720EA00E5EFC6 /* blargg_endian.h */; };
+		F5A32B852723E0AD00A7C391 /* LockFreeFIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF580AAE7D7A00AA021C /* LockFreeFIFO.h */; };
+		F5A32B862723E0AD00A7C391 /* PlayerCodeReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C8566E1E61DC2A0083EC15 /* PlayerCodeReader.h */; };
+		F5A32B872723E0AD00A7C391 /* SynthElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5A0AAE7D7A00AA021C /* SynthElement.h */; };
+		F5A32B882723E0AD00A7C391 /* SynthEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AA4CF5B0AAE7D7A00AA021C /* SynthEvent.h */; };
+		F5A32B892723E0AD00A7C391 /* C700defines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A77F1030ADE785100F2B2BE /* C700defines.h */; };
+		F5A32B8A2723E0AD00A7C391 /* SPC_CPU.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91981BF720EA00E5EFC6 /* SPC_CPU.h */; };
+		F5A32B8B2723E0AD00A7C391 /* samplebrr.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A10AB550AE2855600271511 /* samplebrr.h */; };
+		F5A32B8C2723E0AD00A7C391 /* DspRegFIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */; };
+		F5A32B8D2723E0AD00A7C391 /* gauss.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF717CF0AE3DD5900C79293 /* gauss.h */; };
+		F5A32B8E2723E0AD00A7C391 /* TextKickButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */; };
+		F5A32B8F2723E0AD00A7C391 /* CAAUParameter.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A38D39262F152A00725BF8 /* CAAUParameter.h */; };
+		F5A32B902723E0AD00A7C391 /* blargg_config.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D918D1BF720EA00E5EFC6 /* blargg_config.h */; };
+		F5A32B912723E0AD00A7C391 /* blargg_common.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D918C1BF720EA00E5EFC6 /* blargg_common.h */; };
+		F5A32B922723E0AD00A7C391 /* DspController.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91861BF71FCE00E5EFC6 /* DspController.h */; };
+		F5A32B932723E0AD00A7C391 /* czt.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AEECD2E0B020BC6002C9BB7 /* czt.h */; };
+		F5A32B942723E0AD00A7C391 /* brrcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AD362300AFE59F900FC48D2 /* brrcodec.h */; };
+		F5A32B952723E0AD00A7C391 /* SPC_Filter.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D919C1BF720EA00E5EFC6 /* SPC_Filter.h */; };
+		F5A32B962723E0AD00A7C391 /* SpcControlDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F526742C1C01E8A2006B0276 /* SpcControlDevice.h */; };
+		F5A32B972723E0AD00A7C391 /* C700Driver.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* C700Driver.h */; };
+		F5A32B982723E0AD00A7C391 /* ControlUSB.h in Headers */ = {isa = PBXBuildFile; fileRef = F526742A1C01E8A2006B0276 /* ControlUSB.h */; };
+		F5A32B992723E0AD00A7C391 /* getpluginbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD29160B67860003E710 /* getpluginbundle.h */; };
+		F5A32B9A2723E0AD00A7C391 /* vstkeycode.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2B160B67860003E710 /* vstkeycode.h */; };
+		F5A32B9B2723E0AD00A7C391 /* cocoasupport.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2C160B67860003E710 /* cocoasupport.h */; };
+		F5A32B9C2723E0AD00A7C391 /* cfileselector.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD31160B67860003E710 /* cfileselector.h */; };
+		F5A32B9D2723E0AD00A7C391 /* plugguieditor.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD32160B67860003E710 /* plugguieditor.h */; };
+		F5A32B9E2723E0AD00A7C391 /* C700Properties.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D1B06D1E55E67E00C0C795 /* C700Properties.h */; };
+		F5A32B9F2723E0AD00A7C391 /* RecordingSettingsGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */; };
+		F5A32BA02723E0AD00A7C391 /* macOSUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F5552CAD1E6C4DEB0020BB2B /* macOSUtils.h */; };
+		F5A32BA12723E0AD00A7C391 /* vstgui.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD35160B67860003E710 /* vstgui.h */; };
+		F5A32BA22723E0AD00A7C391 /* spc.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91971BF720EA00E5EFC6 /* spc.h */; };
+		F5A32BA32723E0AD00A7C391 /* C700_CocoaViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A3F41619527F006C91AD /* C700_CocoaViewFactory.h */; };
+		F5A32BA42723E0AD00A7C391 /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
+		F5A32BA52723E0AD00A7C391 /* C700GUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A484161964FD006C91AD /* C700GUI.h */; };
+		F5A32BA62723E0AD00A7C391 /* ctooltipsupport.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A8021619DEA6006C91AD /* ctooltipsupport.h */; };
+		F5A32BA72723E0AD00A7C391 /* MyKnob.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A94D161AB0F1006C91AD /* MyKnob.h */; };
+		F5A32BA82723E0AD00A7C391 /* MySlider.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AA24161AD9F4006C91AD /* MySlider.h */; };
+		F5A32BA92723E0AD00A7C391 /* SNES_SPC.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91931BF720EA00E5EFC6 /* SNES_SPC.h */; };
+		F5A32BAA2723E0AD00A7C391 /* LabelOnOffButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AAA2161C0114006C91AD /* LabelOnOffButton.h */; };
+		F5A32BAB2723E0AD00A7C391 /* WaveView.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AD34161D3490006C91AD /* WaveView.h */; };
+		F5A32BAC2723E0AD00A7C391 /* SmcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018221E3DDC1200400327 /* SmcFileGenerate.h */; };
+		F5A32BAD2723E0AD00A7C391 /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
+		F5A32BAE2723E0AD00A7C391 /* SeparatorLine.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D65BC161EC9D0001CF9AB /* SeparatorLine.h */; };
+		F5A32BAF2723E0AD00A7C391 /* RegisterLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = F51D83D01D295E8B00A23008 /* RegisterLogger.h */; };
+		F5A32BB02723E0AD00A7C391 /* MyParamDisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6600161ECFD1001CF9AB /* MyParamDisplay.h */; };
+		F5A32BB12723E0AD00A7C391 /* MyTextEdit.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6606161ECFE3001CF9AB /* MyTextEdit.h */; };
+		F5A32BB22723E0AD00A7C391 /* EfxAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569BEC01622B5F8006C91AD /* EfxAccess.h */; };
+		F5A32BB32723E0AD00A7C391 /* SpcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F560182B1E3F508C00400327 /* SpcFileGenerate.h */; };
+		F5A32BB42723E0AD00A7C391 /* DataBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C388162515ED006C91AD /* DataBuffer.h */; };
+		F5A32BB52723E0AD00A7C391 /* AudioFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AB162518B9006C91AD /* AudioFile.h */; };
+		F5A32BB62723E0AD00A7C391 /* SPCFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AF162518BF006C91AD /* SPCFile.h */; };
+		F5A32BB72723E0AD00A7C391 /* RawBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3B3162518C6006C91AD /* RawBRRFile.h */; };
+		F5A32BB82723E0AD00A7C391 /* XIFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C40916254B6E006C91AD /* XIFile.h */; };
+		F5A32BB92723E0AD00A7C391 /* PlistBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C6DD162644AE006C91AD /* PlistBRRFile.h */; };
+		F5A32BBA2723E0AD00A7C391 /* EchoKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432C241627AE4200863A0B /* EchoKernel.h */; };
+		F5A32BBB2723E0AD00A7C391 /* C700TimeThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F56AC10B1C393EC500787F85 /* C700TimeThread.h */; };
+		F5A32BBC2723E0AD00A7C391 /* C700Kernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432F2D1628117D00863A0B /* C700Kernel.h */; };
+		F5A32BBD2723E0AD00A7C391 /* C700Parameters.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432FEF162915F900863A0B /* C700Parameters.h */; };
+		F5A32BBE2723E0AD00A7C391 /* dsp.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91911BF720EA00E5EFC6 /* dsp.h */; };
+		F5A32BBF2723E0AD00A7C391 /* blargg_source.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D918F1BF720EA00E5EFC6 /* blargg_source.h */; };
+		F5A32BC02723E0AD00A7C391 /* SPC_DSP.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D919A1BF720EA00E5EFC6 /* SPC_DSP.h */; };
+		F5A32BC12723E0AD00A7C391 /* C700DSP.h in Headers */ = {isa = PBXBuildFile; fileRef = F58DCD7D1A2B4586004BD426 /* C700DSP.h */; };
+		F5A32BC22723E0AD00A7C391 /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F510B702163266CB00A844B4 /* FileAccess.h */; };
+		F5A32BC32723E0AD00A7C391 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
+		F5A32BC42723E0AD00A7C391 /* DynamicVoiceAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = F556802C1A2AA8550031451C /* DynamicVoiceAllocator.h */; };
+		F5A32BC62723E0AD00A7C391 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		F5A32BC72723E0AD00A7C391 /* AUBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C260B2144FD00EC1825 /* AUBackground.png */; };
+		F5A32BC82723E0AD00A7C391 /* knobBack.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C2F0B2144FD00EC1825 /* knobBack.png */; };
+		F5A32BC92723E0AD00A7C391 /* sliderThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */; };
+		F5A32BCA2723E0AD00A7C391 /* firstopen.png in Resources */ = {isa = PBXBuildFile; fileRef = F500CA851E7AB58000920AB2 /* firstopen.png */; };
+		F5A32BCB2723E0AD00A7C391 /* bt_check.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AA85161BFFA8006C91AD /* bt_check.png */; };
+		F5A32BCC2723E0AD00A7C391 /* rocker_sw.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AD17161D3277006C91AD /* rocker_sw.png */; };
+		F5A32BCD2723E0AD00A7C391 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = F5BEFCA419BC4F8C0083F8D9 /* help.png */; };
+		F5A32BCE2723E0AD00A7C391 /* bt_copy.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FB161EB76D001CF9AB /* bt_copy.png */; };
+		F5A32BCF2723E0AD00A7C391 /* bt_calc.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FD161EB7CD001CF9AB /* bt_calc.png */; };
+		F5A32BD02723E0AD00A7C391 /* bt_load.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FF161EB8CE001CF9AB /* bt_load.png */; };
+		F5A32BD12723E0AD00A7C391 /* hwconn.png in Resources */ = {isa = PBXBuildFile; fileRef = F529ABB91C3199ED0023A689 /* hwconn.png */; };
+		F5A32BD22723E0AD00A7C391 /* bt_khaos.png in Resources */ = {isa = PBXBuildFile; fileRef = F56A752819C6B65B00348177 /* bt_khaos.png */; };
+		F5A32BD32723E0AD00A7C391 /* bt_save.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6501161EB957001CF9AB /* bt_save.png */; };
+		F5A32BD42723E0AD00A7C391 /* bt_unload.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6503161EB9B6001CF9AB /* bt_unload.png */; };
+		F5A32BD52723E0AD00A7C391 /* bt_save_xi.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6505161EBA24001CF9AB /* bt_save_xi.png */; };
+		F5A32BD62723E0AD00A7C391 /* bt_velocitysens.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6507161EBB09001CF9AB /* bt_velocitysens.png */; };
+		F5A32BD72723E0AD00A7C391 /* bank_a.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6544161EBBE9001CF9AB /* bank_a.png */; };
+		F5A32BD82723E0AD00A7C391 /* bank_b.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6545161EBBE9001CF9AB /* bank_b.png */; };
+		F5A32BD92723E0AD00A7C391 /* bank_c.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6546161EBBE9001CF9AB /* bank_c.png */; };
+		F5A32BDA2723E0AD00A7C391 /* bank_d.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6547161EBBE9001CF9AB /* bank_d.png */; };
+		F5A32BDB2723E0AD00A7C391 /* track01_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654C161EBF1B001CF9AB /* track01_.png */; };
+		F5A32BDC2723E0AD00A7C391 /* track02_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654D161EBF1B001CF9AB /* track02_.png */; };
+		F5A32BDD2723E0AD00A7C391 /* track03_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654E161EBF1B001CF9AB /* track03_.png */; };
+		F5A32BDE2723E0AD00A7C391 /* track04_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654F161EBF1B001CF9AB /* track04_.png */; };
+		F5A32BDF2723E0AD00A7C391 /* track05_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6550161EBF1B001CF9AB /* track05_.png */; };
+		F5A32BE02723E0AD00A7C391 /* track06_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6551161EBF1B001CF9AB /* track06_.png */; };
+		F5A32BE12723E0AD00A7C391 /* track07_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6552161EBF1B001CF9AB /* track07_.png */; };
+		F5A32BE22723E0AD00A7C391 /* track08_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6553161EBF1B001CF9AB /* track08_.png */; };
+		F5A32BE32723E0AD00A7C391 /* track09_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6554161EBF1B001CF9AB /* track09_.png */; };
+		F5A32BE42723E0AD00A7C391 /* track10_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6555161EBF1B001CF9AB /* track10_.png */; };
+		F5A32BE52723E0AD00A7C391 /* track11_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6556161EBF1B001CF9AB /* track11_.png */; };
+		F5A32BE62723E0AD00A7C391 /* track12_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6557161EBF1B001CF9AB /* track12_.png */; };
+		F5A32BE72723E0AD00A7C391 /* track13_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6558161EBF1B001CF9AB /* track13_.png */; };
+		F5A32BE82723E0AD00A7C391 /* track14_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6559161EBF1B001CF9AB /* track14_.png */; };
+		F5A32BE92723E0AD00A7C391 /* track15_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D655A161EBF1B001CF9AB /* track15_.png */; };
+		F5A32BEA2723E0AD00A7C391 /* track16_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D655B161EBF1B001CF9AB /* track16_.png */; };
+		F5A32BEB2723E0AD00A7C391 /* ind_track.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6572161EC0F6001CF9AB /* ind_track.png */; };
+		F5A32BED2723E0AD00A7C391 /* C700.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A660720730100365D66 /* C700.cpp */; };
+		F5A32BEE2723E0AD00A7C391 /* AUBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A7F072073D200365D66 /* AUBase.cpp */; };
+		F5A32BEF2723E0AD00A7C391 /* PlayerCodeReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5C8566D1E61DC2A0083EC15 /* PlayerCodeReader.cpp */; };
+		F5A32BF02723E0AD00A7C391 /* AUInputElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A83072073D200365D66 /* AUInputElement.cpp */; };
+		F5A32BF12723E0AD00A7C391 /* C700Properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */; };
+		F5A32BF22723E0AD00A7C391 /* RegisterLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F51D83CF1D295E8B00A23008 /* RegisterLogger.cpp */; };
+		F5A32BF32723E0AD00A7C391 /* CAAUParameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5A38D38262F152A00725BF8 /* CAAUParameter.cpp */; };
+		F5A32BF42723E0AD00A7C391 /* AUOutputElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A85072073D200365D66 /* AUOutputElement.cpp */; };
+		F5A32BF52723E0AD00A7C391 /* PlayingFileGenerateBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560181B1E3B8C4000400327 /* PlayingFileGenerateBase.cpp */; };
+		F5A32BF62723E0AD00A7C391 /* AUScopeElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A88072073D200365D66 /* AUScopeElement.cpp */; };
+		F5A32BF72723E0AD00A7C391 /* CAHostTimeBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5A38D46262F165200725BF8 /* CAHostTimeBase.cpp */; };
+		F5A32BF82723E0AD00A7C391 /* ComponentBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05A8A072073D200365D66 /* ComponentBase.cpp */; };
+		F5A32BF92723E0AD00A7C391 /* AUBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05AA7072073D200365D66 /* AUBuffer.cpp */; };
+		F5A32BFA2723E0AD00A7C391 /* CAAudioChannelLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05ADF0720742100365D66 /* CAAudioChannelLayout.cpp */; };
+		F5A32BFB2723E0AD00A7C391 /* spc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91961BF720EA00E5EFC6 /* spc.cpp */; };
+		F5A32BFC2723E0AD00A7C391 /* CAMutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05AE10720742100365D66 /* CAMutex.cpp */; };
+		F5A32BFD2723E0AD00A7C391 /* CAStreamBasicDescription.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8BA05AE30720742100365D66 /* CAStreamBasicDescription.cpp */; };
+		F5A32BFE2723E0AD00A7C391 /* UrlLinkBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F500CA7F1E78215D00920AB2 /* UrlLinkBox.cpp */; };
+		F5A32BFF2723E0AD00A7C391 /* CAVectorUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E0BECF80898391C00E1F0F7 /* CAVectorUnit.cpp */; };
+		F5A32C002723E0AD00A7C391 /* CAAUMIDIMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF3A0AAE7C4000AA021C /* CAAUMIDIMap.cpp */; };
+		F5A32C012723E0AD00A7C391 /* MidiDriverBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */; };
+		F5A32C022723E0AD00A7C391 /* CAAUMIDIMapManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF3C0AAE7C4000AA021C /* CAAUMIDIMapManager.cpp */; };
+		F5A32C032723E0AD00A7C391 /* AUMIDIBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF4B0AAE7CFC00AA021C /* AUMIDIBase.cpp */; };
+		F5A32C042723E0AD00A7C391 /* SmcFileGenerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56018211E3DDC1200400327 /* SmcFileGenerate.cpp */; };
+		F5A32C052723E0AD00A7C391 /* MusicDeviceBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF4D0AAE7CFC00AA021C /* MusicDeviceBase.cpp */; };
+		F5A32C062723E0AD00A7C391 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
+		F5A32C072723E0AD00A7C391 /* SynthElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF590AAE7D7A00AA021C /* SynthElement.cpp */; };
+		F5A32C082723E0AD00A7C391 /* SPC_DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91991BF720EA00E5EFC6 /* SPC_DSP.cpp */; };
+		F5A32C092723E0AD00A7C391 /* DspRegFIFO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91BF1BF721CE00E5EFC6 /* DspRegFIFO.cpp */; };
+		F5A32C0A2723E0AD00A7C391 /* czt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AEECD2D0B020BC6002C9BB7 /* czt.cpp */; };
+		F5A32C0B2723E0AD00A7C391 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
+		F5A32C0C2723E0AD00A7C391 /* C700Driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* C700Driver.cpp */; };
+		F5A32C0D2723E0AD00A7C391 /* cocoasupport.mm in Sources */ = {isa = PBXBuildFile; fileRef = F597AD28160B67860003E710 /* cocoasupport.mm */; };
+		F5A32C0E2723E0AD00A7C391 /* SNES_SPC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91921BF720EA00E5EFC6 /* SNES_SPC.cpp */; };
+		F5A32C0F2723E0AD00A7C391 /* AUInstrumentBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AA4CF560AAE7D7A00AA021C /* AUInstrumentBase.cpp */; };
+		F5A32C102723E0AD00A7C391 /* plugguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2A160B67860003E710 /* plugguieditor.cpp */; };
+		F5A32C112723E0AD00A7C391 /* cvstguitimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2D160B67860003E710 /* cvstguitimer.cpp */; };
+		F5A32C122723E0AD00A7C391 /* SpcControlDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F526742B1C01E8A2006B0276 /* SpcControlDevice.cpp */; };
+		F5A32C132723E0AD00A7C391 /* SpcFileGenerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */; };
+		F5A32C142723E0AD00A7C391 /* cfileselector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD30160B67860003E710 /* cfileselector.cpp */; };
+		F5A32C152723E0AD00A7C391 /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD33160B67860003E710 /* vstcontrols.cpp */; };
+		F5A32C162723E0AD00A7C391 /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD34160B67860003E710 /* vstgui.cpp */; };
+		F5A32C172723E0AD00A7C391 /* C700_CocoaViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F569A3F51619527F006C91AD /* C700_CocoaViewFactory.mm */; };
+		F5A32C182723E0AD00A7C391 /* ControlUSB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52674291C01E8A2006B0276 /* ControlUSB.cpp */; };
+		F5A32C192723E0AD00A7C391 /* C700Edit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A40416195488006C91AD /* C700Edit.cpp */; };
+		F5A32C1A2723E0AD00A7C391 /* C700GUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A485161964FD006C91AD /* C700GUI.cpp */; };
+		F5A32C1B2723E0AD00A7C391 /* ctooltipsupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A8011619DEA6006C91AD /* ctooltipsupport.cpp */; };
+		F5A32C1C2723E0AD00A7C391 /* MyKnob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A94E161AB0F1006C91AD /* MyKnob.cpp */; };
+		F5A32C1D2723E0AD00A7C391 /* SPC_Filter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D919B1BF720EA00E5EFC6 /* SPC_Filter.cpp */; };
+		F5A32C1E2723E0AD00A7C391 /* MySlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AA25161AD9F4006C91AD /* MySlider.cpp */; };
+		F5A32C1F2723E0AD00A7C391 /* SNES_SPC_misc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91941BF720EA00E5EFC6 /* SNES_SPC_misc.cpp */; };
+		F5A32C202723E0AD00A7C391 /* DspController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91851BF71FCE00E5EFC6 /* DspController.cpp */; };
+		F5A32C212723E0AD00A7C391 /* DynamicVoiceAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F556802B1A2AA8550031451C /* DynamicVoiceAllocator.cpp */; };
+		F5A32C222723E0AD00A7C391 /* LabelOnOffButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */; };
+		F5A32C232723E0AD00A7C391 /* WaveView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AD35161D3490006C91AD /* WaveView.cpp */; };
+		F5A32C242723E0AD00A7C391 /* C700DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58DCD7C1A2B4586004BD426 /* C700DSP.cpp */; };
+		F5A32C252723E0AD00A7C391 /* DummyCntl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */; };
+		F5A32C262723E0AD00A7C391 /* AUPlugInDispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5A38D3F262F15FA00725BF8 /* AUPlugInDispatch.cpp */; };
+		F5A32C272723E0AD00A7C391 /* SeparatorLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D65BD161EC9D0001CF9AB /* SeparatorLine.cpp */; };
+		F5A32C282723E0AD00A7C391 /* MyParamDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */; };
+		F5A32C292723E0AD00A7C391 /* MyTextEdit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */; };
+		F5A32C2A2723E0AD00A7C391 /* EfxAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569BEC11622B5F8006C91AD /* EfxAccess.cpp */; };
+		F5A32C2B2723E0AD00A7C391 /* DataBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C389162515ED006C91AD /* DataBuffer.cpp */; };
+		F5A32C2C2723E0AD00A7C391 /* AudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3AC162518B9006C91AD /* AudioFile.cpp */; };
+		F5A32C2D2723E0AD00A7C391 /* SPCFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B0162518BF006C91AD /* SPCFile.cpp */; };
+		F5A32C2E2723E0AD00A7C391 /* RawBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B4162518C6006C91AD /* RawBRRFile.cpp */; };
+		F5A32C2F2723E0AD00A7C391 /* MemManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F527FF9E1BEE323F0083E355 /* MemManager.cpp */; };
+		F5A32C302723E0AD00A7C391 /* XIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C40A16254B6E006C91AD /* XIFile.cpp */; };
+		F5A32C312723E0AD00A7C391 /* PlistBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */; };
+		F5A32C322723E0AD00A7C391 /* EchoKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432C251627AE4200863A0B /* EchoKernel.cpp */; };
+		F5A32C332723E0AD00A7C391 /* SNES_SPC_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91951BF720EA00E5EFC6 /* SNES_SPC_state.cpp */; };
+		F5A32C342723E0AD00A7C391 /* C700Kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432F2E1628117D00863A0B /* C700Kernel.cpp */; };
+		F5A32C352723E0AD00A7C391 /* TextKickButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */; };
+		F5A32C362723E0AD00A7C391 /* ChunkReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54D11B81E3788EB000CDDA7 /* ChunkReader.cpp */; };
+		F5A32C372723E0AD00A7C391 /* RecordingSettingsGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */; };
+		F5A32C382723E0AD00A7C391 /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
+		F5A32C392723E0AD00A7C391 /* macOSUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5552CAC1E6C4DEB0020BB2B /* macOSUtils.mm */; };
+		F5A32C3A2723E0AD00A7C391 /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510B703163266CB00A844B4 /* FileAccess.cpp */; };
+		F5A32C3B2723E0AD00A7C391 /* dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91901BF720EA00E5EFC6 /* dsp.cpp */; };
+		F5A32C3D2723E0AD00A7C391 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F52674351C01E914006B0276 /* IOKit.framework */; };
+		F5A32C3E2723E0AD00A7C391 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05AF9072074E100365D66 /* AudioToolbox.framework */; };
+		F5A32C3F2723E0AD00A7C391 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602BE1984CFF80079A9BE /* Foundation.framework */; };
+		F5A32C402723E0AD00A7C391 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602A01984CEC60079A9BE /* Cocoa.framework */; };
+		F5A32C412723E0AD00A7C391 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05AFA072074E100365D66 /* AudioUnit.framework */; };
+		F5A32C422723E0AD00A7C391 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05B01072074F900365D66 /* CoreServices.framework */; };
+		F5A32C432723E0AD00A7C391 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2134090B199D8500DC9811 /* Accelerate.framework */; };
+		F5A32C4D2723E0DA00A7C391 /* C700DSP.h in Headers */ = {isa = PBXBuildFile; fileRef = F58DCD7D1A2B4586004BD426 /* C700DSP.h */; };
+		F5A32C4E2723E0DA00A7C391 /* MersenneTwister.h in Headers */ = {isa = PBXBuildFile; fileRef = F557ACE619CD159300CF9792 /* MersenneTwister.h */; };
+		F5A32C4F2723E0DA00A7C391 /* UrlLinkBox.h in Headers */ = {isa = PBXBuildFile; fileRef = F500CA801E78215D00920AB2 /* UrlLinkBox.h */; };
+		F5A32C502723E0DA00A7C391 /* C700_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32BAE0B30371A71500C91783 /* C700_Prefix.pch */; };
+		F5A32C512723E0DA00A7C391 /* C700defines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A77F1030ADE785100F2B2BE /* C700defines.h */; };
+		F5A32C522723E0DA00A7C391 /* samplebrr.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A10AB550AE2855600271511 /* samplebrr.h */; };
+		F5A32C532723E0DA00A7C391 /* blargg_endian.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D918E1BF720EA00E5EFC6 /* blargg_endian.h */; };
+		F5A32C542723E0DA00A7C391 /* SNES_SPC.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91931BF720EA00E5EFC6 /* SNES_SPC.h */; };
+		F5A32C552723E0DA00A7C391 /* gauss.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AF717CF0AE3DD5900C79293 /* gauss.h */; };
+		F5A32C562723E0DA00A7C391 /* czt.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AEECD2E0B020BC6002C9BB7 /* czt.h */; };
+		F5A32C572723E0DA00A7C391 /* RecordingSettingsGUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D69C3F1E44BD6D00F62CF6 /* RecordingSettingsGUI.h */; };
+		F5A32C582723E0DA00A7C391 /* blargg_common.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D918C1BF720EA00E5EFC6 /* blargg_common.h */; };
+		F5A32C592723E0DA00A7C391 /* brrcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AD362300AFE59F900FC48D2 /* brrcodec.h */; };
+		F5A32C5A2723E0DA00A7C391 /* audioeffectx.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602B01984CF7D0079A9BE /* audioeffectx.h */; };
+		F5A32C5B2723E0DA00A7C391 /* DspRegFIFO.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */; };
+		F5A32C5C2723E0DA00A7C391 /* C700Driver.h in Headers */ = {isa = PBXBuildFile; fileRef = F543D0AB147D285F00DC53A3 /* C700Driver.h */; };
+		F5A32C5D2723E0DA00A7C391 /* SPC_Filter.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D919C1BF720EA00E5EFC6 /* SPC_Filter.h */; };
+		F5A32C5E2723E0DA00A7C391 /* getpluginbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD29160B67860003E710 /* getpluginbundle.h */; };
+		F5A32C5F2723E0DA00A7C391 /* C700Properties.h in Headers */ = {isa = PBXBuildFile; fileRef = F5D1B06D1E55E67E00C0C795 /* C700Properties.h */; };
+		F5A32C602723E0DA00A7C391 /* vstkeycode.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2B160B67860003E710 /* vstkeycode.h */; };
+		F5A32C612723E0DA00A7C391 /* blargg_source.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D918F1BF720EA00E5EFC6 /* blargg_source.h */; };
+		F5A32C622723E0DA00A7C391 /* SPC_DSP.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D919A1BF720EA00E5EFC6 /* SPC_DSP.h */; };
+		F5A32C632723E0DA00A7C391 /* cocoasupport.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2C160B67860003E710 /* cocoasupport.h */; };
+		F5A32C642723E0DA00A7C391 /* cfileselector.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD31160B67860003E710 /* cfileselector.h */; };
+		F5A32C652723E0DA00A7C391 /* SmcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F56018221E3DDC1200400327 /* SmcFileGenerate.h */; };
+		F5A32C662723E0DA00A7C391 /* vstgui.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD35160B67860003E710 /* vstgui.h */; };
+		F5A32C672723E0DA00A7C391 /* C700Edit.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A40316195488006C91AD /* C700Edit.h */; };
+		F5A32C682723E0DA00A7C391 /* SpcFileGenerate.h in Headers */ = {isa = PBXBuildFile; fileRef = F560182B1E3F508C00400327 /* SpcFileGenerate.h */; };
+		F5A32C692723E0DA00A7C391 /* aeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602A31984CF600079A9BE /* aeffect.h */; };
+		F5A32C6A2723E0DA00A7C391 /* C700GUI.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A484161964FD006C91AD /* C700GUI.h */; };
+		F5A32C6B2723E0DA00A7C391 /* RegisterLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = F51D83D01D295E8B00A23008 /* RegisterLogger.h */; };
+		F5A32C6C2723E0DA00A7C391 /* ctooltipsupport.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A8021619DEA6006C91AD /* ctooltipsupport.h */; };
+		F5A32C6D2723E0DA00A7C391 /* dsp.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91911BF720EA00E5EFC6 /* dsp.h */; };
+		F5A32C6E2723E0DA00A7C391 /* SPC_CPU.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91981BF720EA00E5EFC6 /* SPC_CPU.h */; };
+		F5A32C6F2723E0DA00A7C391 /* MidiDriverBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F5F3D5D31EEBDC6F0002C320 /* MidiDriverBase.h */; };
+		F5A32C702723E0DA00A7C391 /* MyKnob.h in Headers */ = {isa = PBXBuildFile; fileRef = F569A94D161AB0F1006C91AD /* MyKnob.h */; };
+		F5A32C712723E0DA00A7C391 /* MySlider.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AA24161AD9F4006C91AD /* MySlider.h */; };
+		F5A32C722723E0DA00A7C391 /* LabelOnOffButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AAA2161C0114006C91AD /* LabelOnOffButton.h */; };
+		F5A32C732723E0DA00A7C391 /* DynamicVoiceAllocator.h in Headers */ = {isa = PBXBuildFile; fileRef = F556802C1A2AA8550031451C /* DynamicVoiceAllocator.h */; };
+		F5A32C742723E0DA00A7C391 /* WaveView.h in Headers */ = {isa = PBXBuildFile; fileRef = F569AD34161D3490006C91AD /* WaveView.h */; };
+		F5A32C752723E0DA00A7C391 /* macOSUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F5552CAD1E6C4DEB0020BB2B /* macOSUtils.h */; };
+		F5A32C762723E0DA00A7C391 /* aeffectx.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602A41984CF600079A9BE /* aeffectx.h */; };
+		F5A32C772723E0DA00A7C391 /* DummyCntl.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D63D8161D6FFE001CF9AB /* DummyCntl.h */; };
+		F5A32C782723E0DA00A7C391 /* SeparatorLine.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D65BC161EC9D0001CF9AB /* SeparatorLine.h */; };
+		F5A32C792723E0DA00A7C391 /* MyParamDisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6600161ECFD1001CF9AB /* MyParamDisplay.h */; };
+		F5A32C7A2723E0DA00A7C391 /* MyTextEdit.h in Headers */ = {isa = PBXBuildFile; fileRef = F55D6606161ECFE3001CF9AB /* MyTextEdit.h */; };
+		F5A32C7B2723E0DA00A7C391 /* C700TimeThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F56AC10B1C393EC500787F85 /* C700TimeThread.h */; };
+		F5A32C7C2723E0DA00A7C391 /* MemManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F527FF9F1BEE323F0083E355 /* MemManager.h */; };
+		F5A32C7D2723E0DA00A7C391 /* vstfxstore.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602A51984CF600079A9BE /* vstfxstore.h */; };
+		F5A32C7E2723E0DA00A7C391 /* DspController.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91861BF71FCE00E5EFC6 /* DspController.h */; };
+		F5A32C7F2723E0DA00A7C391 /* ControlUSB.h in Headers */ = {isa = PBXBuildFile; fileRef = F526742A1C01E8A2006B0276 /* ControlUSB.h */; };
+		F5A32C802723E0DA00A7C391 /* SpcControlDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = F526742C1C01E8A2006B0276 /* SpcControlDevice.h */; };
+		F5A32C812723E0DA00A7C391 /* EfxAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F569BEC01622B5F8006C91AD /* EfxAccess.h */; };
+		F5A32C822723E0DA00A7C391 /* spc.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D91971BF720EA00E5EFC6 /* spc.h */; };
+		F5A32C832723E0DA00A7C391 /* DataBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C388162515ED006C91AD /* DataBuffer.h */; };
+		F5A32C842723E0DA00A7C391 /* PlayingFileGenerateBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F560181C1E3B8C4000400327 /* PlayingFileGenerateBase.h */; };
+		F5A32C852723E0DA00A7C391 /* AudioFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AB162518B9006C91AD /* AudioFile.h */; };
+		F5A32C862723E0DA00A7C391 /* SPCFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3AF162518BF006C91AD /* SPCFile.h */; };
+		F5A32C872723E0DA00A7C391 /* RawBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C3B3162518C6006C91AD /* RawBRRFile.h */; };
+		F5A32C882723E0DA00A7C391 /* XIFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C40916254B6E006C91AD /* XIFile.h */; };
+		F5A32C892723E0DA00A7C391 /* PlistBRRFile.h in Headers */ = {isa = PBXBuildFile; fileRef = F569C6DD162644AE006C91AD /* PlistBRRFile.h */; };
+		F5A32C8A2723E0DA00A7C391 /* ChunkReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F54D11B91E3788EB000CDDA7 /* ChunkReader.h */; };
+		F5A32C8B2723E0DA00A7C391 /* EchoKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432C241627AE4200863A0B /* EchoKernel.h */; };
+		F5A32C8C2723E0DA00A7C391 /* C700Kernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432F2D1628117D00863A0B /* C700Kernel.h */; };
+		F5A32C8D2723E0DA00A7C391 /* C700Parameters.h in Headers */ = {isa = PBXBuildFile; fileRef = F5432FEF162915F900863A0B /* C700Parameters.h */; };
+		F5A32C8E2723E0DA00A7C391 /* aeffeditor.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602AC1984CF7D0079A9BE /* aeffeditor.h */; };
+		F5A32C8F2723E0DA00A7C391 /* aeffguieditor.h in Headers */ = {isa = PBXBuildFile; fileRef = F597AD2F160B67860003E710 /* aeffguieditor.h */; };
+		F5A32C902723E0DA00A7C391 /* TextKickButton.h in Headers */ = {isa = PBXBuildFile; fileRef = F5FEFAEC1E4F439B00F08114 /* TextKickButton.h */; };
+		F5A32C912723E0DA00A7C391 /* C700VST.h in Headers */ = {isa = PBXBuildFile; fileRef = F54338D81629759600863A0B /* C700VST.h */; };
+		F5A32C922723E0DA00A7C391 /* PlayerCodeReader.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C8566E1E61DC2A0083EC15 /* PlayerCodeReader.h */; };
+		F5A32C932723E0DA00A7C391 /* FileAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = F510B702163266CB00A844B4 /* FileAccess.h */; };
+		F5A32C942723E0DA00A7C391 /* blargg_config.h in Headers */ = {isa = PBXBuildFile; fileRef = F59D918D1BF720EA00E5EFC6 /* blargg_config.h */; };
+		F5A32C952723E0DA00A7C391 /* audioeffect.h in Headers */ = {isa = PBXBuildFile; fileRef = F53602AE1984CF7D0079A9BE /* audioeffect.h */; };
+		F5A32C962723E0DA00A7C391 /* ControlInstacnesDefs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5C1B32116F803A10034F320 /* ControlInstacnesDefs.h */; };
+		F5A32C982723E0DA00A7C391 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		F5A32C992723E0DA00A7C391 /* AUBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C260B2144FD00EC1825 /* AUBackground.png */; };
+		F5A32C9A2723E0DA00A7C391 /* knobBack.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C2F0B2144FD00EC1825 /* knobBack.png */; };
+		F5A32C9B2723E0DA00A7C391 /* sliderThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = 8ACF4C3E0B2144FD00EC1825 /* sliderThumb.png */; };
+		F5A32C9C2723E0DA00A7C391 /* firstopen.png in Resources */ = {isa = PBXBuildFile; fileRef = F500CA851E7AB58000920AB2 /* firstopen.png */; };
+		F5A32C9D2723E0DA00A7C391 /* bt_check.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AA85161BFFA8006C91AD /* bt_check.png */; };
+		F5A32C9E2723E0DA00A7C391 /* rocker_sw.png in Resources */ = {isa = PBXBuildFile; fileRef = F569AD17161D3277006C91AD /* rocker_sw.png */; };
+		F5A32C9F2723E0DA00A7C391 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = F5BEFCA419BC4F8C0083F8D9 /* help.png */; };
+		F5A32CA02723E0DA00A7C391 /* bt_copy.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FB161EB76D001CF9AB /* bt_copy.png */; };
+		F5A32CA12723E0DA00A7C391 /* bt_calc.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FD161EB7CD001CF9AB /* bt_calc.png */; };
+		F5A32CA22723E0DA00A7C391 /* bt_load.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D64FF161EB8CE001CF9AB /* bt_load.png */; };
+		F5A32CA32723E0DA00A7C391 /* hwconn.png in Resources */ = {isa = PBXBuildFile; fileRef = F529ABB91C3199ED0023A689 /* hwconn.png */; };
+		F5A32CA42723E0DA00A7C391 /* bt_khaos.png in Resources */ = {isa = PBXBuildFile; fileRef = F56A752819C6B65B00348177 /* bt_khaos.png */; };
+		F5A32CA52723E0DA00A7C391 /* bt_save.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6501161EB957001CF9AB /* bt_save.png */; };
+		F5A32CA62723E0DA00A7C391 /* bt_unload.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6503161EB9B6001CF9AB /* bt_unload.png */; };
+		F5A32CA72723E0DA00A7C391 /* bt_save_xi.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6505161EBA24001CF9AB /* bt_save_xi.png */; };
+		F5A32CA82723E0DA00A7C391 /* bt_velocitysens.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6507161EBB09001CF9AB /* bt_velocitysens.png */; };
+		F5A32CA92723E0DA00A7C391 /* bank_a.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6544161EBBE9001CF9AB /* bank_a.png */; };
+		F5A32CAA2723E0DA00A7C391 /* bank_b.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6545161EBBE9001CF9AB /* bank_b.png */; };
+		F5A32CAB2723E0DA00A7C391 /* bank_c.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6546161EBBE9001CF9AB /* bank_c.png */; };
+		F5A32CAC2723E0DA00A7C391 /* bank_d.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6547161EBBE9001CF9AB /* bank_d.png */; };
+		F5A32CAD2723E0DA00A7C391 /* track01_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654C161EBF1B001CF9AB /* track01_.png */; };
+		F5A32CAE2723E0DA00A7C391 /* track02_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654D161EBF1B001CF9AB /* track02_.png */; };
+		F5A32CAF2723E0DA00A7C391 /* track03_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654E161EBF1B001CF9AB /* track03_.png */; };
+		F5A32CB02723E0DA00A7C391 /* track04_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D654F161EBF1B001CF9AB /* track04_.png */; };
+		F5A32CB12723E0DA00A7C391 /* track05_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6550161EBF1B001CF9AB /* track05_.png */; };
+		F5A32CB22723E0DA00A7C391 /* track06_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6551161EBF1B001CF9AB /* track06_.png */; };
+		F5A32CB32723E0DA00A7C391 /* track07_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6552161EBF1B001CF9AB /* track07_.png */; };
+		F5A32CB42723E0DA00A7C391 /* track08_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6553161EBF1B001CF9AB /* track08_.png */; };
+		F5A32CB52723E0DA00A7C391 /* track09_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6554161EBF1B001CF9AB /* track09_.png */; };
+		F5A32CB62723E0DA00A7C391 /* track10_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6555161EBF1B001CF9AB /* track10_.png */; };
+		F5A32CB72723E0DA00A7C391 /* track11_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6556161EBF1B001CF9AB /* track11_.png */; };
+		F5A32CB82723E0DA00A7C391 /* track12_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6557161EBF1B001CF9AB /* track12_.png */; };
+		F5A32CB92723E0DA00A7C391 /* track13_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6558161EBF1B001CF9AB /* track13_.png */; };
+		F5A32CBA2723E0DA00A7C391 /* track14_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6559161EBF1B001CF9AB /* track14_.png */; };
+		F5A32CBB2723E0DA00A7C391 /* track15_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D655A161EBF1B001CF9AB /* track15_.png */; };
+		F5A32CBC2723E0DA00A7C391 /* track16_.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D655B161EBF1B001CF9AB /* track16_.png */; };
+		F5A32CBD2723E0DA00A7C391 /* ind_track.png in Resources */ = {isa = PBXBuildFile; fileRef = F55D6572161EC0F6001CF9AB /* ind_track.png */; };
+		F5A32CBF2723E0DA00A7C391 /* czt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AEECD2D0B020BC6002C9BB7 /* czt.cpp */; };
+		F5A32CC02723E0DA00A7C391 /* brrcodec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8AD362610AFE5EDC00FC48D2 /* brrcodec.cpp */; };
+		F5A32CC12723E0DA00A7C391 /* C700Driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F543D0AA147D285F00DC53A3 /* C700Driver.cpp */; };
+		F5A32CC22723E0DA00A7C391 /* MemManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F527FF9E1BEE323F0083E355 /* MemManager.cpp */; };
+		F5A32CC32723E0DA00A7C391 /* SPC_DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91991BF720EA00E5EFC6 /* SPC_DSP.cpp */; };
+		F5A32CC42723E0DA00A7C391 /* PlayingFileGenerateBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560181B1E3B8C4000400327 /* PlayingFileGenerateBase.cpp */; };
+		F5A32CC52723E0DA00A7C391 /* SmcFileGenerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F56018211E3DDC1200400327 /* SmcFileGenerate.cpp */; };
+		F5A32CC62723E0DA00A7C391 /* MidiDriverBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5F3D5D21EEBDC6F0002C320 /* MidiDriverBase.cpp */; };
+		F5A32CC72723E0DA00A7C391 /* cocoasupport.mm in Sources */ = {isa = PBXBuildFile; fileRef = F597AD28160B67860003E710 /* cocoasupport.mm */; };
+		F5A32CC82723E0DA00A7C391 /* UrlLinkBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F500CA7F1E78215D00920AB2 /* UrlLinkBox.cpp */; };
+		F5A32CC92723E0DA00A7C391 /* cvstguitimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2D160B67860003E710 /* cvstguitimer.cpp */; };
+		F5A32CCA2723E0DA00A7C391 /* cfileselector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD30160B67860003E710 /* cfileselector.cpp */; };
+		F5A32CCB2723E0DA00A7C391 /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD33160B67860003E710 /* vstcontrols.cpp */; };
+		F5A32CCC2723E0DA00A7C391 /* DynamicVoiceAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F556802B1A2AA8550031451C /* DynamicVoiceAllocator.cpp */; };
+		F5A32CCD2723E0DA00A7C391 /* SNES_SPC_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91951BF720EA00E5EFC6 /* SNES_SPC_state.cpp */; };
+		F5A32CCE2723E0DA00A7C391 /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD34160B67860003E710 /* vstgui.cpp */; };
+		F5A32CCF2723E0DA00A7C391 /* C700Edit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A40416195488006C91AD /* C700Edit.cpp */; };
+		F5A32CD02723E0DA00A7C391 /* C700GUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A485161964FD006C91AD /* C700GUI.cpp */; };
+		F5A32CD12723E0DA00A7C391 /* dsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91901BF720EA00E5EFC6 /* dsp.cpp */; };
+		F5A32CD22723E0DA00A7C391 /* ctooltipsupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A8011619DEA6006C91AD /* ctooltipsupport.cpp */; };
+		F5A32CD32723E0DA00A7C391 /* MyKnob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569A94E161AB0F1006C91AD /* MyKnob.cpp */; };
+		F5A32CD42723E0DA00A7C391 /* GUIUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C381E44A7E800F62CF6 /* GUIUtils.cpp */; };
+		F5A32CD52723E0DA00A7C391 /* MySlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AA25161AD9F4006C91AD /* MySlider.cpp */; };
+		F5A32CD62723E0DA00A7C391 /* LabelOnOffButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AAA3161C0114006C91AD /* LabelOnOffButton.cpp */; };
+		F5A32CD72723E0DA00A7C391 /* audioeffectx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F53602AF1984CF7D0079A9BE /* audioeffectx.cpp */; };
+		F5A32CD82723E0DA00A7C391 /* WaveView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569AD35161D3490006C91AD /* WaveView.cpp */; };
+		F5A32CD92723E0DA00A7C391 /* SNES_SPC_misc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91941BF720EA00E5EFC6 /* SNES_SPC_misc.cpp */; };
+		F5A32CDA2723E0DA00A7C391 /* DummyCntl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D63D9161D6FFE001CF9AB /* DummyCntl.cpp */; };
+		F5A32CDB2723E0DA00A7C391 /* SeparatorLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D65BD161EC9D0001CF9AB /* SeparatorLine.cpp */; };
+		F5A32CDC2723E0DA00A7C391 /* MyParamDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6601161ECFD1001CF9AB /* MyParamDisplay.cpp */; };
+		F5A32CDD2723E0DA00A7C391 /* MyTextEdit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F55D6607161ECFE3001CF9AB /* MyTextEdit.cpp */; };
+		F5A32CDE2723E0DA00A7C391 /* ControlUSB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F52674291C01E8A2006B0276 /* ControlUSB.cpp */; };
+		F5A32CDF2723E0DA00A7C391 /* TextKickButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5FEFAEB1E4F439B00F08114 /* TextKickButton.cpp */; };
+		F5A32CE02723E0DA00A7C391 /* SPC_Filter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D919B1BF720EA00E5EFC6 /* SPC_Filter.cpp */; };
+		F5A32CE12723E0DA00A7C391 /* RegisterLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F51D83CF1D295E8B00A23008 /* RegisterLogger.cpp */; };
+		F5A32CE22723E0DA00A7C391 /* macOSUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5552CAC1E6C4DEB0020BB2B /* macOSUtils.mm */; };
+		F5A32CE32723E0DA00A7C391 /* EfxAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569BEC11622B5F8006C91AD /* EfxAccess.cpp */; };
+		F5A32CE42723E0DA00A7C391 /* vstplugmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F53602B11984CF7D0079A9BE /* vstplugmain.cpp */; };
+		F5A32CE52723E0DA00A7C391 /* DataBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C389162515ED006C91AD /* DataBuffer.cpp */; };
+		F5A32CE62723E0DA00A7C391 /* AudioFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3AC162518B9006C91AD /* AudioFile.cpp */; };
+		F5A32CE72723E0DA00A7C391 /* SPCFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B0162518BF006C91AD /* SPCFile.cpp */; };
+		F5A32CE82723E0DA00A7C391 /* ChunkReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54D11B81E3788EB000CDDA7 /* ChunkReader.cpp */; };
+		F5A32CE92723E0DA00A7C391 /* RawBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C3B4162518C6006C91AD /* RawBRRFile.cpp */; };
+		F5A32CEA2723E0DA00A7C391 /* XIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C40A16254B6E006C91AD /* XIFile.cpp */; };
+		F5A32CEB2723E0DA00A7C391 /* DspController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91851BF71FCE00E5EFC6 /* DspController.cpp */; };
+		F5A32CEC2723E0DA00A7C391 /* SNES_SPC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91921BF720EA00E5EFC6 /* SNES_SPC.cpp */; };
+		F5A32CED2723E0DA00A7C391 /* PlistBRRFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F569C6DE162644AE006C91AD /* PlistBRRFile.cpp */; };
+		F5A32CEE2723E0DA00A7C391 /* EchoKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432C251627AE4200863A0B /* EchoKernel.cpp */; };
+		F5A32CEF2723E0DA00A7C391 /* audioeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F53602AD1984CF7D0079A9BE /* audioeffect.cpp */; };
+		F5A32CF02723E0DA00A7C391 /* C700DSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F58DCD7C1A2B4586004BD426 /* C700DSP.cpp */; };
+		F5A32CF12723E0DA00A7C391 /* SpcControlDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F526742B1C01E8A2006B0276 /* SpcControlDevice.cpp */; };
+		F5A32CF22723E0DA00A7C391 /* RecordingSettingsGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D69C3E1E44BD6D00F62CF6 /* RecordingSettingsGUI.cpp */; };
+		F5A32CF32723E0DA00A7C391 /* DspRegFIFO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91BF1BF721CE00E5EFC6 /* DspRegFIFO.cpp */; };
+		F5A32CF42723E0DA00A7C391 /* C700Kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432F2E1628117D00863A0B /* C700Kernel.cpp */; };
+		F5A32CF52723E0DA00A7C391 /* C700Parameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5432FF0162915F900863A0B /* C700Parameters.cpp */; };
+		F5A32CF62723E0DA00A7C391 /* aeffguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F597AD2E160B67860003E710 /* aeffguieditor.cpp */; };
+		F5A32CF72723E0DA00A7C391 /* C700Properties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5D1B06C1E55E67E00C0C795 /* C700Properties.cpp */; };
+		F5A32CF82723E0DA00A7C391 /* C700VST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F54338D91629759600863A0B /* C700VST.cpp */; };
+		F5A32CF92723E0DA00A7C391 /* spc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F59D91961BF720EA00E5EFC6 /* spc.cpp */; };
+		F5A32CFA2723E0DA00A7C391 /* PlayerCodeReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5C8566D1E61DC2A0083EC15 /* PlayerCodeReader.cpp */; };
+		F5A32CFB2723E0DA00A7C391 /* FileAccess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F510B703163266CB00A844B4 /* FileAccess.cpp */; };
+		F5A32CFC2723E0DA00A7C391 /* SpcFileGenerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F560182A1E3F508C00400327 /* SpcFileGenerate.cpp */; };
+		F5A32CFE2723E0DA00A7C391 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F52674351C01E914006B0276 /* IOKit.framework */; };
+		F5A32CFF2723E0DA00A7C391 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2134090B199D8500DC9811 /* Accelerate.framework */; };
+		F5A32D002723E0DA00A7C391 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BA05AF9072074E100365D66 /* AudioToolbox.framework */; };
+		F5A32D012723E0DA00A7C391 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602A01984CEC60079A9BE /* Cocoa.framework */; };
+		F5A32D022723E0DA00A7C391 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53602BE1984CFF80079A9BE /* Foundation.framework */; };
 		F5A38D3A262F152A00725BF8 /* CAAUParameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5A38D38262F152A00725BF8 /* CAAUParameter.cpp */; };
 		F5A38D3B262F152A00725BF8 /* CAAUParameter.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A38D39262F152A00725BF8 /* CAAUParameter.h */; };
 		F5A38D41262F15FA00725BF8 /* AUPlugInDispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5A38D3F262F15FA00725BF8 /* AUPlugInDispatch.cpp */; };
@@ -637,6 +1033,10 @@
 		F59D919C1BF720EA00E5EFC6 /* SPC_Filter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPC_Filter.h; sourceTree = "<group>"; };
 		F59D91BF1BF721CE00E5EFC6 /* DspRegFIFO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DspRegFIFO.cpp; sourceTree = "<group>"; };
 		F59D91C01BF721CE00E5EFC6 /* DspRegFIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DspRegFIFO.h; sourceTree = "<group>"; };
+		F5A32C482723E0AD00A7C391 /* C700.component */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.component; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5A32C492723E0AD00A7C391 /* C700 AU copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "C700 AU copy-Info.plist"; path = "/Users/osoumen/dev/C700/C700 AU copy-Info.plist"; sourceTree = "<absolute>"; };
+		F5A32D072723E0DA00A7C391 /* C700.vst */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = C700.vst; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5A32D082723E0DA00A7C391 /* C700 VST copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "C700 VST copy-Info.plist"; path = "/Users/osoumen/dev/C700/C700 VST copy-Info.plist"; sourceTree = "<absolute>"; };
 		F5A38D38262F152A00725BF8 /* CAAUParameter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAAUParameter.cpp; sourceTree = "<group>"; };
 		F5A38D39262F152A00725BF8 /* CAAUParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAAUParameter.h; sourceTree = "<group>"; };
 		F5A38D3F262F15FA00725BF8 /* AUPlugInDispatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AUPlugInDispatch.cpp; sourceTree = "<group>"; };
@@ -696,6 +1096,32 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F5A32C3C2723E0AD00A7C391 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A32C3D2723E0AD00A7C391 /* IOKit.framework in Frameworks */,
+				F5A32C3E2723E0AD00A7C391 /* AudioToolbox.framework in Frameworks */,
+				F5A32C3F2723E0AD00A7C391 /* Foundation.framework in Frameworks */,
+				F5A32C402723E0AD00A7C391 /* Cocoa.framework in Frameworks */,
+				F5A32C412723E0AD00A7C391 /* AudioUnit.framework in Frameworks */,
+				F5A32C422723E0AD00A7C391 /* CoreServices.framework in Frameworks */,
+				F5A32C432723E0AD00A7C391 /* Accelerate.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5A32CFD2723E0DA00A7C391 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A32CFE2723E0DA00A7C391 /* IOKit.framework in Frameworks */,
+				F5A32CFF2723E0DA00A7C391 /* Accelerate.framework in Frameworks */,
+				F5A32D002723E0DA00A7C391 /* AudioToolbox.framework in Frameworks */,
+				F5A32D012723E0DA00A7C391 /* Cocoa.framework in Frameworks */,
+				F5A32D022723E0DA00A7C391 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -706,6 +1132,8 @@
 				089C167CFE841241C02AAC07 /* Resources */,
 				089C1671FE841209C02AAC07 /* External Frameworks and Libraries */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
+				F5A32C492723E0AD00A7C391 /* C700 AU copy-Info.plist */,
+				F5A32D082723E0DA00A7C391 /* C700 VST copy-Info.plist */,
 			);
 			name = Chip700;
 			sourceTree = "<group>";
@@ -799,6 +1227,8 @@
 				8D01CCD20486CAD60068D4B7 /* C700.component */,
 				F56D351F156A0EA000038960 /* encodetest */,
 				F543322816296E0200863A0B /* C700.vst */,
+				F5A32C482723E0AD00A7C391 /* C700.component */,
+				F5A32D072723E0DA00A7C391 /* C700.vst */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1302,6 +1732,187 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F5A32B672723E0AD00A7C391 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A32B682723E0AD00A7C391 /* C700Version.h in Headers */,
+				F5A32B692723E0AD00A7C391 /* AUBase.h in Headers */,
+				F5A32B6A2723E0AD00A7C391 /* AUPlugInDispatch.h in Headers */,
+				F5A32B6B2723E0AD00A7C391 /* AUDispatch.h in Headers */,
+				F5A32B6C2723E0AD00A7C391 /* AUInputElement.h in Headers */,
+				F5A32B6D2723E0AD00A7C391 /* MemManager.h in Headers */,
+				F5A32B6E2723E0AD00A7C391 /* AUOutputElement.h in Headers */,
+				F5A32B6F2723E0AD00A7C391 /* AUScopeElement.h in Headers */,
+				F5A32B702723E0AD00A7C391 /* ComponentBase.h in Headers */,
+				F5A32B712723E0AD00A7C391 /* AUBuffer.h in Headers */,
+				F5A32B722723E0AD00A7C391 /* ChunkReader.h in Headers */,
+				F5A32B732723E0AD00A7C391 /* MidiDriverBase.h in Headers */,
+				F5A32B742723E0AD00A7C391 /* AUSilentTimeout.h in Headers */,
+				F5A32B752723E0AD00A7C391 /* UrlLinkBox.h in Headers */,
+				F5A32B762723E0AD00A7C391 /* CAAudioChannelLayout.h in Headers */,
+				F5A32B772723E0AD00A7C391 /* CAMutex.h in Headers */,
+				F5A32B782723E0AD00A7C391 /* CAStreamBasicDescription.h in Headers */,
+				F5A32B792723E0AD00A7C391 /* C700.h in Headers */,
+				F5A32B7A2723E0AD00A7C391 /* CAHostTimeBase.h in Headers */,
+				F5A32B7B2723E0AD00A7C391 /* PlayingFileGenerateBase.h in Headers */,
+				F5A32B7C2723E0AD00A7C391 /* CAVectorUnit.h in Headers */,
+				F5A32B7D2723E0AD00A7C391 /* CAVectorUnitTypes.h in Headers */,
+				F5A32B7E2723E0AD00A7C391 /* CAAUMIDIMap.h in Headers */,
+				F5A32B7F2723E0AD00A7C391 /* CAAUMIDIMapManager.h in Headers */,
+				F5A32B802723E0AD00A7C391 /* GUIUtils.h in Headers */,
+				F5A32B812723E0AD00A7C391 /* AUMIDIBase.h in Headers */,
+				F5A32B822723E0AD00A7C391 /* MusicDeviceBase.h in Headers */,
+				F5A32B832723E0AD00A7C391 /* MersenneTwister.h in Headers */,
+				F5A32B842723E0AD00A7C391 /* blargg_endian.h in Headers */,
+				F5A32B852723E0AD00A7C391 /* LockFreeFIFO.h in Headers */,
+				F5A32B862723E0AD00A7C391 /* PlayerCodeReader.h in Headers */,
+				F5A32B872723E0AD00A7C391 /* SynthElement.h in Headers */,
+				F5A32B882723E0AD00A7C391 /* SynthEvent.h in Headers */,
+				F5A32B892723E0AD00A7C391 /* C700defines.h in Headers */,
+				F5A32B8A2723E0AD00A7C391 /* SPC_CPU.h in Headers */,
+				F5A32B8B2723E0AD00A7C391 /* samplebrr.h in Headers */,
+				F5A32B8C2723E0AD00A7C391 /* DspRegFIFO.h in Headers */,
+				F5A32B8D2723E0AD00A7C391 /* gauss.h in Headers */,
+				F5A32B8E2723E0AD00A7C391 /* TextKickButton.h in Headers */,
+				F5A32B8F2723E0AD00A7C391 /* CAAUParameter.h in Headers */,
+				F5A32B902723E0AD00A7C391 /* blargg_config.h in Headers */,
+				F5A32B912723E0AD00A7C391 /* blargg_common.h in Headers */,
+				F5A32B922723E0AD00A7C391 /* DspController.h in Headers */,
+				F5A32B932723E0AD00A7C391 /* czt.h in Headers */,
+				F5A32B942723E0AD00A7C391 /* brrcodec.h in Headers */,
+				F5A32B952723E0AD00A7C391 /* SPC_Filter.h in Headers */,
+				F5A32B962723E0AD00A7C391 /* SpcControlDevice.h in Headers */,
+				F5A32B972723E0AD00A7C391 /* C700Driver.h in Headers */,
+				F5A32B982723E0AD00A7C391 /* ControlUSB.h in Headers */,
+				F5A32B992723E0AD00A7C391 /* getpluginbundle.h in Headers */,
+				F5A32B9A2723E0AD00A7C391 /* vstkeycode.h in Headers */,
+				F5A32B9B2723E0AD00A7C391 /* cocoasupport.h in Headers */,
+				F5A32B9C2723E0AD00A7C391 /* cfileselector.h in Headers */,
+				F5A32B9D2723E0AD00A7C391 /* plugguieditor.h in Headers */,
+				F5A32B9E2723E0AD00A7C391 /* C700Properties.h in Headers */,
+				F5A32B9F2723E0AD00A7C391 /* RecordingSettingsGUI.h in Headers */,
+				F5A32BA02723E0AD00A7C391 /* macOSUtils.h in Headers */,
+				F5A32BA12723E0AD00A7C391 /* vstgui.h in Headers */,
+				F5A32BA22723E0AD00A7C391 /* spc.h in Headers */,
+				F5A32BA32723E0AD00A7C391 /* C700_CocoaViewFactory.h in Headers */,
+				F5A32BA42723E0AD00A7C391 /* C700Edit.h in Headers */,
+				F5A32BA52723E0AD00A7C391 /* C700GUI.h in Headers */,
+				F5A32BA62723E0AD00A7C391 /* ctooltipsupport.h in Headers */,
+				F5A32BA72723E0AD00A7C391 /* MyKnob.h in Headers */,
+				F5A32BA82723E0AD00A7C391 /* MySlider.h in Headers */,
+				F5A32BA92723E0AD00A7C391 /* SNES_SPC.h in Headers */,
+				F5A32BAA2723E0AD00A7C391 /* LabelOnOffButton.h in Headers */,
+				F5A32BAB2723E0AD00A7C391 /* WaveView.h in Headers */,
+				F5A32BAC2723E0AD00A7C391 /* SmcFileGenerate.h in Headers */,
+				F5A32BAD2723E0AD00A7C391 /* DummyCntl.h in Headers */,
+				F5A32BAE2723E0AD00A7C391 /* SeparatorLine.h in Headers */,
+				F5A32BAF2723E0AD00A7C391 /* RegisterLogger.h in Headers */,
+				F5A32BB02723E0AD00A7C391 /* MyParamDisplay.h in Headers */,
+				F5A32BB12723E0AD00A7C391 /* MyTextEdit.h in Headers */,
+				F5A32BB22723E0AD00A7C391 /* EfxAccess.h in Headers */,
+				F5A32BB32723E0AD00A7C391 /* SpcFileGenerate.h in Headers */,
+				F5A32BB42723E0AD00A7C391 /* DataBuffer.h in Headers */,
+				F5A32BB52723E0AD00A7C391 /* AudioFile.h in Headers */,
+				F5A32BB62723E0AD00A7C391 /* SPCFile.h in Headers */,
+				F5A32BB72723E0AD00A7C391 /* RawBRRFile.h in Headers */,
+				F5A32BB82723E0AD00A7C391 /* XIFile.h in Headers */,
+				F5A32BB92723E0AD00A7C391 /* PlistBRRFile.h in Headers */,
+				F5A32BBA2723E0AD00A7C391 /* EchoKernel.h in Headers */,
+				F5A32BBB2723E0AD00A7C391 /* C700TimeThread.h in Headers */,
+				F5A32BBC2723E0AD00A7C391 /* C700Kernel.h in Headers */,
+				F5A32BBD2723E0AD00A7C391 /* C700Parameters.h in Headers */,
+				F5A32BBE2723E0AD00A7C391 /* dsp.h in Headers */,
+				F5A32BBF2723E0AD00A7C391 /* blargg_source.h in Headers */,
+				F5A32BC02723E0AD00A7C391 /* SPC_DSP.h in Headers */,
+				F5A32BC12723E0AD00A7C391 /* C700DSP.h in Headers */,
+				F5A32BC22723E0AD00A7C391 /* FileAccess.h in Headers */,
+				F5A32BC32723E0AD00A7C391 /* ControlInstacnesDefs.h in Headers */,
+				F5A32BC42723E0AD00A7C391 /* DynamicVoiceAllocator.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5A32C4C2723E0DA00A7C391 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A32C4D2723E0DA00A7C391 /* C700DSP.h in Headers */,
+				F5A32C4E2723E0DA00A7C391 /* MersenneTwister.h in Headers */,
+				F5A32C4F2723E0DA00A7C391 /* UrlLinkBox.h in Headers */,
+				F5A32C502723E0DA00A7C391 /* C700_Prefix.pch in Headers */,
+				F5A32C512723E0DA00A7C391 /* C700defines.h in Headers */,
+				F5A32C522723E0DA00A7C391 /* samplebrr.h in Headers */,
+				F5A32C532723E0DA00A7C391 /* blargg_endian.h in Headers */,
+				F5A32C542723E0DA00A7C391 /* SNES_SPC.h in Headers */,
+				F5A32C552723E0DA00A7C391 /* gauss.h in Headers */,
+				F5A32C562723E0DA00A7C391 /* czt.h in Headers */,
+				F5A32C572723E0DA00A7C391 /* RecordingSettingsGUI.h in Headers */,
+				F5A32C582723E0DA00A7C391 /* blargg_common.h in Headers */,
+				F5A32C592723E0DA00A7C391 /* brrcodec.h in Headers */,
+				F5A32C5A2723E0DA00A7C391 /* audioeffectx.h in Headers */,
+				F5A32C5B2723E0DA00A7C391 /* DspRegFIFO.h in Headers */,
+				F5A32C5C2723E0DA00A7C391 /* C700Driver.h in Headers */,
+				F5A32C5D2723E0DA00A7C391 /* SPC_Filter.h in Headers */,
+				F5A32C5E2723E0DA00A7C391 /* getpluginbundle.h in Headers */,
+				F5A32C5F2723E0DA00A7C391 /* C700Properties.h in Headers */,
+				F5A32C602723E0DA00A7C391 /* vstkeycode.h in Headers */,
+				F5A32C612723E0DA00A7C391 /* blargg_source.h in Headers */,
+				F5A32C622723E0DA00A7C391 /* SPC_DSP.h in Headers */,
+				F5A32C632723E0DA00A7C391 /* cocoasupport.h in Headers */,
+				F5A32C642723E0DA00A7C391 /* cfileselector.h in Headers */,
+				F5A32C652723E0DA00A7C391 /* SmcFileGenerate.h in Headers */,
+				F5A32C662723E0DA00A7C391 /* vstgui.h in Headers */,
+				F5A32C672723E0DA00A7C391 /* C700Edit.h in Headers */,
+				F5A32C682723E0DA00A7C391 /* SpcFileGenerate.h in Headers */,
+				F5A32C692723E0DA00A7C391 /* aeffect.h in Headers */,
+				F5A32C6A2723E0DA00A7C391 /* C700GUI.h in Headers */,
+				F5A32C6B2723E0DA00A7C391 /* RegisterLogger.h in Headers */,
+				F5A32C6C2723E0DA00A7C391 /* ctooltipsupport.h in Headers */,
+				F5A32C6D2723E0DA00A7C391 /* dsp.h in Headers */,
+				F5A32C6E2723E0DA00A7C391 /* SPC_CPU.h in Headers */,
+				F5A32C6F2723E0DA00A7C391 /* MidiDriverBase.h in Headers */,
+				F5A32C702723E0DA00A7C391 /* MyKnob.h in Headers */,
+				F5A32C712723E0DA00A7C391 /* MySlider.h in Headers */,
+				F5A32C722723E0DA00A7C391 /* LabelOnOffButton.h in Headers */,
+				F5A32C732723E0DA00A7C391 /* DynamicVoiceAllocator.h in Headers */,
+				F5A32C742723E0DA00A7C391 /* WaveView.h in Headers */,
+				F5A32C752723E0DA00A7C391 /* macOSUtils.h in Headers */,
+				F5A32C762723E0DA00A7C391 /* aeffectx.h in Headers */,
+				F5A32C772723E0DA00A7C391 /* DummyCntl.h in Headers */,
+				F5A32C782723E0DA00A7C391 /* SeparatorLine.h in Headers */,
+				F5A32C792723E0DA00A7C391 /* MyParamDisplay.h in Headers */,
+				F5A32C7A2723E0DA00A7C391 /* MyTextEdit.h in Headers */,
+				F5A32C7B2723E0DA00A7C391 /* C700TimeThread.h in Headers */,
+				F5A32C7C2723E0DA00A7C391 /* MemManager.h in Headers */,
+				F5A32C7D2723E0DA00A7C391 /* vstfxstore.h in Headers */,
+				F5A32C7E2723E0DA00A7C391 /* DspController.h in Headers */,
+				F5A32C7F2723E0DA00A7C391 /* ControlUSB.h in Headers */,
+				F5A32C802723E0DA00A7C391 /* SpcControlDevice.h in Headers */,
+				F5A32C812723E0DA00A7C391 /* EfxAccess.h in Headers */,
+				F5A32C822723E0DA00A7C391 /* spc.h in Headers */,
+				F5A32C832723E0DA00A7C391 /* DataBuffer.h in Headers */,
+				F5A32C842723E0DA00A7C391 /* PlayingFileGenerateBase.h in Headers */,
+				F5A32C852723E0DA00A7C391 /* AudioFile.h in Headers */,
+				F5A32C862723E0DA00A7C391 /* SPCFile.h in Headers */,
+				F5A32C872723E0DA00A7C391 /* RawBRRFile.h in Headers */,
+				F5A32C882723E0DA00A7C391 /* XIFile.h in Headers */,
+				F5A32C892723E0DA00A7C391 /* PlistBRRFile.h in Headers */,
+				F5A32C8A2723E0DA00A7C391 /* ChunkReader.h in Headers */,
+				F5A32C8B2723E0DA00A7C391 /* EchoKernel.h in Headers */,
+				F5A32C8C2723E0DA00A7C391 /* C700Kernel.h in Headers */,
+				F5A32C8D2723E0DA00A7C391 /* C700Parameters.h in Headers */,
+				F5A32C8E2723E0DA00A7C391 /* aeffeditor.h in Headers */,
+				F5A32C8F2723E0DA00A7C391 /* aeffguieditor.h in Headers */,
+				F5A32C902723E0DA00A7C391 /* TextKickButton.h in Headers */,
+				F5A32C912723E0DA00A7C391 /* C700VST.h in Headers */,
+				F5A32C922723E0DA00A7C391 /* PlayerCodeReader.h in Headers */,
+				F5A32C932723E0DA00A7C391 /* FileAccess.h in Headers */,
+				F5A32C942723E0DA00A7C391 /* blargg_config.h in Headers */,
+				F5A32C952723E0DA00A7C391 /* audioeffect.h in Headers */,
+				F5A32C962723E0DA00A7C391 /* ControlInstacnesDefs.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -1363,6 +1974,48 @@
 			productReference = F56D351F156A0EA000038960 /* encodetest */;
 			productType = "com.apple.product-type.tool";
 		};
+		F5A32B652723E0AD00A7C391 /* C700 AU newUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5A32C452723E0AD00A7C391 /* Build configuration list for PBXNativeTarget "C700 AU newUI" */;
+			buildPhases = (
+				F5A32B662723E0AD00A7C391 /* ShellScript */,
+				F5A32B672723E0AD00A7C391 /* Headers */,
+				F5A32BC52723E0AD00A7C391 /* Resources */,
+				F5A32BEC2723E0AD00A7C391 /* Sources */,
+				F5A32C3C2723E0AD00A7C391 /* Frameworks */,
+				F5A32C442723E0AD00A7C391 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "C700 AU newUI";
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = Chip700;
+			productReference = F5A32C482723E0AD00A7C391 /* C700.component */;
+			productType = "com.apple.product-type.bundle";
+		};
+		F5A32C4A2723E0DA00A7C391 /* C700 VST newUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5A32D042723E0DA00A7C391 /* Build configuration list for PBXNativeTarget "C700 VST newUI" */;
+			buildPhases = (
+				F5A32C4B2723E0DA00A7C391 /* ShellScript */,
+				F5A32C4C2723E0DA00A7C391 /* Headers */,
+				F5A32C972723E0DA00A7C391 /* Resources */,
+				F5A32CBE2723E0DA00A7C391 /* Sources */,
+				F5A32CFD2723E0DA00A7C391 /* Frameworks */,
+				F5A32D032723E0DA00A7C391 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "C700 VST newUI";
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = Chip700;
+			productReference = F5A32D072723E0DA00A7C391 /* C700.vst */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1383,8 +2036,10 @@
 			projectRoot = "";
 			targets = (
 				8D01CCC60486CAD60068D4B7 /* C700 AU */,
+				F5A32B652723E0AD00A7C391 /* C700 AU newUI */,
 				F56D351E156A0EA000038960 /* encodetest */,
 				F543317716296E0200863A0B /* C700 VST */,
+				F5A32C4A2723E0DA00A7C391 /* C700 VST newUI */,
 			);
 		};
 /* End PBXProject section */
@@ -1480,6 +2135,96 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F5A32BC52723E0AD00A7C391 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A32BC62723E0AD00A7C391 /* InfoPlist.strings in Resources */,
+				F5A32BC72723E0AD00A7C391 /* AUBackground.png in Resources */,
+				F5A32BC82723E0AD00A7C391 /* knobBack.png in Resources */,
+				F5A32BC92723E0AD00A7C391 /* sliderThumb.png in Resources */,
+				F5A32BCA2723E0AD00A7C391 /* firstopen.png in Resources */,
+				F5A32BCB2723E0AD00A7C391 /* bt_check.png in Resources */,
+				F5A32BCC2723E0AD00A7C391 /* rocker_sw.png in Resources */,
+				F5A32BCD2723E0AD00A7C391 /* help.png in Resources */,
+				F5A32BCE2723E0AD00A7C391 /* bt_copy.png in Resources */,
+				F5A32BCF2723E0AD00A7C391 /* bt_calc.png in Resources */,
+				F5A32BD02723E0AD00A7C391 /* bt_load.png in Resources */,
+				F5A32BD12723E0AD00A7C391 /* hwconn.png in Resources */,
+				F5A32BD22723E0AD00A7C391 /* bt_khaos.png in Resources */,
+				F5A32BD32723E0AD00A7C391 /* bt_save.png in Resources */,
+				F5A32BD42723E0AD00A7C391 /* bt_unload.png in Resources */,
+				F5A32BD52723E0AD00A7C391 /* bt_save_xi.png in Resources */,
+				F5A32BD62723E0AD00A7C391 /* bt_velocitysens.png in Resources */,
+				F5A32BD72723E0AD00A7C391 /* bank_a.png in Resources */,
+				F5A32BD82723E0AD00A7C391 /* bank_b.png in Resources */,
+				F5A32BD92723E0AD00A7C391 /* bank_c.png in Resources */,
+				F5A32BDA2723E0AD00A7C391 /* bank_d.png in Resources */,
+				F5A32BDB2723E0AD00A7C391 /* track01_.png in Resources */,
+				F5A32BDC2723E0AD00A7C391 /* track02_.png in Resources */,
+				F5A32BDD2723E0AD00A7C391 /* track03_.png in Resources */,
+				F5A32BDE2723E0AD00A7C391 /* track04_.png in Resources */,
+				F5A32BDF2723E0AD00A7C391 /* track05_.png in Resources */,
+				F5A32BE02723E0AD00A7C391 /* track06_.png in Resources */,
+				F5A32BE12723E0AD00A7C391 /* track07_.png in Resources */,
+				F5A32BE22723E0AD00A7C391 /* track08_.png in Resources */,
+				F5A32BE32723E0AD00A7C391 /* track09_.png in Resources */,
+				F5A32BE42723E0AD00A7C391 /* track10_.png in Resources */,
+				F5A32BE52723E0AD00A7C391 /* track11_.png in Resources */,
+				F5A32BE62723E0AD00A7C391 /* track12_.png in Resources */,
+				F5A32BE72723E0AD00A7C391 /* track13_.png in Resources */,
+				F5A32BE82723E0AD00A7C391 /* track14_.png in Resources */,
+				F5A32BE92723E0AD00A7C391 /* track15_.png in Resources */,
+				F5A32BEA2723E0AD00A7C391 /* track16_.png in Resources */,
+				F5A32BEB2723E0AD00A7C391 /* ind_track.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5A32C972723E0DA00A7C391 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A32C982723E0DA00A7C391 /* InfoPlist.strings in Resources */,
+				F5A32C992723E0DA00A7C391 /* AUBackground.png in Resources */,
+				F5A32C9A2723E0DA00A7C391 /* knobBack.png in Resources */,
+				F5A32C9B2723E0DA00A7C391 /* sliderThumb.png in Resources */,
+				F5A32C9C2723E0DA00A7C391 /* firstopen.png in Resources */,
+				F5A32C9D2723E0DA00A7C391 /* bt_check.png in Resources */,
+				F5A32C9E2723E0DA00A7C391 /* rocker_sw.png in Resources */,
+				F5A32C9F2723E0DA00A7C391 /* help.png in Resources */,
+				F5A32CA02723E0DA00A7C391 /* bt_copy.png in Resources */,
+				F5A32CA12723E0DA00A7C391 /* bt_calc.png in Resources */,
+				F5A32CA22723E0DA00A7C391 /* bt_load.png in Resources */,
+				F5A32CA32723E0DA00A7C391 /* hwconn.png in Resources */,
+				F5A32CA42723E0DA00A7C391 /* bt_khaos.png in Resources */,
+				F5A32CA52723E0DA00A7C391 /* bt_save.png in Resources */,
+				F5A32CA62723E0DA00A7C391 /* bt_unload.png in Resources */,
+				F5A32CA72723E0DA00A7C391 /* bt_save_xi.png in Resources */,
+				F5A32CA82723E0DA00A7C391 /* bt_velocitysens.png in Resources */,
+				F5A32CA92723E0DA00A7C391 /* bank_a.png in Resources */,
+				F5A32CAA2723E0DA00A7C391 /* bank_b.png in Resources */,
+				F5A32CAB2723E0DA00A7C391 /* bank_c.png in Resources */,
+				F5A32CAC2723E0DA00A7C391 /* bank_d.png in Resources */,
+				F5A32CAD2723E0DA00A7C391 /* track01_.png in Resources */,
+				F5A32CAE2723E0DA00A7C391 /* track02_.png in Resources */,
+				F5A32CAF2723E0DA00A7C391 /* track03_.png in Resources */,
+				F5A32CB02723E0DA00A7C391 /* track04_.png in Resources */,
+				F5A32CB12723E0DA00A7C391 /* track05_.png in Resources */,
+				F5A32CB22723E0DA00A7C391 /* track06_.png in Resources */,
+				F5A32CB32723E0DA00A7C391 /* track07_.png in Resources */,
+				F5A32CB42723E0DA00A7C391 /* track08_.png in Resources */,
+				F5A32CB52723E0DA00A7C391 /* track09_.png in Resources */,
+				F5A32CB62723E0DA00A7C391 /* track10_.png in Resources */,
+				F5A32CB72723E0DA00A7C391 /* track11_.png in Resources */,
+				F5A32CB82723E0DA00A7C391 /* track12_.png in Resources */,
+				F5A32CB92723E0DA00A7C391 /* track13_.png in Resources */,
+				F5A32CBA2723E0DA00A7C391 /* track14_.png in Resources */,
+				F5A32CBB2723E0DA00A7C391 /* track15_.png in Resources */,
+				F5A32CBC2723E0DA00A7C391 /* track16_.png in Resources */,
+				F5A32CBD2723E0DA00A7C391 /* ind_track.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -1534,6 +2279,58 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [ ${CONFIGURATION} = \"Deployment\" ]; then\ncp -a -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$PROJECT_DIR/dist/macosx/\"\nfi\n";
+		};
+		F5A32B662723E0AD00A7C391 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "plistBuddy=\"/usr/libexec/PlistBuddy\"\ninfoPlistFileSource=\"${SRCROOT}/${INFOPLIST_FILE}\"\ninfoPlistFileDestination=\"${TEMP_DIR}/Preprocessed-Info.plist\"\n\nif [ ${CONFIGURATION} = \"Development\" ]; then\nversionPrefix=\"dev-\"\nelse\nversionPrefix=\"\"\nfi\nlastCommitDate=$(git log -1 --date=short --pretty=format:\"%cd\" | sed -e 's/^.\\{2\\}//g' -e 's/\\-//g')\n\nnowYear=$(date \"+%Y\")\nversionString=$versionPrefix$lastCommitDate\ngetInfoString=\"C700 version $versionString, Copyright 2006-$nowYear osoumen\"\n\n$plistBuddy -c \"Set :CFBundleVersion $versionString\" \"$infoPlistFileDestination\"\n$plistBuddy -c \"Set :CFBundleShortVersionString $versionString\" \"$infoPlistFileDestination\"\n$plistBuddy -c \"Set :CFBundleGetInfoString $getInfoString\" \"$infoPlistFileDestination\"\n";
+		};
+		F5A32C442723E0AD00A7C391 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ${CONFIGURATION} = \"Deployment\" ]; then\ncp -a -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.component\" \"$PROJECT_DIR/dist/macosx/\"\nfi\n";
+		};
+		F5A32C4B2723E0DA00A7C391 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "plistBuddy=\"/usr/libexec/PlistBuddy\"\ninfoPlistFileSource=\"${SRCROOT}/${INFOPLIST_FILE}\"\ninfoPlistFileDestination=\"${TEMP_DIR}/Preprocessed-Info.plist\"\n\nif [ ${CONFIGURATION} = \"Development\" ]; then\nversionPrefix=\"dev-\"\nelse\nversionPrefix=\"\"\nfi\nlastCommitDate=$(git log -1 --date=short --pretty=format:\"%cd\" | sed -e 's/^.\\{2\\}//g' -e 's/\\-//g')\n\nnowYear=$(date \"+%Y\")\nversionString=$versionPrefix$lastCommitDate\ngetInfoString=\"C700 version $versionString, Copyright 2006-$nowYear osoumen\"\n\n$plistBuddy -c \"Set :CFBundleVersion $versionString\" \"$infoPlistFileDestination\"\n$plistBuddy -c \"Set :CFBundleShortVersionString $versionString\" \"$infoPlistFileDestination\"\n$plistBuddy -c \"Set :CFBundleGetInfoString $getInfoString\" \"$infoPlistFileDestination\"\n";
+		};
+		F5A32D032723E0DA00A7C391 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ${CONFIGURATION} = \"Development\" ]; then\nln -s -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$HOME/Library/Audio/Plug-Ins/VST/\"\nelse\ncp -a -f \"$SYMROOT/$CONFIGURATION/$PRODUCT_NAME.vst\" \"$PROJECT_DIR/dist/macosx/\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1699,6 +2496,161 @@
 			files = (
 				F56D3527156A0EE900038960 /* brrcodec.cpp in Sources */,
 				F56D3540156A115300038960 /* enccodetest.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5A32BEC2723E0AD00A7C391 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A32BED2723E0AD00A7C391 /* C700.cpp in Sources */,
+				F5A32BEE2723E0AD00A7C391 /* AUBase.cpp in Sources */,
+				F5A32BEF2723E0AD00A7C391 /* PlayerCodeReader.cpp in Sources */,
+				F5A32BF02723E0AD00A7C391 /* AUInputElement.cpp in Sources */,
+				F5A32BF12723E0AD00A7C391 /* C700Properties.cpp in Sources */,
+				F5A32BF22723E0AD00A7C391 /* RegisterLogger.cpp in Sources */,
+				F5A32BF32723E0AD00A7C391 /* CAAUParameter.cpp in Sources */,
+				F5A32BF42723E0AD00A7C391 /* AUOutputElement.cpp in Sources */,
+				F5A32BF52723E0AD00A7C391 /* PlayingFileGenerateBase.cpp in Sources */,
+				F5A32BF62723E0AD00A7C391 /* AUScopeElement.cpp in Sources */,
+				F5A32BF72723E0AD00A7C391 /* CAHostTimeBase.cpp in Sources */,
+				F5A32BF82723E0AD00A7C391 /* ComponentBase.cpp in Sources */,
+				F5A32BF92723E0AD00A7C391 /* AUBuffer.cpp in Sources */,
+				F5A32BFA2723E0AD00A7C391 /* CAAudioChannelLayout.cpp in Sources */,
+				F5A32BFB2723E0AD00A7C391 /* spc.cpp in Sources */,
+				F5A32BFC2723E0AD00A7C391 /* CAMutex.cpp in Sources */,
+				F5A32BFD2723E0AD00A7C391 /* CAStreamBasicDescription.cpp in Sources */,
+				F5A32BFE2723E0AD00A7C391 /* UrlLinkBox.cpp in Sources */,
+				F5A32BFF2723E0AD00A7C391 /* CAVectorUnit.cpp in Sources */,
+				F5A32C002723E0AD00A7C391 /* CAAUMIDIMap.cpp in Sources */,
+				F5A32C012723E0AD00A7C391 /* MidiDriverBase.cpp in Sources */,
+				F5A32C022723E0AD00A7C391 /* CAAUMIDIMapManager.cpp in Sources */,
+				F5A32C032723E0AD00A7C391 /* AUMIDIBase.cpp in Sources */,
+				F5A32C042723E0AD00A7C391 /* SmcFileGenerate.cpp in Sources */,
+				F5A32C052723E0AD00A7C391 /* MusicDeviceBase.cpp in Sources */,
+				F5A32C062723E0AD00A7C391 /* GUIUtils.cpp in Sources */,
+				F5A32C072723E0AD00A7C391 /* SynthElement.cpp in Sources */,
+				F5A32C082723E0AD00A7C391 /* SPC_DSP.cpp in Sources */,
+				F5A32C092723E0AD00A7C391 /* DspRegFIFO.cpp in Sources */,
+				F5A32C0A2723E0AD00A7C391 /* czt.cpp in Sources */,
+				F5A32C0B2723E0AD00A7C391 /* brrcodec.cpp in Sources */,
+				F5A32C0C2723E0AD00A7C391 /* C700Driver.cpp in Sources */,
+				F5A32C0D2723E0AD00A7C391 /* cocoasupport.mm in Sources */,
+				F5A32C0E2723E0AD00A7C391 /* SNES_SPC.cpp in Sources */,
+				F5A32C0F2723E0AD00A7C391 /* AUInstrumentBase.cpp in Sources */,
+				F5A32C102723E0AD00A7C391 /* plugguieditor.cpp in Sources */,
+				F5A32C112723E0AD00A7C391 /* cvstguitimer.cpp in Sources */,
+				F5A32C122723E0AD00A7C391 /* SpcControlDevice.cpp in Sources */,
+				F5A32C132723E0AD00A7C391 /* SpcFileGenerate.cpp in Sources */,
+				F5A32C142723E0AD00A7C391 /* cfileselector.cpp in Sources */,
+				F5A32C152723E0AD00A7C391 /* vstcontrols.cpp in Sources */,
+				F5A32C162723E0AD00A7C391 /* vstgui.cpp in Sources */,
+				F5A32C172723E0AD00A7C391 /* C700_CocoaViewFactory.mm in Sources */,
+				F5A32C182723E0AD00A7C391 /* ControlUSB.cpp in Sources */,
+				F5A32C192723E0AD00A7C391 /* C700Edit.cpp in Sources */,
+				F5A32C1A2723E0AD00A7C391 /* C700GUI.cpp in Sources */,
+				F5A32C1B2723E0AD00A7C391 /* ctooltipsupport.cpp in Sources */,
+				F5A32C1C2723E0AD00A7C391 /* MyKnob.cpp in Sources */,
+				F5A32C1D2723E0AD00A7C391 /* SPC_Filter.cpp in Sources */,
+				F5A32C1E2723E0AD00A7C391 /* MySlider.cpp in Sources */,
+				F5A32C1F2723E0AD00A7C391 /* SNES_SPC_misc.cpp in Sources */,
+				F5A32C202723E0AD00A7C391 /* DspController.cpp in Sources */,
+				F5A32C212723E0AD00A7C391 /* DynamicVoiceAllocator.cpp in Sources */,
+				F5A32C222723E0AD00A7C391 /* LabelOnOffButton.cpp in Sources */,
+				F5A32C232723E0AD00A7C391 /* WaveView.cpp in Sources */,
+				F5A32C242723E0AD00A7C391 /* C700DSP.cpp in Sources */,
+				F5A32C252723E0AD00A7C391 /* DummyCntl.cpp in Sources */,
+				F5A32C262723E0AD00A7C391 /* AUPlugInDispatch.cpp in Sources */,
+				F5A32C272723E0AD00A7C391 /* SeparatorLine.cpp in Sources */,
+				F5A32C282723E0AD00A7C391 /* MyParamDisplay.cpp in Sources */,
+				F5A32C292723E0AD00A7C391 /* MyTextEdit.cpp in Sources */,
+				F5A32C2A2723E0AD00A7C391 /* EfxAccess.cpp in Sources */,
+				F5A32C2B2723E0AD00A7C391 /* DataBuffer.cpp in Sources */,
+				F5A32C2C2723E0AD00A7C391 /* AudioFile.cpp in Sources */,
+				F5A32C2D2723E0AD00A7C391 /* SPCFile.cpp in Sources */,
+				F5A32C2E2723E0AD00A7C391 /* RawBRRFile.cpp in Sources */,
+				F5A32C2F2723E0AD00A7C391 /* MemManager.cpp in Sources */,
+				F5A32C302723E0AD00A7C391 /* XIFile.cpp in Sources */,
+				F5A32C312723E0AD00A7C391 /* PlistBRRFile.cpp in Sources */,
+				F5A32C322723E0AD00A7C391 /* EchoKernel.cpp in Sources */,
+				F5A32C332723E0AD00A7C391 /* SNES_SPC_state.cpp in Sources */,
+				F5A32C342723E0AD00A7C391 /* C700Kernel.cpp in Sources */,
+				F5A32C352723E0AD00A7C391 /* TextKickButton.cpp in Sources */,
+				F5A32C362723E0AD00A7C391 /* ChunkReader.cpp in Sources */,
+				F5A32C372723E0AD00A7C391 /* RecordingSettingsGUI.cpp in Sources */,
+				F5A32C382723E0AD00A7C391 /* C700Parameters.cpp in Sources */,
+				F5A32C392723E0AD00A7C391 /* macOSUtils.mm in Sources */,
+				F5A32C3A2723E0AD00A7C391 /* FileAccess.cpp in Sources */,
+				F5A32C3B2723E0AD00A7C391 /* dsp.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5A32CBE2723E0DA00A7C391 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5A32CBF2723E0DA00A7C391 /* czt.cpp in Sources */,
+				F5A32CC02723E0DA00A7C391 /* brrcodec.cpp in Sources */,
+				F5A32CC12723E0DA00A7C391 /* C700Driver.cpp in Sources */,
+				F5A32CC22723E0DA00A7C391 /* MemManager.cpp in Sources */,
+				F5A32CC32723E0DA00A7C391 /* SPC_DSP.cpp in Sources */,
+				F5A32CC42723E0DA00A7C391 /* PlayingFileGenerateBase.cpp in Sources */,
+				F5A32CC52723E0DA00A7C391 /* SmcFileGenerate.cpp in Sources */,
+				F5A32CC62723E0DA00A7C391 /* MidiDriverBase.cpp in Sources */,
+				F5A32CC72723E0DA00A7C391 /* cocoasupport.mm in Sources */,
+				F5A32CC82723E0DA00A7C391 /* UrlLinkBox.cpp in Sources */,
+				F5A32CC92723E0DA00A7C391 /* cvstguitimer.cpp in Sources */,
+				F5A32CCA2723E0DA00A7C391 /* cfileselector.cpp in Sources */,
+				F5A32CCB2723E0DA00A7C391 /* vstcontrols.cpp in Sources */,
+				F5A32CCC2723E0DA00A7C391 /* DynamicVoiceAllocator.cpp in Sources */,
+				F5A32CCD2723E0DA00A7C391 /* SNES_SPC_state.cpp in Sources */,
+				F5A32CCE2723E0DA00A7C391 /* vstgui.cpp in Sources */,
+				F5A32CCF2723E0DA00A7C391 /* C700Edit.cpp in Sources */,
+				F5A32CD02723E0DA00A7C391 /* C700GUI.cpp in Sources */,
+				F5A32CD12723E0DA00A7C391 /* dsp.cpp in Sources */,
+				F5A32CD22723E0DA00A7C391 /* ctooltipsupport.cpp in Sources */,
+				F5A32CD32723E0DA00A7C391 /* MyKnob.cpp in Sources */,
+				F5A32CD42723E0DA00A7C391 /* GUIUtils.cpp in Sources */,
+				F5A32CD52723E0DA00A7C391 /* MySlider.cpp in Sources */,
+				F5A32CD62723E0DA00A7C391 /* LabelOnOffButton.cpp in Sources */,
+				F5A32CD72723E0DA00A7C391 /* audioeffectx.cpp in Sources */,
+				F5A32CD82723E0DA00A7C391 /* WaveView.cpp in Sources */,
+				F5A32CD92723E0DA00A7C391 /* SNES_SPC_misc.cpp in Sources */,
+				F5A32CDA2723E0DA00A7C391 /* DummyCntl.cpp in Sources */,
+				F5A32CDB2723E0DA00A7C391 /* SeparatorLine.cpp in Sources */,
+				F5A32CDC2723E0DA00A7C391 /* MyParamDisplay.cpp in Sources */,
+				F5A32CDD2723E0DA00A7C391 /* MyTextEdit.cpp in Sources */,
+				F5A32CDE2723E0DA00A7C391 /* ControlUSB.cpp in Sources */,
+				F5A32CDF2723E0DA00A7C391 /* TextKickButton.cpp in Sources */,
+				F5A32CE02723E0DA00A7C391 /* SPC_Filter.cpp in Sources */,
+				F5A32CE12723E0DA00A7C391 /* RegisterLogger.cpp in Sources */,
+				F5A32CE22723E0DA00A7C391 /* macOSUtils.mm in Sources */,
+				F5A32CE32723E0DA00A7C391 /* EfxAccess.cpp in Sources */,
+				F5A32CE42723E0DA00A7C391 /* vstplugmain.cpp in Sources */,
+				F5A32CE52723E0DA00A7C391 /* DataBuffer.cpp in Sources */,
+				F5A32CE62723E0DA00A7C391 /* AudioFile.cpp in Sources */,
+				F5A32CE72723E0DA00A7C391 /* SPCFile.cpp in Sources */,
+				F5A32CE82723E0DA00A7C391 /* ChunkReader.cpp in Sources */,
+				F5A32CE92723E0DA00A7C391 /* RawBRRFile.cpp in Sources */,
+				F5A32CEA2723E0DA00A7C391 /* XIFile.cpp in Sources */,
+				F5A32CEB2723E0DA00A7C391 /* DspController.cpp in Sources */,
+				F5A32CEC2723E0DA00A7C391 /* SNES_SPC.cpp in Sources */,
+				F5A32CED2723E0DA00A7C391 /* PlistBRRFile.cpp in Sources */,
+				F5A32CEE2723E0DA00A7C391 /* EchoKernel.cpp in Sources */,
+				F5A32CEF2723E0DA00A7C391 /* audioeffect.cpp in Sources */,
+				F5A32CF02723E0DA00A7C391 /* C700DSP.cpp in Sources */,
+				F5A32CF12723E0DA00A7C391 /* SpcControlDevice.cpp in Sources */,
+				F5A32CF22723E0DA00A7C391 /* RecordingSettingsGUI.cpp in Sources */,
+				F5A32CF32723E0DA00A7C391 /* DspRegFIFO.cpp in Sources */,
+				F5A32CF42723E0DA00A7C391 /* C700Kernel.cpp in Sources */,
+				F5A32CF52723E0DA00A7C391 /* C700Parameters.cpp in Sources */,
+				F5A32CF62723E0DA00A7C391 /* aeffguieditor.cpp in Sources */,
+				F5A32CF72723E0DA00A7C391 /* C700Properties.cpp in Sources */,
+				F5A32CF82723E0DA00A7C391 /* C700VST.cpp in Sources */,
+				F5A32CF92723E0DA00A7C391 /* spc.cpp in Sources */,
+				F5A32CFA2723E0DA00A7C391 /* PlayerCodeReader.cpp in Sources */,
+				F5A32CFB2723E0DA00A7C391 /* FileAccess.cpp in Sources */,
+				F5A32CFC2723E0DA00A7C391 /* SpcFileGenerate.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1960,6 +2912,188 @@
 			};
 			name = Deployment;
 		};
+		F5A32C462723E0AD00A7C391 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 0;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = /;
+				EXPORTED_SYMBOLS_FILE = C700.exp;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = C700_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG_PRINT=1",
+					"PATH_LEN_MAX=1024",
+					"CA_USE_AUDIO_PLUGIN_ONLY=1",
+					"UI_COMPATIBLE_FIX=1",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/CoreAudio/PublicUtility,
+					$PROJECT_DIR/vstgui,
+					"$PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/**",
+				);
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
+				MARKETING_VERSION = 0.5;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-bundle";
+				PRODUCT_BUNDLE_IDENTIFIER = com.picopicose.audiounit.C700;
+				PRODUCT_NAME = C700;
+				SDKROOT = macosx;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = component;
+			};
+			name = Development;
+		};
+		F5A32C472723E0AD00A7C391 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 0;
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_LOCATION = NO;
+				EXPORTED_SYMBOLS_FILE = C700.exp;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = C700_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"PATH_LEN_MAX=1024",
+					"CA_USE_AUDIO_PLUGIN_ONLY=1",
+					"UI_COMPATIBLE_FIX=1",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/CoreAudio/PublicUtility,
+					$PROJECT_DIR/vstgui,
+					"$PROJECT_DIR/CoreAudio/AudioUnits/AUPublic/**",
+				);
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
+				LLVM_LTO = YES;
+				MARKETING_VERSION = 0.5;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-bundle";
+				PRODUCT_BUNDLE_IDENTIFIER = com.picopicose.audiounit.C700;
+				PRODUCT_NAME = C700;
+				SDKROOT = macosx;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = component;
+			};
+			name = Deployment;
+		};
+		F5A32D052723E0DA00A7C391 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = C700_Prefix_VST.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG_PRINT=1",
+					"PATH_LEN_MAX=1024",
+					"CA_USE_AUDIO_PLUGIN_ONLY=1",
+					"UI_COMPATIBLE_FIX=1",
+				);
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/vstsdk2.4,
+					$PROJECT_DIR/vstgui,
+				);
+				INFOPLIST_FILE = Info_vst.plist;
+				INFOPLIST_PREPROCESS = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = (
+					"-DTESTING",
+					"$(OTHER_CFLAGS)",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.picopicose.vst.C700;
+				PRODUCT_NAME = C700;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = vst;
+			};
+			name = Development;
+		};
+		F5A32D062723E0DA00A7C391 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_LOCATION = NO;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = C700_Prefix_VST.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"PATH_LEN_MAX=1024",
+					"CA_USE_AUDIO_PLUGIN_ONLY=1",
+					"UI_COMPATIBLE_FIX=1",
+				);
+				GCC_UNROLL_LOOPS = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					$PROJECT_DIR/vstsdk2.4,
+					$PROJECT_DIR/vstgui,
+				);
+				INFOPLIST_FILE = Info_vst.plist;
+				INFOPLIST_PREPROCESS = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.picopicose.vst.C700;
+				PRODUCT_NAME = C700;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = vst;
+			};
+			name = Deployment;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1995,6 +3129,24 @@
 			buildConfigurations = (
 				F56D3521156A0EA000038960 /* Development */,
 				F56D3522156A0EA000038960 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		F5A32C452723E0AD00A7C391 /* Build configuration list for PBXNativeTarget "C700 AU newUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5A32C462723E0AD00A7C391 /* Development */,
+				F5A32C472723E0AD00A7C391 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		F5A32D042723E0DA00A7C391 /* Build configuration list for PBXNativeTarget "C700 VST newUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5A32D052723E0DA00A7C391 /* Development */,
+				F5A32D062723E0DA00A7C391 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Development;

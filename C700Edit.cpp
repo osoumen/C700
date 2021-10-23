@@ -177,10 +177,15 @@ void C700Edit::setParameter(long index, float value)
 	cntl = m_pUIView->FindControlByTag(tag);
 	while (cntl)
 	{
-//        cntl->setDirty();
+#ifdef UI_COMPATIBLE_FIX
+		cntl->setValue(value);
+		cntl->invalid();
+#else
+		//cntl->invalid();
+		cntl->setDirty();
 		cntl->setValue(value);
 		//printf("tag=%d, value=%f\n",tag,value);
-		cntl->invalid();
+#endif
 
         // 使用RAMが実機の容量を超えたら赤字に変える
         if (tag == kAudioUnitCustomProperty_TotalRAM) {
@@ -339,7 +344,9 @@ void C700Edit::SetProgramName( const char *pgname )
 			//textbox->invalid();		//Windowsではこれが無いとなぜか更新されない
             textbox->setDirty();
 			textbox->setText(pgname);
+#ifdef UI_COMPATIBLE_FIX
 			textbox->invalid();
+#endif
 		}
 	}
 }
