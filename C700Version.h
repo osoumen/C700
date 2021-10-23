@@ -5,7 +5,7 @@
 #ifdef DEBUG
 	#define kC700Version 0xFFFFFFFF
 #else
-	#define kC700Version 0x00000400
+	#define kC700Version 0x00000401
 #endif
 
 #define C700_COMP_SUBTYPE		'C700'
