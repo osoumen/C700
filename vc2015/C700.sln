@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "C700", "C700.vcxproj", "{59248302-52E0-4CC0-9BBE-E475BA4A9B41}"
 EndProject
@@ -9,6 +9,8 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		Release newUI|Win32 = Release newUI|Win32
+		Release newUI|x64 = Release newUI|x64
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
@@ -17,6 +19,10 @@ Global
 		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Debug|Win32.Build.0 = Debug|Win32
 		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Debug|x64.ActiveCfg = Debug|x64
 		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Debug|x64.Build.0 = Debug|x64
+		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Release newUI|Win32.ActiveCfg = Release newUI|Win32
+		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Release newUI|Win32.Build.0 = Release newUI|Win32
+		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Release newUI|x64.ActiveCfg = Release newUI|x64
+		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Release newUI|x64.Build.0 = Release newUI|x64
 		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Release|Win32.ActiveCfg = Release|Win32
 		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Release|Win32.Build.0 = Release|Win32
 		{59248302-52E0-4CC0-9BBE-E475BA4A9B41}.Release|x64.ActiveCfg = Release|x64
