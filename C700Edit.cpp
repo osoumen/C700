@@ -142,7 +142,7 @@ void C700Edit::close()
 }
 
 //-----------------------------------------------------------------------------
-void C700Edit::setParameter(long index, float value)
+void C700Edit::setParameter(int32_t index, float value)
 {
 	//エフェクタのパラメータが変化したときに呼ばれる
 	//GUI側に変化したパラメータを反映させる処理を行う
@@ -234,7 +234,7 @@ void C700Edit::setParameter(long index, float value)
 }
 
 //-----------------------------------------------------------------------------
-void C700Edit::setParameter(long index, const void *inPtr)
+void C700Edit::setParameter(int32_t index, const void *inPtr)
 {
 #if AU
     switch ( index ) {

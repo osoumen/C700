@@ -38,8 +38,8 @@ public:
 	virtual bool	open(void *ptr);
 	virtual void	close();
 	
-    void            setParameter(long index, const void *inPtr);
-	virtual void	setParameter(long index, float value);
+    void            setParameter(int32_t index, const void *inPtr);
+	virtual void	setParameter(int32_t index, float value);
 	virtual void	valueChanged(CControl *pControl);	
 	long			getTag();
 
