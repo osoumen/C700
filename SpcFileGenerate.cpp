@@ -44,9 +44,12 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     int reglogSize = convertLogData( reglog, tickPerSec, reglogData, 4 * 1024 * 1024, &loopPoint, true );
     
 	const int echoSize = reglog.getDspRegionData()[0x7d] << 11;
-	int logAddr = 0x600 + echoSize;
 	int brrAddr = reglog.getBrrRegionLocateAddr();
 	bool outputScript700 = false;
+	int dirPos = (0x200 + mSpcPlayCodeSize + 0xff) & 0xff00;
+	int esaPos = dirPos + 0x400;
+	int logAddr = esaPos + echoSize;
+
 	if (reglogSize > (brrAddr - logAddr))
 	{
 		// 64kに収まらない場合、700ファイルの形式で書き出す
@@ -54,6 +57,8 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
 		get700FileName(path, script700path, PATH_LEN_MAX);
 		exportScript700(script700path, reglog);
 		outputScript700 = true;
+		dirPos = 0x200;
+		esaPos = dirPos + 0x400;
 	}
 	
     // SPCヘッダの書き出し
@@ -118,13 +123,13 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
 	}
     
     // DIR領域の書き出し
-    spcFile.setPos(0x300);
+    spcFile.setPos(0x100 + dirPos);
     spcFile.writeData(reglog.getDirRegionData(), reglog.getDirRegionSize());
     
     // レジスタログの書き出し
 	if (!outputScript700) {
 		// エコー領域の後に演奏データを入れる
-		spcFile.setPos(0x700 + echoSize);    // DSP_EDL
+		spcFile.setPos(0x100 + esaPos + echoSize);    // DSP_EDL
 		spcFile.writeData(reglogData, reglogSize);
 	}
     
@@ -143,6 +148,12 @@ bool SpcFileGenerate::WriteToFile( const char *path, const RegisterLogger &reglo
     // DSP領域の書き出し
     spcFile.setPos(0x10100);
     writeDspRegion(spcFile, reglog);
+	
+	// DIR,ESAの書き換え
+	spcFile.setPos(0x1015d);	// DIR
+	spcFile.writeByte(dirPos >> 8);
+	spcFile.setPos(0x1016d);	// ESA
+	spcFile.writeByte(esaPos >> 8);
 	
 	// KON,KOFフラグをクリアする
 	spcFile.setPos(0x1014c);
