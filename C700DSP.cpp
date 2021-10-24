@@ -123,6 +123,10 @@ mUseRealEmulation( true )
     mSpcPlayerCode = NULL;
     mSpcPlayerCodeSize = 0;
     mCodeVer = 0;
+	
+	for (int i=0; i<65536; ++i) {
+		mRam[i] = 0;
+	}
 }
 
 C700DSP::~C700DSP()
