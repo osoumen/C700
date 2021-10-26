@@ -97,6 +97,8 @@ public:
     int             GetPGChunkSize( int pgnum );
     bool            RestorePGDataFromChunk( ChunkReader *chunk, int pgnum );
 #endif
+	void			BeginRestorePGData() { mInRestoreParameters = true; }
+	void			EndRestorePGData() { mInRestoreParameters = false; }
     
 private:
 	int		GetTotalRAM();
@@ -121,6 +123,7 @@ private:
 	C700Driver      mDriver;
     
     bool            mIsHwAvailable;
+	bool			mInRestoreParameters;
     
     std::map<int, PropertyDescription>  mPropertyParams;
     

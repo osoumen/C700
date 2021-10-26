@@ -43,6 +43,7 @@ C700Kernel::C700Kernel()
 	mEditChannel = 0;
     
     mIsHwAvailable = false;
+	mInRestoreParameters = false;
     
     mCurrentPosInTimeLine = .0;
     mRecordStartBeatPos = .0;
@@ -771,10 +772,12 @@ bool C700Kernel::SetPropertyValue( int inID, float value )
 		{
 			int		filter[8];
 			mFilterBand[inID-kAudioUnitCustomProperty_Band1] = value;
-			CalcFIRParam(mFilterBand, filter);
-			if ( parameterSetFunc ) {
-				for ( int i=0; i<8; i++ ) {
-					parameterSetFunc(kParam_fir0+i, filter[i], paramSetUserData);
+			if (!mInRestoreParameters) {
+				CalcFIRParam(mFilterBand, filter);
+				if ( parameterSetFunc ) {
+					for ( int i=0; i<8; i++ ) {
+						parameterSetFunc(kParam_fir0+i, filter[i], paramSetUserData);
+					}
 				}
 			}
 			return true;

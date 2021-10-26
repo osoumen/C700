@@ -603,6 +603,7 @@ ComponentResult	C700::RestoreState(CFPropertyListRef plist)
     }
 	CFDictionaryRef dict = static_cast<CFDictionaryRef>(plist);
 	if (result == noErr) {
+		mEfx->BeginRestorePGData();
 		//ƒvƒƒOƒ‰ƒ€‚Ì•œŒ³
 		CFStringRef pgnum;
 		CFDictionaryRef	pgdata;
@@ -631,6 +632,7 @@ ComponentResult	C700::RestoreState(CFPropertyListRef plist)
         // EditChan‚Ì•û‚ªŒã‚ÉÝ’è‚³‚ê‚Ä‚µ‚Ü‚¤‚Æ‚¤‚Ü‚­•œŒ³‚³‚ê‚È‚¢
         mEfx->RestorePropertyFromDict(dict, mPropertyParams[kAudioUnitCustomProperty_EditingChannel]);
         mEfx->RestorePropertyFromDict(dict, mPropertyParams[kAudioUnitCustomProperty_EditingProgram]);
+		mEfx->EndRestorePGData();
 	}
 	return result;
 }
