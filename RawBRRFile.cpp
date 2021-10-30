@@ -137,8 +137,8 @@ bool RawBRRFile::tryLoad(bool noLoopPoint)
 	}
 	
 	//エンドフラグの位置がループポイントより前だとエラー
-	if ( endflag_pos <= mInst.lp ) {
-		mInst.lp = fileBrr.size;
+	if ( endflag_pos < mInst.lp ) {
+		mInst.lp = endflag_pos + 9;
 	}
 	
 	//instデータの初期化
