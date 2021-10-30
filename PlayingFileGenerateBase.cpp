@@ -173,9 +173,6 @@ int PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, doubl
     
     beginConvert(0);
     for (int i=0; i<reglog.mLogCommandsPos; i++) {
-        if (i == reglog.mLogCommandsLoopPoint) {
-            markLoopPoint();
-        }
         if (skipInitialize) {
             if ((i >= reglog.mBeginInitializationPoint) && (i < reglog.mEndInitializationPoint)) {
                 continue;
@@ -183,12 +180,27 @@ int PlayingFileGenerateBase::convertLogData( const RegisterLogger &reglog, doubl
         }
         unsigned char cmd = reglog.m_pLogCommands[i].data[0];
         int cmdLen = getCommandLength(cmd);
+		int tick = convertTime2Tick(reglog.m_pLogCommands[i].time);
         if (cmd < 0x80) {
             if (cmdLen == 2) {
-                addRegWrite( 0, cmd, reglog.m_pLogCommands[i].data[1], reglog.m_pLogCommands[i].time );
+				if (tick >= mDumpBeginTime) {
+					writeWaitFromPrev(tick);
+					if (i == reglog.mLogCommandsLoopPoint) {
+						mLoopPoint = mRegLogBuffer.GetDataPos();
+					}
+					addRegWrite( 0, cmd, reglog.m_pLogCommands[i].data[1] );
+				}
             }
             else if (cmdLen == 3) {
-                addPitchRegWrite( 0, cmd, reglog.m_pLogCommands[i].data[2], reglog.m_pLogCommands[i].data[1], reglog.m_pLogCommands[i].time );
+				if (tick >= mDumpBeginTime) {
+					writeWaitFromPrev(tick);
+					if ( (cmd & 0x0f) == 0x03 ) {
+						if (i == reglog.mLogCommandsLoopPoint) {
+							mLoopPoint = mRegLogBuffer.GetDataPos();
+						}
+						addPitchRegWrite( 0, cmd, reglog.m_pLogCommands[i].data[2], reglog.m_pLogCommands[i].data[1] );
+					}
+				}
             }
         }
         else if (cmd == 0x9e) {
@@ -302,7 +314,10 @@ bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLo
 		else if (cmd == 0x9e) {
 			if (loopPointPos == outDataBytes) {
 				// ループ長が0の場合に処理が止まるのでwaitを入れる
-				fprintf(fp, "4c00a0000000");
+				fprintf(fp, "5cffa0000000");
+			}
+			else {
+				fprintf(fp, "5cff00000000");
 			}
 			fprintf(fp, "ff%02x%02x%02x%02x", loopPointPos & 0xff, (loopPointPos >> 8) & 0xff, (loopPointPos >> 16) & 0xff, (loopPointPos >> 24) & 0xff);
 		}
@@ -330,16 +345,8 @@ void PlayingFileGenerateBase::beginConvert( int time )
 }
 
 //-----------------------------------------------------------------------------
-bool PlayingFileGenerateBase::addRegWrite( int device, int addr, unsigned char data, int time )
+bool PlayingFileGenerateBase::addRegWrite( int device, int addr, unsigned char data )
 {
-    int tick = convertTime2Tick(time);
-    
-    if (tick < mDumpBeginTime) {
-        return false;
-    }
-    
-    writeWaitFromPrev(tick);
-    
     if ( mRegLogBuffer.GetLeftSize() >= 3 ) {
         writeByte( addr );
         writeByte( data );
@@ -357,42 +364,23 @@ bool PlayingFileGenerateBase::addRegWrite( int device, int addr, unsigned char d
 }
 
 //-----------------------------------------------------------------------------
-bool PlayingFileGenerateBase::addPitchRegWrite( int device, int addr, unsigned char data_l, unsigned char data_m, int time )
+bool PlayingFileGenerateBase::addPitchRegWrite( int device, int addr, unsigned char data_l, unsigned char data_m )
 {
-    int tick = convertTime2Tick(time);
-    
-    if (tick < mDumpBeginTime) {
-        return false;
-    }
-    
-    if ( (addr & 0x0f) == 0x03 ) {
+	if ( mRegLogBuffer.GetLeftSize() >= 4 ) {
+		writeByte( addr );
+		writeByte( data_m );
+		writeByte( data_l );
+		/*
+		 if (regStat.count(addr) == 0) {
+		 regStat[addr] = 1;
+		 }
+		 else {
+		 regStat[addr] = regStat[addr]+1;
+		 }
+		 */
+	}
         
-        writeWaitFromPrev(tick);
-        
-        if ( mRegLogBuffer.GetLeftSize() >= 4 ) {
-            writeByte( addr );
-            writeByte( data_m );
-            writeByte( data_l );
-            /*
-             if (regStat.count(addr) == 0) {
-             regStat[addr] = 1;
-             }
-             else {
-             regStat[addr] = regStat[addr]+1;
-             }
-             */
-        }
-        
-        return true;
-    }
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-void PlayingFileGenerateBase::markLoopPoint()
-{
-	mLoopPoint = mRegLogBuffer.GetDataPos();
-    //	printf("--MarkLoopPoint--¥n");
+	return true;
 }
 
 //-----------------------------------------------------------------------------

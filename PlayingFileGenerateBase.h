@@ -41,9 +41,8 @@ private:
     std::map<int,int>   mWaitStat;
     
     void				beginConvert( int time );
-	bool				addRegWrite( int device, int addr, unsigned char data, int time );
-    bool                addPitchRegWrite( int device, int addr, unsigned char data_l, unsigned char data_m, int time );
-	void				markLoopPoint();
+	bool				addRegWrite( int device, int addr, unsigned char data );
+    bool                addPitchRegWrite( int device, int addr, unsigned char data_l, unsigned char data_m );
 	void				endConvert(int time);
     
 	int                 optimizeWaits(const unsigned char *inData, int inDataSize, unsigned char *outData, int outDataSize, int *outLoopPoint);
