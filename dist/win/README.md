@@ -12,7 +12,7 @@
 
 ## 動作環境
 ### macOS版
-* macOS 10.11 以降のIntel, Apple M1 Mac
+* macOS 10.11 以降の Mac(Intel, Apple Silicon)
 * Audio Units または VST2.4に対応したホストアプリケーション
 
 ### Windows版
@@ -21,7 +21,7 @@
 ## 動作確認済ホスト
 ### macOS
 
-* Logic Pro 10.6.3 (Intel,Apple Silicon) (macOS Big Sur 11.6)
+* Logic Pro 10.7 (Intel,Apple Silicon) (macOS Big Sur 11.6.1)
 * Digital Performer 8 (32/64bit) (10.8.5)
 * Digital Performer 9.12 (32/64bit) (10.10.5)
 
@@ -275,6 +275,11 @@
 * なるべくチューナーなどを使用して正確にピッチを合わせた方が綺麗なループになる。
 
 ## 更新履歴
+* 2021/10/31
+	* FIRフィルタがの設定値が保存復帰後スライダー設定値に置き換わっていたのを保持されるように修正
+	* ループポイントがファイル終端付近にあるbrrファイルが正常に読めなくなっていたのを修正
+	* 正しくループしないspc,smcが出力される場合があった問題の修正
+
 * 2021/10/23
 	* .spcファイル出力時に演奏データ容量がオーバーした場合に、script700ファイルを出力する機能を追加
 	* .spcファイル出力時に、開始直後のノートオンが発音されない場合があったのを修正
