@@ -271,6 +271,10 @@ bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLo
 			continue;
 		}
 		waitTime += (reglog.m_pLogCommands[i].time - prevTime) * 64;
+		if (reglog.m_pLogCommands[i].data[0] == 0x9e) {
+			// 最後のkeyoffに入れるwaitの分の時間を減らす
+			waitTime -= keyoff_wait;
+		}
 		prevTime = reglog.m_pLogCommands[i].time;
 		if (waitTime < requiedWait) {
 			fprintf(fp, "%02x%02x%02x%02x", requiedWait & 0xff, (requiedWait >> 8) & 0xff, (requiedWait >> 16) & 0xff, (requiedWait >> 24) & 0xff);
@@ -312,13 +316,8 @@ bool PlayingFileGenerateBase::exportScript700(const char *path, const RegisterLo
 			}
 		}
 		else if (cmd == 0x9e) {
-			if (loopPointPos == outDataBytes) {
-				// ループ長が0の場合に処理が止まるのでwaitを入れる
-				fprintf(fp, "5cffa0000000");
-			}
-			else {
-				fprintf(fp, "5cff00000000");
-			}
+			// ループ後に音が残るのでキーオフしてループ長が0の場合に処理が止まるのでwaitを入れる
+			fprintf(fp, "5cff%02x%02x%02x%02x", keyoff_wait & 0xff, (keyoff_wait >> 8) & 0xff, (keyoff_wait >> 16) & 0xff, (keyoff_wait >> 24) & 0xff);
 			fprintf(fp, "ff%02x%02x%02x%02x", loopPointPos & 0xff, (loopPointPos >> 8) & 0xff, (loopPointPos >> 16) & 0xff, (loopPointPos >> 24) & 0xff);
 		}
 	}
@@ -390,6 +389,7 @@ void PlayingFileGenerateBase::endConvert(int time)
     
 	if ( mRegLogBuffer.GetDataUsed() > 0 ) {
 		writeWaitFromPrev(tick);
+		addRegWrite( 0, 0x5c, 0xff );
 		writeEndByte();
 		/*
          for (auto it = regStat.begin(); it != regStat.end(); it++) {
