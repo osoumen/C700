@@ -403,6 +403,7 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 	int	editProg = 0;
 	int editChannel = 0;
 	
+	mEfx->BeginRestorePGData();
 	while ( byteSize - saveChunk->GetDataPos() > (int)sizeof( ChunkReader::MyChunkHead ) ) {
 		int		ckType;
 		long	ckSize;
@@ -453,6 +454,7 @@ VstInt32 C700VST::setChunk(void* data, VstInt32 byteSize, bool isPreset)
 	}
 	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingChannel, editChannel);
 	mEfx->SetPropertyValue(kAudioUnitCustomProperty_EditingProgram, editProg);
+	mEfx->EndRestorePGData();
 #if TESTING
 	printf("setChunk saveChunk->GetDataPos()=%d\n",saveChunk->GetDataPos());
 #endif	
