@@ -550,8 +550,15 @@ void MidiDriverBase::parseDataEntryLSB(int ch, int value)
 //-----------------------------------------------------------------------------
 void MidiDriverBase::parseDataEntryMSB(int ch, int value)
 {
-    mChStat[ch].dataEntryValue &= 0x00ff;
-    mChStat[ch].dataEntryValue |= (value & 0x7f) << 8;
+    mChStat[ch].dataEntryValue &= 0x007f;
+    //inverts lower bits when negative
+    if (value > 0x3f)
+    { 
+        mChStat[ch].dataEntryValue = 0x7f - mChStat[ch].dataEntryValue;
+    }
+    //set highest bit only
+    mChStat[ch].dataEntryValue |= (value & 0x40) << 1;
+    handleDataEntryValueChange(ch, mChStat[ch].isSettingNRPN, mChStat[ch].isSettingNRPN ? mChStat[ch].nrpn : mChStat[ch].rpn, mChStat[ch].dataEntryValue);
 }
 
 //-----------------------------------------------------------------------------
